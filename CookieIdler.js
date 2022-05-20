@@ -5,6 +5,11 @@ import { theory } from "./api/Theory";
 import { Utils } from "./api/Utils";
 import { UI } from "./api/ui/UI";
 import { Game } from "./api/Game";
+//Hello to the person reading this "code"
+//Spoilers alert for ALL of the upgrades, buildings and achievements
+//Before leaving, please try and find any bugs or bad JS coding practices for me
+
+//Some parameters
 
 var id = "CookieIdler";
 var name = "Cookie Idler";
@@ -13,7 +18,15 @@ var description =
 var authors = "Sainen Lv.420 #2684";
 var version = 1;
 
-//States
+
+
+
+
+
+
+
+
+//States (And thus begins the spoilers)
 let achCount = 0;
 let vizType = 0;
 let lumpTotal = 0;
@@ -473,11 +486,19 @@ var init = () => {
 		invest.getDescription = () => investName;
 		invest.getInfo = () => investInfo;
 		invest.bought = (amount) => {
-			let rand = 0;
-			for(let i=0;i<amount;i++){
-				rand = Math.round((25 + invest.level/250) * Math.random());
-				if(rand <= 18 && building[rand].level > 0){
-					building[rand].level += 5+ConjureBuild.level;
+			if(amount > 99){
+				for(let i=0;i<Math.round(Math.pow(amount,0.5));i++){
+					rand = Math.round((25 + invest.level/250) * Math.random());
+					if(rand <= 18 && building[rand].level > 0){
+						building[rand].level += 5+ConjureBuild.level+(Math.round(Math.pow(amount,0.5)));
+					}
+				}
+			}else{
+				for(let i=0;i<amount;i++){
+					rand = Math.round((25 + invest.level/250) * Math.random());
+					if(rand <= 18 && building[rand].level > 0){
+						building[rand].level += 5+ConjureBuild.level;
+					}
 				}
 			}
 			calcCPS();
@@ -867,7 +888,7 @@ var prePublish = () => {
 
 var getExpn = (index) => (buildingExp[index].level * buiexp) + 1;
 var getPower = (index) => (Utils.getStepwisePowerSum(buildingP[index].level, buildingUpgradeMult[index], 5, 1));
-
+//ellipsis you're so epic for contibuting to getEquationOverlay() function
 var getEquationOverlay = () => 
 	ui.createStackLayout({
 		children:[
