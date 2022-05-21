@@ -10,7 +10,7 @@ import { Game } from "./api/Game";
 //Before leaving, please try and find any bugs or bad JS coding practices for me
 
 //Some parameters
-//If you're wondering why the refund button doesn't appear, please refer to line and you would know something's up
+//If you're wondering why the refund button doesn't appear, please refer to line 646 and you would know something's up
 
 var id = "CookieIdler";
 var name = "Cookie Idler";
@@ -643,7 +643,7 @@ var init = () => {
       "Improves " + buildingName[i] + " by a factor of " + buip.toString(10);
 	buildingUpgrade[i].maxLevel = buildingPMax[i];
 	buildingUpgrade[i].bought = (amount) => calcCPS();
-	buildingUpgrade[i].canBeRefunded = (amount) => return buildingUpgrade[i].level-amount >= 0;
+	buildingUpgrade[i].canBeRefunded = (amount) => buildingUpgrade[i].level-amount >= 0;
   }
   ///////////////////////
   //// Milestone Upgrades
