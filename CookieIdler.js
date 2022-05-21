@@ -249,12 +249,12 @@ let cookieTauInfo = "An experimental type of antimatter-based cookie that is bas
 let residualLuckName = "Distilled Residual Essence of Luck";
 let residualLuckInfo = "You have an extremely low chance of getting another level of building for free";
 let terraInfName = "Terra-Infinity";
-let terraInfInfo = "Using the your devotion, the gods grant you an everlasting source of cookieverse materials";
+let terraInfInfo = "Using your devotion, the gods grant you an everlasting source of cookieverse materials";
 let twingateName = "Twin Gates of Transcendence";
 let twingateInfo = "Unwind the secrets of heveanly chips to empower your empire";
 let conjurebuildName = "Blessing of the Capital";
-let conjurebulidInfo = "Blessed with the money power, you investments rewards gets higher";
-let chronosageName = "Chronos Ageing";
+let conjurebulidInfo = "Blessed with the money power, you investments rewards increase";
+let chronosageName = "Chronos Aging";
 let chronosageInfo = "Transmute the power of yggdrasil to all your buildings";
 
 //Conseq. HC Upgrade
