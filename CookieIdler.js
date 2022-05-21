@@ -15,7 +15,7 @@ import { Game } from "./api/Game";
 var id = "CookieIdler";
 var name = "Cookie Idler";
 var description =
-  "A ungodly large mess and nonmathematical of a theory involving copius amounts of cookies, tau, and other stuffs (NOT grandmas). A BIG credits to Orteil for bringing such a legendary game idea to life; and elipsis for suggesting ideas for the UI.\nThis \"theory\" contains: All Cookie Clicker Buildings, a looot of upgrades, a loot of achievements, no scary maths, [DATA EXPUNGED], not thousands of lines of raw text because I\'m too lazy to encrypt it, bad JS coding, and e150 tau!\nWARNING : In ALL Circumstances, DO NOT attempt to purchase level 4 of the cookie tin upgrade, doing so may crash your game INSTANTLY(hang in there until you can afford level 5)";
+  "A ungodly large mess and nonmathematical of a theory involving copius amounts of cookies, tau, and other stuffs (NOT grandmas). A BIG credits to Orteil for bringing such a legendary game idea to life, elipsis for suggesting ideas for the UI; and skyhigh173#3120 for reformatting the code so it looks better.\nThis \"theory\" contains: All Cookie Clicker Buildings, a looot of upgrades, a loot of achievements, no scary maths, [DATA EXPUNGED], not thousands of lines of raw text because I\'m too lazy to encrypt it, bad JS coding, and e150 tau!\nWARNING : In ALL Circumstances, DO NOT attempt to purchase level 4 of the cookie tin upgrade, doing so may crash your game INSTANTLY(hang in there until you can afford level 5)";
 var authors = "Sainen Lv.420 #2684";
 //Improvement : sky
 var version = 1.1;
