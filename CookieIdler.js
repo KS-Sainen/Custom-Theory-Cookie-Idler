@@ -987,6 +987,7 @@ var getEquationOverlay = () =>
 				text: "Secondary Equation",
 				displacementX: 280,
 				fontSize: 10,
+				horizontalOptions: LayoutOptions.END,
 				padding: new Thickness(10,10,0,0)
 			}),
 			ui.createImage({
