@@ -895,14 +895,13 @@ var InsPopup = ui.createPopup({
     title: "Instructions",
     content: ui.createStackLayout({
         children: [
-            ui.createFrame({
-                heightRequest: 410,
-                cornerRadius: 0,
-                content: ui.createLabel({text: "Welcome to a theory all about cookies and more cookies!!!\n You have 3 currencies, cookies(C), heavenly chips(H), and sugar lumps(L), which you\'ll be spending on upgrades located on both tabs.\nCookies by far is the most important, as majority of the gameplay revolves around it, from buildings to even tau! You can get your first batch of cookies by buying a cursor, which is gifted to you for free to kickstart your very own cookie empire! By maximizing CPS(C dot), you are sure to produce a whole lot of cookies.\nHeavenly Chips are a special type of cookie that forms whenever you sacrificed everything material you own in exchange for greater power(called publications). They can be used for all sorts of special upgrades, and might even end up boosting your CPS if you know enough.\nSugar lumps by far are the hardest to accquire, literally requiring luck in order to get some, but its powers of being able to outright boost your building\'s CPS by 10%, multiplicative! Rumors has it that it gets easier to accquire the more cookies you have.\n I will leave that up to you to decide. ou are not supposed to see this",
+           ui.createScrollView({
+                heightRequest: 200,
+                content: ui.createLabel({text: "Welcome to a theory all about cookies and more cookies!!!\n You have 3 currencies, cookies(C), heavenly chips(H), and sugar lumps(L), which you\'ll be spending on upgrades located on both tabs.\nCookies by far is the most important, as majority of the gameplay revolves around it, from buildings to even tau! You can get your first batch of cookies by buying a cursor, which is gifted to you for free to kickstart your very own cookie empire! By maximizing CPS(C dot), you are sure to produce a whole lot of cookies.\nHeavenly Chips are a special type of cookie that forms whenever you sacrificed everything material you own in exchange for greater power(called publications). They can be used for all sorts of special upgrades, and might even end up boosting your CPS if you know enough.\nSugar lumps by far are the hardest to accquire, literally requiring luck in order to get some, but its powers of being able to outright boost your building\'s CPS by 10%, multiplicative! Rumors has it that it gets easier to accquire the more cookies you have.\n I will leave that up to you to decide. And you are not supposed to see this during normal gameplay >:(",
 					horizontalTextAlignment: TextAlignment.CENTER,
                     padding: Thickness(10, 2, 10, 2),
                     fontSize: 14,
-					maxLines: 100
+		     maxLines: 100
                 })
             }),
             ui.createButton({text: "Close", onClicked: () => InsPopup.hide()})
