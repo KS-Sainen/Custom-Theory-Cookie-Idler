@@ -17,6 +17,7 @@ var name = "Cookie Idler";
 var description =
   "A ungodly large mess and nonmathematical of a theory involving copius amounts of cookies, tau, and other stuffs (NOT grandmas). A BIG credits to Orteil for bringing such a legendary game idea to life; and elipsis for suggesting ideas for the UI.\nThis \"theory\" contains: All Cookie Clicker Buildings, a looot of upgrades, a loot of achievements, no scary maths, [DATA EXPUNGED], not thousands of lines of raw text because I\'m too lazy to encrypt it, bad JS coding, and e150 tau!\nWARNING : In ALL Circumstances, DO NOT attempt to purchase level 4 of the cookie tin upgrade, doing so may crash your game INSTANTLY(hang in there until you can afford level 5)";
 var authors = "Sainen Lv.420 #2684";
+//Improvement : sky
 var version = 1.1;
 
 
@@ -267,7 +268,7 @@ var cookietName = [
 ["Cheesecake","Profiteroles","Panettone","Cinnamon Bun","Jelly Donut","Glazed Donut","Chocolate Cake","Pies","Croissant","Pain Au Chocolat","Focaccia","Taiyaki","Phyllo","Samarkand Bread"],
 ["Cookie Dough","Cookie Dough(No Salmonella)","Burnt Cookie","A normal chocolate chip cookie but there\'s no chips at all for some reason","4K Cookie","Ray-Traced Cookie","Crackers","Deep-Fried Cookie","Flavor Text Cookie"],
 ["Toast","Marshmellows","PB amd J","Wookies","Cheeseburger","Beesechurger","One lone chocolate Chip","Pizza","Candy","Brownies","Flavor text Food that is not cookie","Fudge"],
-["Gilles-Cookie Paille","liver","Mathmatically Illegal Cookie","! [ Snakey Snickerdoodles ] !","Nerdy as f Cookie",":exCookie:","JS-Formed ellipsis Cookie","SkyXCookie","Weierstra🅱️ Cookie Spiral"],
+["Gilles-Cookie Paille","liver","Mathmatically Illegal Cookie","! [ Snakey Snickerdoodles ] !","Nerdy as f Cookie",":exCookie:","JS-Formed ellipsis Cookie","SkyXCookie","Weierstra🅱️ Cookie Spiral", "Exponential Cookie"], //just added one
 ["Gigaloopite","Tetraloopite","Enium Cookie","Orate Cookie","Dxygen Cookie","IUSpawn Cookie"],
 ["Mutated Cookie","Magic Marbled Cookie","Shortcake-like Cookie","Truffle Cookie","Salt Pretzels","Seaweed Sesame Cookie","Dulce De Leche","Keylime Pie","S\'Mores","Chocolate Drizzle Cookie","Peppermint Kiss Cookie","Sprinkled Jelly Cookie","Galaxial Drop","Reflective Frosted Cookie","Pecan Walnut Cookie","White Mine Cookie","Jelly Triangle","Gold Leafed Cookie","Grand Chocolate Wafer Sprinkles"]
 ];
@@ -402,7 +403,7 @@ var checkChapter = (c) =>{
 	else if(c==1)return building[1].level >= 1;
 	else if(c==2)return cookie.value > BigNumber.from(1e12);
 	else if(c==3)return building[6].level >= 1;
-	else if(c>=15) return (cookie.value) >= BigNumber.from("1e750");
+	else if(c>=15)return (cookie.value) >= BigNumber.from("1e750");
 	else return building[c+4].level >= 1;
 	
 };
@@ -740,21 +741,22 @@ var init = () => {
 
 var updateAvailability = () => {
   //something related to milestone upgrades and building specific
-	covenant.isAvailable = cookie.value >= BigNumber.from(1e60);
+	let BF = (num) => BigNumber.from(num);
+	covenant.isAvailable = cookie.value >= BF(1e60);
 	kitty.isAvailable = achCount >= 5;
 	cookieT.isAvailable = building[3].level > 0;
-	CookieH.isAvailable = hc.value >= BigNumber.from(500);
-	CookieS.isAvailable = hc.value >= BigNumber.from(10000);
-	cookieTin.isAvailable = hc.value >= BigNumber.from(10);
-	CookieC.isAvailable = hc.value >= BigNumber.from(1e7);
-	DivineD.isAvailable = hc.value >= BigNumber.from(1e10);
-	ResidualLuck.isAvailable = hc.value >= BigNumber.from(1e38) && (CookieH.level + CookieS.level + CookieC.level >= 3);
-	CookieTau.isAvailable = hc.value >= BigNumber.from(1e20);
-	ygg.isAvailable = cookie.value >= BigNumber.from(1e100);
-	terra.isAvailable = cookie.value >= BigNumber.from(1e125);
-	recom.isAvailable = cookie.value >= BigNumber.from(1e155);
-	invest.isAvailable = cookie.value >= BigNumber.from(1e180);
-	TerraInf.isAvailable = hc.value >= BigNumber.from(1e50);
+	CookieH.isAvailable = hc.value >= BF(500);
+	CookieS.isAvailable = hc.value >= BF(10000);
+	cookieTin.isAvailable = hc.value >= BF(10);
+	CookieC.isAvailable = hc.value >= BF(1e7);
+	DivineD.isAvailable = hc.value >= BF(1e10);
+	ResidualLuck.isAvailable = hc.value >= BF(1e38) && (CookieH.level + CookieS.level + CookieC.level >= 3);
+	CookieTau.isAvailable = hc.value >= BF(1e20);
+	ygg.isAvailable = cookie.value >= BF(1e100);
+	terra.isAvailable = cookie.value >= BF(1e125);
+	recom.isAvailable = cookie.value >= BF(1e155);
+	invest.isAvailable = cookie.value >= BF(1e180);
+	TerraInf.isAvailable = hc.value >= BF(1e50);
 	TwinGates.isAvailable = ChronosAge.level > 0;
 	ChronosAge.isAvailable = ygg.level > 0;
 	ConjureBuild.isAvailable = invest.level >= 10;
@@ -807,15 +809,16 @@ var calcCPS = () => {
 
 var tick = (multiplier) => {
 	if(time==0){calcCPS();calcCPS();}
-	theory.invalidateTertiaryEquation();
-	theory.invalidateSecondaryEquation();
 	let bonus = theory.publicationMultiplier;
-	cookie.value += bonus * CPS * BigNumber.from(0.1) * Logistic();
-  //Sugar Lump Incremental
-	hc.value+=HPS/10;
+	
+	cookie.value += (bonus * CPS * Logistic()) / BigNumber.from(0.1);
+	
+        //Sugar Lump Incremental
+	hc.value += HPS/10;
 	if(cookie.value > 1e50){
-		lump.value += Math.floor(cookie.value.log10()/lumpc) + LPS/10;
-		lumpTotal += Math.floor(cookie.value.log10()/lumpc) + LPS/10;
+		let lwC = Math.wfloor(cookie.value.log10()/lumpc) + LPS/10;
+		lump.value += lC;
+		lumpTotal += lwC;
 	}
 	if (cookie.value > 1000 && Math.random() <= 1 / (lumpc/(cookie.value.log10()))) {
 		lump.value += BigNumber.ONE;
@@ -831,6 +834,8 @@ var tick = (multiplier) => {
 		}
 	}
 	updateAvailability();
+	theory.invalidateTertiaryEquation();
+	theory.invalidateSecondaryEquation();
 };
 //Logistic funtion for Mine+
 //Param -> midpoint=30*L, max=500*L - 1, min=0
@@ -896,7 +901,7 @@ var InsPopup = ui.createPopup({
     content: ui.createStackLayout({
         children: [
            ui.createScrollView({
-                heightRequest: 200,
+                heightRequest: 300,
                 content: ui.createLabel({text: "Welcome to a theory all about cookies and more cookies!!!\n You have 3 currencies, cookies(C), heavenly chips(H), and sugar lumps(L), which you\'ll be spending on upgrades located on both tabs.\nCookies by far is the most important, as majority of the gameplay revolves around it, from buildings to even tau! You can get your first batch of cookies by buying a cursor, which is gifted to you for free to kickstart your very own cookie empire! By maximizing CPS(C dot), you are sure to produce a whole lot of cookies.\nHeavenly Chips are a special type of cookie that forms whenever you sacrificed everything material you own in exchange for greater power(called publications). They can be used for all sorts of special upgrades, and might even end up boosting your CPS if you know enough.\nSugar lumps by far are the hardest to accquire, literally requiring luck in order to get some, but its powers of being able to outright boost your building\'s CPS by 10%, multiplicative! Rumors has it that it gets easier to accquire the more cookies you have.\n I will leave that up to you to decide. And you are not supposed to see this during normal gameplay >:(",
 					horizontalTextAlignment: TextAlignment.CENTER,
                     padding: Thickness(10, 2, 10, 2),
@@ -983,13 +988,13 @@ var getEquationOverlay = () =>
 					}
 				}
 			}),
-			ui.createLatexLabel({
-				text: "Secondary Equation",
-				displacementX: 280,
-				fontSize: 10,
-				horizontalOptions: LayoutOptions.END,
-				padding: new Thickness(10,10,0,0)
-			}),
+			//ui.createLatexLabel({
+			//	text: "Secondary Equation", //bad, temp removed
+			//	displacementX: 280,
+			//	fontSize: 10,
+			//	horizontalOptions: LayoutOptions.END,
+			//	padding: new Thickness(10,10,0,0)
+			//}),
 			ui.createImage({
 				source: ImageSource.INFO,
 				horizontalOptions: LayoutOptions.END,
@@ -1010,16 +1015,22 @@ var getEquationOverlay = () =>
 init();
 calcCPS();
 var secondaryEq = (mode) => {
-	if(mode==0){
-		return ("B(i) = B[i]P_{i}(1.01)^{L[i]}" + ((CookieTau.level > 0)?"(\\log_{10}\\log_{10}\\tau)^{2}":"") + ((ChronosAge.level > 0)?"(1+t)^{1.5}":""));
-	}else if (mode==1){
-		return ("P = M(CP(l)) \\\\" + ((CookieS.level > 0)?"(log_{2}(L + 2))^{2}":"") + ((CookieH.level > 0)?"(log_{10}(H + 10))^{1.5}":"") + ((CookieC.level > 0)?"(log_{10}(C + 10))":""));
-	}else if (mode==2){
-		return ("M = M_{i}K(0.15)+(K-10)(0.2)\\\\+(K-25)(0.25)+(K-50)(0.3)");
-	}else if (mode==3){
-		theory.secondaryEquationScale = 0.9;
-		return ("CP(l) = C_{1}(l)C_{2}()"+((invest.level > 0)?"I^{1.01}":"")+"\\\\C_{1}(l) = max_{l}:[0,25,50,75,100,150]\\\\ \\rightarrow [1.03,1.05,1.07,1.09,1.11,1.13]^{l}\\\\C_{2}() = \\prod_{i=0}^{8}{TP[i]^{CT[i]}}");
-	}else if (mode==4){
-		return "B_{2} *=  \\sum_{i=0 \\: i\\neq 1}^{18}{P_{2}}{C_{i}}^{"+BigNumber.from(covExp).toString(1)+" + COV_{L}}";
+	switch (mode) {
+		case 0:
+		        return ("B(i) = B[i]P_{i}(1.01)^{L[i]}" + ((CookieTau.level > 0)?"(\\log_{10}\\log_{10}\\tau)^{2}":"") + ((ChronosAge.level > 0)?"(1+t)^{1.5}":""));
+			break;
+		case 1:
+		        return ("P = M(CP(l)) \\\\" + ((CookieS.level > 0)?"(log_{2}(L + 2))^{2}":"") + ((CookieH.level > 0)?"(log_{10}(H + 10))^{1.5}":"") + ((CookieC.level > 0)?"(log_{10}(C + 10))":""));
+			break;
+		case 2:
+                        return ("M = M_{i}K(0.15)+(K-10)(0.2)\\\\+(K-25)(0.25)+(K-50)(0.3)");
+			break;
+		case 3:
+		        theory.secondaryEquationScale = 0.9;
+	        	return ("CP(l) = C_{1}(l)C_{2}()"+((invest.level > 0)?"I^{1.01}":"")+"\\\\C_{1}(l) = max_{l}:[0,25,50,75,100,150]\\\\ \\rightarrow [1.03,1.05,1.07,1.09,1.11,1.13]^{l}\\\\C_{2}() = \\prod_{i=0}^{8}{TP[i]^{CT[i]}}");
+			break;
+		case 4:
+	        	return "B_{2} *=  \\sum_{i=0 \\: i\\neq 1}^{18}{P_{2}}{C_{i}}^{"+BigNumber.from(covExp).toString(1)+" + COV_{L}}";
+			break;
 	}
 };
