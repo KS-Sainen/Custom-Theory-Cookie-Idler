@@ -817,7 +817,7 @@ var tick = (multiplier) => {
 	hc.value += HPS/10;
 	if(cookie.value > 1e50){
 		let lwC = Math.floor(cookie.value.log10()/lumpc) + LPS/10;
-		lump.value += lC;
+		lump.value += lwC;
 		lumpTotal += lwC;
 	}
 	if (cookie.value > 1000 && Math.random() <= 1 / (lumpc/(cookie.value.log10()))) {
