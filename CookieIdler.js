@@ -193,7 +193,7 @@ let buildingUpgradeName = [
   "Electrolytes and Acres",
   "Drilling Overclock",
   "Patent Publishing",
-  "Increase Intrest Rates",
+  "Increase Interest Rates",
   "Sacred Chocolate Artifact",
   "Syllables",
   "Cosmic Exploration",
@@ -205,7 +205,7 @@ let buildingUpgradeName = [
   "Serendipity",
   "Gone Iterative",
   "Reformat JS Script",
-  "Instal Another Idle Game",
+  "Install Another Idle Game",
   "Get an extra IQ Point",
 ];
 let buildingUpgradeMult = [250,4,100,150,100,79,55,34,17,9,8,5,3,2,2,2,2,2,2,2];
@@ -811,12 +811,12 @@ var tick = (multiplier) => {
 	if(time==0){calcCPS();calcCPS();}
 	let bonus = theory.publicationMultiplier;
 	
-	cookie.value += (bonus * CPS * Logistic()) / BigNumber.from(0.1);
+	cookie.value += (bonus * CPS * Logistic()) / BigNumber.from(10);
 	
         //Sugar Lump Incremental
 	hc.value += HPS/10;
 	if(cookie.value > 1e50){
-		let lwC = Math.wfloor(cookie.value.log10()/lumpc) + LPS/10;
+		let lwC = Math.floor(cookie.value.log10()/lumpc) + LPS/10;
 		lump.value += lC;
 		lumpTotal += lwC;
 	}
