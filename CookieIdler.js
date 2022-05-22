@@ -15,9 +15,17 @@ import { Game } from "./api/Game";
 var id = "CookieIdler";
 var name = "Cookie Idler";
 var description =
-  "An ungodly large mess and nonmathematical of a theory involving copious amounts of cookies, tau, and other stuffs (NOT grandmas). A BIG credits to Orteil for bringing such a legendary game idea to life, ellipsis for suggesting ideas for the UI, skyhigh173#3120 for reformatting the code so it looks better; and spqcey(randomname#9373) for proofreading and fixing a majority of the text.\nThis \"theory\" contains: All Cookie Clicker Buildings, a looot of upgrades, a loot of achievements, no scary maths, [DATA EXPUNGED], not thousands of lines of raw text because I\'m too lazy to encrypt it, bad JS coding, and e150 tau!\nWARNING : In ALL Circumstances, DO NOT attempt to purchase level 4 of the cookie tin upgrade, doing so may crash your game INSTANTLY(hang in there until you can afford level 5)";
+  "An ungodly large mess and nonmathematical of a theory involving copious amounts of cookies, tau, and other stuffs (NOT grandmas). A BIG credits to Orteil for bringing such a legendary game idea to life, ellipsis for suggesting ideas for the UI, skyhigh173 for reformatting the code so it looks better; and spqcey(randomname#9373) for proofreading and fixing a majority of the text.\nThis \"theory\" contains: All Cookie Clicker Buildings, a looot of upgrades, a loot of achievements, no scary maths, [DATA EXPUNGED], not thousands of lines of raw text because I\'m too lazy to encrypt it, bad JS coding, and e150 tau!\nWARNING : In ALL Circumstances, DO NOT attempt to purchase level 4 of the cookie tin upgrade, doing so may crash your game INSTANTLY(hang in there until you can afford level 5)";
 var authors = "Sainen Lv.420 #2684";
-//Improvement : sky
+
+/*
+Big thinks to these people!
+ellipsis
+sky
+spqcey
+
+feel free to add more into the list.
+*/
 var version = 1.1;
 
 
@@ -121,19 +129,20 @@ var cookieT;
 const basect = 2.2e6;
 const ctr = Math.log2(2700);
 var getCookieP = (level) =>{
-	let res = BigNumber.ONE;
+	let bn = (num) => BigNumber.from(num);
+	let res = bn(1);
 	if(level >= 150){
-		res = (BigNumber.from(1.13)).pow(level);
+		res = (bn(1.13)).pow(level);
 	}else if(level >= 100){
-		res = (BigNumber.from(1.11)).pow(level);
+		res = (bn(1.11)).pow(level);
 	}else if(level >= 75){
-		res = (BigNumber.from(1.09)).pow(level);
+		res = (bn(1.09)).pow(level);
 	}else if(level >= 50){
-		res = (BigNumber.from(1.07)).pow(level);
+		res = (bn(1.07)).pow(level);
 	}else if(level >= 25){
-		res = (BigNumber.from(1.05)).pow(level);
+		res = (bn(1.05)).pow(level);
 	}else{
-		res = (BigNumber.from(1.03)).pow(level);
+		res = (bn(1.03)).pow(level);
 	}
 	for(let i=0;i<cookieTinName.length;i++){
 		res *= (BigNumber.from(cookietP[i])).pow(cookiet[i].level);
@@ -210,7 +219,7 @@ let buildingUpgradeName = [
 ];
 let buildingUpgradeMult = [250,4,100,150,100,79,55,34,17,9,8,5,3,2,2,2,2,2,2,2];
 var kitty;
-const kittyID = 69420;
+const kittyID = 69420; //ouo
 let kittyName = ["Helper Kittens","Worker Kittens","Engineer Kittens","Overseer Kittens","Manager Kittens","Accountant Kittens","Specialist Kittens","Expert Kittens","Consultant Kittens","Assistants to the Regional Kittens","Marketeer Kittens","Analyst Kittens","Kitten Executive","Senior Kitten Executive","The meowy boss"];
 let kittyDName = "Very Chawwtic Kitty";
 let kittyExp = Math.log2(9750);
@@ -268,7 +277,7 @@ var cookietName = [
 ["Cheesecake","Profiteroles","Panettone","Cinnamon Bun","Jelly Donut","Glazed Donut","Chocolate Cake","Pies","Croissant","Pain Au Chocolat","Focaccia","Taiyaki","Phyllo","Samarkand Bread"],
 ["Cookie Dough","Cookie Dough(No Salmonella)","Burnt Cookie","A normal chocolate chip cookie but there\'s no chips at all for some reason","4K Cookie","Ray-Traced Cookie","Crackers","Deep-Fried Cookie","Flavor Text Cookie"],
 ["Toast","Marshmellows","PB amd J","Wookies","Cheeseburger","Beesechurger","One lone chocolate Chip","Pizza","Candy","Brownies","Flavor text Food that is not cookie","Fudge"],
-["Gilles-Cookie Paille","liver","Mathmatically Illegal Cookie","! [ Snakey Snickerdoodles ] !","Nerdy as f Cookie",":exCookie:","JS-Formed ellipsis Cookie","SkyXCookie","Weierstra🅱️ Cookie Spiral", "Exponential Cookie"], //just added one
+["Gilles-Cookie Paille","liver","Mathmatically Illegal Cookie","! [ Snakey Snickerdoodles ] !","Nerdy as f Cookie",":exCookie:","JS-Formed ellipsis Cookie","SkyXCookie","Weierstra🅱️ Cookie Spiral","Exponential Cookie","ouo cookie"],
 ["Gigaloopite","Tetraloopite","Enium Cookie","Orate Cookie","Dxygen Cookie","IUSpawn Cookie"],
 ["Mutated Cookie","Magic Marbled Cookie","Shortcake-like Cookie","Truffle Cookie","Salt Pretzels","Seaweed Sesame Cookie","Dulce De Leche","Keylime Pie","S\'Mores","Chocolate Drizzle Cookie","Peppermint Kiss Cookie","Sprinkled Jelly Cookie","Galaxial Drop","Reflective Frosted Cookie","Pecan Walnut Cookie","White Mine Cookie","Jelly Triangle","Gold Leafed Cookie","Grand Chocolate Wafer Sprinkles"]
 ];
@@ -514,18 +523,19 @@ var init = () => {
 		invest.maxLevel = 1000;
 	}
   // All 19 Buildings
+  let LOG = Math.log2(1.15);
   for (let i = 0; i < 19; i++) {
     if (i == 0) {
       building[i] = theory.createUpgrade(
         1+i,
         cookie,
-        new FirstFreeCost(new ExponentialCost(baseCost[i], Math.log2(1.15)))
+        new FirstFreeCost(new ExponentialCost(baseCost[i], LOG))
       );
     } else {
       building[i] = theory.createUpgrade(
         1+i,
         cookie,
-        new ExponentialCost(baseCost[i], Math.log2(1.15))
+        new ExponentialCost(baseCost[i], LOG)
       );
     }
     building[i].getDescription = () => buildingName[i];
@@ -539,73 +549,74 @@ var init = () => {
   theory.createBuyAllUpgrade(1, cookie, 1e3);
   theory.createAutoBuyerUpgrade(2, cookie, 1e25);
   //Heavenly Upgrade
+  let baseI = 1000000;
   {
-	  cookieTin = theory.createPermanentUpgrade(1000000,hc,new ExponentialCost(25,Math.log2(1e6)));
+	  cookieTin = theory.createPermanentUpgrade(baseI,hc,new ExponentialCost(25,Math.log2(1e6)));
 	  cookieTin.getDescription = () => cookieTinName[(cookieTin.level==cookieTinName.length)?cookieTinName.length - 1:cookieTin.level];
 	  cookieTin.getInfo = () => cookieTinInfo;
 	  cookieTin.maxLevel = cookieTinName.length;
   }
   {
-	  CookieH = theory.createPermanentUpgrade(1000001,hc,new ConstantCost(500));
+	  CookieH = theory.createPermanentUpgrade(baseI+1,hc,new ConstantCost(500));
 	  CookieH.getDescription = () => cookieHName;
 	  CookieH.getInfo = () => cookieHInfo;
 	  CookieH.maxLevel = 1;
 	  CookieH.bought = (amount) => calcCPS();
   }
   {
-	  CookieS = theory.createPermanentUpgrade(1000002,hc,new ConstantCost(15000));
+	  CookieS = theory.createPermanentUpgrade(baseI+2,hc,new ConstantCost(15000));
 	  CookieS.getDescription = () => cookieSName;
 	  CookieS.getInfo = () => cookieSInfo;
 	  CookieS.maxLevel = 1;
 	  CookieS.bought = (amount) => calcCPS();
   }
   {
-	  CookieC = theory.createPermanentUpgrade(1000003,hc,new ConstantCost(1e7));
+	  CookieC = theory.createPermanentUpgrade(baseI+3,hc,new ConstantCost(1e7));
 	  CookieC.getDescription = () => cookieCName;
 	  CookieC.getInfo = () => cookieCInfo;
 	  CookieC.maxLevel = 1;
 	  CookieC.bought = (amount) => calcCPS();
   }
   {
-	  DivineD = theory.createPermanentUpgrade(1000004,hc,new ExponentialCost(1e10,Math.log2(1e10)));
+	  DivineD = theory.createPermanentUpgrade(baseI+4,hc,new ExponentialCost(1e10,Math.log2(1e10)));
 	  DivineD.getDescription = () => divineDName;
 	  DivineD.getInfo = () => divineDInfo;
 	  DivineD.maxLevel = 25;
 	  DivineD.bought = (amount) => calcCPS();
   }
   {
-	  CookieTau = theory.createPermanentUpgrade(1000005,hc,new ConstantCost(1e25));
+	  CookieTau = theory.createPermanentUpgrade(baseI+5,hc,new ConstantCost(1e25));
 	  CookieTau.getDescription = () => cookieTauName;
 	  CookieTau.getInfo = () => cookieTauInfo;
 	  CookieTau.maxLevel = 1;
 	  CookieTau.bought = (amount) => calcCPS();
   }
   {
-	  ResidualLuck = theory.createPermanentUpgrade(1000006,hc,new ExponentialCost(1e40,Math.log2(1e5)));
+	  ResidualLuck = theory.createPermanentUpgrade(baseI+6,hc,new ExponentialCost(1e40,Math.log2(1e5)));
 	  ResidualLuck.maxLevel = 5;
 	  ResidualLuck.getDescription = () => residualLuckName;
 	  ResidualLuck.getInfo = () => residualLuckInfo;
   }
   {
-	  TerraInf = theory.createPermanentUpgrade(1000007,hc,new ExponentialCost(1e55,Math.log2(1e10)));
+	  TerraInf = theory.createPermanentUpgrade(baseI+7,hc,new ExponentialCost(1e55,Math.log2(1e10)));
 	  TerraInf.getDescription = () => terraInfName;
 	  TerraInf.getInfo = () => terraInfInfo; 
 	  TerraInf.maxLevel = 7;
   }
   {
-	  ChronosAge = theory.createPermanentUpgrade(1000008,hc,new ConstantCost(2.5e57));
+	  ChronosAge = theory.createPermanentUpgrade(baseI+8,hc,new ConstantCost(2.5e57));
 	  ChronosAge.getDescription = () => chronosageName;
 	  ChronosAge.getInfo = () => chronosageInfo;
 	  ChronosAge.maxLevel = 1;
   }
   {
-	  ConjureBuild = theory.createPermanentUpgrade(1000009,hc,new ExponentialCost(1e60,Math.log2(8)));
+	  ConjureBuild = theory.createPermanentUpgrade(baseI+9,hc,new ExponentialCost(1e60,Math.log2(8)));
 	  ConjureBuild.maxLevel = 3;
 	  ConjureBuild.getDescription = () => conjurebuildName;
 	  ConjureBuild.getInfo = () => conjurebulidInfo;
   }
   {
-	  TwinGates = theory.createPermanentUpgrade(1000010,hc,new ConstantCost(1e65));
+	  TwinGates = theory.createPermanentUpgrade(baseI+10,hc,new ConstantCost(1e65));
 	  TwinGates.maxLevel=1;
 	  TwinGates.getDescription = () => twingateName;
 	  TwinGates.getInfo = () => twingateInfo;
@@ -811,7 +822,7 @@ var tick = (multiplier) => {
 	if(time==0){calcCPS();calcCPS();}
 	let bonus = theory.publicationMultiplier;
 	
-	cookie.value += (bonus * CPS * Logistic()) / BigNumber.from(10);
+	cookie.value += (bonus * CPS * Logistic()) / BigNumber.TEN;
 	
         //Sugar Lump Incremental
 	hc.value += HPS/10;
@@ -901,7 +912,7 @@ var InsPopup = ui.createPopup({
     content: ui.createStackLayout({
         children: [
            ui.createScrollView({
-                heightRequest: 300,
+                heightRequest: 400,
                 content: ui.createLabel({text: "Welcome to a theory all about cookies and more cookies!!!\n You have 3 currencies, cookies(C), heavenly chips(H), and sugar lumps(L), which you\'ll be spending on upgrades located on both tabs.\nCookies by far is the most important, as the majority of the gameplay revolves around it, from buildings to even tau! You can get your first batch of cookies by buying a cursor, which is gifted to you for free to kickstart your very own cookie empire! By maximizing CPS(C dot), you are sure to produce a whole lot of cookies.\nHeavenly Chips are a special type of cookie that forms whenever you sacrificed everything material you own in exchange for greater power(called publications). They can be used for all sorts of special upgrades, and might even end up boosting your CPS if you know enough.\nSugar lumps by far are the hardest to acquire, literally requiring luck in order to get some, but its powers of being able to outright boost your building\'s CPS by 10%, multiplicative! Rumor has it that it gets easier to acquire the more cookies you have.\n\n",
 					horizontalTextAlignment: TextAlignment.CENTER,
                     padding: Thickness(10, 2, 10, 2),
