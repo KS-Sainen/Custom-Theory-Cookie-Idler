@@ -26,7 +26,7 @@ spqcey
 
 feel free to add more into the list.
 */
-var version = 1.1;
+var version = 1.2;
 
 //States (And thus begins the spoilers)
 let achCount = 0;
@@ -214,6 +214,12 @@ var invest;
 const investName = "Investment Openings";
 const investInfo =
     "Open your very own investments forms. Grants 5 buildings of random type and a flat 1.01 CPS boost!(chance of failure included)";
+//TEMPLE - Archaeology
+var arch;
+var archArt;
+let archArtN = ["Sample Artifact"];
+let archClue = ["Test Clue"];
+let archArtD = ["This exists"];
 //Visualizer
 var viz;
 const vizTypeM = 1;
@@ -677,7 +683,7 @@ var init = () => {
                 new ExponentialCost(baseCost[i], LOG)
             );
         }
-        building[i].getDescription = () => buildingName[i];
+        building[i].getDescription = () => "$B(" + BigNumber.from(i).toString(0) + ")$ - " + buildingName[i];
         building[i].getInfo = () => getInf(i);
         building[i].bought = (amount) => calcCPS();
     }
