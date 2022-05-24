@@ -329,7 +329,7 @@ let cookieHInfo = "You gain more CPS the more HC you have";
 let cookieRName = "[REDACTED] Cookie";
 let cookieRInfo = "A very [REDACTED] cookie that [DATA EXPUNGED]";
 let cookieSName = "Sugar Crystal Cookie";
-let cookieSInfo = "This cookie gets tastier the more sugar you have";
+let cookieSInfo = "This cookie gets tastier the more sugar you have, but decreasing your sugar makes it less tasty";
 let cookieCName = "Cookie Cookie";
 let cookieCInfo = "This cookie increases CPS by the amount of cookies you own";
 let divineDName = "Divine Doubling";
@@ -373,7 +373,7 @@ var cookietName = [
 	["Caramoas","Sagalogs","Shortfoils","Win Mints","Fig Gluttons","Loreols","Jaffa Cake","Grease\'s Cups","Digits","Lombardia Cookies","Bastenaken Cookies","Festivity Loops","Havabreaks","Zilla Wafers","Dim Dams","Pokey"],
 	["Cheesecake","Profiteroles","Panettone","Cinnamon Bun","Jelly Donut","Glazed Donut","Chocolate Cake","Pies","Croissant","Pain Au Chocolat","Focaccia","Taiyaki","Phyllo","Samarkand Bread"],
 	["Cookie Dough","Cookie Dough(No Salmonella)","Burnt Cookie","A normal chocolate chip cookie but there\'s no chips at all for some reason","4K Cookie","Ray-Traced Cookie","Crackers","Deep-Fried Cookie","Flavor Text Cookie"],
-	["Toast","Marshmellows","PB amd J","Wookies","Cheeseburger","Beesechurger","One lone chocolate Chip","Pizza","Candy","Brownies","Flavor text Food that is not cookie","Fudge"],
+	["Toast","Marshmellows","PB and J","Wookies","Cheeseburger","Beesechurger","One lone chocolate Chip","Pizza","Candy","Brownies","Flavor text Food that is not cookie","Fudge"],
 	["Gilles-Cookie Paille","liver","Mathmatically Illegal Cookie","! [ Snakey Snickerdoodles ] !","Nerdy as f Cookie",":exCookie:","JS-Formed ellipsis Cookie","SkyXCookie","Weierstra🅱️ Cookie Spiral","Exponential Cookie","ouo cookie"],
 	["Gigaloopite","Tetraloopite","Enium Cookie","Orate Cookie","Dxygen Cookie","IUSpawn Cookie"],
 	["Mutated Cookie","Magic Marbled Cookie","Shortcake-like Cookie","Truffle Cookie","Salt Pretzels","Seaweed Sesame Cookie","Dulce De Leche","Keylime Pie","S\'Mores","Chocolate Drizzle Cookie","Peppermint Kiss Cookie","Sprinkled Jelly Cookie","Galaxial Drop","Reflective Frosted Cookie","Pecan Walnut Cookie","White Mine Cookie","Jelly Triangle","Gold Leafed Cookie","Grand Chocolate Wafer Sprinkles"]
@@ -986,7 +986,7 @@ var init = () => {
     updateAvailability();
     calcCPS();
 };
-
+//TODO : Rework Tougher Mouse upgrade
 var updateAvailability = () => {
     //something related to milestone upgrades and building specific
     let BF = (num) => BigNumber.from(num);
@@ -1022,7 +1022,8 @@ var updateAvailability = () => {
         if (i >= 3) buildingExp[i].isAvailable = building[i - 1].isAvailable;
     }
 };
-//TODO : Move the ENTIRE CPS calculation elsewhere because calculating it per fucking tick is too fucking expensive, even for my standard
+//DONE : Move the ENTIRE CPS calculation elsewhere because calculating it per fucking tick is too fucking expensive, even for my standard
+//TODO : Should we calculate CPS every 100 ticks(10 seconds) to account for idling?
 var calcCPS = () => {
     CPS = BigNumber.ZERO;
     nccps = BigNumber.ZERO;
