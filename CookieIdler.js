@@ -39,7 +39,37 @@ let BigL10 = (i) => BF(i).log10();
 let BigL2 = (i) => BF(i).log2();
 let BigTS = (i) => BF(i).toString(0);
 let TS10 = (i) => i.toString(10);
+let RandI = (i) => Math.floor(MR()*i);
 
+//Prize Functions
+let prize=0;
+let minCookie = (i) => {
+    cookie.value += BF(60) * CPS * BF(i);
+}
+let pubH = (i) => {
+    hc.value += BF(i) * (cookie.value / BF("1e12")).pow(1 / 3);
+}
+let tickLump = (i) => {
+    let dL = (BF(i)*LPS) + (1 / (lumpc / BigL10(BF(10)+cookie.value)))*BF(i);
+    lump.value += dL;
+    lumpTotal += dL;
+}
+let bsearch = (arr,f) => {
+    let l=0;
+    let r=arr.length;
+    let mid = 0;
+    let ret = -1;
+    while(l<r){
+        mid=(l+r)/2;
+        if(arr[mid] > f){
+            l=mid+1;
+        }else if(arr[mid] <= f){
+            ret=mid;
+            r=mid-1;
+        }
+    }
+    return ret;
+}
 
 //States (And thus begins the spoilers)
 var getInternalState = () => `${achCount} ${vizType} ${lumpTotal} ${eqType} ${artUnlock} ${BigTS(CPS)} ${BigTS(HPS)}`;
@@ -171,7 +201,7 @@ let bcps = [
     6.5e74,
     3.15e85,
     BF("4.9e97"),
-    BF("2.1e160"),
+    BF("2.1e125"),
     BF("1.5e170"),
     BF("1.1e185"),
     BF("8.3e200"),
@@ -251,6 +281,7 @@ let artArtName = [
     "Da Vinci Manuscript",//Factory CPS
     "A very curious tulip bulb",//Bank CPS
     "Book of Symbolisms",//Chancemaker Unlock
+    "Grimoire of Basic Cookie Magic",//Grimoire
     "More artifacts coming soon",
 ];
 let artClue = [
@@ -263,6 +294,7 @@ let artClue = [
     "Get those patents out, ya stingy",//6-7
     "Hoard, Hoard, Hoard more",//7-8
     "Am I lucky? enough?",//8-9
+    "haha mana goes brrrrrr",//9-10
     "You have all artifacts, yay",
 ];
 let artArtDesc = [
@@ -276,8 +308,37 @@ let artArtDesc = [
     "Do it like the renaissance! Legacy design included",
     "The best thing about economics is that it can be reset to zero, and undo your mistakes",
     "You don\'t know why, but you felt a compulsion to keep this book close to you",
+    "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 3 spells",
     "The temple is currently empty and fully explored for artifacts, but not for long....",
 ];
+//WIZARD TOWER - Grimoire
+var isSpellShown = false;
+var mana;
+var Spell = new Array (9);
+var SpellView;
+let spellName = [
+    "Conjure Baked Goods",
+    "Force the Hand of Cookies",
+    "Prestidigus",
+    "Terrona Terra",
+    "Replenish Extradionaire",
+    "Asseto Accio",
+    "Manas Embiggening",
+    "Mimi Mami",
+    "Simply Sweetdelicious"
+];
+let spellDesc = [
+    "You get more cookies, simple",
+    "Something good or bad happens to you, find out what happens!",
+    "Gives you HC equivalent to publishing now",
+    "Makes the terraforming business suddenly go to the cookie moon",
+    "Enriches your temple with a lot more loot",
+    "Spawn buildings into existence, only works for a certain amounts",
+    "Increases your mana production rate, at the cost of more failure",
+    "Reduces the cost of casting spells for a while",
+    "Spawn some sugar lumps in",
+];
+let spellCost = [75,100,750,250,300,1000,400,115,1500];
 //Visualizer
 var viz;
 const vizTypeM = 1;
@@ -698,7 +759,7 @@ var init = () => {
                 //Terra
                 terra = theory.createUpgrade(10003,cookie,new ExponentialCost(1e130, ML2(1e10))
                 );
-                terra.maxLevel = 10;
+                terra.maxLevel = 20;
                 terra.getDescription = () => terraName;
                 terra.getInfo = () => terraInfo;
                 terra.bought = (amount) => getEquationOverlay();
@@ -753,6 +814,63 @@ var init = () => {
                     if(artCheck(artUnlock)){
                         artUnlock++;
                         updateAvailability();
+                    }
+                    //Incentives
+                    //sucks to sucks
+                    //1/2/3/5/10/15/30/60 minute CPS
+                    //1 prestige H
+                    //1000/1500/2000/2500/5000 tick lumps
+                    //All of the above(JACKPOT)
+                    let r = RandI(10000);
+                    let chance = [10000,9995,9945,9845,9735,9615,9565,9555,9530,9430,9320,9200,9100,9000];
+                    //bsearch to find slot
+                    prize = bsearch(chance,r);
+                    log(`${r} ${prize}`);
+                    switch(prize){
+                        case 0:
+                            minCookie(60);
+                            pubH(1);
+                            tickLump(5000);
+                            break;
+                        case 1:
+                            tickLump(5000);
+                            break;
+                        case 2:
+                            tickLump(2500);
+                            break;
+                        case 3:
+                            tickLump(2000);
+                            break;
+                        case 4:
+                            tickLump(1500);
+                            break;
+                        case 5:
+                            tickLump(1000);
+                            break;
+                        case 6:
+                            pubH(1);
+                            break;
+                        case 7:
+                            minCookie(60);
+                            break;
+                        case 8:
+                            minCookie(30);
+                            break;
+                        case 9:
+                            minCookie(15);
+                            break;
+                        case 10:
+                            minCookie(10);
+                            break;
+                        case 11:
+                            minCookie(5);
+                            break;
+                        case 12:
+                            minCookie(3);
+                            break;
+                        case 13:
+                            minCookie(1);
+                            break;
                     }
                     if(artArt.maxLevel < artArt.level)artArt.maxLevel = artArt.level;
                 };
@@ -1098,7 +1216,7 @@ var updateAvailability = () => {
         buildingUpgrade[i].isAvailable = building[i].level > 10;
         if (i >= 3) buildingExp[i].isAvailable = building[i - 1].isAvailable;
     }
-    building[14].isAvailable = ((cookie.value >= baseCost[13]) && (artArt.level > 9));
+    building[14].isAvailable = ((cookie.value >= baseCost[13]) && (artArt.level > 8));
 };
 //DONE : Move the ENTIRE CPS calculation elsewhere because calculating it per fucking tick is too fucking expensive, even for my standard
 var calcCPS = () => {
@@ -1197,7 +1315,7 @@ var tick = (multiplier) => {
             lumpTotal++;
         }
     }
-    let lwC = Math.floor((ML10(1+cookie.value)) / lumpc) + LPS / 10;
+    let lwC = Math.floor((BigL10(10+cookie.value)) / lumpc) + LPS / 10;
     lump.value += lwC;
     lumpTotal += lwC;
     
@@ -1471,6 +1589,9 @@ var artCheck = (cond) => {
             break;
         case 8:
             return Math.random() < 0.9999999;
+            break;
+        case 9:
+            return building[7].level >= (parseInt([+!+[]+!+[]+!+[]+!+[]+!+[]+!+[]+!+[]]+[+!+[]+!+[]+!+[]]+[+!+[]+!+[]+!+[]+!+[]]+[+!+[]+!+[]])^parseInt([+!+[]+!+[]+!+[]]+[+!+[]+!+[]+!+[]]+[+!+[]+!+[]+!+[]+!+[]+!+[]+!+[]+!+[]+!+[]]+[+!+[]+!+[]+!+[]+!+[]+!+[]+!+[]]))+50;
             break;
         default:
             return false;
