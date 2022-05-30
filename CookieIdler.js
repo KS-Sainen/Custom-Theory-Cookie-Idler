@@ -5,6 +5,7 @@ import { theory } from "./api/Theory";
 import { Utils } from "./api/Utils";
 import { UI } from "./api/ui/UI";
 import { Game } from "./api/Game";
+import { ConstantCost, CustomCost } from "../api/Costs";
 //Hello to the person reading this "code"
 //Spoilers alert for ALL of the upgrades, buildings and achievements
 //Before leaving, please try and find any bugs or bad JS coding practices for me
@@ -72,7 +73,13 @@ let bsearch = (arr,f) => {
 }
 
 //States (And thus begins the spoilers)
-var getInternalState = () => `${achCount} ${vizType} ${lumpTotal} ${eqType} ${artUnlock} ${BigTS(CPS)} ${BigTS(HPS)}`;
+var getInternalState = () => {
+    let st = `${achCount} ${vizType} ${lumpTotal} ${eqType} ${artUnlock} ${BigTS(CPS)} ${BigTS(HPS)} `;
+    for(let i=0;i<8;i++){
+        st += `${spellCast[i]} `;
+    }
+    return st;
+};
 var setInternalState = (state) => {
     let res = state.split(" ");
     if (res.length > 0) {
@@ -96,6 +103,11 @@ var setInternalState = (state) => {
     if (res.length > 6){
         HPS = BF(res[6]);
     }
+    for(let i=0;i<8;i++){
+        if(res.length > (7+i)){
+            spellCast[i] = parseInt(res[7+i]);
+        }
+    }
 };
 let CPS = BigNumber.ZERO,
     HPS = BigNumber.ZERO,
@@ -106,6 +118,7 @@ let lumpTotal = 0;
 let eqType = 0;
 let artUnlock = 0;
 let time = 0; //degrees
+let spellCast = [0,0,0,0,0,0,0,0];
 
 
 //End States
@@ -312,18 +325,17 @@ let artArtDesc = [
     "The temple is currently empty and fully explored for artifacts, but not for long....",
 ];
 //WIZARD TOWER - Grimoire
-var isSpellShown = false;
+var isSpellShown = 0;
 var mana;
-var Spell = new Array (9);
+var Spell = new Array (8);
 var SpellView;
 let spellName = [
-    "Conjure Baked Goods",
+    "Conjure Idled Goods",
     "Force the Hand of Cookies",
     "Prestidigus",
     "Terrona Terra",
     "Replenish Extradionaire",
     "Asseto Accio",
-    "Manas Embiggening",
     "Mimi Mami",
     "Simply Sweetdelicious"
 ];
@@ -334,11 +346,84 @@ let spellDesc = [
     "Makes the terraforming business suddenly go to the cookie moon",
     "Enriches your temple with a lot more loot",
     "Spawn buildings into existence, only works for a certain amounts",
-    "Increases your mana production rate, at the cost of more failure",
-    "Reduces the cost of casting spells for a while",
+    "Reduces the cooldown time of certain spells",
     "Spawn some sugar lumps in",
 ];
-let spellCost = [75,100,750,250,300,1000,400,115,1500];
+let effectCPSB=1;
+let templeLuck = 1000;
+let spellCost = [15,20,75,25,30,100,10,0];
+let spellCool = [180,240,3600,300,360,600,600,1000];
+let effectCPSBDur = 37;
+let templeLuckDur = 30;
+let logBoost = 1;
+let logBoostDue = 0;
+
+let castSpell = (index) => {
+    spellCast[index]=thyme.level;
+    switch(index){
+        case 0:
+            var rand = RandI(100);
+            if(rand <= 90){
+                log("Cookies for you");
+                rand = RandI(30);
+                cookie.value += BF(rand*60) * CPS;
+            }else{
+                log("No Cookies for you");
+            }
+            break;
+        case 1:
+            var rand = RandI(200);
+            if(rand == 200){
+                log("Sweet");
+                tickLump(100);
+            }else if(rand >= 100){
+                log("Lucky");
+                minCookie(17);
+            }else if(rand >= 60){
+                log("Frenzy");
+                effectCPSB=7;
+            }else if(rand >= 50){
+                log("Clot");
+                minCookie(-16);
+            }else if(rand >= 40){
+                log("Bleed");
+                effectCPSB = 0.6;
+            }else{
+                log("Nothing Happened");
+            }
+            break;
+        case 2:
+            log("Get your chips");
+            pubH(1);
+            break;
+        case 3:
+            log("That\'s to the moon");
+            xBegin=time;
+            logBoost=50;
+            logBoostDue=terra.level * 30;
+            break;
+        case 4:
+            log("HERE COMES THE LOOT");
+            break;
+        case 5:
+            let rand = RandI(20);
+            if((rand < building.length) && (building[rand].level > 0) && (building[rand].cost.getCost(building[rand].level) <= (BF(1e6)*cookie.value))){
+                log("Buildings For You!");
+                building[rand].level += RandI(10)+1;
+            }
+            break;
+        case 6:
+            for(let i=0;i<Spell.length;i++){
+                spellCast[i]-=600;
+            }
+            log("It works!");
+            break;
+        case 7:
+            log("Sweet Anyone?");
+            if(RandI(100) > 5)tickLump(500);
+            break;
+    }
+};
 //Visualizer
 var viz;
 const vizTypeM = 1;
@@ -822,10 +907,12 @@ var init = () => {
                     //1000/1500/2000/2500/5000 tick lumps
                     //All of the above(JACKPOT)
                     let r = RandI(10000);
+                    if((spellCast[5]+(10*templeLuckDur)) >= thyme.level){
+                        r+=templeLuck;
+                    }
                     let chance = [10000,9995,9945,9845,9735,9615,9565,9555,9530,9430,9320,9200,9100,9000];
                     //bsearch to find slot
                     prize = bsearch(chance,r);
-                    log(`${r} ${prize}`);
                     switch(prize){
                         case 0:
                             minCookie(60);
@@ -878,6 +965,26 @@ var init = () => {
                     calcCPS();
                 }
                 break;
+            case 7:
+                SpellView = theory.createUpgrade(10008,cookie,new FreeCost());
+                SpellView.getDescription = () => "Toggle Grimoire";
+                SpellView.getInfo = () => "Open or close the grimoire by buying this upgrade";
+                SpellView.isAutoBuyable = false;
+                SpellView.bought = (amount) => {
+                    SpellView.level=0;
+                    isSpellShown ^= 1;
+                    updateAvailability();
+                }
+                for(let i=0;i<Spell.length;i++){
+                    Spell[i] = theory.createUpgrade(i+20000,lump,new ConstantCost(spellCost[i]));
+                    Spell[i].getDescription = () => spellName[i];
+                    Spell[i].getInfo = () => spellDesc[i];
+                    Spell[i].isAutoBuyable = false;
+                    Spell[i].maxLevel = 1;
+                    Spell[i].bought = (amount) => {
+                        castSpell(i);
+                    };
+                }
         }
 
     }
@@ -1210,6 +1317,9 @@ var updateAvailability = () => {
             cookieTin.level >= i + 1 &&
             cookie.value > BF(cookietB[i]);
     }
+    for(let i=0;i<Spell.length;i++){
+        Spell[i].isAvailable=isSpellShown;
+    }
     for (let i = 0; i < 19; i++) {
         if (i >= 3) building[i].isAvailable = cookie.value >= baseCost[i - 1];
         buildingP[i].isAvailable = building[i].level > 0;
@@ -1225,7 +1335,7 @@ var calcCPS = () => {
     milk = BigNumber.FIVE * achCount;
     HPS = BF(hc.value).pow(0.9) * (recom.level+((artArt.level > 7)?10:0));
     LPS = (recom.level+((artArt.level > 7)?10:0)) * 0.01;
-    let kp = kittyPower(kitty.level) * BF((100 + milk) / 100);
+    let kp = kittyPower(kitty.level) * BF(BF(100 + milk) / BF(100));
     for (let i = 0; i < 19; i++) {
         let step1 =
             BF(building[i].level) *
@@ -1294,6 +1404,9 @@ var calcCPS = () => {
     if (covenant.level != 0)
         arrcps[1] *= bc.pow(BF(covenant.level).pow(0.45) * covDelta + covExp) * covenant.level;
     CPS += arrcps[1];
+    if((spellCast[1]+(10*effectCPSBDur)) >= thyme.level){
+        CPS *= effectCPSB;
+    }
     CPS *= getCookieP(cookieT.level) * (TwinGates.level > 0 ? hc.value.pow(0.05 * TwinGates.level) : 1) * theory.publicationMultiplier * (BigP(game.sigmaTotal,R9Box.level*0.7));
 };
 
@@ -1333,7 +1446,14 @@ var tick = (multiplier) => {
     if(thyme.level < thyme.maxLevel){
         thyme.level++;
     }
-    if(thyme.level%10 == 0)updateAvailability();
+    if(thyme.level%10 == 0){
+        for(let i=0;i<Spell.length;i++){
+            if((spellCast[i]/10)+spellCool[i] <= (thyme.level/10)){
+                Spell[i].level=0;
+            }
+        }
+        updateAvailability();
+    }
     theory.invalidateTertiaryEquation();
     if(thyme.level%7 == 0)theory.invalidateSecondaryEquation();
 };
@@ -1345,7 +1465,7 @@ let xBegin = BF("-1e100");
 var Logistic = () => {
     var maxL =
         BF(terra.level).pow(1.2 + 0.05 * (TerraInf.level + ((artArt.level > 6)?1:0))) * 1500 +
-        BF(building[3].level).pow(1.2 + 0.03 * TerraInf.level);
+        BF(building[3].level).pow(1.2 + 0.03 * TerraInf.level) * ((spellCast[3]+(10*logBoostDue) >= thyme.level)?logBoost:1);
     return (
         BigNumber.ONE +
         maxL -
@@ -1666,4 +1786,4 @@ var secondaryEq = (mode) => {
             return `\\dot{H} = H^{0.9}(${rc})\\\\ \\dot{L} = 0.01${rc}\\\\ B(4) \\leftarrow B(4)10^{54}2^{${rc}-1}`;
             break;
     }
-};
+}
