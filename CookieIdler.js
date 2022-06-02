@@ -206,7 +206,7 @@ let bcps = [
     7.4e7,
     4.05e10,
     1.4e12,
-    5.8e17,
+    1.6e18,
     4.4e32,
     2.6e39,
     5.6e51,
@@ -245,7 +245,7 @@ var getCookieP = (level) => {
     }
     if (CookieS.level != 0) res *= (BigNumber.TWO + lump.value).log2().pow(2);
     if (CookieH.level != 0) res *= (BigNumber.TEN + hc.value).log10().pow(1.5);
-    if (CookieC.level != 0) res *= (BigNumber.TEN + cookie.value).log10();
+    if (CookieC.level != 0 && (cookie.value > BigNumber.ZERO)) res *= (BigNumber.TEN + cookie.value).log10();
     if (DivineD.level != 0) res *= BigNumber.TWO.pow(DivineD.level);
     res *= BigP(1.01,invest.level);
     return res;
@@ -384,7 +384,7 @@ let castSpell = (index) => {
                 effectCPSB=7;
             }else if(rand >= 50){
                 log("Clot");
-                minCookie(-16);
+                minCookie(-6);
             }else if(rand >= 40){
                 log("Bleed");
                 effectCPSB = 0.6;
