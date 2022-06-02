@@ -45,7 +45,7 @@ let RandI = (i) => Math.floor(MR()*i);
 //Prize Functions
 let prize=0;
 let minCookie = (i) => {
-    cookie.value += BF(60) * CPS * BF(i);
+    cookie.value += BF(60) * CPS * BF(i) * Logistic();
 }
 let pubH = (i) => {
     hc.value += BF(i) * (cookie.value / BF("1e12")).pow(1 / 3);
