@@ -30,31 +30,66 @@ feel free to add more into the list.
 var version = 1.3;
 
 //Function Name Reductions
+/**
+ * Returns the BigNumber equivalent of any of the following arguments
+ * Functionally IDENTICAL to BigNumber.from()
+ * @param {number|string|BigNumber} i
+ * @return BigNumber
+ */
 let BF = (i) => BigNumber.from(i);
+/**For the following functions:
+ * @param {number} i
+ * @param {number} p
+ * @return number
+*/
 let MP = (i,p) => Math.pow(i,p);
 let ML2 = (i) => Math.log2(i);
 let ML10 = (i) => Math.log10(i);
 let MR = () => Math.random();
+/**For the following functions EXCEPT RandI(i):
+ * @param {number|string|BigNumber} i
+ * @param {number} p
+ * @return number
+*/
 let BigP = (i,p) => BF(i).pow(p);
 let BigL10 = (i) => BF(i).log10();
 let BigL2 = (i) => BF(i).log2();
 let BigTS = (i) => BF(i).toString(0);
 let TS10 = (i) => i.toString(10);
+//Returns a random number in the range [0,i]
 let RandI = (i) => Math.floor(MR()*i);
 
 //Prize Functions
 let prize=0;
+/**
+ * @desc Gives the equivalent cookies compared to i minutes of your CPS
+ * @param {number} i 
+ */
 let minCookie = (i) => {
     cookie.value += BF(60) * CPS * BF(i) * Logistic();
 }
+/**
+ * @desc Gives the equivalent heavenly chips if you pubbed at this moment
+ * @param {number} i 
+ */
 let pubH = (i) => {
     hc.value += BF(i) * (cookie.value / BF("1e12")).pow(1 / 3);
 }
+/**
+ * @desc Gives the equivalent amount of lumps for i ticks
+ * @param {number} i 
+ */
 let tickLump = (i) => {
     let dL = (BF(i)*LPS) + (1 / (lumpc / BigL10(BF(10)+cookie.value)))*BF(i);
     lump.value += dL;
     lumpTotal += dL;
 }
+/**
+ * @desc Binary searches through an array arr to the desired number f
+ * @param {array} arr, must be sorted from maximum to minimum
+ * @param {number} f, value to search for
+ * @returns {number} the index where the next element is less than, -1 if it's beyond the end of the array
+ */
 let bsearch = (arr,f) => {
     let l=0;
     let r=arr.length;
@@ -73,6 +108,10 @@ let bsearch = (arr,f) => {
 }
 
 //States (And thus begins the spoilers)
+/**
+ * @desc Serializes the state of the theory
+ * @returns {string} The internal state of the array, compatible with setInternalState()
+ */
 var getInternalState = () => {
     let st = `${achCount} ${vizType} ${lumpTotal} ${eqType} ${artUnlock} ${BigTS(CPS)} ${BigTS(HPS)} `;
     for(let i=0;i<8;i++){
@@ -80,6 +119,12 @@ var getInternalState = () => {
     }
     return st;
 };
+/**
+ * @desc Sets certain values of the theory according to the serialized state
+ * ! The values set are the following:
+ * ! Achievement Count, Visualizer Type(unused), Total Lumps, Equation Type, Artifacts Unlocked, CPS, HPS, Time since last cast of every spell
+ * @param {state} state, must be from getInternalState() only
+ */
 var setInternalState = (state) => {
     let res = state.split(" ");
     if (res.length > 0) {
@@ -109,6 +154,7 @@ var setInternalState = (state) => {
         }
     }
 };
+//Initializes the variables for the serialized string(the scope is global)
 let CPS = BigNumber.ZERO,
     HPS = BigNumber.ZERO,
     LPS = BigNumber.ZERO;
@@ -224,6 +270,11 @@ let bcps = [
 var cookieT;
 const basect = 2.2e6;
 const ctr = ML2(2700);
+/**
+ * Calculates the total boost from the different types of cookies you have
+ * @param {BigNumber} level, The amount of cookie upgrade level you have from the cookieT.level
+ * @returns {BigNumber} The total amount of cookie boost you have 
+ */
 var getCookieP = (level) => {
     //let bn = (num) => BF(num);
     let res = BF(1);
@@ -250,7 +301,9 @@ var getCookieP = (level) => {
     res *= BigP(1.01,invest.level);
     return res;
 };
+//An array of strings containing every single cookies types for use in displaying the name
 let cookieType = ["Plain Cookie","Chocolate Chip Cookie","Sugar Cookie","Oatmeal Raisin Cookie","Peanut Butter Cookie","Coconut Cookie","Almond Cookie","Hazelnut Cookie","Walnut Cookie","Cashew Cookie","White Chocolate Cookie","Milk Chocolate Cookie","Macadamia Cookie","Double Chip Cookie","White Chocolate Macadamia Cookie","All-Chocolate Cookie","Dark-Chocolated Coated Cookie","White-Chocolate Coated Cookie","Eclipse Cookie","Zebra Cookie","Snickerdoodle","Stroopwafel","Macaroon","Madeleine","Palmier","Palets","Sables","Pure Black Chocolate Cookie","Pure White Chocolate Cookie","Ladyfingers","Tullies","Checker Cookie","Butter Cookie","Vanilla Cream Cookie","Gingersnap","Cinnamon Cookie","Vanity Cookie","Pinwheel Cookie","Shortbread Biscuits","Millionare\'s Shortbread","Caramel Cookie","Pecan Sandies","Moravian Spice Cookie","Anzac Biscuit","Whole Grain Cookie","Candy Cookie","Big Chipped Cookie","Spinkled Cookie","Anti-Idle Cookie","Florentine","Chocolate Crinkles","Zero-Idle Cookie","Maple Cookie","Persian Rice Cookie","Norwegian Cookie","Crispy Rice Cookie","Ube Cookie","Butterscotch Cookie","Speculaas","Chocolate Oatmeal Cookie","Molasses Cookie","Biscotti","Waffle Cookie","Custard Cream Cookie","Bourbon Biscuits","Mini-Cookie","Whoopie Pies","Caramel Wafer Biscuits","Chocolate Chip Mocha Cookie","Earl Grey Cookie","Chai Tea Cookie","Myanmar Tea Cookie","Thai Tea Cookie","Corn Syrup Cookie","Icebox Cookie","Graham Cracker","Hardtack","Tofu Cookie","Gluten-Free Cookie","Lebkuchen","Aachener Printen","Canistrelli","Petit Beurre","Nanaimo Bars","Berger Cookie","Chinsuko","Putri Salju","Milk Cookie","Kruidnoten","Marie Biscuits","Meringue Cookie","Yogurt Cookie","Thumbprint","Pizzelle","Granola Cookie","Ricotta Cookie","Roze Koeken","Peanut Butter Cup Cookie","Sesame Cookie","Vanillekipferl","Battenberg Biscuits","Rosette Cookie","Gangmakers","Welsh Cookie","Raspberry Cheesecake Cookies","Bokkenpootjes","Fat Rascals","Ischler Cookies","Matcha Cookie","Super Fusion Cookie","Spicy Cookie","Kolachy Cookie","Gomma Cookie","Coyotas","Frosted Sugar Cookie","Marshmallow Sandwich Cookie","Chocolate Chip Covered Chocolate Chip Cookie","Super Idler Flavored Cookie"];
+//The default value of the cookie flavor displayed
 const defaultcookieType = "Exotic Undefined Cookies";
 const cookieInf = "Increases overall CPS by making your cookie taste better.";
 
@@ -258,27 +311,31 @@ const cookieInf = "Increases overall CPS by making your cookie taste better.";
 var covenant;
 const covExp = 5.1;
 const covDelta = 0.7;
-const covEq =
-    `B_{2} *=  \\sum_{i=0 \\: i\\neq 1}^{18}{P_{2}}{C_{i}}^{ ${BF(covExp).toString(1)} + COV_{L}}`;
+//const covEq = `B_{2} *=  \\sum_{i=0 \\: i\\neq 1}^{18}{P_{2}}{C_{i}}^{ ${BF(covExp).toString(1)} + COV_{L}}`;
+
 //FARM - Yggdrasil
 var ygg;
 const yggName = "Yggdrasil $(Y_{g})$";
 const yggInfo = "Empower your farms with the power of time and cookie ancients";
+
 //MINE - Terra
 var terra;
 const terraName = "Mass Terraforming $(T_{r})$";
 const terraInfo =
     "Unlocks/Improves a buff that temporarily boosts your CPS by a lot";
-//FACTORY - Recombobulators
+
+    //FACTORY - Recombobulators
 var recom;
 const recomName = "Recombobulators $(R_{e})$";
 const recomInfo = "Produces a constant stream of all currencies! What a dream!";
+
 //BANK - Investment
 var invest;
 const investName = "Investment Openings $(I_{o})$";
 const investInfo =
     "Open your very own investments forms. Grants 5 buildings of random type and a flat 1.01 CPS boost!(chance of failure included)";
-//TEMPLE - Archaeology
+
+    //TEMPLE - Archaeology
 var art;
 var artArt;
 let artName = "Archaeology $(A_{r})$";
@@ -324,6 +381,7 @@ let artArtDesc = [
     "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 3 spells",
     "The temple is currently empty and fully explored for artifacts, but not for long....",
 ];
+
 //WIZARD TOWER - Grimoire
 var isSpellShown = 0;
 var mana;
