@@ -472,7 +472,7 @@ let castSpell = (index) => {
             break;
         case 6:
             for(let i=0;i<Spell.length;i++){
-                spellCast[i]-=600;
+                spellCast[i]-=1200;
             }
             log("It works!");
             break;
@@ -575,7 +575,8 @@ var cookieTin,
     TwinGates,
     ConjureBuild,
     ChronosAge,
-    R9Box;
+    R9Box,
+    conGrow;
 let cookieTinInfo =
     "Heavenly cookies that boosts your CPS more than normal cookie.";
 let cookieTinName = [
@@ -619,10 +620,12 @@ let chronosageName = "Chronos Aging";
 let chronosageInfo = "Transmute the power of yggdrasil to all your buildings";
 let boxrName = "Box of R9";
 let boxrInfo = `A very stange and mathematical box seemingly full of ${game.sigmaTotal} students`;
+let congrowName = "Continuos Growth";
+let congrowInfo = "Certain high-tech buildings gets more powerful the more of them you have";
 
 //Conseq. HC Upgrade
 var cookiet = new Array(9);
-var cookietP = [1.15, 1.25, 1.35, 1.5, 1.5, 1.75, 1.75, 2, 2.25, 2.5];
+var cookietP = [1.2, 1.25, 1.35, 1.5, 1.5, 1.75, 1.75, 2, 2.25, 2.5];
 var cookietB = [
     1.5e17,
     1.5e32,
@@ -877,7 +880,7 @@ var init = () => {
                 new ExponentialCost(baseCost[i], LOG)
             );
         }
-        building[i].getDescription = () => `\$B(${BigTS(i)})\$ - ${buildingName[i]}`;
+        building[i].getDescription = () => `\$B[${BigTS(i)}]\$ - ${buildingName[i]}`;
         building[i].getInfo = () => getInf(i);
         building[i].bought = (amount) => calcCPS();
         switch(i){
@@ -1180,6 +1183,12 @@ var init = () => {
         R9Box.getInfo = () => boxrInfo;
         R9Box.maxLevel = 3;
     }
+    {
+        conGrow = theory.createPermanentUpgrade(baseI+12,hc,new ConstantCost(1e103));
+        conGrow.getDescription = () => congrowName;
+        conGrow.getInfo = () => congrowInfo;
+        conGrow.maxLevel = 1;
+    }
     //Cursor Upgrade
     {
         clickp = theory.createPermanentUpgrade(
@@ -1370,6 +1379,7 @@ var updateAvailability = () => {
     art.isAvailable = cookie.value >= BF(1e250);
     R9Box.isAvailable = hc.value > BF(1e79);
     artArt.isAvailable = artArt.maxLevel > 0;
+    conGrow.isAvailable = hc.value > BF(1e100);
     for (let i = 0; i < cookieTinName.length; i++) {
         cookiet[i].isAvailable =
             cookieTin.level >= i + 1 &&
@@ -1395,10 +1405,12 @@ var calcCPS = () => {
     LPS = (recom.level+((artArt.level > 7)?10:0)) * 0.01;
     let kp = kittyPower(kitty.level) * BF(BF(100 + milk) / BF(100));
     for (let i = 0; i < 19; i++) {
-        let step1 =
-            BF(building[i].level) *
-            BF(getPower(i)) *
-            BF(bcps[i]);
+        let step1 = BF(0);
+        if(conGrow.level > 0 && i >= 11){
+            step1 = BF(Utils.getStepwisePowerSum(building[i].level,2.5+(0.1*(i-11)),50,1)-1)*BF(getPower(i))*BF(bcps[i]);
+        }else{
+            step1 = BF(building[i].level) * BF(getPower(i)) * BF(bcps[i]);
+        }
         if(i == 6 && artArt.level > 0){
             step1*=BF(8e56);
         }
@@ -1522,7 +1534,7 @@ var tick = (multiplier) => {
 let xBegin = BF("-1e100");
 var Logistic = () => {
     var maxL =
-        BF(terra.level).pow(1.2 + 0.05 * (TerraInf.level + ((artArt.level > 6)?1:0))) * 1500 +
+        BF(terra.level).pow(2.5 + 0.05 * (TerraInf.level + ((artArt.level > 6)?1:0))) * 1500 +
         BF(building[3].level).pow(1.2 + 0.03 * TerraInf.level) * ((spellCast[3]+(10*logBoostDue) >= thyme.level)?logBoost:1);
     return (
         BigNumber.ONE +
@@ -1837,7 +1849,7 @@ var secondaryEq = (mode) => {
             let tr = " T_{r}";
             let tf = " T_{\\infty}";
             let tm = " T_{m}"
-            return `${tm} = 1500${tr}^{1.2+0.05${tf}}\\\\T = ${tm} - \\frac{1+${tm}-${tm}^{0.99999-0.01${tf}}}{1+e^{-(t-(X_{b}+300${tr}))}}`;
+            return `${tm} = 1500${tr}^{2.5+0.05${tf}}\\\\T = ${tm} - \\frac{1+${tm}-${tm}^{0.99999-0.01${tf}}}{1+e^{-(t-(X_{b}+300${tr}))}}`;
             break;
         case 7://Recom
             let rc = " R_{c}";
