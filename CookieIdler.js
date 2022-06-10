@@ -117,6 +117,7 @@ var getInternalState = () => {
     for(let i=0;i<8;i++){
         st += `${spellCast[i]} `;
     }
+    st += `${heavVis} `;
     return st;
 };
 /**
@@ -153,6 +154,9 @@ var setInternalState = (state) => {
             spellCast[i] = parseInt(res[7+i]);
         }
     }
+    if(res.length > 15){
+        heavVis = parseInt(res[15]);
+    }
 };
 //Initializes the variables for the serialized string(the scope is global)
 let CPS = BigNumber.ZERO,
@@ -165,6 +169,7 @@ let eqType = 0;
 let artUnlock = 0;
 let time = 0; //degrees
 let spellCast = [0,0,0,0,0,0,0,0];
+let heavVis = 0;
 
 
 //End States
@@ -262,9 +267,9 @@ let bcps = [
     BF("4.9e97"),
     BF("2.1e125"),
     BF("1.5e170"),
-    BF("1.1e185"),
-    BF("8.3e200"),
-    BF("6.4e250"),
+    BF("1.1e172"),
+    BF("8.3e185"),
+    BF("6.4e190"),
 ];
 //Types of Cookies
 var cookieT;
@@ -410,11 +415,18 @@ let spellDesc = [
 let effectCPSB=1;
 let templeLuck = 1000;
 let spellCost = [15,20,75,25,30,100,10,0];
+//! SECONDS ONLY
 let spellCool = [180,240,3600,300,360,600,600,1000];
 let effectCPSBDur = 37;
 let templeLuckDur = 30;
 let logBoost = 1;
 let logBoostDue = 0;
+
+let updateSpellLayer = () => {
+    for(let i=0;i<8;i++){
+        Spell[i].maxLevel = 1 + SpellStack.level;
+    }
+};
 
 let castSpell = (index) => {
     spellCast[index]=thyme.level;
@@ -465,9 +477,11 @@ let castSpell = (index) => {
             break;
         case 5:
             let rand = RandI(20);
-            if((rand < building.length) && (building[rand].level > 0) && (building[rand].cost.getCost(building[rand].level) <= (BF(1e6)*cookie.value))){
-                log("Buildings For You!");
-                building[rand].level += RandI(10)+1;
+            if(rand < 19){
+                if((building[rand].level > 0) && (building[rand].cost <= (BF(1e9)*cookie.value))){
+                    //log("Buildings For You!");
+                    building[rand].level += RandI(10)+1;
+                }
             }
             break;
         case 6:
@@ -576,7 +590,9 @@ var cookieTin,
     ConjureBuild,
     ChronosAge,
     R9Box,
-    conGrow;
+    conGrow,
+    SpellStack;
+var heavvis;
 let cookieTinInfo =
     "Heavenly cookies that boosts your CPS more than normal cookie.";
 let cookieTinName = [
@@ -800,7 +816,7 @@ var init = () => {
     {
         thyme = theory.createUpgrade(1e9,cookie,new ConstantCost(BF("1e1000")));
         thyme.isAvailable = false;
-        thyme.maxLevel = 315360000;//365 Days
+        thyme.maxLevel = 1262304000;//1461 Days
         thyme.getDescription = () => "Time (time)";
         thyme.getInfo = () => "how the fuck did you managed to see it";
     }
@@ -1056,6 +1072,17 @@ var init = () => {
     theory.createBuyAllUpgrade(1, cookie, 1e3);
     theory.createAutoBuyerUpgrade(2, cookie, 1e25);
     //Heavenly Upgrade
+    {
+        heavvis = theory.createPermanentUpgrade(999999,cookie,new FreeCost());
+        heavvis.getDescription = () => "Toggle Heavenly Upgrades";
+        heavvis.getInfo = () => "Toggles the visibility of heavenly upgrades";
+        heavvis.isAutoBuyable = false;
+        heavvis.bought = (amount) => {
+            heavVis ^= 1;
+            heavvis.level--;
+            updateAvailability();
+        };
+    }
     let baseI = 1000000;
     {
         cookieTin = theory.createPermanentUpgrade(
@@ -1188,6 +1215,13 @@ var init = () => {
         conGrow.getDescription = () => congrowName;
         conGrow.getInfo = () => congrowInfo;
         conGrow.maxLevel = 1;
+    }
+    {
+        SpellStack = theory.createPermanentUpgrade(baseI+13,hc,new ExponentialCost(1e105,ML2(1e5)));
+        SpellStack.getDescription = () => "Spell Cast Layering";
+        SpellStack.getInfo = () => "Allows multiples of the same spell to be casted, cooldown all at once";
+        SpellStack.bought = (amount) => updateSpellLayer();
+        SpellStack.maxLevel = 2;
     }
     //Cursor Upgrade
     {
@@ -1348,7 +1382,7 @@ var init = () => {
             () => checkChapter(i)
         );
     }
-
+    updateSpellLayer();
     updateAvailability();
     //calcCPS();
 };
@@ -1359,27 +1393,28 @@ var updateAvailability = () => {
     covenant.isAvailable = cookie.value >= BF(1e60);
     kitty.isAvailable = achCount >= 5;
     cookieT.isAvailable = building[3].level > 0;
-    CookieH.isAvailable = hc.value >= BF(500);
-    CookieS.isAvailable = hc.value >= BF(10000);
-    cookieTin.isAvailable = hc.value >= BF(10);
-    CookieC.isAvailable = hc.value >= BF(1e7);
-    DivineD.isAvailable = hc.value >= BF(1e10);
+    CookieH.isAvailable = hc.value >= BF(500) && heavVis;
+    CookieS.isAvailable = hc.value >= BF(10000) && heavVis;
+    cookieTin.isAvailable = hc.value >= BF(10) && heavVis;
+    CookieC.isAvailable = hc.value >= BF(1e7) && heavVis;
+    DivineD.isAvailable = hc.value >= BF(1e10) && heavVis;
     ResidualLuck.isAvailable =
         hc.value >= BF(1e38) &&
-        CookieH.level + CookieS.level + CookieC.level >= 3;
-    CookieTau.isAvailable = hc.value >= BF(1e20);
+        CookieH.level + CookieS.level + CookieC.level >= 3 && heavVis;
+    CookieTau.isAvailable = hc.value >= BF(1e20) && heavVis;
     ygg.isAvailable = cookie.value >= BF(1e100);
     terra.isAvailable = cookie.value >= BF(1e125);
     recom.isAvailable = cookie.value >= BF(1e155);
     invest.isAvailable = cookie.value >= BF(1e180);
-    TerraInf.isAvailable = hc.value >= BF(1e50);
-    TwinGates.isAvailable = ChronosAge.level > 0;
-    ChronosAge.isAvailable = ygg.level > 0;
-    ConjureBuild.isAvailable = invest.level >= 10;
+    TerraInf.isAvailable = hc.value >= BF(1e50) && heavVis;
+    TwinGates.isAvailable = ChronosAge.level > 0 && heavVis;
+    ChronosAge.isAvailable = ygg.level > 0 && heavVis;
+    ConjureBuild.isAvailable = invest.level >= 10 && heavVis;
     art.isAvailable = cookie.value >= BF(1e250);
-    R9Box.isAvailable = hc.value > BF(1e79);
+    R9Box.isAvailable = hc.value > BF(1e79) && heavVis;
     artArt.isAvailable = artArt.maxLevel > 0;
-    conGrow.isAvailable = hc.value > BF(1e100);
+    conGrow.isAvailable = hc.value > BF(1e100) && heavVis;
+    SpellStack.isAvailable = hc.value > BF(1e100) && heavVis;
     for (let i = 0; i < cookieTinName.length; i++) {
         cookiet[i].isAvailable =
             cookieTin.level >= i + 1 &&
@@ -1407,7 +1442,7 @@ var calcCPS = () => {
     for (let i = 0; i < 19; i++) {
         let step1 = BF(0);
         if(conGrow.level > 0 && i >= 11){
-            step1 = BF(Utils.getStepwisePowerSum(building[i].level,2.5+(0.1*(i-11)),50,1)-1)*BF(getPower(i))*BF(bcps[i]);
+            step1 = BF(Utils.getStepwisePowerSum(building[i].level,2.5+(0.01*(i-11)),50,1)-1)*BF(getPower(i))*BF(bcps[i]);
         }else{
             step1 = BF(building[i].level) * BF(getPower(i)) * BF(bcps[i]);
         }
