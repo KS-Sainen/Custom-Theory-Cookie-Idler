@@ -517,7 +517,7 @@ let buildingUpgrade = new Array(19);
 let buildingPower = new Array(19);
 let buildingP = new Array(19);
 let buildingPMax = [
-    500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500,
+    250, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500,
     500, 450, 400, 350, 250, 250, 250,
 ];
 let buildingUpgradeName = [
@@ -542,7 +542,7 @@ let buildingUpgradeName = [
     "Get an extra IQ Point",
 ];
 let buildingUpgradeMult = [
-    250, 4, 100, 150, 100, 79, 55, 34, 17, 9, 8, 5, 3, 2, 2, 2, 2, 2, 2, 2,
+    250, 3.5, 100, 150, 100, 79, 55, 34, 17, 9, 8, 5, 3, 2, 2, 2, 2, 2, 2, 2,
 ];
 var kitty;
 const kittyID = 69420; //ouo
@@ -1427,7 +1427,7 @@ var updateAvailability = () => {
     ConjureBuild.isAvailable = invest.level >= 10 && heavVis;
     art.isAvailable = cookie.value >= BF(1e250);
     R9Box.isAvailable = hc.value > BF(1e79) && heavVis;
-    artArt.isAvailable = artArt.maxLevel > 0;
+    artArt.isAvailable = (artArt.maxLevel > 1) || (art.level > 0);
     conGrow.isAvailable = hc.value > BF(1e100) && heavVis;
     SpellStack.isAvailable = hc.value > BF(1e100) && heavVis;
     for (let i = 0; i < cookieTinName.length; i++) {
@@ -1505,8 +1505,8 @@ var calcCPS = () => {
             BF(buip).pow(buildingUpgrade[i].level)
         ).pow(getExpn(i));
         //arrcps[i]=BF("1e180");
-        if (i == 2 && ygg.level != 0 && thyme.level > BigNumber.ZERO)
-            arrcps[i] *= BF(getPower(i)).pow(1.4 + 0.1 * ygg.level) * BF(building[6].level + building[2].level).pow(BigP(ygg.level,0.9) * 0.2 + 3.2) * (BigNumber.ONE + BF(thyme.level).pow(1.4));
+        if (i == 2 && ygg.level > 0 && thyme.level > BigNumber.ZERO)
+            arrcps[i] *= BF(getPower(i)).pow(1.4 + 0.1 * ygg.level) * BF(building[6].level + building[2].level).pow(BigP(ygg.level,0.9) * 0.2 + 3.2) * (BigNumber.ONE + BF(thyme.level).pow(1.4)) * BF(1e9);
 
         if (i == 4 && recom.level > 0) {
             arrcps[i] *= (recom.level > 1)?(BF(1e54) * BigP(2,recom.level - 1)):(BF(1e54));
@@ -1577,7 +1577,7 @@ var tick = (multiplier) => {
                 Spell[i].level=0;
             }
         }
-        updateSpellLayer();
+        if(thyme.level%11 == 0)updateSpellLayer();
         updateAvailability();
     }
     theory.invalidateTertiaryEquation();
@@ -1705,6 +1705,28 @@ var InsPopup = ui.createPopup({
 //ellipsis you're so epic for contributing to getEquationOverlay() function
 let eqName = ["Building CPS","Building Power","Milk","Cookie Power","Covenant","Yggdrasil","Terra","Recombobulators"];
 let binfoname = ["Normal","Compressed"];
+let seqButton = ui.createButton({
+    text: `Secondary Equation\n${eqName[eqType]}`, row: 1, column: 0, 
+    fontFamily: FontFamily.CMU_REGULAR,
+    onClicked: () => {
+        eqType++;
+        eqType = eqType % 8;
+        while(!secondaryCheck(eqType)){
+            eqType++;
+            eqType = eqType % 8;
+        }
+        seqButton.text = `Secondary Equation\n${eqName[eqType]}`;
+        theory.invalidateSecondaryEquation();
+    },
+});
+let biButton = ui.createButton({
+    text: `Building Display\n${binfoname[bInfo]}`, row: 0, column: 1,
+    fontFamily: FontFamily.CMU_REGULAR,
+    onClicked: () =>{
+        bInfo ^= 1;
+        biButton.text = `Building Display\n${binfoname[bInfo]}`;
+    }
+});
 let popup = ui.createPopup({
     title: "Main Menu",
     isPeekable: true,
@@ -1735,28 +1757,8 @@ let popup = ui.createPopup({
                 columnDefinitions: ["50*", "50*"],
                 children: [
                     ui.createButton({text: "Visualizer Type", row: 0, column: 0}),
-                    ui.createButton({
-                        text: `Building Display\n${binfoname[bInfo]}`, row: 0, column: 1,
-                        fontFamily: FontFamily.CMU_REGULAR,
-                        onClicked: () =>{
-                            bInfo ^= 1;
-                            popup.content.children[2].children[1].text = `Building Display\n${binfoname[bInfo]}`;
-                        }
-                    }),
-                    ui.createButton({
-                        text: `Secondary Equation\n${eqName[eqType]}`, row: 1, column: 0, 
-                        fontFamily: FontFamily.CMU_REGULAR,
-                        onClicked: () => {
-                            eqType++;
-                            eqType = eqType % 8;
-                            while(!secondaryCheck(eqType)){
-                                eqType++;
-                                eqType = eqType % 8;
-                            }
-                            popup.content.children[2].children[2].text = `Secondary Equation\n${eqName[eqType]}`;
-                            theory.invalidateSecondaryEquation();
-                        },
-                    }),
+                    biButton,
+                    seqButton,
                     ui.createButton({text: "Coming Soon", row: 1, column: 1}),
                 ]
             }),
@@ -1765,7 +1767,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text:"Cookie Idler GRIMOIRE BETA\nv.0.1.3a"
+                text:"Cookie Idler GRIMOIRE BETA\nv0.1.3a"
             })
         ]
     })
@@ -1914,7 +1916,7 @@ var secondaryEq = (mode) => {
             break;
         case 5://Ygg + Chronos
             let ys = " Y_{g}"
-            return `B(3) \\leftarrow B(3)P_{3}^{1.4 + (0.1\\times${ys})}(B[6]+B[2])^{3.2 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{1.1}), \\quad i \\neq 2`:``}`;
+            return `B(3) \\leftarrow B(3)10^{9}P_{3}^{1.4 + (0.1\\times${ys})}(B[6]+B[2])^{3.2 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{1.1}), \\quad i \\neq 2`:``}`;
             break;
         case 6://Terra
             let tr = " T_{r}";
