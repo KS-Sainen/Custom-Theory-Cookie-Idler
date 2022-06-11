@@ -6,6 +6,10 @@ import { Utils } from "./api/Utils";
 import { UI } from "./api/ui/UI";
 import { Game } from "./api/Game";
 import { ConstantCost, CustomCost } from "../api/Costs";
+import { ImageSource } from "../api/ui/properties/ImageSource";
+import { Popup } from "../api/ui/Popup";
+import { ui } from "../api/ui/UI";
+import { FontFamily } from "../api/ui/properties/FontFamily";
 //Hello to the person reading this "code"
 //Spoilers alert for ALL of the upgrades, buildings and achievements
 //Before leaving, please try and find any bugs or bad JS coding practices for me
@@ -117,7 +121,7 @@ var getInternalState = () => {
     for(let i=0;i<8;i++){
         st += `${spellCast[i]} `;
     }
-    st += `${heavVis} `;
+    st += `${heavVis} ${bInfo} `;
     return st;
 };
 /**
@@ -157,6 +161,9 @@ var setInternalState = (state) => {
     if(res.length > 15){
         heavVis = parseInt(res[15]);
     }
+    if(res.length > 16){
+        bInfo = parseInt(res[16]);
+    }
 };
 //Initializes the variables for the serialized string(the scope is global)
 let CPS = BigNumber.ZERO,
@@ -170,6 +177,7 @@ let artUnlock = 0;
 let time = 0; //degrees
 let spellCast = [0,0,0,0,0,0,0,0];
 let heavVis = 0;
+let bInfo = 0;
 
 
 //End States
@@ -509,8 +517,8 @@ let buildingUpgrade = new Array(19);
 let buildingPower = new Array(19);
 let buildingP = new Array(19);
 let buildingPMax = [
-    1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000,
-    1000, 900, 800, 750, 500, 500, 250,
+    500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500,
+    500, 450, 400, 350, 250, 250, 250,
 ];
 let buildingUpgradeName = [
     "Extra Finger",
@@ -896,8 +904,15 @@ var init = () => {
                 new ExponentialCost(baseCost[i], LOG)
             );
         }
-        building[i].getDescription = () => `\$B[${BigTS(i)}]\$ - ${buildingName[i]}`;
-        building[i].getInfo = () => getInf(i);
+        building[i].getDescription = () => {
+            let bi = `\$B[${BigTS(i)}]^{${(getExpn(i)>1)?getExpn(i).toString(10):""}}\$`;
+            if(bInfo){
+                return `${bi} = ${calcBuilding(i,0)}`;
+            }else{ 
+                return `${bi} - ${buildingName[i]}`
+            }
+        };
+        building[i].getInfo = (amount) => getInf(i,amount);
         building[i].bought = (amount) => calcCPS();
         switch(i){
             case 1:
@@ -1431,7 +1446,17 @@ var updateAvailability = () => {
     }
     building[14].isAvailable = ((cookie.value >= baseCost[13]) && (artArt.level > 8));
 };
-//DONE : Move the ENTIRE CPS calculation elsewhere because calculating it per fucking tick is too fucking expensive, even for my standard
+
+//CPS Zone
+//Calculates Building Level
+//id = ID, am = Offset Amount
+var calcBuilding = (id,am) => {
+    if(conGrow.level > 0 && id >= 11){
+        return Utils.getStepwisePowerSum(building[id].level+am,2.5+(0.01*(id-11)),50,1)-1;
+    }else{
+        return BF(building[id].level+am)
+    }
+};
 var calcCPS = () => {
     CPS = BigNumber.ZERO;
     let bc = BigNumber.ZERO;
@@ -1440,12 +1465,7 @@ var calcCPS = () => {
     LPS = (recom.level+((artArt.level > 7)?10:0)) * 0.01;
     let kp = kittyPower(kitty.level) * BF(BF(100 + milk) / BF(100));
     for (let i = 0; i < 19; i++) {
-        let step1 = BF(0);
-        if(conGrow.level > 0 && i >= 11){
-            step1 = BF(Utils.getStepwisePowerSum(building[i].level,2.5+(0.01*(i-11)),50,1)-1)*BF(getPower(i))*BF(bcps[i]);
-        }else{
-            step1 = BF(building[i].level) * BF(getPower(i)) * BF(bcps[i]);
-        }
+        let step1 = BF(calcBuilding(i,0)*BF(getPower(i))*BF(bcps[i]));
         if(i == 6 && artArt.level > 0){
             step1*=BF(8e56);
         }
@@ -1557,6 +1577,7 @@ var tick = (multiplier) => {
                 Spell[i].level=0;
             }
         }
+        updateSpellLayer();
         updateAvailability();
     }
     theory.invalidateTertiaryEquation();
@@ -1602,7 +1623,10 @@ var getSecondaryEquation = () => {
     return secondaryEq(eqType);
 };
 
-var getInf = (index) => {
+var getInf = (index,am) => {
+    if(bInfo){
+        return `\$B[${index}]^{${(getExpn(index)>1)?getExpn(index):""}}\$ = ${Utils.getMathTo(calcBuilding(index,0),calcBuilding(index,am))}`
+    }
     let result = buildingName[index];
     if (building[index].level == 1) {
         result += " ";
@@ -1679,110 +1703,122 @@ var InsPopup = ui.createPopup({
     }),
 });
 //ellipsis you're so epic for contributing to getEquationOverlay() function
-var getEquationOverlay = () =>
-    ui.createGrid({
-        columnDefinitions: ["90*", "auto"],
-        children: [
-            ui.createStackLayout({
+let eqName = ["Building CPS","Building Power","Milk","Cookie Power","Covenant","Yggdrasil","Terra","Recombobulators"];
+let binfoname = ["Normal","Compressed"];
+let popup = ui.createPopup({
+    title: "Main Menu",
+    isPeekable: true,
+    content: ui.createStackLayout({
+        children:[
+            ui.createGrid({
+                columnDefinitions: ["50*", "50*"],
                 children: [
-                    ui.createImage({
-                        source: ImageSource.CHANGE,
-                        horizontalOptions: LayoutOptions.START,
-                        verticalOptions: LayoutOptions.END,
-                        heightRequest: 25,
-                        margin: new Thickness(10, 10, 0, 0),
-                        onTouched: (e) => {
-                            if (e.type == TouchType.SHORTPRESS_RELEASED) {
-                                log("It works!");
-                                vizType = vizType == 0 ? 1 : 0;
-                                theory.invalidateSecondaryEquation();
-                                theory.clearGraph();
-                            }
+                    ui.createButton({
+                        text: "Instructions", row: 0, column: 0,
+                        onClicked: () => {
+                            InsPopup.show();
                         },
                     }),
-                    ui.createLatexLabel({
-                        text: "Change Visualizer",
-                        fontSize: 10,
-                        padding: new Thickness(10, 10, 0, 0),
+                    ui.createButton({
+                        text: "Perks", row: 0, column: 1
                     }),
-                    terra.level > 0
-                        ? ui.createImage({
-                              source: ImageSource.FAST_FORWARD,
-                              horizontalOptions: LayoutOptions.START,
-                              verticalOptions: LayoutOptions.END,
-                              heightRequest: 25,
-                              margin: new Thickness(10, 10, 0, 0),
-                              onTouched: (e) => {
-                                  if (e.type == TouchType.SHORTPRESS_RELEASED) {
-                                      log("Boost!");
-                                      xBegin = time;
-                                      calcCPS();
-                                  }
-                              },
-                          })
-                        : ui.createImage({
-                              source: ImageSource.LOCK,
-                              horizontalOptions: LayoutOptions.START,
-                              verticalOptions: LayoutOptions.END,
-                              heightRequest: 25,
-                              margin: new Thickness(10, 10, 0, 0),
-                          }),
-                    terra.level > 0
-                        ? ui.createLatexLabel({
-                              text: "Terraform Buff",
-                              fontSize: 10,
-                              padding: new Thickness(10, 10, 0, 0),
-                          })
-                        : ui.createLatexLabel({
-                              text: "Locked",
-                              fontSize: 10,
-                              padding: new Thickness(10, 10, 0, 0),
-                          }),
-                ],
+                    ui.createButton({
+                        text: "Subgames", row: 1, column: 0
+                    }),
+                    ui.createButton({
+                        text: "What\'s New", row: 1, column: 1
+                    }),
+                ]
             }),
-            ui.createStackLayout({
+            ui.createProgressBar({progress: 0}),
+            ui.createGrid({
+                columnDefinitions: ["50*", "50*"],
                 children: [
-                    ui.createImage({
-                        source: ImageSource.CHANGE,
-                        horizontalOptions: LayoutOptions.END,
-                        verticalOptions: LayoutOptions.START,
-                        heightRequest: 20,
-                        margin: new Thickness(10, 10, 0, 0),
-                        onTouched: (e) => {
-                            if (e.type == TouchType.SHORTPRESS_RELEASED) {
-                                log("Equation Change!");
+                    ui.createButton({text: "Visualizer Type", row: 0, column: 0}),
+                    ui.createButton({
+                        text: `Building Display\n${binfoname[bInfo]}`, row: 0, column: 1,
+                        fontFamily: FontFamily.CMU_REGULAR,
+                        onClicked: () =>{
+                            bInfo ^= 1;
+                            popup.content.children[2].children[1].text = `Building Display\n${binfoname[bInfo]}`;
+                        }
+                    }),
+                    ui.createButton({
+                        text: `Secondary Equation\n${eqName[eqType]}`, row: 1, column: 0, 
+                        fontFamily: FontFamily.CMU_REGULAR,
+                        onClicked: () => {
+                            eqType++;
+                            eqType = eqType % 8;
+                            while(!secondaryCheck(eqType)){
                                 eqType++;
                                 eqType = eqType % 8;
-                                while(!secondaryCheck(eqType)){
-                                    eqType++;
-                                    eqType = eqType % 8;
-                                }
-                                theory.invalidateSecondaryEquation();
                             }
+                            popup.content.children[2].children[2].text = `Secondary Equation\n${eqName[eqType]}`;
+                            theory.invalidateSecondaryEquation();
                         },
                     }),
-                    //ui.createLatexLabel({
-                    //	text: "Secondary Equation", //bad, temp removed
-                    //	displacementX: 280,
-                    //	fontSize: 10,
-                    //	horizontalOptions: LayoutOptions.END,
-                    //	padding: new Thickness(10,10,0,0)
-                    //}),
-                    ui.createImage({
-                        source: ImageSource.INFO,
-                        horizontalOptions: LayoutOptions.END,
-                        verticalOptions: LayoutOptions.END,
-                        heightRequest: 20,
-                        margin: new Thickness(10, 10, 0, 0),
-                        onTouched: (e) => {
-                            if (e.type == TouchType.SHORTPRESS_RELEASED) {
-                                log("Help Menu");
-                                InsPopup.show();
-                            }
-                        },
-                    }),
-                ],
+                    ui.createButton({text: "Coming Soon", row: 1, column: 1}),
+                ]
             }),
+            ui.createProgressBar({progress: 0}),
+            ui.createLabel({
+                horizontalTextAlignment: TextAlignment.CENTER,
+                fontSize: 15,
+                padding: new Thickness(10, 10, 0, 0),
+                text:"Cookie Idler GRIMOIRE BETA\nv.0.1.3a"
+            })
+        ]
+    })
+});
+
+var getEquationOverlay = () =>
+    ui.createStackLayout({
+        children: [
+            ui.createImage({
+                source: ImageSource.INFO,
+                horizontalOptions: LayoutOptions.START,
+                verticalOptions: LayoutOptions.END,
+                heightRequest: 25,
+                margin: new Thickness(10, 10, 0, 0),
+                onTouched: (e) => {
+                    if (e.type == TouchType.SHORTPRESS_RELEASED) {
+                        popup.show();
+                    }
+                },
+            }),
+            terra.level > 0
+                ? ui.createImage({
+                      source: ImageSource.FAST_FORWARD,
+                      horizontalOptions: LayoutOptions.START,
+                      verticalOptions: LayoutOptions.END,
+                      heightRequest: 25,
+                      margin: new Thickness(10, 10, 0, 0),
+                      onTouched: (e) => {
+                          if (e.type == TouchType.SHORTPRESS_RELEASED) {
+                              log("Boost!");
+                              xBegin = time;
+                              calcCPS();
+                          }
+                      },
+                  })
+                : ui.createImage({
+                      source: ImageSource.LOCK,
+                      horizontalOptions: LayoutOptions.START,
+                      verticalOptions: LayoutOptions.END,
+                      heightRequest: 25,
+                      margin: new Thickness(10, 10, 0, 0),
+                  }),
+            terra.level > 0
+                ? ui.createLatexLabel({
+                      text: "Terraform Buff",
+                      fontSize: 10,
+                      padding: new Thickness(10, 10, 0, 0),
+                  })
+                : ui.createLatexLabel({
+                      text: "Locked",
+                      fontSize: 10,
+                      padding: new Thickness(10, 10, 0, 0),
+                  }),
         ],
     });
 
