@@ -288,8 +288,7 @@ const ctr = ML2(2700);
  * @param {BigNumber} level, The amount of cookie upgrade level you have from the cookieT.level
  * @returns {BigNumber} The total amount of cookie boost you have 
  */
-var getCookieP = (level) => {
-    //let bn = (num) => BF(num);
+var getCookieTP = (level) => {
     let res = BF(1);
     if (level >= 150) {
         res = BF(1.13).pow(level);
@@ -304,6 +303,11 @@ var getCookieP = (level) => {
     } else {
         res = BF(1.03).pow(level);
     }
+    return res;
+};
+var getCookieP = (level) => {
+    //let bn = (num) => BF(num);
+    let res = getCookieTP(level);
     for (let i = 0; i < cookieTinName.length; i++) {
         res *= BigP(cookietP[i],cookiet[i].level);
     }
@@ -836,13 +840,16 @@ var init = () => {
             new ExponentialCost(basect, ctr)
         );
         cookieT.getDescription = (_) => {
+            if(bInfo){
+                return `\$ C_{1}(${cookieT.level}) = ${getCookieTP(cookieT.level)}, \\: CP(${cookieT.level})=${getCookieP(cookieT.level)}\$`;
+            }
             if (cookieT.level > cookieType.length) {
                 return defaultcookieType;
             } else {
                 return cookieType[cookieT.level];
             }
         };
-        cookieT.getInfo = () => cookieInf;
+        cookieT.getInfo = (amount) => (bInfo)?`\$ l = \$ ${Utils.getMathTo(cookieT.level,cookieT.level+amount)}`:cookieInf;
         cookieT.bought = (amount) => calcCPS();
     }
     //Heavely Tasty Cookie
@@ -855,13 +862,16 @@ var init = () => {
             );
             cookiet[i].maxLevel = cookietName[i].length;
             cookiet[i].getDescription = () => {
+                if(bInfo){
+                    return `\$ TP[${i}]^{CT[${i}]} = ${cookietP[i]}^{${cookiet[i].level}} = ${BigP(cookietP[i],cookiet[i].level)}\$`;
+                }
                 if (cookiet[i].level >= cookiet[i].maxLevel) {
                     return cookietName[i][cookietName[i].length - 1];
                 } else {
                     return cookietName[i][cookiet[i].level];
                 }
             };
-            cookiet[i].getInfo = () =>
+            cookiet[i].getInfo = (amount) => (bInfo)?`\$ CT[${i}] =\$ ${Utils.getMathTo(cookiet[i].level,cookiet[i].level+amount)}`:
                 "Some nice Heavenly Cookies to boost CPS even more";
             cookiet[i].bought = (amount) => calcCPS();
         }
@@ -874,20 +884,18 @@ var init = () => {
             new ExponentialCost(kittyCost, kittyExp)
         );
         kitty.getDescription = (_) => {
+            if(bInfo){
+                return `\$K_{i} = ${kitty.level}, M = ${kittyPower(kitty.level)}\$`;
+            }
             if (kitty.level > kittyName.length) {
                 return kittyDName;
             } else {
                 return kittyName[kitty.level];
             }
         };
-        kitty.getInfo = () => "You gain more CPS the more kittens you have";
+        kitty.getInfo = (amount) => (bInfo)?`\$ K_{i} = \$ ${Utils.getMathTo(kitty.level,kitty.level+amount)} `:"You gain more CPS the more kittens you have";
         kitty.bought = (amount) => calcCPS();
     }
-    
-    
-
-    
-    
     // All 19 Buildings
     let LOG = ML2(1.15);
     for (let i = 0; i < 19; i++) {
@@ -1904,7 +1912,7 @@ var secondaryEq = (mode) => {
             theory.secondaryEquationScale = 0.9;
             return (
                 "CP(l) = C_{1}(l)C_{2}()" +
-                (invest.level > 0 ? "I^{1.01}" : "") +
+                (invest.level > 0 ? "I_{o}^{1.01}" : "") +
                 "\\\\C_{1}(l) = max_{l}:[0,25,50,75,100,150]\\\\ \\rightarrow [1.03,1.05,1.07,1.09,1.11,1.13]^{l}\\\\C_{2}() = \\prod_{i=0}^{8}{TP[i]^{CT[i]}}"
             );
             break;
