@@ -920,7 +920,7 @@ var init = () => {
                 return `${bi} - ${buildingName[i]}`
             }
         };
-        building[i].getInfo = (amount) => getInf(i,amount);
+        building[i].getInfo = (amount) => `${getInf(i,amount)}, \$B(${i}) = ${arrcps[i]}\$`;
         building[i].bought = (amount) => calcCPS();
         switch(i){
             case 1:
@@ -1514,7 +1514,7 @@ var calcCPS = () => {
         ).pow(getExpn(i));
         //arrcps[i]=BF("1e180");
         if (i == 2 && ygg.level > 0 && thyme.level > BigNumber.ZERO)
-            arrcps[i] *= BF(getPower(i)).pow(1.4 + 0.1 * ygg.level) * BF(building[6].level + building[2].level).pow(BigP(ygg.level,0.9) * 0.2 + 3.2) * (BigNumber.ONE + BF(thyme.level).pow(1.4)) * BF(1e9);
+            arrcps[i] *= BF(getPower(i)).pow(1.3 + 0.1 * ygg.level) * BF(building[6].level + building[2].level).pow(BigP(ygg.level,0.9) * 0.2 + 3.2) * (BigNumber.ONE + BF(thyme.level).pow(1.4)) * BF(1e9);
 
         if (i == 4 && recom.level > 0) {
             arrcps[i] *= (recom.level > 1)?(BF(1e54) * BigP(2,recom.level - 1)):(BF(1e54));
@@ -1924,7 +1924,7 @@ var secondaryEq = (mode) => {
             break;
         case 5://Ygg + Chronos
             let ys = " Y_{g}"
-            return `B(3) \\leftarrow B(3)10^{9}P_{3}^{1.4 + (0.1\\times${ys})}(B[6]+B[2])^{3.2 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{1.1}), \\quad i \\neq 2`:``}`;
+            return `B(3) \\leftarrow B(3)10^{9}P_{3}^{1.3 + (0.1\\times${ys})}(B[6]+B[2])^{3.2 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{1.1}), \\quad i \\neq 2`:``}`;
             break;
         case 6://Terra
             let tr = " T_{r}";
