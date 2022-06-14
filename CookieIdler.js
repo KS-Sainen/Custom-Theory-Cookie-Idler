@@ -77,6 +77,7 @@ let minCookie = (i) => {
  * @param {number} i 
  */
 let pubH = (i) => {
+    if(cookie.value <= 0)return;
     hc.value += BF(i) * (cookie.value / BF("1e12")).pow(1 / 3);
 }
 /**
@@ -521,8 +522,8 @@ let buildingUpgrade = new Array(19);
 let buildingPower = new Array(19);
 let buildingP = new Array(19);
 let buildingPMax = [
-    250, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500,
-    500, 450, 400, 350, 250, 250, 250,
+    150, 500, 500, 500, 500, 500, 500, 500, 500, 500, 450, 400,
+    350, 350, 350, 300, 250, 200, 150,
 ];
 let buildingUpgradeName = [
     "Extra Finger",
@@ -546,7 +547,7 @@ let buildingUpgradeName = [
     "Get an extra IQ Point",
 ];
 let buildingUpgradeMult = [
-    250, 3.5, 100, 150, 100, 79, 55, 34, 17, 9, 8, 5, 3, 2, 2, 2, 2, 2, 2, 2,
+    250, 3.5, 90, 150, 100, 79, 55, 34, 17, 9, 8, 5, 3, 2, 2, 2, 2, 2, 2, 2,
 ];
 var kitty;
 const kittyID = 69420; //ouo
@@ -582,7 +583,7 @@ var kittyPower = (level) => {
         ret += (level - 9) * 0.2;
     }
     ret += level * 0.15;
-    if(art.level > 2){
+    if(artArt.level > 2){
         ret=MP(ret,1.5);
     }
     return ret;
@@ -920,7 +921,7 @@ var init = () => {
                 return `${bi} - ${buildingName[i]}`
             }
         };
-        building[i].getInfo = (amount) => `${getInf(i,amount)}, \$B(${i}) = ${arrcps[i]}\$`;
+        building[i].getInfo = (amount) => `${getInf(i,amount)}, ${((bInfo)?`\$B(${i}) = ${arrcps[i]}\$`:"")}`;
         building[i].bought = (amount) => calcCPS();
         switch(i){
             case 1:
@@ -1283,10 +1284,15 @@ var init = () => {
         buildingUpgrade[i] = theory.createPermanentUpgrade(
             33 + i,
             lump,
-            new LinearCost(1, 1)
+            new LinearCost(i+1, i+1)
         );
-        buildingUpgrade[i].getDescription = () => buildingUpgradeName[i];
-        buildingUpgrade[i].getInfo = () => `Improves ${buildingName[i]}  by a factor of ${TS10(buip)}`;
+        buildingUpgrade[i].getDescription = (amount) => (bInfo)?`\$ 1.1^{L[${i}]} = 1.1^{${buildingUpgrade[i].level}} = ${BigP(1.1,buildingUpgrade[i].level)}\$`:buildingUpgradeName[i];
+        buildingUpgrade[i].getInfo = (amount) => {
+            if(bInfo){
+                return `\$ L[${i}] = \$ ${Utils.getMathTo(buildingUpgrade[i].level,buildingUpgrade[i].level+amount)}`;
+            }
+            return `Improves ${buildingName[i]}  by a factor of ${TS10(buip)}`
+        };
         buildingUpgrade[i].maxLevel = buildingPMax[i];
         buildingUpgrade[i].bought = (amount) => calcCPS();
         buildingUpgrade[i].canBeRefunded = (amount) =>
