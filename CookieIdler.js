@@ -196,7 +196,7 @@ var cookie, hc, lump, milk;
 let building = new Array(21);
 //Buildings Attributes
 let buildingName = [
-    "Cursor",
+    "Cursof",
     "Grandma",
     "Farm",
     "Mine",
