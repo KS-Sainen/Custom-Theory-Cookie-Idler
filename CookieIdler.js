@@ -260,22 +260,22 @@ let baseCost = [
 ];
 //Ideally, 1/100 base
 let bcps = [
-    7,
-    310,
-    5.3e4,
-    7.4e7,
-    4.05e10,
-    1.4e12,
-    1.6e18,
-    4.4e32,
-    2.6e39,
-    5.6e51,
-    6.66e60,
-    6.5e74,
-    3.15e85,
-    BF("4.9e97"),
-    BF("2.1e125"),
-    BF("1.5e170"),
+    7,//0
+    310,//1
+    5.3e4,//2
+    7.4e7,//3
+    4.05e10,//4
+    1.4e12,//5
+    1.6e18,//6
+    4.4e32,//7
+    2.6e39,//8
+    5.6e51,//9
+    6.66e60,//10
+    6.5e74,//11
+    3.15e85,//12
+    BF("4.9e97"),//13
+    BF("2.1e125"),//14
+    BF("2.2e150"),//15
     BF("1.1e172"),
     BF("8.3e185"),
     BF("6.4e190"),
@@ -448,8 +448,8 @@ let castSpell = (index) => {
             var rand = RandI(100);
             if(rand <= 90){
                 log("Cookies for you");
-                rand = RandI(30);
-                cookie.value += BF(rand*60) * CPS;
+                rand = RandI(15);
+                minCookie(rand*30);
             }else{
                 log("No Cookies for you");
             }
@@ -1235,17 +1235,17 @@ var init = () => {
         R9Box.maxLevel = 3;
     }
     {
-        conGrow = theory.createPermanentUpgrade(baseI+12,hc,new ConstantCost(1e103));
+        conGrow = theory.createPermanentUpgrade(baseI+12,hc,new ExponentialCost(1e103,ML2(1e7)));
         conGrow.getDescription = () => congrowName;
         conGrow.getInfo = () => congrowInfo;
-        conGrow.maxLevel = 1;
+        conGrow.maxLevel = 3;
     }
     {
         SpellStack = theory.createPermanentUpgrade(baseI+13,hc,new ExponentialCost(1e105,ML2(1e5)));
         SpellStack.getDescription = () => "Spell Cast Layering";
         SpellStack.getInfo = () => "Allows multiples of the same spell to be casted, cooldown all at once";
         SpellStack.bought = (amount) => updateSpellLayer();
-        SpellStack.maxLevel = 2;
+        SpellStack.maxLevel = 3;
     }
     //Cursor Upgrade
     {
@@ -1466,7 +1466,9 @@ var updateAvailability = () => {
 //id = ID, am = Offset Amount
 var calcBuilding = (id,am) => {
     if(conGrow.level > 0 && id >= 11){
-        return Utils.getStepwisePowerSum(building[id].level+am,2.5+(0.01*(id-11)),50,1)-1;
+        return Utils.getStepwisePowerSum(building[id].level+am,2.4+(0.1*conGrow.level)+(0.01*(id-11)),50,1)-1;
+    }else if(conGrow.level > 1 && id < 11){
+        return Utils.getStepwisePowerSum(building[id].level+am,1.2+(0.01*(id+1)),50,1)-1;
     }else{
         return BF(building[id].level+am)
     }
