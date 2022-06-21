@@ -1466,9 +1466,9 @@ var updateAvailability = () => {
 //id = ID, am = Offset Amount
 var calcBuilding = (id,am) => {
     if(conGrow.level > 0 && id >= 11){
-        return Utils.getStepwisePowerSum(building[id].level+am,2.4+(0.1*conGrow.level)+(0.01*(id-11)),50,1)-1;
+        return Utils.getStepwisePowerSum(building[id].level+am,2.4+(0.2*conGrow.level)+(0.011*(id-11)),50-conGrow.level,1)-1;
     }else if(conGrow.level > 1 && id < 11){
-        return Utils.getStepwisePowerSum(building[id].level+am,1.2+(0.01*(id+1)),50,1)-1;
+        return Utils.getStepwisePowerSum(building[id].level+am,1.2+(0.07*conGrow.level)+(0.021*(id+1)),50-conGrow.level,1)-1;
     }else{
         return BF(building[id].level+am)
     }
