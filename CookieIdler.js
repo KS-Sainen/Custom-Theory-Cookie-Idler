@@ -938,7 +938,7 @@ var init = () => {
                 ygg = theory.createUpgrade(10002,cookie,new ExponentialCost(1e110, ML2(1e25)));
                 ygg.getDescription = () => yggName;
                 ygg.getInfo = () => yggInfo;
-                ygg.maxLevel = 5;
+                ygg.maxLevel = 4;//get rekt yggdrasil
                 ygg.bought = (amount) => calcCPS();
                 break; 
             case 3:
