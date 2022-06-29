@@ -448,41 +448,41 @@ let castSpell = (index) => {
             var rand = RandI(100);
             if(rand <= 90){
                 log("Cookies for you");
-                rand = RandI(15);
+                rand = RandI(15+(2*SpellStack.level));
                 minCookie(rand*30);
             }else{
                 log("No Cookies for you");
             }
             break;
         case 1:
-            var rand = RandI(200);
-            if(rand == 200){
+            var rand = RandI(200+(7*SpellStack.level));
+            if(rand >= 200){
                 log("Sweet");
-                tickLump(100);
+                tickLump(100+(50*SpellStack.level));
             }else if(rand >= 100){
                 log("Lucky");
-                minCookie(17);
+                minCookie(17+(3.5*SpellStack.level));
             }else if(rand >= 60){
                 log("Frenzy");
-                effectCPSB=7;
+                effectCPSB=7+(0.5*SpellStack.level);
             }else if(rand >= 50){
                 log("Clot");
-                minCookie(-6);
+                minCookie(-6 + (0.1*SpellStack.level));
             }else if(rand >= 40){
                 log("Bleed");
-                effectCPSB = 0.6;
+                effectCPSB = 0.6 + (0.05*SpellStack.level);
             }else{
                 log("Nothing Happened");
             }
             break;
         case 2:
             log("Get your chips");
-            pubH(1);
+            pubH(1+(0.05*SpellStack.level));
             break;
         case 3:
             log("That\'s to the moon");
             xBegin=time;
-            logBoost=50;
+            logBoost=50 + (2.5*SpellStack.level);
             logBoostDue=terra.level * 30;
             break;
         case 4:
@@ -493,19 +493,19 @@ let castSpell = (index) => {
             if(rand < 19){
                 if((building[rand].level > 0) && (building[rand].cost <= (BF(1e9)*cookie.value))){
                     //log("Buildings For You!");
-                    building[rand].level += RandI(10)+1;
+                    building[rand].level += RandI(10)+1+SpellStack.level;
                 }
             }
             break;
         case 6:
             for(let i=0;i<Spell.length;i++){
-                spellCast[i]-=1200;
+                spellCast[i]-=1200+(300*SpellStack.level);
             }
             log("It works!");
             break;
         case 7:
             log("Sweet Anyone?");
-            if(RandI(100) > 5)tickLump(500);
+            if(RandI(100) > 5)tickLump(500+(25*SpellStack.level));
             break;
     }
 };
@@ -584,7 +584,7 @@ var kittyPower = (level) => {
     }
     ret += level * 0.15;
     if(artArt.level > 2){
-        ret=MP(ret,1.5);
+        ret=MP(ret,1.5+(achCount * 0.01));
     }
     return ret;
 };
@@ -938,7 +938,7 @@ var init = () => {
                 ygg = theory.createUpgrade(10002,cookie,new ExponentialCost(1e110, ML2(1e25)));
                 ygg.getDescription = () => yggName;
                 ygg.getInfo = () => yggInfo;
-                ygg.maxLevel = 4;//get rekt yggdrasil
+                ygg.maxLevel = 4;
                 ygg.bought = (amount) => calcCPS();
                 break; 
             case 3:
@@ -1235,15 +1235,15 @@ var init = () => {
         R9Box.maxLevel = 3;
     }
     {
-        conGrow = theory.createPermanentUpgrade(baseI+12,hc,new ExponentialCost(1e103,ML2(1e7)));
+        conGrow = theory.createPermanentUpgrade(baseI+12,hc,new ExponentialCost(1e103,ML2(1e5)));
         conGrow.getDescription = () => congrowName;
         conGrow.getInfo = () => congrowInfo;
-        conGrow.maxLevel = 3;
+        conGrow.maxLevel = 5;
     }
     {
         SpellStack = theory.createPermanentUpgrade(baseI+13,hc,new ExponentialCost(1e105,ML2(1e5)));
         SpellStack.getDescription = () => "Spell Cast Layering";
-        SpellStack.getInfo = () => "Allows multiples of the same spell to be casted, cooldown all at once";
+        SpellStack.getInfo = () => "Allows multiples of the same spell to be casted, cooldown all at once and slightly empowers the spell as well";
         SpellStack.bought = (amount) => updateSpellLayer();
         SpellStack.maxLevel = 3;
     }
