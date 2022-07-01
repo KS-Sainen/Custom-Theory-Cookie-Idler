@@ -550,8 +550,8 @@ let buildingUpgrade = new Array(19);
 let buildingPower = new Array(19);
 let buildingP = new Array(19);
 let buildingPMax = [
-    150, 500, 500, 500, 500, 500, 500, 500, 500, 500, 450, 400,
-    350, 350, 350, 300, 250, 200, 150,
+    150, 350, 250, 500, 500, 500, 500, 500, 500, 500, 450, 400,
+    350, 350, 350, 350, 300, 250, 200,
 ];
 let buildingUpgradeName = [
     "Extra Finger",
