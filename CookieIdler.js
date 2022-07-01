@@ -10,6 +10,7 @@ import { ImageSource } from "../api/ui/properties/ImageSource";
 import { Popup } from "../api/ui/Popup";
 import { ui } from "../api/ui/UI";
 import { FontFamily } from "../api/ui/properties/FontFamily";
+import { Thickness } from "../api/ui/properties/Thickness";
 //Hello to the person reading this "code"
 //Spoilers alert for ALL of the upgrades, buildings and achievements
 //Before leaving, please try and find any bugs or bad JS coding practices for me
@@ -117,12 +118,16 @@ let bsearch = (arr,f) => {
  * @desc Serializes the state of the theory
  * @returns {string} The internal state of the array, compatible with setInternalState()
  */
+
 var getInternalState = () => {
     let st = `${achCount} ${vizType} ${lumpTotal} ${eqType} ${artUnlock} ${BigTS(CPS)} ${BigTS(HPS)} `;
     for(let i=0;i<8;i++){
         st += `${spellCast[i]} `;
     }
-    st += `${heavVis} ${bInfo} `;
+    st += `${heavVis} ${bInfo} ${perkPoint} `;
+    for(let i=0;i<19;i++){
+        st += `${buiPerk[i]} `
+    }
     return st;
 };
 /**
@@ -144,6 +149,7 @@ var setInternalState = (state) => {
     }
     if (res.length > 3) {
         eqType = parseInt(res[3]);
+        seqButton.text = `Secondary Equation\n${eqName[eqType]}`;
     }
     if (res.length > 4) {
         artUnlock = parseInt(res[4]);
@@ -164,6 +170,20 @@ var setInternalState = (state) => {
     }
     if(res.length > 16){
         bInfo = parseInt(res[16]);
+        biButton.text = `Building Display\n${binfoname[bInfo]}`;
+    }
+    if(res.length > 17){
+        perkPoint = parseInt(res[17]);
+    }
+    perkHas = perkPoint;
+    for(let i=0;i<19;i++){
+        if(res.length > (18+i)){
+            buiPerk[i] = parseInt(res[18+i]);
+            perkHas -= buiPerk[i];
+        }else{
+            buiPerk[i]=0;
+        }
+        perkMenu.content.children[3].children[0].children[i].children[1].text = `${buiPerk[i]} / ${maxbuiPerk(i)}`;
     }
 };
 //Initializes the variables for the serialized string(the scope is global)
@@ -179,9 +199,17 @@ let time = 0; //degrees
 let spellCast = [0,0,0,0,0,0,0,0];
 let heavVis = 0;
 let bInfo = 0;
-
+let buiPerk = new Array(21);
+let maxbuiPerk = (indx) => (indx==2)?3:5;
+let perkPoint = 0;
+let perkHas = 0;
 
 //End States
+
+//Dealing with perks
+let calcCookieToPerk = (level) => {
+    return BigP(10,7.5*(level+1));
+}
 
 //UtilVariables
 let arrcps = new Array(21);
@@ -276,9 +304,9 @@ let bcps = [
     BF("4.9e97"),//13
     BF("2.1e125"),//14
     BF("2.2e150"),//15
-    BF("1.1e172"),
-    BF("8.3e185"),
-    BF("6.4e190"),
+    BF("1.1e172"),//16
+    BF("8.3e185"),//17
+    BF("6.4e190"),//18
 ];
 //Types of Cookies
 var cookieT;
@@ -1411,6 +1439,7 @@ var init = () => {
             () => checkChapter(i)
         );
     }
+    //Finishing up stuffs
     updateSpellLayer();
     updateAvailability();
     //calcCPS();
@@ -1522,7 +1551,7 @@ var calcCPS = () => {
         ).pow(getExpn(i));
         //arrcps[i]=BF("1e180");
         if (i == 2 && ygg.level > 0 && thyme.level > BigNumber.ZERO)
-            arrcps[i] *= BF(getPower(i)).pow(1.3 + 0.1 * ygg.level) * BF(building[6].level + building[2].level).pow(BigP(ygg.level,0.9) * 0.2 + 3.2) * (BigNumber.ONE + BF(thyme.level).pow(1.4)) * BF(1e9);
+            arrcps[i] *= BF(getPower(i)).pow(1.1 + 0.1 * ygg.level) * BF(building[6].level + building[2].level).pow(BigP(ygg.level,0.9) * 0.2 + 3.2) * (BigNumber.ONE + BF(thyme.level).pow(1.4)) * BF(1e9);
 
         if (i == 4 && recom.level > 0) {
             arrcps[i] *= (recom.level > 1)?(BF(1e54) * BigP(2,recom.level - 1)):(BF(1e54));
@@ -1743,6 +1772,106 @@ let biButton = ui.createButton({
         biButton.text = `Building Display\n${binfoname[bInfo]}`;
     }
 });
+let perkLabel1 = ui.createLatexLabel({
+    text:"You can forge your cookies into exponentium bars to exponentiate your buildings for faster cookie production here.",
+    fontSize: 14,
+    //padding: new Thickness(10,10,10,10),
+    horizontalTextAlignment: TextAlignment.CENTER
+});
+let perkLabel2 = ui.createLatexLabel({
+    text:`You have ${perkHas} exponentium bars`,
+    fontSize: 14,
+    //padding: new Thickness(10,10,10,10),
+    horizontalTextAlignment: TextAlignment.CENTER
+});
+let perkForgeButton = ui.createButton({
+    text:`Forge another one (${calcCookieToPerk(perkPoint)} C)`,
+    onClicked: () =>{
+        if(calcCookieToPerk(perkPoint) <= cookie.value){
+            cookie.value-=calcCookieToPerk(perkPoint);
+            perkPoint++;
+            perkHas++;
+            perkForgeButton.text = `Forge another one (${calcCookieToPerk(perkPoint)} C)`;
+            perkLabel2.text = `You have ${perkHas} exponentium bars`;
+        }
+    }
+});
+let perkAssign = (indx) => ui.createGrid({
+    columnDefinitions: ["65*","15*","10*","10*"],
+    children: [
+        ui.createLatexLabel({
+            text:`B[${indx}] - ${buildingName[indx]}`,row:0,column:0,
+            horizontalTextAlignment: TextAlignment.START,
+            verticalTextAlignment: TextAlignment.CENTER,
+        }),
+        ui.createLatexLabel({
+            text:`${buiPerk[indx]} / ${(buiPerk[indx] < (indx==2)?3:5)}`,row:0,column:1,
+            horizontalTextAlignment: TextAlignment.CENTER,
+            verticalTextAlignment: TextAlignment.CENTER,
+        }),
+        ui.createButton({
+            text:`+`,row:0,column:2,
+            onClicked:() => {
+                if(perkHas > 0 && (buiPerk[indx] < maxbuiPerk(indx))){
+                    perkHas--;
+                    buiPerk[indx]++;
+                    perkLabel2.text = `You have ${perkHas} exponentium bars`;
+                    perkMenu.content.children[3].children[0].children[indx].children[1].text = `${buiPerk[indx]} / ${maxbuiPerk(indx)}`;
+                }
+            }
+        }),
+        ui.createButton({
+            text:`-`,row:0,column:3,
+            onClicked:() => {
+                if(buiPerk[indx] > 0){
+                    perkHas++;
+                    buiPerk[indx]--;
+                    perkLabel2.text = `You have ${perkHas} exponentium bars`;
+                    perkMenu.content.children[3].children[0].children[indx].children[1].text = `${buiPerk[indx]} / ${maxbuiPerk(indx)}`;
+                }
+            }
+        }),
+    ]
+});
+let perkMenu = ui.createPopup({
+    title: "Perks",
+    isPeekable: true,
+    content: ui.createStackLayout({
+        children:[
+            perkLabel1,
+            perkLabel2,
+            perkForgeButton,
+            ui.createScrollView({
+                heightRequest: 400,
+                children:[
+                    ui.createStackLayout({
+                        children:[
+                            perkAssign(0),
+                            perkAssign(1),
+                            perkAssign(2),
+                            perkAssign(3),
+                            perkAssign(4),
+                            perkAssign(5),
+                            perkAssign(6),
+                            perkAssign(7),
+                            perkAssign(8),
+                            perkAssign(9),
+                            perkAssign(10),
+                            perkAssign(11),
+                            perkAssign(12),
+                            perkAssign(13),
+                            perkAssign(14),
+                            perkAssign(15),
+                            perkAssign(16),
+                            perkAssign(17),
+                            perkAssign(18)
+                        ]
+                    })
+                ]
+            })
+        ]
+    })
+});
 let popup = ui.createPopup({
     title: "Main Menu",
     isPeekable: true,
@@ -1758,7 +1887,12 @@ let popup = ui.createPopup({
                         },
                     }),
                     ui.createButton({
-                        text: "Perks", row: 0, column: 1
+                        text: "Perks", row: 0, column: 1,
+                        onClicked: () => {
+                            perkForgeButton.text=`Forge another one (${calcCookieToPerk(perkPoint)} C)`;
+                            perkLabel2.text = `You have ${perkHas} exponentium bars`;
+                            perkMenu.show();
+                        }
                     }),
                     ui.createButton({
                         text: "Subgames", row: 1, column: 0
@@ -1932,7 +2066,7 @@ var secondaryEq = (mode) => {
             break;
         case 5://Ygg + Chronos
             let ys = " Y_{g}"
-            return `B(3) \\leftarrow B(3)10^{9}P_{3}^{1.3 + (0.1\\times${ys})}(B[6]+B[2])^{3.2 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{1.1}), \\quad i \\neq 2`:``}`;
+            return `B(3) \\leftarrow B(3)10^{9}P_{3}^{1.1 + (0.1\\times${ys})}(B[6]+B[2])^{3.2 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{1.1}), \\quad i \\neq 2`:``}`;
             break;
         case 6://Terra
             let tr = " T_{r}";
