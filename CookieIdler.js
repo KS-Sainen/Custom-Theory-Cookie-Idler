@@ -11,6 +11,7 @@ import { Popup } from "../api/ui/Popup";
 import { ui } from "../api/ui/UI";
 import { FontFamily } from "../api/ui/properties/FontFamily";
 import { Thickness } from "../api/ui/properties/Thickness";
+import { profilers } from "../api/Profiler";
 //Hello to the person reading this "code"
 //Spoilers alert for ALL of the upgrades, buildings and achievements
 //Before leaving, please try and find any bugs or bad JS coding practices for me
@@ -206,13 +207,16 @@ let time = 0; //degrees
 let spellCast = [0,0,0,0,0,0,0,0];
 let heavVis = 0;
 let bInfo = 0;
-let buiPerk = new Array(21);
+let buiPerk = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 let maxbuiPerk = (indx) => (indx==2)?3:5;
 let perkPoint = 0;
 let perkHas = 0;
 let eqC = 0;
 
 //End States
+
+//Profiling things for performance and optimizations
+var profiler1 = profilers.get("profiler1");
 
 //Dealing with perks
 let calcCookieToPerk = (level) => {
@@ -292,10 +296,10 @@ let baseCost = [
     BF("1.7e180"),
     BF("2.1e215"),
     BF("2.6e300"),
-    BF("3.1e350"),
-    BF("7.1e400"),
-    BF("1.2e450"),
-    BF("1.9e500"),
+    BF("3.1e1350"),//BREAK
+    BF("7.1e1400"),
+    BF("1.2e1450"),
+    BF("1.9e1500"),
 ];
 //Ideally, 1/100 base
 let bcps = [
@@ -586,7 +590,7 @@ let buildingUpgradeName = [
     "Get an extra IQ Point",
 ];
 let buildingUpgradeMult = [
-    250, 3.5, 90, 150, 100, 79, 55, 34, 17, 9, 8, 5, 3, 2, 2, 2, 2, 2, 2, 2,
+    250, 3.5, 70, 150, 100, 79, 55, 50, 45, 30, 30, 30, 25, 25, 25, 20, 25, 30, 35, 40,
 ];
 var kitty;
 const kittyID = 69420; //ouo
@@ -613,15 +617,15 @@ let kittyCost = 75000;
 var kittyPower = (level) => {
     let ret = 1;
     if (level >= 50) {
-        ret += (level - 49) * 0.3;
+        ret += (level - 49) * 0.5;
     }
     if (level >= 25) {
-        ret += (level - 24) * 0.25;
+        ret += (level - 24) * 0.4;
     }
     if (level >= 10) {
-        ret += (level - 9) * 0.2;
+        ret += (level - 9) * 0.3;
     }
-    ret += level * 0.15;
+    ret += level * 0.2;
     if(artArt.level > 2){
         ret=MP(ret,1.5+(achCount * 0.01));
     }
@@ -636,14 +640,14 @@ var cookieTin,
     CookieC,
     DivineD,
     CookieTau,
-    ResidualLuck,
     TerraInf,
     TwinGates,
     ConjureBuild,
     ChronosAge,
     R9Box,
     conGrow,
-    SpellStack;
+    SpellStack,
+    Empower;
 var heavvis;
 let cookieTinInfo =
     "Heavenly cookies that boosts your CPS more than normal cookie.";
@@ -672,9 +676,6 @@ let divineDInfo = "Doubles your CPS";
 let cookieTauName = "Tauonium Cookie";
 let cookieTauInfo =
     "An experimental type of antimatter-based cookie that is based on tau";
-let residualLuckName = "Distilled Residual Essence of Luck";
-let residualLuckInfo =
-    "You have an extremely low chance of getting another level of building for free";
 let terraInfName = "Terra-Infinity $(T_{\\infty})$";
 let terraInfInfo =
     "Using your devotion, the gods grant you an everlasting source of cookieverse materials";
@@ -690,6 +691,7 @@ let boxrName = "Box of R9";
 let boxrInfo = `A very stange and mathematical box seemingly full of ${game.sigmaTotal} students`;
 let congrowName = "Continuos Growth";
 let congrowInfo = "Certain high-tech buildings gets more powerful the more of them you have";
+
 
 //Conseq. HC Upgrade
 var cookiet = new Array(9);
@@ -856,6 +858,17 @@ var checkChapter = (c) => {
 var thyme;
 //All Secondary Equations
 //1.Building CPS, 2.P formula, 3.Milk, 4.Cookie Power, 5.Covenant, 6.Yggdrasil, 7.Terra
+function shortPermaUpgrade(id, cur, costModel, desc, info){
+    var up = theory.createPermanentUpgrade(id,cur,costModel);
+    up.getDescription = () => desc;
+    up.getInfo = () => info; 
+    return up;
+}
+function shortPermaUpgradeML(id, cur, costModel, desc, info, maxLevel){
+    var up = shortPermaUpgrade(id, cur, costModel, desc, info);
+    up.maxLevel = maxLevel;
+    return up;
+}
 
 var init = () => {
     eqC=0;
@@ -1041,6 +1054,8 @@ var init = () => {
                         artUnlock++;
                         updateAvailability();
                     }
+                    if(artArt.maxLevel < artArt.level)artArt.maxLevel = artArt.level;
+                    if((artArt.maxLevel >= artArt.level) && (artUnlock+1 > artArt.maxLevel))artArt.maxLevel=artUnlock+1;
                     //Incentives
                     //sucks to sucks
                     //1/2/3/5/10/15/30/60 minute CPS
@@ -1163,130 +1178,31 @@ var init = () => {
         cookieTin.getInfo = () => cookieTinInfo;
         cookieTin.maxLevel = cookieTinName.length;
     }
-    {
-        CookieH = theory.createPermanentUpgrade(
-            baseI + 1,
-            hc,
-            new ConstantCost(500)
-        );
-        CookieH.getDescription = () => cookieHName;
-        CookieH.getInfo = () => cookieHInfo;
-        CookieH.maxLevel = 1;
-        CookieH.bought = (amount) => calcCPS();
-    }
-    {
-        CookieS = theory.createPermanentUpgrade(
-            baseI + 2,
-            hc,
-            new ConstantCost(15000)
-        );
-        CookieS.getDescription = () => cookieSName;
-        CookieS.getInfo = () => cookieSInfo;
-        CookieS.maxLevel = 1;
-        CookieS.bought = (amount) => calcCPS();
-    }
-    {
-        CookieC = theory.createPermanentUpgrade(
-            baseI + 3,
-            hc,
-            new ConstantCost(1e7)
-        );
-        CookieC.getDescription = () => cookieCName;
-        CookieC.getInfo = () => cookieCInfo;
-        CookieC.maxLevel = 1;
-        CookieC.bought = (amount) => calcCPS();
-    }
-    {
-        DivineD = theory.createPermanentUpgrade(
-            baseI + 4,
-            hc,
-            new ExponentialCost(1e10, ML2(1e10))
-        );
-        DivineD.getDescription = () => divineDName;
-        DivineD.getInfo = () => divineDInfo;
-        DivineD.maxLevel = 25;
-        DivineD.bought = (amount) => calcCPS();
-    }
-    {
-        CookieTau = theory.createPermanentUpgrade(
-            baseI + 5,
-            hc,
-            new ConstantCost(1e25)
-        );
-        CookieTau.getDescription = () => cookieTauName;
-        CookieTau.getInfo = () => cookieTauInfo;
-        CookieTau.maxLevel = 1;
-        CookieTau.bought = (amount) => calcCPS();
-    }
-    {
-        ResidualLuck = theory.createPermanentUpgrade(
-            baseI + 6,
-            hc,
-            new ExponentialCost(1e40, ML2(1e5))
-        );
-        ResidualLuck.maxLevel = 5;
-        ResidualLuck.getDescription = () => residualLuckName;
-        ResidualLuck.getInfo = () => residualLuckInfo;
-    }
-    {
-        TerraInf = theory.createPermanentUpgrade(
-            baseI + 7,
-            hc,
-            new ExponentialCost(1e55, ML2(1e10))
-        );
-        TerraInf.getDescription = () => terraInfName;
-        TerraInf.getInfo = () => terraInfInfo;
-        TerraInf.maxLevel = 7;
-    }
-    {
-        ChronosAge = theory.createPermanentUpgrade(
-            baseI + 8,
-            hc,
-            new ConstantCost(2.5e57)
-        );
-        ChronosAge.getDescription = () => chronosageName;
-        ChronosAge.getInfo = () => chronosageInfo;
-        ChronosAge.maxLevel = 1;
-    }
-    {
-        ConjureBuild = theory.createPermanentUpgrade(
-            baseI + 9,
-            hc,
-            new ExponentialCost(1e60, ML2(8))
-        );
-        ConjureBuild.maxLevel = 3;
-        ConjureBuild.getDescription = () => conjurebuildName;
-        ConjureBuild.getInfo = () => conjurebulidInfo;
-    }
-    {
-        TwinGates = theory.createPermanentUpgrade(
-            baseI + 10,
-            hc,
-            new ConstantCost(1e65)
-        );
-        TwinGates.maxLevel = 1;
-        TwinGates.getDescription = () => twingateName;
-        TwinGates.getInfo = () => twingateInfo;
-    }
-    {
-        R9Box = theory.createPermanentUpgrade(baseI+11,hc,new ExponentialCost(1e80,ML2(1000)));
-        R9Box.getDescription = () => boxrName;
-        R9Box.getInfo = () => boxrInfo;
-        R9Box.maxLevel = 3;
-    }
-    {
-        conGrow = theory.createPermanentUpgrade(baseI+12,hc,new ExponentialCost(1e103,ML2(1e5)));
-        conGrow.getDescription = () => congrowName;
-        conGrow.getInfo = () => congrowInfo;
-        conGrow.maxLevel = 5;
-    }
-    {
-        SpellStack = theory.createPermanentUpgrade(baseI+13,hc,new ExponentialCost(1e105,ML2(1e5)));
-        SpellStack.getDescription = () => "Spell Cast Layering";
-        SpellStack.getInfo = () => "Allows multiples of the same spell to be casted, cooldown all at once and slightly empowers the spell as well";
-        SpellStack.bought = (amount) => updateSpellLayer();
-        SpellStack.maxLevel = 3;
-    }
+    CookieH = shortPermaUpgradeML(baseI + 1,hc,new ConstantCost(500),cookieHName,cookieHInfo,1);
+    CookieH.bought = (amount) => calcCPS();
+    CookieS = shortPermaUpgradeML(baseI + 2,hc,new ConstantCost(15000),cookieSName,cookieSInfo,1);
+    CookieS.bought = (amount) => calcCPS();
+    CookieC = shortPermaUpgradeML(baseI + 3,hc,new ConstantCost(1e7),cookieCName,cookieCInfo,1);
+    CookieC.bought = (amount) => calcCPS();
+    DivineD = shortPermaUpgrade(baseI + 4,hc,new ExponentialCost(1e10, ML2(1e10)),divineDName,divineDInfo);
+    DivineD.bought = (amount) => calcCPS();
+    CookieTau = shortPermaUpgradeML(baseI + 5,hc,new ConstantCost(1e25),cookieTauName,cookieTauInfo,1);
+    CookieTau.bought = (amount) => calcCPS();
+    TerraInf = shortPermaUpgradeML(baseI + 7,hc,new ExponentialCost(1e55, ML2(1e10)),terraInfName,terraInfInfo,7);
+    TerraInf.bought = (amount) => calcCPS();
+    ChronosAge = shortPermaUpgradeML(baseI + 8,hc,new ConstantCost(2.5e57),chronosageName,chronosageInfo,1);
+    ChronosAge.bought = (amount) => calcCPS();
+    ConjureBuild = shortPermaUpgradeML(baseI + 9,hc,new ExponentialCost(1e60, ML2(8)),conjurebuildName,conjurebulidInfo,3,{});
+    TwinGates = shortPermaUpgradeML(baseI + 10,hc,new ConstantCost(1e65),twingateName,twingateInfo,1);
+    TwinGates.bought = (amount) => calcCPS();
+    R9Box = shortPermaUpgradeML(baseI+11,hc,new ExponentialCost(1e80,ML2(1000)),boxrName,boxrInfo,3);
+    R9Box.bought = (amount) => calcCPS();
+    conGrow = shortPermaUpgradeML(baseI+12,hc,new ExponentialCost(1e103,ML2(1e5)),congrowName,congrowInfo,5);
+    conGrow.bought = (amount) => calcCPS();
+    SpellStack = shortPermaUpgradeML(baseI+13,hc,new ExponentialCost(1e105,ML2(1e5)),"Spell Cast Layering","Allows multiples of the same spell to be casted, cooldown all at once and slightly empowers the spell as well",3);
+    SpellStack.bought = (amount) => updateSpellLayer();
+    Empower = shortPermaUpgradeML(baseI+14,hc,new ExponentialCost(1e120,ML2(10^1.3)),"Empowerments of Buildings","Increases how fast $P$ grows",50);
+    Empower.bought = (amount) => calcCPS();
     //Cursor Upgrade
     {
         clickp = theory.createPermanentUpgrade(
@@ -1468,9 +1384,6 @@ var updateAvailability = () => {
     cookieTin.isAvailable = hc.value >= BF(10) && heavVis;
     CookieC.isAvailable = hc.value >= BF(1e7) && heavVis;
     DivineD.isAvailable = hc.value >= BF(1e10) && heavVis;
-    ResidualLuck.isAvailable =
-        hc.value >= BF(1e38) &&
-        CookieH.level + CookieS.level + CookieC.level >= 3 && heavVis;
     CookieTau.isAvailable = hc.value >= BF(1e20) && heavVis;
     ygg.isAvailable = cookie.value >= BF(1e100);
     terra.isAvailable = cookie.value >= BF(1e125);
@@ -1485,6 +1398,7 @@ var updateAvailability = () => {
     artArt.isAvailable = (artArt.maxLevel > 1) || (art.level > 0);
     conGrow.isAvailable = hc.value > BF(1e100) && heavVis;
     SpellStack.isAvailable = hc.value > BF(1e100) && heavVis;
+    Empower.isAvailable = hc.value > BF(1e115) && heavVis;
     for (let i = 0; i < cookieTinName.length; i++) {
         cookiet[i].isAvailable =
             cookieTin.level >= i + 1 &&
@@ -1579,7 +1493,7 @@ var calcCPS = () => {
             arrcps[i] *= BF(clickp.level) * BigP(buip, buildingUpgrade[0].level) * BF(bcp);
         }
         if (i != 1) {
-            bc += building[i].level * getPower(1).pow(0.98);
+            bc += BigP(building[i].level,0.95) * getPower(1).pow(0.95);
             CPS += arrcps[i]
         }
     }
@@ -1589,46 +1503,26 @@ var calcCPS = () => {
     if((spellCast[1]+(10*effectCPSBDur)) >= thyme.level){
         CPS *= effectCPSB;
     }
+    lwC = Math.floor((BigL10(10+cookie.value)) / lumpc) + LPS / 10;
     CPS *= getCookieP(cookieT.level) * (TwinGates.level > 0 ? hc.value.pow(0.05 * TwinGates.level) : 1) * theory.publicationMultiplier * (BigP(game.sigmaTotal,R9Box.level*0.7));
 };
-
+let lwC = 0;
 var tick = (multiplier) => {
-    if(artArt.maxLevel < artArt.level)artArt.maxLevel = artArt.level;
-    if((artArt.maxLevel >= artArt.level) && (artUnlock+1 > artArt.maxLevel))artArt.maxLevel=artUnlock+1;
+    if(thyme.level < thyme.maxLevel){
+        thyme.level++;
+    }
     if (time == 0 || thyme.level%100 == 0) {
         calcCPS();
         calcCPS();
     }
 
     cookie.value += (CPS * Logistic()) / BigNumber.TEN;
+    lump.value += lwC;
+    lumpTotal += lwC;
 
     //Sugar Lump Incremental
     hc.value += HPS / 10;
     if(thyme.level % 10 == 0){
-        if (cookie.value > 10 && Math.random() <= 1 / (lumpc / BigL10(cookie.value))) {
-            lump.value += BigNumber.ONE;
-            lumpTotal++;
-        }
-    }
-    let lwC = Math.floor((BigL10(10+cookie.value)) / lumpc) + LPS / 10;
-    lump.value += lwC;
-    lumpTotal += lwC;
-    
-    time++;
-    if(thyme.level % 13 == 0){
-        if(ResidualLuck.level > 0 && Math.random() <= 1 / (10000 - ResidualLuck.level * 1000)) {
-            let tempnum = Math.round(Math.random() * 18);
-            if (building[tempnum].level > 0) {
-                //log("You won a " + buildingName[tempnum]);
-                building[tempnum].level++;
-                calcCPS();
-            }
-        }
-    }
-    if(thyme.level < thyme.maxLevel){
-        thyme.level++;
-    }
-    if(thyme.level%10 == 0){
         for(let i=0;i<Spell.length;i++){
             if((spellCast[i]/10)+spellCool[i] <= (thyme.level/10)){
                 Spell[i].level=0;
@@ -1636,9 +1530,13 @@ var tick = (multiplier) => {
         }
         if(thyme.level%11 == 0)updateSpellLayer();
         updateAvailability();
+        if (cookie.value > 10 && Math.random() <= 1 / (lumpc / BigL10(cookie.value))) {
+            lump.value += BigNumber.ONE;
+            lumpTotal++;
+        }
     }
+
     theory.invalidateTertiaryEquation();
-    if(thyme.level%7 == 0)theory.invalidateSecondaryEquation();
 };
 //Logistic funtion for Mine+
 //Param -> midpoint=30*L, max=500*L - 1, min=0
@@ -1750,12 +1648,15 @@ var getExpn = (index) => buildingExp[index].level * buiexp + 1;
 var getPower = (index) =>
     Utils.getStepwisePowerSum(
         buildingP[index].level,
-        buildingUpgradeMult[index],
+        buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*2),
         5,
         1
     );
 var getPower2 = (index, level) =>
-    Utils.getStepwisePowerSum(level, buildingUpgradeMult[index], 5, 1);
+    Utils.getStepwisePowerSum(level, buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*2), 5, 1);
+//! The text is arranged as follows: Introduction, Exponents, Cookies and Milk, Special Upgrades, Terraform Powerup, Archaeology, Grimoire, SPOILERS:(((((Cosmic Trade, Chemistry Laboratory, Bingo Research Facility)))))
+const helpText = [];
+
 var InsPopup = ui.createPopup({
     title: "Instructions",
     content: ui.createStackLayout({
@@ -1916,6 +1817,16 @@ let perkMenu = ui.createPopup({
         ]
     })
 });
+let subPopup = ui.createPopup({
+    title: "Subgames",
+    isPeekable: true,
+    content:ui.createLatexLabel({
+        text:"\n\n\n\nComing Soon!\n\n\n\n\n\n",
+        fontSize: 14,
+        horizontalTextAlignment: TextAlignment.CENTER,
+        verticalTextAlignment: TextAlignment.CENTER,
+    })
+});
 let popup = ui.createPopup({
     title: "Main Menu",
     isPeekable: true,
@@ -1940,7 +1851,10 @@ let popup = ui.createPopup({
                         }
                     }),
                     ui.createButton({
-                        text: "Subgames", row: 1, column: 0
+                        text: "Subgames", row: 1, column: 0,
+                        onClicked: () => {
+                            subPopup.show();
+                        }
                     }),
                     ui.createButton({
                         text: "What\'s New", row: 1, column: 1
@@ -1952,10 +1866,10 @@ let popup = ui.createPopup({
                 columnDefinitions: ["50*", "50*"],
                 rowSpacing: 8,
                 children: [
-                    ui.createButton({text: "Visualizer Type", row: 0, column: 0}),
+                    ui.createButton({text: "Visualizer Type\nNormal", row: 0, column: 0}),
                     biButton,
                     seqButton,
-                    ui.createButton({text: "Coming Soon", row: 1, column: 1}),
+                    ui.createButton({text: "???", row: 1, column: 1}),
                 ]
             }),
             ui.createGrid({
@@ -2119,7 +2033,7 @@ var secondaryEq = (mode,col) => {
         case 4://Cov
             let cp = " C_{v}";
             return (
-                `\\color{#${eqColor[col]}}{B(2) \\leftarrow B(2)\\sum_{i=0 \\: i\\neq 1}^{18}{P_{2}}{C_{i}}^{${BF(covExp).toString(1)}} ${cp}}`
+                `\\color{#${eqColor[col]}}{B(2) \\leftarrow B(2)${cp}(\\sum_{i=0 \\: i\\neq 1}^{18}{P_{1}^{0.95}}{B[i]^{0.95}}${cp})^{${covDelta}${cp}^{0.45} + ${covExp}}}`
             );
             break;
         case 5://Ygg + Chronos
