@@ -128,6 +128,7 @@ var getInternalState = () => {
     for(let i=0;i<19;i++){
         st += `${buiPerk[i]} `
     }
+    st += `${eqC} `;
     return st;
 };
 /**
@@ -185,6 +186,12 @@ var setInternalState = (state) => {
         }
         perkMenu.content.children[3].children[0].children[i].children[1].text = `${buiPerk[i]} / ${maxbuiPerk(i)}`;
     }
+    if(res.length > 37){
+        eqC = parseInt(res[37]);
+    }else{
+        eqC = 0;
+    }
+    colorButton.text = `Equation Color\n${eqColorName[eqC]}`;
 };
 //Initializes the variables for the serialized string(the scope is global)
 let CPS = BigNumber.ZERO,
@@ -203,6 +210,7 @@ let buiPerk = new Array(21);
 let maxbuiPerk = (indx) => (indx==2)?3:5;
 let perkPoint = 0;
 let perkHas = 0;
+let eqC = 0;
 
 //End States
 
@@ -850,6 +858,7 @@ var thyme;
 //1.Building CPS, 2.P formula, 3.Milk, 4.Cookie Power, 5.Covenant, 6.Yggdrasil, 7.Terra
 
 var init = () => {
+    eqC=0;
     cookie = theory.createCurrency("C", "C");
     hc = theory.createCurrency("H", "H");
     lump = theory.createCurrency("L", "L");
@@ -1650,25 +1659,43 @@ var Logistic = () => {
 };
 
 const height = 60;
+let eqColor = ["FFFFFF","E6DFCF","C28863","FFD4D8","E96954","E1F29A","CDBADE","F7ED91","FBF2D5"];
+let eqColorName = ["White","Milk","Chocolate","Strawberry","Raspberry","Lime","Blueberry","Banana","Vanilla"];
+let eqColorAch = [0,10,15,20,25,30,40,50,60];
+var PrimaryEquation = (col) => {
+    return `\\color{#${eqColor[col]}}{\\dot{C} = P(B(0) + P_{cp}\\sum_{i=1}^{18}{B(i)})}`;
+};
 var getPrimaryEquation = () => {
     theory.primaryEquationScale = 1.15;
     theory.primaryEquationHeight = height;
-    let result = "\\dot{C} = P(B(0) + P_{cp}\\sum_{i=1}^{18}{B(i)})";
-    return result;
+    if(Number.isNaN(eqC)){
+        eqC = 0;
+    }
+    return PrimaryEquation(eqC);
 };
-
-var getTertiaryEquation = () =>
+var TertiaryEquation = (col) => {
+    if(Number.isNaN(col)){
+        col = 0;
+    }
+    return `\\color{#${eqColor[col]}}{` + 
     theory.latexSymbol +
     "=\\max C^{0.2}" +
     " \\quad " +
     "\\dot{C} = " +
     BF(CPS).toString(0) +
-    (terra.level > 0 ? "\\quad T = " + Logistic().toString(10) : "");
+    (terra.level > 0 ? "\\quad T = " + Logistic().toString(10) : "") + "}";
+}
+var getTertiaryEquation = () =>{
+    if(Number.isNaN(eqC)){
+        eqC = 0;
+    }
+    return TertiaryEquation(eqC);
+}
 
 var getSecondaryEquation = () => {
     theory.secondaryEquationHeight = 90;
     theory.secondaryEquationScale = 1.1;
-    return secondaryEq(eqType);
+    return secondaryEq(eqType,eqC);
 };
 
 var getInf = (index,am) => {
@@ -1775,8 +1802,22 @@ let biButton = ui.createButton({
         biButton.text = `Building Display\n${binfoname[bInfo]}`;
     }
 });
+let colorButton = ui.createButton({
+    text: `Equation Color\n${eqColorName[eqC]}`, row: 0, column: 1,
+    onClicked: () =>{
+        if (achCount >= eqColorAch[eqC] && (eqC < eqColor.length - 1)) {
+            eqC++;
+        }else{
+            eqC=0;
+        }
+        colorButton.text = `Equation Color\n${eqColorName[eqC]}`;
+        theory.invalidatePrimaryEquation();
+        theory.invalidateSecondaryEquation();
+        theory.invalidateTertiaryEquation();
+    }
+})
 let perkLabel1 = ui.createLatexLabel({
-    text:"You can forge your cookies into exponentium bars to exponentiate your buildings for faster cookie production here.",
+    text:"You can forge your cookies into exponentium bars to exponentiate your buildings for faster cookie production here.\n\nEach bar you give to a building increases their exponent by 0.05",
     fontSize: 14,
     //padding: new Thickness(10,10,10,10),
     horizontalTextAlignment: TextAlignment.CENTER
@@ -1837,7 +1878,7 @@ let perkAssign = (indx) => ui.createGrid({
     ]
 });
 let perkMenu = ui.createPopup({
-    title: "Perks",
+    title: "Exponents",
     isPeekable: true,
     content: ui.createStackLayout({
         children:[
@@ -1882,6 +1923,7 @@ let popup = ui.createPopup({
         children:[
             ui.createGrid({
                 columnDefinitions: ["50*", "50*"],
+                rowSpacing: 8,
                 children: [
                     ui.createButton({
                         text: "Instructions", row: 0, column: 0,
@@ -1890,7 +1932,7 @@ let popup = ui.createPopup({
                         },
                     }),
                     ui.createButton({
-                        text: "Perks", row: 0, column: 1,
+                        text: "Exponents", row: 0, column: 1,
                         onClicked: () => {
                             perkForgeButton.text=`Forge another one (${calcCookieToPerk(perkPoint)} C)`;
                             perkLabel2.text = `You have ${perkHas} exponentium bars`;
@@ -1908,11 +1950,18 @@ let popup = ui.createPopup({
             ui.createProgressBar({progress: 0}),
             ui.createGrid({
                 columnDefinitions: ["50*", "50*"],
+                rowSpacing: 8,
                 children: [
                     ui.createButton({text: "Visualizer Type", row: 0, column: 0}),
                     biButton,
                     seqButton,
                     ui.createButton({text: "Coming Soon", row: 1, column: 1}),
+                ]
+            }),
+            ui.createGrid({
+                columnDefinitions: ["25*", "50*","25*"],
+                children: [
+                    colorButton
                 ]
             }),
             ui.createProgressBar({progress: 0}),
@@ -2033,53 +2082,59 @@ var secondaryCheck = (mode) => {
             return true;
     }
 };
-var secondaryEq = (mode) => {
+var secondaryEq = (mode,col) => {
+    if(Number.isNaN(col)){
+        col = 0;
+    }
     switch (mode) {
         case 0:
             return (
+                `\\color{#${eqColor[col]}}{` +
                 "B(i) = B[i]P_{i}(1.1)^{L[i]}" +
                 (CookieTau.level > 0 ? "(\\log_{10}\\log_{10}\\tau)^{2}" : "") +
-                (ChronosAge.level > 0 ? "(1+t)^{1.5}" : "")
+                (ChronosAge.level > 0 ? "(1+t)^{1.5}" : "") + "}"
             );
             break;
         case 1:
             return (
+                `\\color{#${eqColor[col]}}{` +
                 "P = M(CP(l)) \\\\" +
                 (CookieS.level > 0 ? "(log_{2}(L + 2))^{2}" : "") +
                 (CookieH.level > 0 ? "(log_{10}(H + 10))^{1.5}" : "") +
-                (CookieC.level > 0 ? "(log_{10}(C + 10))" : "")
+                (CookieC.level > 0 ? "(log_{10}(C + 10))" : "") + "}"
             );
             break;
         case 2:
-            return "M = M_{i}K(0.15)+(K-10)(0.2)\\\\+(K-25)(0.25)+(K-50)(0.3)";
+            return `M = M_{i}K(0.15)+(K-10)(0.2)\\\\+(K-25)(0.25)+(K-50)(0.3)`;
             break;
         case 3:
             theory.secondaryEquationScale = 0.9;
-            return (
+            return ( 
+                `\\color{#${eqColor[col]}}{` +
                 "CP(l) = C_{1}(l)C_{2}()" +
                 (invest.level > 0 ? "I_{o}^{1.01}" : "") +
-                "\\\\C_{1}(l) = max_{l}:[0,25,50,75,100,150]\\\\ \\rightarrow [1.03,1.05,1.07,1.09,1.11,1.13]^{l}\\\\C_{2}() = \\prod_{i=0}^{8}{TP[i]^{CT[i]}}"
+                "\\\\C_{1}(l) = max_{l}:[0,25,50,75,100,150]\\\\ \\rightarrow [1.03,1.05,1.07,1.09,1.11,1.13]^{l}\\\\C_{2}() = \\prod_{i=0}^{8}{TP[i]^{CT[i]}}}"
             );
             break;
         case 4://Cov
             let cp = " C_{v}";
             return (
-                `B(2) \\leftarrow B(2)\\sum_{i=0 \\: i\\neq 1}^{18}{P_{2}}{C_{i}}^{${BF(covExp).toString(1)}} ${cp}`
+                `\\color{#${eqColor[col]}}{B(2) \\leftarrow B(2)\\sum_{i=0 \\: i\\neq 1}^{18}{P_{2}}{C_{i}}^{${BF(covExp).toString(1)}} ${cp}}`
             );
             break;
         case 5://Ygg + Chronos
             let ys = " Y_{g}"
-            return `B(3) \\leftarrow B(3)10^{9}P_{3}^{1.1 + (0.1\\times${ys})}(B[6]+B[2])^{3.2 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{1.1}), \\quad i \\neq 2`:``}`;
+            return `\\color{#${eqColor[col]}}{B(3) \\leftarrow B(3)10^{9}P_{3}^{1.1 + (0.1\\times${ys})}(B[6]+B[2])^{3.2 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{1.1}), \\quad i \\neq 2`:``}}`;
             break;
         case 6://Terra
             let tr = " T_{r}";
             let tf = " T_{\\infty}";
             let tm = " T_{m}"
-            return `${tm} = 1500${tr}^{2.5+0.05${tf}}\\\\T = ${tm} - \\frac{1+${tm}-${tm}^{0.99999-0.01${tf}}}{1+e^{-(t-(X_{b}+300${tr}))}}`;
+            return `\\color{#${eqColor[col]}}{${tm} = 1500${tr}^{2.5+0.05${tf}}\\\\T = ${tm} - \\frac{1+${tm}-${tm}^{0.99999-0.01${tf}}}{1+e^{-(t-(X_{b}+300${tr}))}}}`;
             break;
         case 7://Recom
             let rc = " R_{c}";
-            return `\\dot{H} = H^{0.9}(${rc})\\\\ \\dot{L} = 0.01${rc}\\\\ B(4) \\leftarrow B(4)10^{54}2^{${rc}-1}`;
+            return `\\color{#${eqColor[col]}}{\\dot{H} = H^{0.9}(${rc})\\\\ \\dot{L} = 0.01${rc}\\\\ B(4) \\leftarrow B(4)10^{54}2^{${rc}-1}}`;
             break;
     }
 }
