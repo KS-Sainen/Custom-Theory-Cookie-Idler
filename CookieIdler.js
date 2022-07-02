@@ -208,7 +208,7 @@ let perkHas = 0;
 
 //Dealing with perks
 let calcCookieToPerk = (level) => {
-    if(!level){
+    if(Number.isNaN(level)){
         return calcCookieToPerk(0);
     }
     return BigP(10,7.5*(level+1));
