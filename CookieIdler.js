@@ -1395,10 +1395,10 @@ var init = () => {
     for(let i=0;i<15;i++){
         buiAch1[i] = theory.createAchievement(300+i,BuildingAchievement,bach1[i],`Get ${buildingName[i]} to level 100`,()=>CheckAchBui(i,100));
         buiAch2[i] = theory.createAchievement(400+i,BuildingAchievement,bach2[i],`Get ${buildingName[i]} to level 1000`,()=>CheckAchBui(i,1000));
-        buiAch3[i] = theory.createSecretAchievement(500+i,BuildingAchievement,bach3[i],`Get ${buildingName[i]} to level 5000`,`${buildingName[i]} by 5000`,()=>CheckAchBui(i,5000));
-        if(i < 14){
+        //buiAch3[i] = theory.createSecretAchievement(500+i,BuildingAchievement,bach3[i],`Get ${buildingName[i]} to level 5000`,`${buildingName[i]} by 5000`,()=>CheckAchBui(i,5000));
+        /*if(i < 14){
             buiAch3[i] = theory.createSecretAchievement(600+i,BuildingAchievement,bach4[i],`Get ${buildingName[i]} to level 10000`,`${buildingName[i]} by 10000`,()=>CheckAchBui(i,10000));
-        }
+        }*/
         buiLumpAch = theory.createAchievement(700+i,BuildingAchievement,bachlump[i],`Upgrade ${buildingName[i]} to level 100`,()=>CheckAchBui2(i,100));
     }
     //Misc.
