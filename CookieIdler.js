@@ -74,6 +74,7 @@ let prize=0;
 let minCookie = (i) => {
     cookie.value += BF(60) * CPS * BF(i) * Logistic();
 }
+
 /**
  * @desc Gives the equivalent heavenly chips if you pubbed at this moment
  * @param {number} i 
@@ -82,6 +83,7 @@ let pubH = (i) => {
     if(cookie.value <= 0)return;
     hc.value += BF(i) * (cookie.value / BF("1e12")).pow(1 / 3);
 }
+
 /**
  * @desc Gives the equivalent amount of lumps for i ticks
  * @param {number} i 
@@ -91,6 +93,7 @@ let tickLump = (i) => {
     lump.value += dL;
     lumpTotal += dL;
 }
+
 /**
  * @desc Binary searches through an array arr to the desired number f
  * @param {array} arr, must be sorted from maximum to minimum
@@ -119,7 +122,6 @@ let bsearch = (arr,f) => {
  * @desc Serializes the state of the theory
  * @returns {string} The internal state of the array, compatible with setInternalState()
  */
-
 var getInternalState = () => {
     let st = `${achCount} ${vizType} ${lumpTotal} ${eqType} ${artUnlock} ${BigTS(CPS)} ${BigTS(HPS)} `;
     for(let i=0;i<8;i++){
@@ -132,6 +134,7 @@ var getInternalState = () => {
     st += `${eqC} `;
     return st;
 };
+
 /**
  * @desc Sets certain values of the theory according to the serialized state
  * ! The values set are the following:
@@ -310,18 +313,18 @@ let bcps = [
     4.05e10,//4
     1.4e12,//5
     1.6e18,//6
-    4.4e32,//7
-    2.6e39,//8
-    5.6e51,//9
-    6.66e60,//10
-    6.5e74,//11
-    3.15e85,//12
-    BF("4.9e97"),//13
-    BF("2.1e125"),//14
-    BF("2.2e150"),//15
-    BF("1.1e172"),//16
-    BF("8.3e185"),//17
-    BF("6.4e190"),//18
+    4.4e28,//7
+    1.58e38,//8
+    5.6e49,//9
+    6.66e58,//10
+    6.5e72,//11
+    9.15e79,//12
+    BF("4.9e95"),//13
+    BF("2.1e123"),//14
+    BF("2.2e148"),//15
+    BF("1.1e170"),//16
+    BF("8.3e183"),//17
+    BF("6.4e188"),//18
 ];
 //Types of Cookies
 var cookieT;
@@ -355,15 +358,15 @@ var getCookieP = (level) => {
     for (let i = 0; i < cookieTinName.length; i++) {
         res *= BigP(cookietP[i],cookiet[i].level);
     }
-    if (CookieS.level != 0) res *= (BigNumber.TWO + lump.value).log2().pow(2);
-    if (CookieH.level != 0) res *= (BigNumber.TEN + hc.value).log10().pow(1.5);
-    if (CookieC.level != 0 && (cookie.value > BigNumber.ZERO)) res *= (BigNumber.TEN + cookie.value).log10();
+    if (CookieS.level != 0) res *= (BigNumber.TWO + lump.value).log2().pow(1.5);
+    if (CookieH.level != 0) res *= (BigNumber.TEN + hc.value).log10().pow(1.25);
+    if (CookieC.level != 0 && (cookie.value > BigNumber.ZERO)) res *= (BigNumber.TEN + cookie.value).log10().pow(0.9);
     if (DivineD.level != 0) res *= BigNumber.TWO.pow(DivineD.level);
     res *= BigP(1.01,invest.level);
     return res;
 };
 //An array of strings containing every single cookies types for use in displaying the name
-let cookieType = ["Plain Cookie","Chocolate Chip Cookie","Sugar Cookie","Oatmeal Raisin Cookie","Peanut Butter Cookie","Coconut Cookie","Almond Cookie","Hazelnut Cookie","Walnut Cookie","Cashew Cookie","White Chocolate Cookie","Milk Chocolate Cookie","Macadamia Cookie","Double Chip Cookie","White Chocolate Macadamia Cookie","All-Chocolate Cookie","Dark-Chocolated Coated Cookie","White-Chocolate Coated Cookie","Eclipse Cookie","Zebra Cookie","Snickerdoodle","Stroopwafel","Macaroon","Madeleine","Palmier","Palets","Sables","Pure Black Chocolate Cookie","Pure White Chocolate Cookie","Ladyfingers","Tullies","Checker Cookie","Butter Cookie","Vanilla Cream Cookie","Gingersnap","Cinnamon Cookie","Vanity Cookie","Pinwheel Cookie","Shortbread Biscuits","Millionare\'s Shortbread","Caramel Cookie","Pecan Sandies","Moravian Spice Cookie","Anzac Biscuit","Whole Grain Cookie","Candy Cookie","Big Chipped Cookie","Spinkled Cookie","Anti-Idle Cookie","Florentine","Chocolate Crinkles","Zero-Idle Cookie","Maple Cookie","Persian Rice Cookie","Norwegian Cookie","Crispy Rice Cookie","Ube Cookie","Butterscotch Cookie","Speculaas","Chocolate Oatmeal Cookie","Molasses Cookie","Biscotti","Waffle Cookie","Custard Cream Cookie","Bourbon Biscuits","Mini-Cookie","Whoopie Pies","Caramel Wafer Biscuits","Chocolate Chip Mocha Cookie","Earl Grey Cookie","Chai Tea Cookie","Myanmar Tea Cookie","Thai Tea Cookie","Corn Syrup Cookie","Icebox Cookie","Graham Cracker","Hardtack","Tofu Cookie","Gluten-Free Cookie","Lebkuchen","Aachener Printen","Canistrelli","Petit Beurre","Nanaimo Bars","Berger Cookie","Chinsuko","Putri Salju","Milk Cookie","Kruidnoten","Marie Biscuits","Meringue Cookie","Yogurt Cookie","Thumbprint","Pizzelle","Granola Cookie","Ricotta Cookie","Roze Koeken","Peanut Butter Cup Cookie","Sesame Cookie","Vanillekipferl","Battenberg Biscuits","Rosette Cookie","Gangmakers","Welsh Cookie","Raspberry Cheesecake Cookies","Bokkenpootjes","Fat Rascals","Ischler Cookies","Matcha Cookie","Super Fusion Cookie","Spicy Cookie","Kolachy Cookie","Gomma Cookie","Coyotas","Frosted Sugar Cookie","Marshmallow Sandwich Cookie","Chocolate Chip Covered Chocolate Chip Cookie","Super Idler Flavored Cookie"];
+let cookieType = ["Plain Cookie","Chocolate Chip Cookie","Sugar Cookie","Oatmeal Raisin Cookie","Peanut Butter Cookie","Coconut Cookie","Almond Cookie","Hazelnut Cookie","Walnut Cookie","Cashew Cookie","White Chocolate Cookie","Milk Chocolate Cookie","Macadamia Cookie","Double Chip Cookie","White Chocolate Macadamia Cookie","All-Chocolate Cookie","Dark-Chocolated Coated Cookie","White-Chocolate Coated Cookie","Eclipse Cookie","Zebra Cookie","Snickerdoodle","Stroopwafel","Macaroon","Madeleine","Palmier","Palets","Sables","Pure Black Chocolate Cookie","Pure White Chocolate Cookie","Ladyfingers","Tullies","Checker Cookie","Butter Cookie","Vanilla Cream Cookie","Gingersnap","Cinnamon Cookie","Vanity Cookie","Pinwheel Cookie","Shortbread Biscuits","Millionare\'s Shortbread","Caramel Cookie","Pecan Sandies","Moravian Spice Cookie","Anzac Biscuit","Whole Grain Cookie","Candy Cookie","Big Chipped Cookie","Spinkled Cookie","Anti-Idle Cookie","Florentine","Chocolate Crinkles","Zero-Idle Cookie","Maple Cookie","Persian Rice Cookie","Norwegian Cookie","Crispy Rice Cookie","Ube Cookie","Butterscotch Cookie","Speculaas","Chocolate Oatmeal Cookie","Molasses Cookie","Biscotti","Waffle Cookie","Custard Cream Cookie","Bourbon Biscuits","Mini-Cookie","Whoopie Pies","Caramel Wafer Biscuits","Chocolate Chip Mocha Cookie","Earl Grey Cookie","Chai Tea Cookie","Myanmar Tea Cookie","Thai Tea Cookie","Corn Syrup Cookie","Icebox Cookie","Graham Cracker","Hardtack","Tofu Cookie","Gluten-Free Cookie","Lebkuchen","Aachener Printen","Canistrelli","Petit Beurre","Nanaimo Bars","Berger Cookie","Chinsuko","Putri Salju","Milk Cookie","Kruidnoten","Marie Biscuits","Meringue Cookie","Yogurt Cookie","Thumbprint","Pizzelle","Granola Cookie","Ricotta Cookie","Roze Koeken","Peanut Butter Cup Cookie","Sesame Cookie","Vanillekipferl","Battenberg Biscuits","Rosette Cookie","Gangmakers","Welsh Cookie","Raspberry Cheesecake Cookies","Bokkenpootjes","Fat Rascals","Ischler Cookies","Matcha Cookie","Super Fusion Cookie","Spicy Cookie","Kolachy Cookie","Gomma Cookie","Coyotas","Frosted Sugar Cookie","Marshmallow Sandwich Cookie","Chocolate Chip Covered Chocolate Chip Cookie","Yakgwa","Super Idler Flavored Cookie"];
 //The default value of the cookie flavor displayed
 const defaultcookieType = "Exotic Undefined Cookies";
 const cookieInf = "Increases overall CPS by making your cookie taste better.";
@@ -371,7 +374,7 @@ const cookieInf = "Increases overall CPS by making your cookie taste better.";
 //GRANDMA - Covenant Upgrade (Shipment -> Alchemy Lab)
 var covenant;
 const covExp = 5.1;
-const covDelta = 0.7;
+const covDelta = 0.6;
 //const covEq = `B_{2} *=  \\sum_{i=0 \\: i\\neq 1}^{18}{P_{2}}{C_{i}}^{ ${BF(covExp).toString(1)} + COV_{L}}`;
 
 //FARM - Yggdrasil
@@ -590,7 +593,7 @@ let buildingUpgradeName = [
     "Get an extra IQ Point",
 ];
 let buildingUpgradeMult = [
-    250, 3.5, 70, 150, 100, 79, 55, 50, 45, 30, 30, 30, 25, 25, 25, 20, 25, 30, 35, 40,
+    250, 3.5, 60, 125, 59, 35, 8, 17, 25, 23, 21, 20, 15, 25, 10, 10, 9, 7, 5, 7,
 ];
 var kitty;
 const kittyID = 69420; //ouo
@@ -709,14 +712,15 @@ var cookietB = [
     BF("6e175"),
 ];
 var cookietName = [
-	["Basic Macaron","Rose Macaron","Lemon Macaron","Chocolate Macaron","Pistachio Macaron","Hazelnut Macaron","Violet Macaron","Caramel Macaron","Licorice Macaron","Earl Grey Macaron"],["Butter Horseshoe","Butter Pucks","Butter Knots","Butter Swirls","One Million Square Inches Butter per Cookie","Slab of Pure Butter","French Pure Butter Cookie"],
-	["Empire Biscuits","British Tea Biscuits","Chocolate British Tea Biscuits","Round British Tea Biscuits","Round Chocolate Tea Biscuits","Round British Tea Biscuits with Heart Motif","Round Chocolate British Tea Biscuits with Heart Motif","Big Ben Cookie"],
+	["Basic Macaron","Rose Macaron","Lemon Macaron","Chocolate Macaron","Pistachio Macaron","Hazelnut Macaron","Violet Macaron","Caramel Macaron","Licorice Macaron","Earl Grey Macaron"],
+    ["Butter Horseshoe","Butter Pucks","Butter Knots","Butter Swirls","One Million Square Inches Butter per Cookie","Slab of Pure Butter","French Pure Butter Cookie","Garlic Butter Braised Cookie"],
+	["Empire Biscuits","British Tea Biscuits","Chocolate British Tea Biscuits","Round British Tea Biscuits","Round Chocolate Tea Biscuits","Round British Tea Biscuits with Heart Motif","Round Chocolate British Tea Biscuits with Heart Motif","Big Ben Cookie","Hobnobs Biscuits"],
 	["Caramoas","Sagalogs","Shortfoils","Win Mints","Fig Gluttons","Loreols","Jaffa Cake","Grease\'s Cups","Digits","Lombardia Cookies","Bastenaken Cookies","Festivity Loops","Havabreaks","Zilla Wafers","Dim Dams","Pokey"],
-	["Cheesecake","Profiteroles","Panettone","Cinnamon Bun","Jelly Donut","Glazed Donut","Chocolate Cake","Pies","Croissant","Pain Au Chocolat","Focaccia","Taiyaki","Phyllo","Samarkand Bread"],
+	["Cheesecake","Profiteroles","Panettone","Churros","Cinnamon Bun","Jelly Donut","Glazed Donut","Chocolate Cake","Pies","Croissant","Pain Au Chocolat","Focaccia","Taiyaki","Phyllo","Apple Strudel","Samarkand Bread"],
 	["Cookie Dough","Cookie Dough(No Salmonella)","Burnt Cookie","A normal chocolate chip cookie but there\'s no chips at all for some reason","4K Cookie","Ray-Traced Cookie","Crackers","Deep-Fried Cookie","Flavor Text Cookie"],
-	["Toast","Marshmellows","PB amd J","Wookies","Cheeseburger","Beesechurger","One lone chocolate Chip","Pizza","Candy","Brownies","Flavor text Food that is not cookie","Fudge"],
+	["Toast","Pancakes","Marshmellows","PB amd J","Wookies","Cheeseburger","Beesechurger","One lone chocolate Chip","Pizza","Candy","Brownies","Flavor text Food that is not cookie","Medovik","Fudge"],
 	["Gilles-Cookie Paillé","liver","Mathmatically Illegal Cookie","! [ Snakey Snickerdoodles ] !","Nerdy as f Cookie",":exCookie:","JS-Formed ellipsis Cookie","SkyXCookie","Weierstra🅱️ Cookie Spiral","Exponential Cookie","ouo cookie"],
-	["Gigaloopite","Tetraloopite","Enium Cookie","Orate Cookie","Dxygen Cookie","IUSpawn Cookie"],
+	["Gigaloopite","Tetraloopite","Enium Cookie","Orate Cookie","Dxygen Cookie","IUSpawn Cookie","egg","Euler Serion Cookies"],
 	["Mutated Cookie","Magic Marbled Cookie","Shortcake-like Cookie","Truffle Cookie","Salt Pretzels","Seaweed Sesame Cookie","Dulce De Leche","Keylime Pie","S\'Mores","Chocolate Drizzle Cookie","Peppermint Kiss Cookie","Sprinkled Jelly Cookie","Galaxial Drop","Reflective Frosted Cookie","Pecan Walnut Cookie","White Mine Cookie","Jelly Triangle","Gold Leafed Cookie","Grand Chocolate Wafer Sprinkles"]
 ];
 //Want your self insert? DM me your very own cookie name and I might add it!
@@ -806,6 +810,17 @@ let lumpAchName = [
     "Scrumptiosllionare",
     "THAT\'S A LOTTA SUGARS",
 ];
+var BuildingAchievement;
+var buiAch1 = new Array(19);
+var buiAch2 = new Array(19);
+var buiAch3 = new Array(19);
+var buiAch4 = new Array(14);//Very endgame content right there
+var buiLumpAch = new Array(19);
+const bach1 = ["Mouse Wheel","Retirement Club","Home Organic","Stop! Drilling Time!","Industrial Act","Pretty Penny Pinchers","Way of the Temple","Bewitched","Local Expedition","Transmutation","Isekai\'d","Thyme Wrap","When does it matter?","Some rays of dough and batter","Lucked up","A while loop out and then true","Press F12","Manifest Destiny","Big Brain Thyme"];//not to be confused with a famous composer from the romantic age or something
+const bach2 = ["Clicktopia","Tootsie Roll Machine","100% Sustainable","Break the core","Age of Internet","Keynesian Cookinomics","Balance of Faith","Alakazamd","Cosmic Mapping","Polytranselementation","H̶e̷ ̶C̶o̴m̵e̸s̵","Thyme Pararegano","New Standard Model of Cookie and Flour","Total Enlightenment","Devil\'s Gambit","Apollonium Gasket","Infinite Theorycraft","Is there enough worlds?","Cardinal Synapsis"];
+const bach3 = ["Thumbs, Phalanges, Metacarpals","Ruler of the Ancients","Green Pasture lays live","Dysonian Society","Automatal Hysteria","New Neohyperglobalization Order","The Lord\'s Likeliness","Shaspie Colupis","Multiverse Ramble","With matter comes Cookies","I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎","Thyme Sagaporal Nutmegstant","Unified Complete Theory of the Cookieverse","O thy energy of sky, bring fourth the light rays","Gamber\'s Last Bet","Superliminal","I bring fourth reincarnation of reality","Lost your Cosmic Cookies","I declare thee on all ye inferiors. Despait before me, I am the Ozymandias"];
+const bach4 = ["Hands of fate lays bare their click upon thou","Shrivel, today we rise","Babylonian Conservatorium sits on the hill","Breaking through reality","The perfect game of Factorio","Money is just a human construct","Caricature of the forgotten Deities","Cookiera Avadra Creamdera","Omniverse Realization","Satiated in the gaudy mouths of Gold","Bottom of the abyss","Out of past, Out of future","Hypersize my String and Gluten","Neverending rays of bright brilliance shine on you all"];
+const bachlump = ["A hand and them a some more","Just like babies, but much more weird and terrifying","Farmer\'s Heaven","r/drillingmasterrace","Like the Japanese Inventors!","Hypermetaflation","Chief Artifact Curator","Hours to pronounce, effects very pronounced","A fleet of expeditors","Periodic Table","Is this reality or is it cookieverse?","No more Thyme Pararegano","Flavor Mathematics","4th Cone","Black Cat\'s Paw","Quite nearly but not so full","The \"C\" Language","You need a new bluestack","I am smart"]
 let lumpAchReq = [1, 10, 50, 100, 500, 1000, 10000, 100000, 1000000, 10000000];
 //Misc.
 var otherAch;
@@ -870,6 +885,7 @@ function shortPermaUpgradeML(id, cur, costModel, desc, info, maxLevel){
     return up;
 }
 
+
 var init = () => {
     eqC=0;
     cookie = theory.createCurrency("C", "C");
@@ -917,7 +933,7 @@ var init = () => {
             cookiet[i].maxLevel = cookietName[i].length;
             cookiet[i].getDescription = () => {
                 if(bInfo){
-                    return `\$ TP[${i}]^{CT[${i}]} = ${cookietP[i]}^{${cookiet[i].level}} = ${BigP(cookietP[i],cookiet[i].level)}\$`;
+                    return `\$ TP_{${i}}^{CT_{${i}}} = ${cookietP[i]}^{${cookiet[i].level}} = ${BigP(cookietP[i],cookiet[i].level)}\$`;
                 }
                 if (cookiet[i].level >= cookiet[i].maxLevel) {
                     return cookietName[i][cookietName[i].length - 1];
@@ -925,7 +941,7 @@ var init = () => {
                     return cookietName[i][cookiet[i].level];
                 }
             };
-            cookiet[i].getInfo = (amount) => (bInfo)?`\$ CT[${i}] =\$ ${Utils.getMathTo(cookiet[i].level,cookiet[i].level+amount)}`:
+            cookiet[i].getInfo = (amount) => (bInfo)?`\$ CT_{${i}} =\$ ${Utils.getMathTo(cookiet[i].level,cookiet[i].level+amount)}`:
                 "Some nice Heavenly Cookies to boost CPS even more";
             cookiet[i].bought = (amount) => calcCPS();
         }
@@ -1170,23 +1186,24 @@ var init = () => {
             new ExponentialCost(25, ML2(1e6))
         );
         cookieTin.getDescription = () =>
+            (bInfo)?`Unlock \$TP_{${cookieTin.level}}\$`:
             cookieTinName[
                 cookieTin.level == cookieTinName.length
                     ? cookieTinName.length - 1
                     : cookieTin.level
             ];
-        cookieTin.getInfo = () => cookieTinInfo;
+        cookieTin.getInfo = () => (bInfo)?`Unlocks an additional Heavely Cookie upgrade`:cookieTinInfo;
         cookieTin.maxLevel = cookieTinName.length;
     }
     CookieH = shortPermaUpgradeML(baseI + 1,hc,new ConstantCost(500),cookieHName,cookieHInfo,1);
     CookieH.bought = (amount) => calcCPS();
     CookieS = shortPermaUpgradeML(baseI + 2,hc,new ConstantCost(15000),cookieSName,cookieSInfo,1);
     CookieS.bought = (amount) => calcCPS();
-    CookieC = shortPermaUpgradeML(baseI + 3,hc,new ConstantCost(1e7),cookieCName,cookieCInfo,1);
+    CookieC = shortPermaUpgradeML(baseI + 3,hc,new ConstantCost(1e13),cookieCName,cookieCInfo,1);
     CookieC.bought = (amount) => calcCPS();
-    DivineD = shortPermaUpgrade(baseI + 4,hc,new ExponentialCost(1e10, ML2(1e10)),divineDName,divineDInfo);
+    DivineD = shortPermaUpgrade(baseI + 4,hc,new ExponentialCost(1e14, ML2(1e10)),divineDName,divineDInfo);
     DivineD.bought = (amount) => calcCPS();
-    CookieTau = shortPermaUpgradeML(baseI + 5,hc,new ConstantCost(1e25),cookieTauName,cookieTauInfo,1);
+    CookieTau = shortPermaUpgradeML(baseI + 5,hc,new ConstantCost(8e17),cookieTauName,cookieTauInfo,1);
     CookieTau.bought = (amount) => calcCPS();
     TerraInf = shortPermaUpgradeML(baseI + 7,hc,new ExponentialCost(1e55, ML2(1e10)),terraInfName,terraInfInfo,7);
     TerraInf.bought = (amount) => calcCPS();
@@ -1274,7 +1291,7 @@ var init = () => {
     //// Achievements
     //Utils Achievement Checker
     var CheckAch1 = (i) => {
-        if (ML10(cookie.value) >= caReq[i]) {
+        if (BigL10(cookie.value+1) >= BF(caReq[i])) {
             achCount++;
             calcCPS();
             return true;
@@ -1283,7 +1300,7 @@ var init = () => {
         }
     };
     var CheckAch2 = (i) => {
-        if (ML10(CPS)-ML10(theory.publicationMultiplier) >= cpsaReq[i]) {
+        if (BigL10(CPS+1)-BigL10(1+theory.publicationMultiplier) >= BF(cpsaReq[i])) {
             achCount++;
             calcCPS();
             return true;
@@ -1297,6 +1314,24 @@ var init = () => {
             calcCPS();
             return true;
         } else {
+            return false;
+        }
+    };
+    var CheckAchBui = (indx, lb) => {
+        if(building[indx].level >= lb){
+            achCount++;
+            calcCPS();
+            return true;
+        }else{
+            return false;
+        }
+    };
+    var CheckAchBui2 = (indx, lb) => {
+        if(buildingUpgrade[indx].level >= lb){
+            achCount++;
+            calcCPS();
+            return true;
+        }else{
             return false;
         }
     };
@@ -1355,6 +1390,17 @@ var init = () => {
             () => CheckAch3(i)
         );
     }
+    //A lot of buildings
+    BuildingAchievement = theory.createAchievementCategory(3,"Buildings");
+    for(let i=0;i<15;i++){
+        buiAch1[i] = theory.createAchievement(300+i,BuildingAchievement,bach1[i],`Get ${buildingName[i]} to level 100`,()=>CheckAchBui(i,100));
+        buiAch2[i] = theory.createAchievement(400+i,BuildingAchievement,bach2[i],`Get ${buildingName[i]} to level 1000`,()=>CheckAchBui(i,1000));
+        buiAch3[i] = theory.createSecretAchievement(500+i,BuildingAchievement,bach3[i],`Get ${buildingName[i]} to level 5000`,`${buildingName[i]} by 5000`,()=>CheckAchBui(i,5000));
+        if(i < 14){
+            buiAch3[i] = theory.createSecretAchievement(600+i,BuildingAchievement,bach4[i],`Get ${buildingName[i]} to level 10000`,`${buildingName[i]} by 10000`,()=>CheckAchBui(i,10000));
+        }
+        buiLumpAch = theory.createAchievement(700+i,BuildingAchievement,bachlump[i],`Upgrade ${buildingName[i]} to level 100`,()=>CheckAchBui2(i,100));
+    }
     //Misc.
 
     ///////////////////
@@ -1384,7 +1430,7 @@ var updateAvailability = () => {
     cookieTin.isAvailable = hc.value >= BF(10) && heavVis;
     CookieC.isAvailable = hc.value >= BF(1e7) && heavVis;
     DivineD.isAvailable = hc.value >= BF(1e10) && heavVis;
-    CookieTau.isAvailable = hc.value >= BF(1e20) && heavVis;
+    CookieTau.isAvailable = hc.value >= BF(1e12) && heavVis;
     ygg.isAvailable = cookie.value >= BF(1e100);
     terra.isAvailable = cookie.value >= BF(1e125);
     recom.isAvailable = cookie.value >= BF(1e155);
@@ -1428,6 +1474,21 @@ var calcBuilding = (id,am) => {
         return BF(building[id].level+am)
     }
 };
+function Expensive1(){
+    kittyPower(100);
+}
+function Expensive2(){
+    getCookieP(cookieT.level);
+}
+function Expensive3(){
+    if(recom.level > 0){
+        HPS = BF(hc.value).pow(0.9) * (recom.level+((artArt.level > 7)?10:0));
+        LPS = (recom.level+((artArt.level > 7)?10:0)) * 0.01;
+        arrcps[4] *= (recom.level > 1)?(BF(1e54) * BigP(2,recom.level - 1)):(BF(1e54));
+        lwC = Math.floor((BigL10(10+cookie.value)) / lumpc) + LPS / 10;
+    }
+}
+
 var calcCPS = () => {
     CPS = BigNumber.ZERO;
     let bc = BigNumber.ZERO;
@@ -1436,83 +1497,88 @@ var calcCPS = () => {
     LPS = (recom.level+((artArt.level > 7)?10:0)) * 0.01;
     let kp = kittyPower(kitty.level) * BF(BF(100 + milk) / BF(100));
     for (let i = 0; i < 19; i++) {
+        if(building[i].level == 0){
+            arrcps[i]=0;
+            continue;
+        }
         let step1 = BF(calcBuilding(i,0)*BF(getPower(i))*BF(bcps[i]));
-        if(i == 6 && artArt.level > 0){
-            step1*=BF(8e56);
-        }
-        if(i==0 && artArt.level > 3){
-            step1*=BF(3.24e64);
-        }
-        if(i==6 && artArt.level > 1){
-            step1*=(building[13].level) + BF(1);
-        }
-        if(i!=1 && artArt.level > 4){
-            step1*=BigP(building[1].level,0.59);
-        }
-        if(i==2 && artArt.level > 5){
-            step1*=BF(100);
-        }
-        if(i==13 && artArt.level > 5){
-            step1*=BF(500);
-        }
-        if(i==3 && artArt.level > 6){
-            step1*=BF(7e62);
-        }
-        if(i==4 && artArt.level > 7){
-            step1*=BF(5.16e17);
-        }
-        if(i==13 && artArt.level > 1){
-            step1*=BF(1) + (BF(50)*building[6].level);
-        }
-        if(i==5 && artArt.level > 8){
-            step1*=BF(1.36e68);
-        }
-        if(artArt.level > 9){
-            step1*=BF(100);
-        }
         arrcps[i] = (
             step1 *
             kp *
             BF(buip).pow(buildingUpgrade[i].level)
         ).pow(getExpn(i));
         //arrcps[i]=BF("1e180");
-        if (i == 2 && ygg.level > 0 && thyme.level > BigNumber.ZERO)
-            arrcps[i] *= BF(getPower(i)).pow(1.1 + 0.1 * ygg.level) * BF(building[6].level + building[2].level).pow(BigP(ygg.level,0.9) * 0.2 + 3.2) * (BigNumber.ONE + BF(thyme.level).pow(1.4)) * BF(1e9);
-
-        if (i == 4 && recom.level > 0) {
-            arrcps[i] *= (recom.level > 1)?(BF(1e54) * BigP(2,recom.level - 1)):(BF(1e54));
-        }
-        
-        if (CookieTau.level > 0) {
-            arrcps[i] *= game.tau.log10().log10().pow(2);
-        }
-        if ((ChronosAge.level) > 0 && (i!=2))
-            arrcps[i] *= BigNumber.ONE + BF(thyme.level).pow(1.1);
-
-        if (i != 0 && (clickp.level > 0)) {
-            arrcps[i] *= BF(clickp.level) * BigP(buip, buildingUpgrade[0].level) * BF(bcp);
-        }
-        if (i != 1) {
-            bc += BigP(building[i].level,0.95) * getPower(1).pow(0.95);
-            CPS += arrcps[i]
+        arrcps[i] *= (getCookieP(cookieT.level) * (1+(CookieTau.level * game.tau.log10().log10().pow(2))));
+        bc += BigP(building[i].level,0.8) * getPower(1).pow(0.9);
+    }
+    if(artArt.level > 0){
+        arrcps[6]*=BF(8e56);
+        if(artArt.level > 1){
+            arrcps[13]*=BF(1) + (BF(50)*building[6].level);
+            arrcps[6]*=(building[13].level) + BF(1);
+            if(artArt.level > 3){
+                arrcps[0]*=BF(3.24e64);
+                if(artArt.level > 5){
+                    arrcps[13]*=BF(500);
+                    arrcps[2]*=BF(100);
+                    if(artArt.level > 6){
+                        arrcps[3]*=BF(7e62);
+                        if(artArt.level > 7){
+                            arrcps[4]*=BF(5.16e17);
+                            if(artArt.level > 8){
+                                arrcps[5]*=BF(1.36e68);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    if (covenant.level != 0)
+    if(ygg.level > 0 && thyme.level > 0){
+        arrcps[2] *= BF(getPower(2)).pow(1.175 + 0.05 * ygg.level) * BF(building[6].level + building[2].level).pow(BigP(ygg.level,0.9) * 0.2 + 3) * (BigNumber.ONE + BF(thyme.level).pow(1.4)) * BF(5e10);
+    }
+    if (covenant.level > 0){
         arrcps[1] *= bc.pow(BF(covenant.level).pow(0.45) * covDelta + covExp) * covenant.level;
-    CPS += arrcps[1];
+    }
+    if(recom.level > 0){
+        HPS = BF(hc.value).pow(0.9) * (recom.level+((artArt.level > 7)?10:0));
+        LPS = (recom.level+((artArt.level > 7)?10:0)) * 0.01;
+        arrcps[4] *= (recom.level > 1)?(BF(1e54) * BigP(2,recom.level - 1)):(BF(1e54));
+        lwC = Math.floor((BigL10(10+cookie.value)) / lumpc) + LPS / 10;
+    }
+    CPS = arrcps.reduce((pre,cur) => pre+cur,BigNumber.ZERO);
     if((spellCast[1]+(10*effectCPSBDur)) >= thyme.level){
         CPS *= effectCPSB;
     }
-    lwC = Math.floor((BigL10(10+cookie.value)) / lumpc) + LPS / 10;
-    CPS *= getCookieP(cookieT.level) * (TwinGates.level > 0 ? hc.value.pow(0.05 * TwinGates.level) : 1) * theory.publicationMultiplier * (BigP(game.sigmaTotal,R9Box.level*0.7));
+    if(artArt.level > 4){
+        CPS*=BigP(building[1].level,0.59);
+    }
+    CPS *= 1+(BF(clickp.level) * BigP(buip, buildingUpgrade[0].level) * BF(bcp));
+    if(artArt.level > 9){
+        CPS*=BF(100);
+    }
+    if ((ChronosAge.level) > 0){
+        CPS *= BigNumber.ONE + BF(thyme.level).pow(0.5);
+    }
+    CPS *= (TwinGates.level > 0 ? hc.value.pow(0.03 * TwinGates.level) : 1) * theory.publicationMultiplier * (BigP(game.sigmaTotal,R9Box.level*0.7));
 };
 let lwC = 0;
+let idle = false;
 var tick = (multiplier) => {
+    if(game.isCalculatingOfflineProgress){
+        if(CPS == 0){
+            calcCPS();
+        }
+        cookie.value += (CPS * Logistic()) / BigNumber.TEN;
+        hc.value += HPS / 10;
+        lump.value += lwC + (0.01*(lumpc / BigL10(cookie.value)));
+        lumpTotal += lwC + (0.01*(lumpc / BigL10(cookie.value)));
+        return;
+    }
     if(thyme.level < thyme.maxLevel){
         thyme.level++;
     }
-    if (time == 0 || thyme.level%100 == 0) {
-        calcCPS();
+    if (thyme.level == 0 || thyme.level%200 == 0) {
         calcCPS();
     }
 
@@ -1545,11 +1611,11 @@ var tick = (multiplier) => {
 let xBegin = BF("-1e100");
 var Logistic = () => {
     var maxL =
-        BF(terra.level).pow(2.5 + 0.05 * (TerraInf.level + ((artArt.level > 6)?1:0))) * 1500 +
+        BF(terra.level).pow(2.4 + 0.05 * (TerraInf.level + ((artArt.level > 6)?1:0))) * 1500 +
         BF(building[3].level).pow(1.2 + 0.03 * TerraInf.level) * ((spellCast[3]+(10*logBoostDue) >= thyme.level)?logBoost:1);
     return (
         BigNumber.ONE +
-        maxL -
+        maxL.pow(1 + 0.005*TerraInf.level) -
         maxL.pow(0.99999 - 0.01 * TerraInf.level) /
             (BigNumber.ONE +
                 BigNumber.E.pow(-1 * (time - (xBegin + terra.level * 300))))
@@ -1557,9 +1623,9 @@ var Logistic = () => {
 };
 
 const height = 60;
-let eqColor = ["FFFFFF","E6DFCF","C28863","FFD4D8","E96954","E1F29A","CDBADE","F7ED91","FBF2D5"];
-let eqColorName = ["White","Milk","Chocolate","Strawberry","Raspberry","Lime","Blueberry","Banana","Vanilla"];
-let eqColorAch = [0,10,15,20,25,30,40,50,60];
+let eqColor = ["FFFFFF","E6DFCF","C28863","FFD4D8","E96954","E1F29A","CDBADE","F7ED91","FBF2D5","BD7D36","E5BD46","A6835D","F9F5F0","83F2BC","8F9098","FBABC6"];
+let eqColorName = ["White","Milk","Chocolate","Strawberry","Raspberry","Lime","Blueberry","Banana","Vanilla","Caramel","Honey","Coffee","Coconut","Mint","Licorice","Rose"];
+let eqColorAch = [0,10,15,20,25,30,40,50,60,70,75,80,85,90,100,110];
 var PrimaryEquation = (col) => {
     return `\\color{#${eqColor[col]}}{\\dot{C} = P(B(0) + P_{cp}\\sum_{i=1}^{18}{B(i)})}`;
 };
@@ -1613,8 +1679,8 @@ var getInf = (index,am) => {
         " cookies per second";
     return result;
 };
-var getPublicationMultiplier = (tau) => tau.pow(1.095);
-var getPublicationMultiplierFormula = (symbol) => symbol + "^{1.095}";
+var getPublicationMultiplier = (tau) => tau.pow(1.078);
+var getPublicationMultiplierFormula = (symbol) => symbol + "^{1.078}";
 var getTau = () => cookie.value.pow(0.2);
 var get2DGraphValue = () => {
     if (vizType == 1)
@@ -1648,7 +1714,7 @@ var getExpn = (index) => buildingExp[index].level * buiexp + 1;
 var getPower = (index) =>
     Utils.getStepwisePowerSum(
         buildingP[index].level,
-        buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*2),
+        buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*1),
         5,
         1
     );
@@ -2019,11 +2085,11 @@ var secondaryEq = (mode,col) => {
             );
             break;
         case 2:
-            return `M = M_{i}K(0.15)+(K-10)(0.2)\\\\+(K-25)(0.25)+(K-50)(0.3)`;
+            return `\\color{#${eqColor[col]}}{M = M_{i}K(0.15)+(K-10)(0.2)\\\\+(K-25)(0.25)+(K-50)(0.3)}`;
             break;
         case 3:
             theory.secondaryEquationScale = 0.9;
-            return ( 
+            return (
                 `\\color{#${eqColor[col]}}{` +
                 "CP(l) = C_{1}(l)C_{2}()" +
                 (invest.level > 0 ? "I_{o}^{1.01}" : "") +
@@ -2033,12 +2099,12 @@ var secondaryEq = (mode,col) => {
         case 4://Cov
             let cp = " C_{v}";
             return (
-                `\\color{#${eqColor[col]}}{B(2) \\leftarrow B(2)${cp}(\\sum_{i=0 \\: i\\neq 1}^{18}{P_{1}^{0.95}}{B[i]^{0.95}}${cp})^{${covDelta}${cp}^{0.45} + ${covExp}}}`
+                `\\color{#${eqColor[col]}}{B(2) \\leftarrow B(2)${cp}(\\sum_{i=0 \\: i\\neq 1}^{18}{P_{1}^{0.9}}{B[i]^{0.8}}${cp})^{${covDelta}${cp}^{0.45} + ${covExp}}}`
             );
             break;
         case 5://Ygg + Chronos
             let ys = " Y_{g}"
-            return `\\color{#${eqColor[col]}}{B(3) \\leftarrow B(3)10^{9}P_{3}^{1.1 + (0.1\\times${ys})}(B[6]+B[2])^{3.2 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{1.1}), \\quad i \\neq 2`:``}}`;
+            return `\\color{#${eqColor[col]}}{B(3) \\leftarrow B(3)10^{9}P_{3}^{1.175 + 0.05${ys}}(B[6]+B[2])^{3.2 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{1.1}), \\quad i \\neq 2`:``}}`;
             break;
         case 6://Terra
             let tr = " T_{r}";
