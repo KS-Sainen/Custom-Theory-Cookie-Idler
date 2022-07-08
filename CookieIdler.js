@@ -319,7 +319,7 @@ let bcps = [
     6.66e58,//10
     6.5e72,//11
     9.15e79,//12
-    BF("4.9e95"),//13
+    BF("4.9e96"),//13
     BF("2.1e123"),//14
     BF("2.2e148"),//15
     BF("1.1e170"),//16
@@ -986,7 +986,7 @@ var init = () => {
             let bi = `\$B[${BigTS(i)}]^{${(getExpn(i)>1)?getExpn(i).toString(10):""}}\$`;
             if(bInfo){
                 return `${bi} = ${calcBuilding(i,0)}`;
-            }else{ 
+            }else{
                 return `${bi} - ${buildingName[i]}`
             }
         };
@@ -1395,7 +1395,7 @@ var init = () => {
     for(let i=0;i<15;i++){
         buiAch1[i] = theory.createAchievement(300+i,BuildingAchievement,bach1[i],`Get ${buildingName[i]} to level 100`,()=>CheckAchBui(i,100));
         buiAch2[i] = theory.createAchievement(400+i,BuildingAchievement,bach2[i],`Get ${buildingName[i]} to level 1000`,()=>CheckAchBui(i,1000));
-        //buiAch3[i] = theory.createSecretAchievement(500+i,BuildingAchievement,bach3[i],`Get ${buildingName[i]} to level 5000`,`${buildingName[i]} by 5000`,()=>CheckAchBui(i,5000));
+        buiAch3[i] = theory.createSecretAchievement(500+i,BuildingAchievement,bach3[i],`Get ${buildingName[i]} to level 5000`,`${buildingName[i]} by 5000`,()=>CheckAchBui(i,5000));
         /*if(i < 14){
             buiAch3[i] = theory.createSecretAchievement(600+i,BuildingAchievement,bach4[i],`Get ${buildingName[i]} to level 10000`,`${buildingName[i]} by 10000`,()=>CheckAchBui(i,10000));
         }*/
@@ -1441,7 +1441,7 @@ var updateAvailability = () => {
     ConjureBuild.isAvailable = invest.level >= 10 && heavVis;
     art.isAvailable = cookie.value >= BF(1e250);
     R9Box.isAvailable = hc.value > BF(1e79) && heavVis;
-    artArt.isAvailable = (artArt.maxLevel > 1) || (art.level > 0);
+    artArt.isAvailable = ((artArt.maxLevel >= 1) || (art.level > 0));
     conGrow.isAvailable = hc.value > BF(1e100) && heavVis;
     SpellStack.isAvailable = hc.value > BF(1e100) && heavVis;
     Empower.isAvailable = hc.value > BF(1e115) && heavVis;
@@ -1512,21 +1512,30 @@ var calcCPS = () => {
         bc += BigP(building[i].level,0.8) * getPower(1).pow(0.9);
     }
     if(artArt.level > 0){
-        arrcps[6]*=BF(8e56);
+        //Multiplies temple CPS by 8e57
+        arrcps[6]*=BF(8e57);
         if(artArt.level > 1){
-            arrcps[13]*=BF(1) + (BF(50)*building[6].level);
+            //Multiplies Temple CPS by the amount of prisms you have.
+            //Multiplies Prism CPS by 55 and the amount of temples you have.
+            arrcps[13]*=BF(1) + (BF(55)*building[6].level);
             arrcps[6]*=(building[13].level) + BF(1);
             if(artArt.level > 3){
-                arrcps[0]*=BF(3.24e64);
+                //Multiplies Cursor CPS by 3.24e65
+                arrcps[0]*=BF(3.24e65);
                 if(artArt.level > 5){
-                    arrcps[13]*=BF(500);
-                    arrcps[2]*=BF(100);
+                    //Multiplies Farm CPS by 200
+                    //Multiplies Prism CPS by 750
+                    arrcps[13]*=BF(750);
+                    arrcps[2]*=BF(200);
                     if(artArt.level > 6){
-                        arrcps[3]*=BF(7e62);
+                        //Multiplies Mine CPS by 3.5e63
+                        arrcps[3]*=BF(3.5e63);
                         if(artArt.level > 7){
-                            arrcps[4]*=BF(5.16e17);
+                            //Multiplies Factory CPS by 1.08e18
+                            arrcps[4]*=BF(1.08e18);
                             if(artArt.level > 8){
-                                arrcps[5]*=BF(1.36e68);
+                                //Multiplies Bank CPS by 4.08e68
+                                arrcps[5]*=BF(4.08e68);
                             }
                         }
                     }
@@ -1551,7 +1560,8 @@ var calcCPS = () => {
         CPS *= effectCPSB;
     }
     if(artArt.level > 4){
-        CPS*=BigP(building[1].level,0.59);
+        //Multiplies the CPS from all buildings by the amount of grandmas you have to the power of 0.61
+        CPS*=BigP(building[1].level,0.61);
     }
     CPS *= 1+(BF(clickp.level) * BigP(buip, buildingUpgrade[0].level) * BF(bcp));
     if(artArt.level > 9){
@@ -1623,9 +1633,9 @@ var Logistic = () => {
 };
 
 const height = 60;
-let eqColor = ["FFFFFF","E6DFCF","C28863","FFD4D8","E96954","E1F29A","CDBADE","F7ED91","FBF2D5","BD7D36","E5BD46","A6835D","F9F5F0","83F2BC","8F9098","FBABC6"];
-let eqColorName = ["White","Milk","Chocolate","Strawberry","Raspberry","Lime","Blueberry","Banana","Vanilla","Caramel","Honey","Coffee","Coconut","Mint","Licorice","Rose"];
-let eqColorAch = [0,10,15,20,25,30,40,50,60,70,75,80,85,90,100,110];
+let eqColor = ["FFFFFF","E6DFCF","A06846","FFD4D8","FE3246","ABED6A","C48AE2","F4E4BA","FBF2D5","AC6329","E5BD46","E71334","E2DBD2","83F2BC","8F9098","FF6D98","AB5DF8","00FFFF"];
+let eqColorName = ["White","Milk","Chocolate","Strawberry","Raspberry","Lime","Blueberry","Banana","Vanilla","Caramel","Honey","Cherry","Coconut","Mint","Licorice","Rose","Blackcurrant","Crystallized"];
+let eqColorAch = [0,10,15,20,25,30,40,50,60,70,75,80,85,90,100,110,115,121];
 var PrimaryEquation = (col) => {
     return `\\color{#${eqColor[col]}}{\\dot{C} = P(B(0) + P_{cp}\\sum_{i=1}^{18}{B(i)})}`;
 };
@@ -1641,7 +1651,7 @@ var TertiaryEquation = (col) => {
     if(Number.isNaN(col)){
         col = 0;
     }
-    return `\\color{#${eqColor[col]}}{` + 
+    return `\\color{#${eqColor[col]}}{` +
     theory.latexSymbol +
     "=\\max C^{0.2}" +
     " \\quad " +
@@ -1722,6 +1732,30 @@ var getPower2 = (index, level) =>
     Utils.getStepwisePowerSum(level, buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*2), 5, 1);
 //! The text is arranged as follows: Introduction, Exponents, Cookies and Milk, Special Upgrades, Terraform Powerup, Archaeology, Grimoire, SPOILERS:(((((Cosmic Trade, Chemistry Laboratory, Bingo Research Facility)))))
 const helpText = [];
+//Just a bunch of text that is used in the help menu and a placeholder for the REAL help menu, meanwhile enjoy this placeholder text
+var getHelpText = () => {
+    let ret = "Welcome to a theory all about cookies and more cookies!!!\n You have 3 currencies, cookies(C), heavenly chips(H), and sugar lumps(L), which you'll be spending on upgrades located on both tabs.\n\nCookies(C) by far is the most important, as the majority of the gameplay revolves around it, from buildings to even tau! You can get your first batch of cookies by buying a cursor, which is gifted to you for free to kickstart your very own cookie empire! By maximizing CPS(C dot), you are sure to produce a whole lot of cookies.\n\nHeavenly Chips(H) are a special type of cookie that forms whenever you sacrificed everything material you own in exchange for greater power(called publications). They can be used for all sorts of special upgrades, and might even end up boosting your CPS if you know enough.\n\nSugar lumps(L) by far are the hardest to acquire, literally requiring luck in order to get some, but its powers of being able to outright boost your building's CPS by 10%, multiplicative! Rumor has it that it gets easier to acquire the more cookies you have.\n";
+    if(cookie.value > BF(1e5)){
+        ret += "\nIn the permanent tab, you would find something like P1 = 1. These are upgrades that directly multiplies the CPS of a building by that amount(kinda like its power). It grows exponentially, like how the theory is supposed to be; but varying depending on what building P boosts. Later on they might grow even faster but I'll leave that up to you.\n"
+    }
+    if(cookieT.level > 0){
+        ret += "\nBack to the main tab, there's 2 new upgrades that popped out: Milk and Cookie Flavor. Milk acts like a booster for having more achievements(the labors are all paid for by the felines). Cookie Flavor is exactly what it does, sprinkling more variance and flavor into your cookie empire which apparently makes more cookies for some reason.\n";
+    }
+    if(covenant.isAvailable){
+        ret += "\nThe Grandmother\'s Covenant is the first of the so-called \"Unique Upgrades\". They provide a massive boost to that building's CPS and potentially unlocks new strategies and game mechanics. In this case, the covenant boosts the grandma with P1, The total amount of buildings you own excluding grandmas,  mildly exponentiated as a bonus.\n";
+    }
+    if(terra.isAvailable){
+        ret += "\nTerraform Buff is unlocked when you have the Unique Upgrade for mines, it provides a short boost to your CPS(until it doesn't) through the magic of Logistic Function automatically ending this buff depending on your terraforming level. You'll have higher maximum boosts the more mines you own, along with the upgrade level itself.\n";
+    }
+    if(art.isAvailable){
+        ret += "\nArchaeology is a new game mechanic revolving around exploring your very own temple in search for funny parts and upgrades that helps you later on. To find an artifact, a certain requirement must be completed(which I won't tell you!) through reading the clue for the next one by viewing the information on the Archaeology upgrade. Sometimes exploration might just not come back with upgrades, but something else...\n";
+    }
+    if(SpellView.isAvailable){
+        ret += "\nGrimoire allows you to cast spells through the tomes you had. It costs Sugar Lumps to cast a spell, and each spell can be casted once(until it doesn't) before needing to recharge. A spell is ready to be casted again when the level is set back to 0. Discover the effects of each spell yourself, that's the part of the surprise.\n";
+    }
+    ret += "\nCheck back later for more in-game information\n";
+    return ret;
+}
 
 var InsPopup = ui.createPopup({
     title: "Instructions",
@@ -1730,7 +1764,7 @@ var InsPopup = ui.createPopup({
             ui.createScrollView({
                 heightRequest: 400,
                 content: ui.createLabel({
-                    text: "Welcome to a theory all about cookies and more cookies!!!\n You have 3 currencies, cookies(C), heavenly chips(H), and sugar lumps(L), which you'll be spending on upgrades located on both tabs.\nCookies by far is the most important, as the majority of the gameplay revolves around it, from buildings to even tau! You can get your first batch of cookies by buying a cursor, which is gifted to you for free to kickstart your very own cookie empire! By maximizing CPS(C dot), you are sure to produce a whole lot of cookies.\nHeavenly Chips are a special type of cookie that forms whenever you sacrificed everything material you own in exchange for greater power(called publications). They can be used for all sorts of special upgrades, and might even end up boosting your CPS if you know enough.\nSugar lumps by far are the hardest to acquire, literally requiring luck in order to get some, but its powers of being able to outright boost your building's CPS by 10%, multiplicative! Rumor has it that it gets easier to acquire the more cookies you have.\nCheck back later for more in-game information!\n",
+                    text: "if you're reading this in game then the theory screwed up",
                     horizontalTextAlignment: TextAlignment.CENTER,
                     padding: Thickness(10, 2, 10, 2),
                     fontSize: 14,
@@ -1905,6 +1939,7 @@ let popup = ui.createPopup({
                     ui.createButton({
                         text: "Instructions", row: 0, column: 0,
                         onClicked: () => {
+                            InsPopup.content.children[0].content.text = getHelpText();
                             InsPopup.show();
                         },
                     }),
