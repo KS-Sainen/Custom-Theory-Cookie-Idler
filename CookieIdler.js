@@ -21,7 +21,7 @@ import { profilers } from "../api/Profiler";
 
 var id = "CookieIdler";
 var name = "Cookie Idler";
-var description = "🍪👵🍪\nA game within a theory involving baking a copius amounts of cookies in exchange for something far greater...\n🍪👵🍪\n\n🍪==FEATURES==🍪\n🍪 Click, Bake, Farm, Produce your way into the big leagues. With 19 buildings to buy, empower, and upgrade.\n🍪 Experience a whole new level of text richness in theories like never before. Boatloads of text waiting to be read in all aspects, from the buildings, achievements, all the way to upgrades(nerdy mode included).\n🍪 Unique upgrades and intresting game mechanics will involve you to no end! Tasty Cookies, even tastier cookies, breaking the fourth wall, and changing the game itself.\n🍪Absolute lack of big and scary mathematics, rated E for Everyone\n\n🍪==CREDITS==🍪\n🍪 Orteil for bringing such a legendary game idea to life\n🍪 ellipsis for suggesting ideas for the UI\n🍪 skyhigh173 for reformatting the code so it looks better\nspqcey(randomname#9373) for proofreading and fixing a majority of the text\n\n⚠WARNING⚠ : In ALL Circumstances, DO NOT attempt to purchase level 4 of the cookie tin upgrade, doing so may crash your game INSTANTLY(hang in there until you can afford level 5)";
+var description = "🍪👵🍪\nA game within a theory involving baking a copius amounts of cookies in exchange for something far greater...\n🍪👵🍪\n\n🍪==FEATURES==🍪\n🍪 Click, Bake, Farm, Produce your way into the big leagues. With 19 buildings to buy, empower, and upgrade.\n🍪 Experience a whole new level of text richness in theories like never before. Boatloads of text waiting to be read in all aspects, from the buildings, achievements, all the way to upgrades(nerdy mode included).\n🍪 Unique upgrades and intresting game mechanics will involve you to no end! Tasty Cookies, even tastier cookies, breaking the fourth wall, and changing the game itself.\n🍪Absolute lack of big and scary mathematics, rated E for Everyone\n\n🍪==CREDITS==🍪\n🍪 Orteil for bringing such a legendary game idea to life\n🍪 ellipsis for suggesting ideas for the UI\n🍪 skyhigh173 for reformatting the code so it looks better\n🍪 spqcey(randomname#9373) for proofreading and fixing a majority of the text\n\n⚠WARNING⚠ : In ALL Circumstances, DO NOT attempt to purchase level 4 of the cookie tin upgrade, doing so may crash your game INSTANTLY(hang in there until you can afford level 5)";
 var authors = "Sainen Lv.420 #2684";
 
 /*
@@ -727,7 +727,7 @@ var cookietName = [
 	["Gigaloopite","Tetraloopite","Enium Cookie","Orate Cookie","Dxygen Cookie","IUSpawn Cookie","egg","Euler Serion Cookies"],
 	["Mutated Cookie","Magic Marbled Cookie","Shortcake-like Cookie","Truffle Cookie","Salt Pretzels","Seaweed Sesame Cookie","Dulce De Leche","Keylime Pie","S\'Mores","Chocolate Drizzle Cookie","Peppermint Kiss Cookie","Sprinkled Jelly Cookie","Galaxial Drop","Reflective Frosted Cookie","Pecan Walnut Cookie","White Mine Cookie","Jelly Triangle","Gold Leafed Cookie","Grand Chocolate Wafer Sprinkles"]
 ];
-//Want your self insert? DM me your very own cookie name and I might add it!
+//Want your self insert? DM me your very own c🍪okie name and I might add it!
 
 //Milestone Superpowers and random stuffs
 var superP,superL,superC;
@@ -1002,7 +1002,7 @@ var init = () => {
         building[i].bought = (amount) => calcCPS();
         switch(i){
             case 1:
-                //Grandma's Covenant
+                //Grandma's C🍪venant
                 covenant = theory.createUpgrade(10001,cookie,new ExponentialCost(1e65, ML2(1e15)));
                 covenant.getDescription = (_) => "Grandmother's Covenant $(C_{v})$";
                 covenant.getInfo = () =>
@@ -1589,7 +1589,7 @@ var calcCPS = () => {
         CPS *= effectCPSB;
     }
     if(artArt.level > 4){
-        //Multiplies the CPS from all buildings by the amount of grandmas you have to the power of 0.61
+        //Multiplies the CPS from all buildings by the am🍪unt of grandmas you have to the power of 0.61
         CPS*=BigP(building[1].level,0.61);
     }
     CPS *= 1+(BF(clickp.level) * BigP(buip, buildingUpgrade[0].level) * BF(bcp));
