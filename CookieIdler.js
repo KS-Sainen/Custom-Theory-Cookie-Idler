@@ -21,7 +21,7 @@ import { profilers } from "../api/Profiler";
 
 var id = "CookieIdler";
 var name = "Cookie Idler";
-var description = "🍪👵🍪\nA game within a theory involving baking a copius amounts of cookies in exchange for something far greater...\n🍪👵🍪\n\n🍪==FEATURES==🍪\n🍪 Click, Bake, Farm, Produce your way into the big leagues. With 19 buildings to buy, empower, and upgrade.\n🍪 Experience a whole new level of text richness in theories like never before. Boatloads of text waiting to be read in all aspects, from the buildings, achievements, all the way to upgrades(nerdy mode included).\n🍪 Unique upgrades and intresting game mechanics will involve you to no end! Tasty Cookies, even tastier cookies, breaking the fourth wall, and changing the game itself.\n🍪Absolute lack of big and scary mathematics, rated E for Everyone\n\n🍪==CREDITS==🍪\n🍪 Orteil for bringing such a legendary game idea to life\n🍪 ellipsis for suggesting ideas for the UI\n🍪 skyhigh173 for reformatting the code so it looks better\n🍪 spqcey(randomname#9373) for proofreading and fixing a majority of the text\n\n⚠WARNING⚠ : In ALL Circumstances, DO NOT attempt to purchase level 4 of the cookie tin upgrade, doing so may crash your game INSTANTLY(hang in there until you can afford level 5)";
+var description = "🍪👵🍪\nA game within a theory involving baking a copius amounts of cookies in exchange for something far greater...\n🍪👵🍪\n\n🍪==FEATURES==🍪\n🍪 Click, Bake, Farm, Produce your way into the big leagues. With 19 buildings to buy, empower, and upgrade.\n🍪 Experience a whole new level of text richness in theories like never before. Boatloads of text waiting to be read in all aspects, from the buildings, achievements, all the way to upgrades(nerdy mode included).\n🍪 Unique upgrades and intresting game mechanics will involve you to no end! Tasty Cookies, even tastier cookies, breaking the fourth wall, and changing the game itself.\n🍪Absolute lack of big and scary mathematics, rated E for Everyone\n\n🍪==CREDITS==🍪\n🍪 Orteil for bringing such a legendary game idea to life\n🍪 ellipsis for suggesting ideas for the UI\n🍪 skyhigh173 for reformatting the code so it looks better\nspqcey(randomname#9373) for proofreading and fixing a majority of the text\n\n⚠WARNING⚠ : In ALL Circumstances, DO NOT attempt to purchase level 4 of the cookie tin upgrade, doing so may crash your game INSTANTLY(hang in there until you can afford level 5)";
 var authors = "Sainen Lv.420 #2684";
 
 /*
@@ -36,39 +36,99 @@ var version = 1.3;
 
 //Function Name Reductions
 /**
- * Returns the BigNumber equivalent of any of the following arguments
- * Functionally IDENTICAL to BigNumber.from()
+ * Returns the BigNumber equivalent of any of the following arguments. Functionally IDENTICAL to BigNumber.from()
  * @param {number|string|BigNumber} i
- * @return BigNumber
+ * @return {BigNumber} The BigNumber from the given input i
  */
 let BF = (i) => BigNumber.from(i);
-/**For the following functions:
- * @param {number} i
- * @param {number} p
- * @return number
+
+/**
+ * Returns the value of i^p, identical to to Math.pow(i,p)
+ * @param {number} i The base
+ * @param {number} p The exponent
+ * @return {number} The value of i^p
 */
 let MP = (i,p) => Math.pow(i,p);
+
+/**
+ * Returns the 2nd logarithm of the given number, identical to Math.log2(i)
+ * @param {number} i The given number
+ * @return {number} The 2nd logarithm of the given number
+ */
 let ML2 = (i) => Math.log2(i);
+
+/**
+ * Returns the 10th logarithm of the given number, identical to Math.log2(i)
+ * @param {number} i The given number
+ * @return {number} The 10th logarithm of the given number
+ */
 let ML10 = (i) => Math.log10(i);
+
+/**
+ * Returns a random number within the range of [0,1]
+ * @param void
+ * @return {number} A random number within the range of [0,1]
+ */
 let MR = () => Math.random();
-/**For the following functions EXCEPT RandI(i):
- * @param {number|string|BigNumber} i
- * @param {number} p
- * @return number
+
+/**
+ * Identical to Math.pow(i,p) but for big numbers; also automatically converts any valid BigNumber inputted
+ * @param {number|string|BigNumber} i The base
+ * @param {number} p The exponent
+ * @return {BigNumber} The value of i^p
 */
 let BigP = (i,p) => BF(i).pow(p);
+
+/**
+ * Gives the equivalent cookies compared to i minutes of your CPS
+ * @param {number|string|BigNumber} i The number used
+ * @return {BigNumber} The value of log10(i)
+ */
 let BigL10 = (i) => BF(i).log10();
+
+/**
+ * Identical to Math.log(i) but for big numbers; also automatically converts any valid BigNumber inputted
+ * @param {number|string|BigNumber} i The number used
+ * @return {BigNumber} The value of log2(i)
+ */
 let BigL2 = (i) => BF(i).log2();
+
+/**
+ * Converts the given valid BigNumber string into a string without any decimal places
+ * @param {number|string|BigNumber} i The BigNumber used
+ * @return {string} The string without any decimal places
+ */
 let BigTS = (i) => BF(i).toString(0);
+
+/**
+ * Converts a given number to a string
+ * @param {number} i The number used
+ * @return {string} The string representation of the number
+ */
 let TS10 = (i) => i.toString(10);
-//Returns a random number in the range [0,i]
+
+/**
+ * Returns a random integer in the range of [0,i]
+ * @param {number} i
+ * @return {number} A random integer in the range of [0,i]
+ */
 let RandI = (i) => Math.floor(MR()*i);
+
+/**
+ * Returns a random number in the range of [s,e] where s >= e
+ * @param {number} s The maximum number
+ * @param {number} e The minimum number
+ * @return {number} A random number in the range of [s,e]
+ */
+let RandR = (s,e) => e+(MR()*(s-e));
+
+
 
 //Prize Functions
 let prize=0;
 /**
  * @desc Gives the equivalent cookies compared to i minutes of your CPS
- * @param {number} i 
+ * @param {number} i
  */
 let minCookie = (i) => {
     cookie.value += BF(60) * CPS * BF(i) * Logistic();
@@ -300,8 +360,8 @@ let baseCost = [
     BF("1.7e180"),
     BF("2.1e215"),
     BF("2.6e300"),
-    BF("3.1e1350"),//BREAK
-    BF("7.1e1400"),
+    BF("3.1e351"),//15
+    BF("7.1e1400"),//BREAK
     BF("1.2e1450"),
     BF("1.9e1500"),
 ];
@@ -322,7 +382,7 @@ let bcps = [
     9.15e79,//12
     BF("4.9e96"),//13
     BF("2.1e123"),//14
-    BF("2.2e148"),//15
+    BF("2.2e150"),//15
     BF("1.1e170"),//16
     BF("8.3e183"),//17
     BF("6.4e188"),//18
@@ -334,7 +394,7 @@ const ctr = ML2(2700);
 /**
  * Calculates the total boost from the different types of cookies you have
  * @param {BigNumber} level, The amount of cookie upgrade level you have from the cookieT.level
- * @returns {BigNumber} The total amount of cookie boost you have 
+ * @returns {BigNumber} The total amount of cookie boost you have
  */
 var getCookieTP = (level) => {
     let res = BF(1);
@@ -479,7 +539,7 @@ let effectCPSB=1;
 let templeLuck = 1000;
 let spellCost = [15,20,75,25,30,100,10,0];
 //! SECONDS ONLY
-let spellCool = [180,240,3600,300,360,600,600,1000];
+let spellCool = [720,420,3600,600,420,900,660,1200];
 let effectCPSBDur = 37;
 let templeLuckDur = 30;
 let logBoost = 1;
@@ -549,7 +609,7 @@ let castSpell = (index) => {
             break;
         case 6:
             for(let i=0;i<Spell.length;i++){
-                spellCast[i]-=1200+(300*SpellStack.level);
+                spellCast[i]-=600+(150*SpellStack.level);
             }
             log("It works!");
             break;
@@ -723,11 +783,11 @@ var cookietName = [
 	["Cheesecake","Profiteroles","Panettone","Churros","Cinnamon Bun","Jelly Donut","Glazed Donut","Chocolate Cake","Pies","Croissant","Pain Au Chocolat","Focaccia","Taiyaki","Phyllo","Apple Strudel","Samarkand Bread"],
 	["Cookie Dough","Cookie Dough(No Salmonella)","Burnt Cookie","A normal chocolate chip cookie but there\'s no chips at all for some reason","4K Cookie","Ray-Traced Cookie","Crackers","Deep-Fried Cookie","Flavor Text Cookie"],
 	["Toast","Pancakes","Marshmellows","PB amd J","Wookies","Cheeseburger","Beesechurger","One lone chocolate Chip","Pizza","Candy","Brownies","Flavor text Food that is not cookie","Medovik","Fudge"],
-	["Gilles-Cookie Paillé","liver","Mathmatically Illegal Cookie","! [ Snakey Snickerdoodles ] !","Nerdy as f Cookie",":exCookie:","JS-Formed ellipsis Cookie","SkyXCookie","Weierstra🅱️ Cookie Spiral","Exponential Cookie","ouo cookie"],
+	["Gilles-Cookie Paillé","liver","Mathmatically Illegal Cookie","! [ Snakey Snickerdoodles ] !","Nerdy as f Cookie",":exCookie:","JS-Formed ellipsis Cookie","SkyXCookie","Weierstra🅱️ Cookie Spiral","Exponential Cookie","ouo cookie","Orteil β Cookie"],
 	["Gigaloopite","Tetraloopite","Enium Cookie","Orate Cookie","Dxygen Cookie","IUSpawn Cookie","egg","Euler Serion Cookies"],
 	["Mutated Cookie","Magic Marbled Cookie","Shortcake-like Cookie","Truffle Cookie","Salt Pretzels","Seaweed Sesame Cookie","Dulce De Leche","Keylime Pie","S\'Mores","Chocolate Drizzle Cookie","Peppermint Kiss Cookie","Sprinkled Jelly Cookie","Galaxial Drop","Reflective Frosted Cookie","Pecan Walnut Cookie","White Mine Cookie","Jelly Triangle","Gold Leafed Cookie","Grand Chocolate Wafer Sprinkles"]
 ];
-//Want your self insert? DM me your very own c🍪okie name and I might add it!
+//Want your self insert? DM me your very own cookie name and I might add it!
 
 //Milestone Superpowers and random stuffs
 var superP,superL,superC;
@@ -1002,7 +1062,7 @@ var init = () => {
         building[i].bought = (amount) => calcCPS();
         switch(i){
             case 1:
-                //Grandma's C🍪venant
+                //Grandma's Covenant
                 covenant = theory.createUpgrade(10001,cookie,new ExponentialCost(1e65, ML2(1e15)));
                 covenant.getDescription = (_) => "Grandmother's Covenant $(C_{v})$";
                 covenant.getInfo = () =>
@@ -1229,7 +1289,7 @@ var init = () => {
         conGrow.bought = (amount) => calcCPS();
         SpellStack = shortPermaUpgradeML(baseI+13,hc,new ExponentialCost(1e105,ML2(1e5)),"Spell Cast Layering","Allows multiples of the same spell to be casted, cooldown all at once and slightly empowers the spell as well",3);
         SpellStack.bought = (amount) => updateSpellLayer();
-        Empower = shortPermaUpgradeML(baseI+14,hc,new ExponentialCost(1e120,ML2(10^1.3)),"Empowerments of Buildings","Increases how fast $P$ grows",50);
+        Empower = shortPermaUpgradeML(baseI+14,hc,new ExponentialCost(5e116,ML2(10^1.35)),"Empowerments of Buildings","Increases how fast $P$ grows",50);
         Empower.bought = (amount) => calcCPS();
     }
     //Cursor Upgrade
@@ -1584,12 +1644,13 @@ var calcCPS = () => {
         arrcps[4] *= (recom.level > 1)?(BF(1e54) * BigP(1.9,recom.level - 1)):(BF(1e54));
         lwC = Math.floor((BigL10(10+cookie.value)) / lumpc) + LPS / 10;
     }
+    arrcps[14] = BigP(arrcps[14],RandR(1.01+(0.00005*buildingUpgrade[14].level),0.99+(0.00005*buildingUpgrade[14].level)));
     CPS = arrcps.reduce((pre,cur) => pre+cur,BigNumber.ZERO);
     if((spellCast[1]+(10*effectCPSBDur)) >= thyme.level){
         CPS *= effectCPSB;
     }
     if(artArt.level > 4){
-        //Multiplies the CPS from all buildings by the am🍪unt of grandmas you have to the power of 0.61
+        //Multiplies the CPS from all buildings by the amount of grandmas you have to the power of 0.61
         CPS*=BigP(building[1].level,0.61);
     }
     CPS *= 1+(BF(clickp.level) * BigP(buip, buildingUpgrade[0].level) * BF(bcp));
@@ -2154,6 +2215,7 @@ var secondaryEq = (mode,col) => {
     if(Number.isNaN(col)){
         col = 0;
     }
+    //\color{#E6DFCF}{B(i) = B[i]P_{i}1.1^{L[i]}(\log_{10}\log_{10}\tau)^{2}}
     switch (mode) {
         case 0:
             return `\\color{#${eqColor[col]}}{B(i) = B[i]P_{i}1.1^{L[i]}${(CookieTau.level > 0)?"(\\log_{10}\\log_{10}\\tau)^{2}":""}}`;
@@ -2165,7 +2227,7 @@ var secondaryEq = (mode,col) => {
                 (CookieS.level > 0 ? "(log_{2}(L + 2))^{2}" : "") +
                 (CookieH.level > 0 ? "(log_{10}(H + 10))^{1.5}" : "") +
                 (CookieC.level > 0 ? "(log_{10}(C + 10))" : "") + "}"
-            );
+            ); 
             break;
         case 2:
             return `\\color{#${eqColor[col]}}{M = M_{i}K(0.2)+(K-10)(0.3)\\\\+(K-25)(0.4)+(K-50)(0.5)${(artArt.level > 2)?"\\\\M \\leftarrow M^{1.5+0.01A_{c}}":""}}`;
