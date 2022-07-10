@@ -1313,7 +1313,7 @@ var init = () => {
             new ExponentialCost(b50 * baseCost[i], ML2(b50))
         );
         buildingP[i].getInfo = (amount) =>
-        `\$P_{${i.toString(10)}}${(superP.level > 0)?"^{1.02}":""} \\: = \\: ${Utils.getMathTo(getPower2(i, buildingP[i].level).toString(0),getPower2(i, buildingP[i].level + amount).toString(0))}\$`;
+        `\$P_{${i.toString(10)}}${(superP.level > 0)?"^{1.02}":""} \\: = \\: \$${Utils.getMathTo(getPower2(i, buildingP[i].level).toString(0),getPower2(i, buildingP[i].level + amount).toString(0))}`;
         buildingP[i].getDescription = () =>
             `\$P_{${BigTS(i)}}${(superP.level > 0)?"^{1.02}":""}\$ = ${BigTS(getPower(i))}`;
             //"$P_{" + i.toString(10) + "}$ = " + getPower(i).toString(0);
@@ -2227,7 +2227,7 @@ var secondaryEq = (mode,col) => {
                 (CookieS.level > 0 ? "(log_{2}(L + 2))^{2}" : "") +
                 (CookieH.level > 0 ? "(log_{10}(H + 10))^{1.5}" : "") +
                 (CookieC.level > 0 ? "(log_{10}(C + 10))" : "") + "}"
-            ); 
+            );
             break;
         case 2:
             return `\\color{#${eqColor[col]}}{M = M_{i}K(0.2)+(K-10)(0.3)\\\\+(K-25)(0.4)+(K-50)(0.5)${(artArt.level > 2)?"\\\\M \\leftarrow M^{1.5+0.01A_{c}}":""}}`;
