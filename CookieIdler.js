@@ -2218,7 +2218,7 @@ var secondaryEq = (mode,col) => {
     //\color{#E6DFCF}{B(i) = B[i]P_{i}1.1^{L[i]}(\log_{10}\log_{10}\tau)^{2}}
     switch (mode) {
         case 0:
-            return `\\color{#${eqColor[col]}}{B(i) = B[i]P_{i}1.1^{L[i]}${(CookieTau.level > 0)?"(\\log_{10}\\log_{10}\\tau)^{2}":""}}`;
+            return `\\color{#${eqColor[col]}}{B(i) = B[i]P_{i}1.1^{L[i]}${(CookieTau.level > 0)?"(\\log_{10}\\log_{10}\\tau)^{2}":""}${(building[14].level > 0)?"\\\\B(14) \\leftarrow B(14)^{r(1.01+5\\cdot10^{-5}L[14],0.99+5\\cdot10^{-5}L[14])}":""}}`;
             break;
         case 1:
             return (
