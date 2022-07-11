@@ -12,6 +12,8 @@ import { ui } from "../api/ui/UI";
 import { FontFamily } from "../api/ui/properties/FontFamily";
 import { Thickness } from "../api/ui/properties/Thickness";
 import { profilers } from "../api/Profiler";
+import { TextAlignment } from "../api/ui/properties/TextAlignment";
+import { FontAttributes } from "../api/ui/properties/FontAttributes";
 //Hello to the person reading this "code"
 //Spoilers alert for ALL of the upgrades, buildings and achievements
 //Before leaving, please try and find any bugs or bad JS coding practices for me
@@ -1852,26 +1854,33 @@ var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, building
 const helpText = [];
 //Just a bunch of text that is used in the help menu and a placeholder for the REAL help menu, meanwhile enjoy this placeholder text
 var getHelpText = () => {
-    let ret = "Welcome to a theory all about cookies and more cookies!!!\n You have 3 currencies, cookies(C), heavenly chips(H), and sugar lumps(L), which you'll be spending on upgrades located on both tabs.\n\nCookies(C) by far is the most important, as the majority of the gameplay revolves around it, from buildings to even tau! You can get your first batch of cookies by buying a cursor, which is gifted to you for free to kickstart your very own cookie empire! By maximizing CPS(C dot), you are sure to produce a whole lot of cookies.\n\nHeavenly Chips(H) are a special type of cookie that forms whenever you sacrificed everything material you own in exchange for greater power(called publications). They can be used for all sorts of special upgrades, and might even end up boosting your CPS if you know enough.\n\nSugar lumps(L) by far are the hardest to acquire, literally requiring luck in order to get some, but its powers of being able to outright boost your building's CPS by 10%, multiplicative! Rumor has it that it gets easier to acquire the more cookies you have.\n";
-    if(cookie.value >= BF(1e3)){
-        ret += "\nIn the permanent tab, you would find something like P1 = 1. These are upgrades that directly multiplies the CPS of a building by that amount(kinda like its power). It grows exponentially, like how the theory is supposed to be; but varying depending on what building P boosts. Later on they might grow even faster but I'll leave that up to you.\n"
+    let ret = [];
+    ret.push(ui.createLabel({text:"Welcome to a theory all about cookies and more cookies!!!\n You have 3 currencies, cookies(C), heavenly chips(H), and sugar lumps(L), which you'll be spending on upgrades located on both tabs.\n\nCookies(C) by far is the most important, as the majority of the gameplay revolves around it, from buildings to even tau! You can get your first batch of cookies by buying a cursor, which is gifted to you for free to kickstart your very own cookie empire! By maximizing CPS(C dot), you are sure to produce a whole lot of cookies.\n\nHeavenly Chips(H) are a special type of cookie that forms whenever you sacrificed everything material you own in exchange for greater power(called publications). They can be used for all sorts of special upgrades, and might even end up boosting your CPS if you know enough.\n\nSugar lumps(L) by far are the hardest to acquire, literally requiring luck in order to get some, but its powers of being able to outright boost your building's CPS by 10%, multiplicative! Rumor has it that it gets easier to acquire the more cookies you have.\n",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,10,2,10)}));
+    if(cookie.value >= BF(500)){
+        ret.push(ui.createLabel({text:"Building Upgrades",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,10,2,10)}));
+        ret.push(ui.createLabel({text:"In the permanent tab, you would find something like P1 = 1. These are upgrades that directly multiplies the CPS of a building by that amount(kinda like its power). It grows exponentially, like how the theory is supposed to be; but varying depending on what building P boosts. Later on they might grow even faster but I'll leave that up to you.",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,10,2,10)}));
     }
     if(cookieT.level > 0){
-        ret += "\nBack to the main tab, there's 2 new upgrades that popped out: Milk and Cookie Flavor. Milk acts like a booster for having more achievements(the labors are all paid for by the felines). Cookie Flavor is exactly what it does, sprinkling more variance and flavor into your cookie empire which apparently makes more cookies for some reason.\n";
+        ret.push(ui.createLabel({text:"Milk and Flavors",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,15,2,10)}));
+        ret.push(ui.createLabel({text:"In the main tab, there're 2 new upgrades that popped out: Milk and Cookie Flavor. Milk acts like a booster for having more achievements(the labors are all paid for by the felines). Cookie Flavor is exactly what it does, sprinkling more variance and flavor into your cookie empire which apparently makes more cookies for some reason.",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,10,2,10)}));
     }
     if(covenant.isAvailable){
-        ret += "\nThe Grandmother\'s Covenant is the first of the so-called \"Unique Upgrades\". They provide a massive boost to that building's CPS and potentially unlocks new strategies and game mechanics. In this case, the covenant boosts the grandma with P1, The total amount of buildings you own excluding grandmas,  mildly exponentiated as a bonus.\n";
+        ret.push(ui.createLabel({text:"Unique Upgrades",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,15,2,10)}));
+        ret.push(ui.createLabel({text:"The Grandmother\'s Covenant is the first of the so-called \"Unique Upgrades\". They provide a massive boost to that building's CPS and potentially unlocks new strategies and game mechanics. In this case, the covenant boosts the grandma with P1, The total amount of buildings you own excluding grandmas,  mildly exponentiated as a bonus.",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,10,2,10)}));
     }
     if(terra.isAvailable){
-        ret += "\nTerraform Buff is unlocked when you have the Unique Upgrade for mines, it provides a short boost to your CPS(until it doesn't) through the magic of Logistic Function automatically ending this buff depending on your terraforming level. You'll have higher maximum boosts the more mines you own, along with the upgrade level itself.\n";
+        ret.push(ui.createLabel({text:"Mass Terraforming",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,15,2,10)}));
+        ret.push(ui.createLabel({text:"Terraform Buff is unlocked when you have the Unique Upgrade for mines, it provides a short boost to your CPS(until it doesn't) through the magic of Logistic Function automatically ending this buff depending on your terraforming level. You'll have higher maximum boosts the more mines you own, along with the upgrade level itself.",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,10,2,10)}));
     }
     if(art.isAvailable){
-        ret += "\nArchaeology is a new game mechanic revolving around exploring your very own temple in search for funny parts and upgrades that helps you later on. To find an artifact, a certain requirement must be completed(which I won't tell you!) through reading the clue for the next one by viewing the information on the Archaeology upgrade. Sometimes exploration might just not come back with upgrades, but something else...\n";
+        ret.push(ui.createLabel({text:"Archaeology",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,15,2,10)}));
+        ret.push(ui.createLabel({text:"Archaeology is a new game mechanic revolving around exploring your very own temple in search for funny parts and upgrades that helps you later on. To find an artifact, a certain requirement must be completed(which I won't tell you!) through reading the clue for the next one by viewing the information on the Archaeology upgrade. Sometimes exploration might just not come back with upgrades, but something else...",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,10,2,10)}));
     }
     if(SpellView.isAvailable){
-        ret += "\nGrimoire allows you to cast spells through the tomes you had. It costs Sugar Lumps to cast a spell, and each spell can be casted once(until it doesn't) before needing to recharge. A spell is ready to be casted again when the level is set back to 0. Discover the effects of each spell yourself, that's the part of the surprise.\n";
+        ret.push(ui.createLabel({text:"Grimoire",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,15,2,10)}));
+        ret.push(ui.createLabel({text:"Grimoire allows you to cast spells through the tomes you had. It costs Sugar Lumps to cast a spell, and each spell can be casted once(until it doesn't) before needing to recharge. A spell is ready to be casted again when the level is set back to 0. Discover the effects of each spell yourself, that's the part of the surprise.",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,10,2,10)}));
     }
-    ret += "\nCheck back later for more in-game information\n";
+    ret.push(ui.createLabel({text:"Check back later for more in-game information",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,15,2,15)}));
     return ret;
 }
 
@@ -1881,12 +1890,8 @@ var InsPopup = ui.createPopup({
         children: [
             ui.createScrollView({
                 heightRequest: 400,
-                content: ui.createLabel({
-                    text: "if you're reading this in game then the theory screwed up",
-                    horizontalTextAlignment: TextAlignment.CENTER,
-                    padding: Thickness(10, 2, 10, 2),
-                    fontSize: 14,
-                    maxLines: 100,
+                content: ui.createStackLayout({
+                    children: [ui.createLabel({text:"If you're seeing this then this theory borked",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,15,2,15)})]
                 }),
             }),
             ui.createButton({
@@ -1935,6 +1940,7 @@ let colorButton = ui.createButton({
         theory.invalidateTertiaryEquation();
     }
 })
+
 let perkLabel1 = ui.createLatexLabel({
     text:"You can forge your cookies into exponentium bars to exponentiate your buildings for faster cookie production here.\n\nEach bar you give to a building increases their exponent by 0.05",
     fontSize: 14,
@@ -2078,7 +2084,7 @@ let popup = ui.createPopup({
                     ui.createButton({
                         text: "Instructions", row: 0, column: 0,
                         onClicked: () => {
-                            InsPopup.content.children[0].content.text = getHelpText();
+                            InsPopup.content.children[0].content.children = getHelpText();
                             InsPopup.show();
                         },
                     }),
@@ -2139,8 +2145,8 @@ var getEquationOverlay = () =>
                 source: ImageSource.INFO,
                 horizontalOptions: LayoutOptions.START,
                 verticalOptions: LayoutOptions.END,
-                heightRequest: 25,
-                margin: new Thickness(10, 10, 0, 0),
+                heightRequest: 30,
+                margin: new Thickness(10, 10, 0, 10),
                 onTouched: (e) => {
                     if (e.type == TouchType.SHORTPRESS_RELEASED) {
                         popup.show();
@@ -2149,11 +2155,11 @@ var getEquationOverlay = () =>
             }),
             terra.level > 0
                 ? ui.createImage({
-                      source: ImageSource.FAST_FORWARD,
+                      source: ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/6/6f/CookieProduction39.png/revision/latest?cb=20200620182721"),
                       horizontalOptions: LayoutOptions.START,
                       verticalOptions: LayoutOptions.END,
-                      heightRequest: 25,
-                      margin: new Thickness(10, 10, 0, 0),
+                      heightRequest: 30,
+                      margin: new Thickness(10, 0, 0, 0),
                       onTouched: (e) => {
                           if (e.type == TouchType.SHORTPRESS_RELEASED) {
                               log("Boost!");
