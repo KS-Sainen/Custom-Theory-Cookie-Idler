@@ -239,6 +239,9 @@ var setInternalState = (state) => {
     if(res.length > 17){
         perkPoint = parseInt(res[17]);
     }
+    if(Number.isNaN(perkPoint)){
+        perkPoint=0;
+    }
     perkHas = perkPoint;
     for(let i=0;i<19;i++){
         if(res.length > (18+i)){
@@ -762,7 +765,7 @@ let congrowInfo = "Certain high-tech buildings gets more powerful the more of th
 
 //Conseq. HC Upgrade
 var cookiet = new Array(9);
-var cookietP = [1.2, 1.25, 1.35, 1.5, 1.5, 1.75, 1.75, 2, 2.25, 2.5];
+var cookietP = [1.2, 1.25, 1.35, 1.5, 1.55, 1.75, 1.8, 2, 2.25, 2.5];
 var cookietB = [
     1.5e17,
     1.5e32,
@@ -887,7 +890,7 @@ const bach3 = ["Thumbs, Phalanges, Metacarpals","Ruler of the Ancients","Green P
 const bach4 = ["Hands of fate lays bare their click upon thou","Shrivel, today we rise","Babylonian Conservatorium sits on the hill","Breaking through reality","The perfect game of Factorio","Money is just a human construct","Caricature of the forgotten Deities","Cookiera Avadra Creamdera","Omniverse Realization","Satiated in the gaudy mouths of Gold","Bottom of the abyss","Out of past, Out of future","Hypersize my String and Gluten","Neverending rays of bright brilliance shine on you all"];
 const bachlump = ["A hand and them a some more","Just like babies, but much more weird and terrifying","Farmer\'s Heaven","r/drillingmasterrace","Like the Japanese Inventors!","Hypermetaflation","Chief Artifact Curator","Hours to pronounce, effects very pronounced","A fleet of expeditors","Periodic Table","Is this reality or is it cookieverse?","No more Thyme Pararegano","Flavor Mathematics","4th Cone","Black Cat\'s Paw","Quite nearly but not so full","The \"C\" Language","You need a new bluestack","I am smart"];
 var featAchCat;
-var superIdle,hyperIdle,speedBake1,speedBake2,speedBake3,speedBake4,speedBake5,nice,insipid;
+var superIdle,hyperIdle,speedBake1,speedBake2,speedBake3,speedBake4,speedBake5,nice,insipid,leetnice;
 
 let lumpAchReq = [1, 10, 50, 100, 500, 1000, 10000, 100000, 1000000, 10000000];
 //Misc.
@@ -941,12 +944,32 @@ var checkChapter = (c) => {
 var thyme;
 //All Secondary Equations
 //1.Building CPS, 2.P formula, 3.Milk, 4.Cookie Power, 5.Covenant, 6.Yggdrasil, 7.Terra
+/**
+ * Returns a permanent upgrade object from the arguments given.
+ * @param {number} id, The ID of the upgrade, must be unique.
+ * @param {currency} cur, The currency for the cost of the upgrade.
+ * @param {function} costModel, The function that returns the cost of the upgrade. Must return BigNumber
+ * @param {function} desc, The function that returns the description(the name) of the upgrade. The function MUST return a string
+ * @param {function} info, The function that returns the info of the upgrade. The function MUST return a string
+ * @returns {PermanentUpgrade} The permanent upgrade from the given arguments.
+ */
 function shortPermaUpgrade(id, cur, costModel, desc, info){
     var up = theory.createPermanentUpgrade(id,cur,costModel);
     up.getDescription = () => desc;
     up.getInfo = () => info; 
     return up;
 }
+
+/**
+ * Returns a permanent upgrade object from the arguments given a specified maxLevel.
+ * @param {number} id, The ID of the upgrade, must be unique.
+ * @param {currency} cur, The currency for the cost of the upgrade.
+ * @param {function} costModel, The function that returns the cost of the upgrade. Must return BigNumber
+ * @param {function} desc, The function that returns the description(the name) of the upgrade. The function MUST return a string
+ * @param {function} info, The function that returns the info of the upgrade. The function MUST return a string
+ * @param {number} maxLevel, The maximum level of the upgrade.
+ * @returns {PermanentUpgrade} The permanent upgrade from the given arguments.
+ */
 function shortPermaUpgradeML(id, cur, costModel, desc, info, maxLevel){
     var up = shortPermaUpgrade(id, cur, costModel, desc, info);
     up.maxLevel = maxLevel;
@@ -1306,6 +1329,7 @@ var init = () => {
     }
     //Building Power Upgrade
     const b50 = 1000;
+    //Power Upgrade
     for (let i = 0; i < 19; i++) {
         buildingP[i] = theory.createPermanentUpgrade(
             4 + i,
@@ -1319,6 +1343,7 @@ var init = () => {
             //"$P_{" + i.toString(10) + "}$ = " + getPower(i).toString(0);
         buildingP[i].bought = (amount) => calcCPS();
     }
+    //Lumpy Upgrade
     for (let i = 0; i < 19; i++) {
         buildingUpgrade[i] = theory.createPermanentUpgrade(
             33 + i,
@@ -1478,17 +1503,20 @@ var init = () => {
         buiLumpAch = theory.createAchievement(700+i,BuildingAchievement,bachlump[i],`Upgrade ${buildingName[i]} to level 100`,()=>CheckAchBui2(i,100));
     }
     //Feats
-    featAchCat = theory.createAchievementCategory(4,"Feats");
-    superIdle = theory.createAchievement(800,featAchCat,"Super Idler","(2) Have your cookie exceeds 1 day worth of CPS while having 0 levels of terraform upgrade",()=>CheckAchFeat(() => (cookie.value > BF(86400)*CPS)&&(terra.level==0),2));
-    hyperIdle = theory.createSecretAchievement(801,featAchCat,"Hyper Idler","(3) Have your cookie exceeds 1 year worth of CPS while having 0 levels of terraform upgrade\nhow in the world did you even managed that anyway","Gaseous",()=>CheckAchFeat(() => (cookie.value > BF(31536000)*CPS)&&(terra.level==0),3));
-    speedBake1 = theory.createAchievement(802,featAchCat,"Speed Bake I","(1) Get 1e25 CPS within 1 minute of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e25))&&(thyme.level <= 600),1));
-    speedBake2 = theory.createAchievement(803,featAchCat,"Speed Bake II","(2) Get 1e50 CPS within 45 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e50))&&(thyme.level <= 450),2));
-    speedBake3 = theory.createAchievement(804,featAchCat,"Speed Bake III","(3) Get 1e100 CPS within 30 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e100))&&(thyme.level <= 300),3));
-    speedBake4 = theory.createAchievement(805,featAchCat,"Speed Bake IV","(3) Get 1e200 CPS within 15 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e200))&&(thyme.level <= 150),3));
-    speedBake5 = theory.createAchievement(806,featAchCat,"Speed Bake V","(4) Get 1e300 CPS within 5 seconds of publishing\n\nhaha speed goes brrrrrr",()=>CheckAchFeat(() => (CPS >= BF(1e300))&&(thyme.level <= 50),4));
-    nice = theory.createSecretAchievement(807,featAchCat,"nice","(1) Get exactly 69 heavenly lumps(decimals accepted)","nice",()=>CheckAchFeat(() => (70 > hc.value)&&(hc.value > 68),1));
-    insipid = theory.createAchievement(808,featAchCat,"Bland Taste","(2) Get to e55 without buying a single level of milk and cookie flavor",()=>CheckAchFeat(() => (cookie.value >= BF(1e55))&&(milk.level==0)&&(cookieT.level==0),2));
-    //! Total sum of all feats : 19
+    {
+        featAchCat = theory.createAchievementCategory(4,"Feats");
+        superIdle = theory.createAchievement(800,featAchCat,"Super Idler","(2) Have your cookie exceeds 1 day worth of CPS while having 0 levels of terraform upgrade",()=>CheckAchFeat(() => (cookie.value > BF(86400)*CPS)&&(terra.level==0),2));
+        hyperIdle = theory.createSecretAchievement(801,featAchCat,"Hyper Idler","(3) Have your cookie exceeds 1 year worth of CPS while having 0 levels of terraform upgrade\nhow in the world did you even managed that anyway","Gaseous",()=>CheckAchFeat(() => (cookie.value > BF(0x1e13380)*CPS)&&(terra.level==0),3));
+        speedBake1 = theory.createAchievement(802,featAchCat,"Speed Bake I","(1) Get 1e25 CPS within 1 minute of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e25))&&(thyme.level <= 600),1));
+        speedBake2 = theory.createAchievement(803,featAchCat,"Speed Bake II","(2) Get 1e50 CPS within 45 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e50))&&(thyme.level <= 450),2));
+        speedBake3 = theory.createAchievement(804,featAchCat,"Speed Bake III","(3) Get 1e100 CPS within 30 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e100))&&(thyme.level <= 300),3));
+        speedBake4 = theory.createAchievement(805,featAchCat,"Speed Bake IV","(3) Get 1e200 CPS within 15 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e200))&&(thyme.level <= 150),3));
+        speedBake5 = theory.createAchievement(806,featAchCat,"Speed Bake V","(4) Get 1e300 CPS within 5 seconds of publishing\n\nhaha speed goes brrrrrr",()=>CheckAchFeat(() => (CPS >= BF(1e300))&&(thyme.level <= 50),4));
+        nice = theory.createSecretAchievement(807,featAchCat,"nice","(1) Get exactly 69 heavenly lumps(decimals accepted)","nice",()=>CheckAchFeat(() => (0x46 > hc.value)&&(hc.value > 0x44),1));
+        insipid = theory.createAchievement(808,featAchCat,"Bland Taste","(2) Get to e55 without buying a single level of milk and cookie flavor",()=>CheckAchFeat(() => (cookie.value >= BF(1e55))&&(milk.level==0)&&(cookieT.level==0),2));
+        leetnice = theory.createSecretAchievement(809,featAchCat,"leet nice","(3) Have Temple+Alchemy Lab = 1337","[ni] + [ce] = leet",()=>CheckAchFeat(() => ((building[6].level + building[9].level) == 0x539),3));
+    }
+    //! Total sum of all feats : 22
     //Misc.
 
     ///////////////////
