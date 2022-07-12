@@ -1568,6 +1568,7 @@ var updateAvailability = () => {
     conGrow.isAvailable = hc.value > BF(1e100) && heavVis;
     SpellStack.isAvailable = hc.value > BF(1e100) && heavVis;
     Empower.isAvailable = hc.value > BF(1e115) && heavVis;
+    SpellView.isAvailable = artArt.level > 10;
     for (let i = 0; i < cookieTinName.length; i++) {
         cookiet[i].isAvailable =
             cookieTin.level >= i + 1 &&
@@ -1843,6 +1844,7 @@ var prePublish = () => {
     lumpbf = lump.value;
     hbf = hc.value;
     hbf += (cookie.value / BF("1e12")).pow(1 / 3);
+    isSpellShown = 0;
 };
 
 var getExpn = (index) => buiPerk[index] * buiexp + 1;
@@ -1884,6 +1886,12 @@ var getHelpText = () => {
         ret.push(ui.createLabel({text:"Grimoire allows you to cast spells through the tomes you had. It costs Sugar Lumps to cast a spell, and each spell can be casted once(until it doesn't) before needing to recharge. A spell is ready to be casted again when the level is set back to 0. Discover the effects of each spell yourself, that's the part of the surprise.",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,10,2,10)}));
     }
     ret.push(ui.createLabel({text:"Check back later for more in-game information",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,15,2,15)}));
+    return ret;
+}
+var getUpdateNotes = () => {
+    let ret = [];
+    ret.push(ui.createLabel({text:"Version 0.4.0 - Book of Spells",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,10,2,5)}));
+    ret.push(ui.createLabel({text:"\t- 🧙‍♂️ Added a NEW unique upgrade : \"Grimoire\", available at your nearest temples! Cast spells to further your progression, build new strategy revolving them, or to get unlucky and [DATA EXPUNGED]. \n\t- UI OVERHAUL : Everything\'s changed! From the equation overlay to the brand NEW main menu. Explore a whole new dimension of interacting with the theory you love(hopefully so).\n\t- CHANCEMAKERS : Those things really do depend on luck. I mean, REALLY.\n\t- Balanced out a lot of things at every stage of the game progression until this point. Changed up some upgrades and adjusted P_i growth rate for some rowdy CPS and revolutionized milestone upgrades.\n\t- Added a whole lot of achievements and feats, go get them all. There\'s rewards for achieving them so get achieving.",fontSize:11,horizontalTextAlignment:TextAlignment.START,fontAttributes:FontAttributes.NONE,padding:Thickness(2,5,2,10)}));
     return ret;
 }
 
@@ -2066,12 +2074,11 @@ let whatsnewMenu = ui.createPopup({
     content:ui.createStackLayout({
         children:[
             ui.createFrame({
-                heightRequest: 309,
-                cornerRadius: 0,
-                content:ui.createLabel({
-                    text: "When the grimoire update this will show the entire changelog!",
-                    fontSize: 14,
-                    padding: new Thickness(12, 6, 12, 6),
+                content:ui.createScrollView({
+                    heightRequest: 350,
+                    content:ui.createStackLayout({
+                        children:getUpdateNotes(),
+                    })
                 })
             }),
             ui.createButton({
@@ -2141,7 +2148,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text:"Cookie Idler\nv0.4.15-beta"
+                text:"Cookie Idler\nv0.4.0"
             })
         ]
     })
