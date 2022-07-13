@@ -460,7 +460,7 @@ const terraName = "Mass Terraforming $(T_{r})$";
 const terraInfo =
     "Unlocks/Improves a buff that temporarily boosts your CPS by a lot";
 
-    //FACTORY - Recombobulators
+//FACTORY - Recombobulators
 var recom;
 const recomName = "Recombobulators $(R_{e})$";
 const recomInfo = "Produces a constant stream of all currencies! What a dream!";
@@ -471,7 +471,7 @@ const investName = "Investment Openings $(I_{o})$";
 const investInfo =
     "Open your very own investments forms. Grants 5 buildings of random type and a flat 1.01 CPS boost!(chance of failure included)";
 
-    //TEMPLE - Archaeology
+//TEMPLE - Archaeology
 var art;
 var artArt;
 let artName = "Archaeology $(A_{r})$";
@@ -488,6 +488,10 @@ let artArtName = [
     "A very curious tulip bulb",//Bank CPS
     "Book of Symbolisms",//Chancemaker Unlock
     "Grimoire of Basic Cookie Magic",//Grimoire
+    "Antediluvian Engine",//Time Dilation
+    "Elementium Infused Chocolate Chunk",//Secrets of the Elements
+    "Scent of Vanilla Nebula",//Shipment CPS + Astrofudge
+    "Iteration Drive",//Unlocks funny things
     "More artifacts coming soon",
 ];
 let artClue = [
@@ -501,6 +505,10 @@ let artClue = [
     "Hoard, Hoard, Hoard more",//7-8
     "Am I lucky? enough?",//8-9
     "haha mana goes brrrrrr",//9-10
+    "Time-Stopping Performance",//the world
+    "Cavitilicious",//Choco Chunk
+    "5 Cosmic Mappings ah ah ah",//Vanilla Neb
+    "2^50 = 1.125 × 10^15",//Itr Drive
     "You have all artifacts, yay",
 ];
 let artArtDesc = [
@@ -514,7 +522,11 @@ let artArtDesc = [
     "Do it like the renaissance! Legacy design included",
     "The best thing about economics is that it can be reset to zero, and undo your mistakes",
     "You don\'t know why, but you felt a compulsion to keep this book close to you",
-    "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 3 spells",
+    "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 8 spells",
+    "You feel a strange compulsion in the engine, and you know it\'s time shout \"THE WORLD\" as loud as possible",
+    "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?",
+    "Some astronomers go crazy over these",
+    "I don\'t think we should go deep, I heard the buildings gets strange if we go deep",
     "The temple is currently empty and fully explored for artifacts, but not for long....",
 ];
 
@@ -932,9 +944,9 @@ let chapterLore = [
     "18\n18 types of elementary particles\nNow there's 19 of them\nBut that's still 18 left to turn into cookies\nYou decided to commission the largest of the largest of particle accelerators to convert those particles into cookie particles\nYou gonna leak a lot of money for this, so you made the world dependent of cookies.",
     "How long has it been since you last saw the light of the day?\nYou went outside(and touched grass), only to find the sun instantly making you sweat bullets\nComing back into your den(grand office) you looked into the mirror and find yourself splattered with cookies\nIt seems that light itself is being turned into cookies as well\nMight just as well focus all of them into a big burst of cookies\nAnd in the meantime spray a bit of radiance to those worshippers as well",
     "POOF! and there goes nothing!\nYou just saw one of your cookies disappear into nothingness\nThen you saw a black cat in the corner of your vision again\nIn a panic,you hastily read through the book on symbolisms, and found out that black cat means bad luck\nWith your amounts of cookies, fearing that it might all be GONE the next day,\nYou improvised up a device from that book that would apparently bring in good luck to your entire existence\nAnd your local spellcasters might take an interest in that too",
-    "Does your cookie look empty?\nI know that might sound like nonsense but how much of the matter is really matter\nUsing your sheet amount of knowledge you got from working with your past projects\nYou somehow managed to convert mattern't to matter and the cookie just splits into a whole lot more cookies\nPresenting the plan, you assigned the engineers to work on standardizing the device used to convert mattern't to matter, although the material used might have been too exotic",
+    "Does your cookie look empty?\nI know that might sound like nonsense but how much of the matter is really matter\nUsing your sheet amount of knowledge you got from working with your past projects\nYou somehow managed to convert mattern't to matter and the cookie just splits into a whole lot more cookies\nPresenting the plan, you assigned the engineers to work on standardizing the device used to convert mattern't to matter\nDoes going too deep might reveal something you weren\'t supposed to see?",
     "Having lost your mind being overwhelmed with the thoughts of cookie\nYou went out on a ramage with your cookies, tearing down any and all signs of resistance, even the fabric of reality itself\nYou went mad, in search of something you can use to bend reality\nOne of the madness you did is parting some poor soul(Orteil?) of their laptop\nOn the laptop there's a console with the word 'Javascript' written on it\nYou of course, politely pressure the programmers to decipher the complicated syntax of 'Javascript'",
-    "I love cookies, why don't we enslave other idle games to produce cookies for us",
+    "I love cookies, why don't we enslave other idle games to produce cookies for us\nBreaking through dimensions, hijacking other \"innocent\" idle game universes to produce cookies for us",
     "Nothing stops you anymore\nNot even getting the counter to 750(it's now 500/750)\nIn one of the everlasting days at the Cookie Megacorporation...\nYou managed to manifest your desire of cookies out of thin air\nSeeing this opportunity, you cleared your way through the legal system to get some subjects to perform something on\nIt was a success, seeing them thinking up cookies out of thin air\nWhy bother with all your buildings when you can just think up cookies...",
     "The counter hit 750, and the sky immediately turned itself red...\n(To be continued)",
 ];
@@ -1498,14 +1510,14 @@ var init = () => {
     }
     //A lot of buildings
     BuildingAchievement = theory.createAchievementCategory(3,"Buildings");
-    for(let i=0;i<15;i++){
-        buiAch1[i] = theory.createAchievement(300+i,BuildingAchievement,bach1[i],`Get ${buildingName[i]} to level 100`,()=>CheckAchBui(i,100));
-        buiAch2[i] = theory.createAchievement(400+i,BuildingAchievement,bach2[i],`Get ${buildingName[i]} to level 1000`,()=>CheckAchBui(i,1000));
-        buiAch3[i] = theory.createSecretAchievement(500+i,BuildingAchievement,bach3[i],`Get ${buildingName[i]} to level 5000`,`${buildingName[i]} by 5000`,()=>CheckAchBui(i,5000));
+    for(let i=0;i<16;i++){
+        buiAch1[i] = theory.createAchievement(300+i,BuildingAchievement,bach1[i],`Get ${buildingName[0+Math.floor(bInfo/2)][i]} to level 100`,()=>CheckAchBui(i,100));
+        buiAch2[i] = theory.createAchievement(400+i,BuildingAchievement,bach2[i],`Get ${buildingName[0+Math.floor(bInfo/2)][i]} to level 1000`,()=>CheckAchBui(i,1000));
+        buiAch3[i] = theory.createSecretAchievement(500+i,BuildingAchievement,bach3[i],`Get ${buildingName[0+Math.floor(bInfo/2)][i]} to level 5000`,`${buildingName[0+Math.floor(bInfo/2)][i]} by 5000`,()=>CheckAchBui(i,5000));
         /*if(i < 14){
             buiAch3[i] = theory.createSecretAchievement(600+i,BuildingAchievement,bach4[i],`Get ${buildingName[i]} to level 10000`,`${buildingName[i]} by 10000`,()=>CheckAchBui(i,10000));
         }*/
-        buiLumpAch = theory.createAchievement(700+i,BuildingAchievement,bachlump[i],`Upgrade ${buildingName[i]} to level 100`,()=>CheckAchBui2(i,100));
+        buiLumpAch = theory.createAchievement(700+i,BuildingAchievement,bachlump[i],`Upgrade ${buildingName[0+Math.floor(bInfo/2)][i]} to level 100`,()=>CheckAchBui2(i,100));
     }
     //Feats
     {
@@ -1539,7 +1551,7 @@ var init = () => {
     //Finishing up stuffs
     updateSpellLayer();
     updateAvailability();
-    //calcCPS();
+    calcCPS();
 };
 
 var updateAvailability = () => {
@@ -1856,7 +1868,7 @@ var getPower = (index) => BigP(Utils.getStepwisePowerSum(
     ),1+(superP.level * 0.02));
 
 var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*2), 5, 1),1+(superP.level * 0.02));
-//! The text is arranged as follows: Introduction, Exponents, Cookies and Milk, Special Upgrades, Terraform Powerup, Archaeology, Grimoire, SPOILERS:(((((Cosmic Trade, Chemistry Laboratory, Bingo Research Facility)))))
+//! The text is arranged as follows: Introduction, Exponents, Cookies and Milk, Special Upgrades, Terraform Powerup, Archaeology, Grimoire, SPOILERS:(((((Collectibles, Chemistry Laboratory, Bingo Research Facility)))))
 //Just a bunch of text that is used in the help menu and a placeholder for the REAL help menu, meanwhile enjoy this placeholder text
 var getHelpText = () => {
     let ret = [];
@@ -2174,6 +2186,7 @@ var getEquationOverlay = () =>
                       source: ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/6/6f/CookieProduction39.png/revision/latest?cb=20200620182721"),
                       horizontalOptions: LayoutOptions.START,
                       verticalOptions: LayoutOptions.END,
+                      aspect:Aspect.ASPECT_FIT,
                       heightRequest: 30,
                       margin: new Thickness(10, 0, 0, 0),
                       onTouched: (e) => {
@@ -2237,10 +2250,22 @@ var artCheck = (cond) => {
         case 9:
             return building[7].level >= (parseInt([+!+[]+!+[]+!+[]+!+[]+!+[]+!+[]+!+[]]+[+!+[]+!+[]+!+[]]+[+!+[]+!+[]+!+[]+!+[]]+[+!+[]+!+[]])^parseInt([+!+[]+!+[]+!+[]]+[+!+[]+!+[]+!+[]]+[+!+[]+!+[]+!+[]+!+[]+!+[]+!+[]+!+[]+!+[]]+[+!+[]+!+[]+!+[]+!+[]+!+[]+!+[]]))+50;
             break;
+        case 10://oops looks like someone spilled a [][][[][[]][][](}()()})(!+{)({)([!({)}())])})})]] in there....
+            return arrcps[0x36 - 0x34 +0x6 + 0x4 + 0x59 + 0x2d - 0x9c + 0x14] >= BF([][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]][([][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]]((!![]+[])[+!+[]]+(!![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+([][[]]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+!+[]]+(+[![]]+[][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]])[+!+[]+[+!+[]]]+(!![]+[])[!+[]+!+[]+!+[]]+(+(!+[]+!+[]+!+[]+[+!+[]]))[(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]])[+!+[]+[+[]]]+([]+[])[([][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]][([][[]]+[])[+!+[]]+(![]+[])[+!+[]]+((+[])[([][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]])[+!+[]+[+[]]]+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[])[+!+[]]+([][[]]+[])[+[]]+([][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]]+[])[!+[]+!+[]+!+[]]+(!![]+[])[+[]]+(!![]+[][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]])[+!+[]+[+[]]]+(!![]+[])[+!+[]]]+[])[+!+[]+[+!+[]]]+(!![]+[])[!+[]+!+[]+!+[]]]](!+[]+!+[]+!+[]+[!+[]+!+[]])+(![]+[])[+!+[]]+(![]+[])[!+[]+!+[]])()([+!+[]]+(!![]+[])[!+[]+!+[]+!+[]]+[+!+[]]+[!+[]+!+[]+!+[]+!+[]+!+[]+!+[]]+[!+[]+!+[]+!+[]+!+[]+!+[]]));
+        case 11:
+            return lump.value >= 0b10011100010000;
+        case 12:
+            return building[7].level >= 0b10011100010000/2;
+        case 13:
+            return buildingUpgrade[15].level >= 0x4b;
         default:
             return false;
     }
 };
+//"Time-Stopping Performance",//the world
+//"Cavitilicious",//Choco Chunk
+//"5 Cosmic Mappings ah ah ah",//Vanilla Neb
+//"2^50 = 1.125 × 10^15",//Itr Drive
 init();
 calcCPS();
 var secondaryCheck = (mode) => {
