@@ -1645,6 +1645,7 @@ var updateAvailability = () => {
         buildingUpgrade[i].isAvailable = building[i].level > 10;
     }
     building[14].isAvailable = ((cookie.value >= baseCost[13]) && (artArt.level > 8));
+    jetdrive.isAvailable = (artArt.level > 12) || (jetdrive.level > 0);
     //Unique Upgrade
     covenant.isAvailable = cookie.value >= BF(1e60);
     ygg.isAvailable = cookie.value >= BF(1e100);
@@ -1659,6 +1660,7 @@ var updateAvailability = () => {
     }
     timeDilate.isAvailable = artArt.level > 11;
     excavate.isAvailable = artArt.level > 12;
+    moreExcavator.isAvailable = artArt.level > 12;
     accelerator.isAvailable = artArt.level > 12;
     acceleratorMenu.isAvailable = accelerator.level > 0;
     //Cookie Flavor
