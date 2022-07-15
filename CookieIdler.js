@@ -323,6 +323,7 @@ var isCurrencyVisible = (indx) => indx <= 2;
 const elemName = ["Be","Ch","Bg","Su","Jm","Cs","Hz","Mn","As"];
 const elemFormalName = ["Berrylium","Chalcedhoney","Buttergold","Sugarmuck","Jetmint","Cherrysilver","Hazelrald","Mooncandy","Astrofudge"];
 const elemWeight = [1,2,3,5,8,13,21,36,57];
+const nextExcavateReq = [0,1.35e13,5.5e12,1.5e9,6e7,500000,69420,69420];//req to unlock THAT element(comp: n-1)
 
 
 //==Buildings==
@@ -462,7 +463,7 @@ var universalBought = (indx) =>{
 
 
 //==Types of Cookies==
-var cookieT;
+var cookieT,crystalHoney;
 /**
  * Calculates the total boost from the different types of cookies you have
  * @param {BigNumber} level, The amount of cookie upgrade level you have from the cookieT.level
@@ -470,6 +471,7 @@ var cookieT;
  */
 var getCookieTP = (level) => {
     let res = BF(1);
+    level += crystalHoney.level * 15;
     if (level >= 150) {
         res = BF(1.13).pow(level);
     } else if (level >= 100) {
@@ -807,7 +809,7 @@ const vizName = ["Classic", "Milk"];
 
 
 //==Permanent Building Upgrades==
-var clickp,jetdrive; //Click Power relative to CPS
+var clickp,jetdrive; //Click Power relative to CPS + Empowerments but I'm so original
 var buildingUpgrade = new Array(19);
 var buildingPower = new Array(19);
 var buildingP = new Array(19);
@@ -1119,14 +1121,10 @@ var init = () => {
     }
     //Tasty Cookies
     {
-        cookieT = theory.createUpgrade(
-            0,
-            cookie,
-            new ExponentialCost(basect, ctr)
-        );
+        cookieT = theory.createUpgrade(0,cookie,new ExponentialCost(basect, ctr));
         cookieT.getDescription = (_) => {
             if(bInfo==1){
-                return `\$ C_{1}(${cookieT.level}) = ${getCookieTP(cookieT.level)}, \\: CP(${cookieT.level})${superC.level > 0?"^{1.05}":""}=${getCookieP(cookieT.level)}\$`;
+                return `\$ C_{1}(${cookieT.level+(crystalHoney.level*15)}) = ${getCookieTP(cookieT.level)}, \\: CP(${cookieT.level})${superC.level > 0?"^{1.05}":""}=${getCookieP(cookieT.level)}\$`;
             }
             if (cookieT.level > cookieType.length) {
                 return defaultcookieType;
@@ -1140,11 +1138,7 @@ var init = () => {
     //Heavely Tasty Cookie
     {
         for (let i = 0; i < cookieTinName.length; i++) {
-            cookiet[i] = theory.createUpgrade(
-                1000100 + i,
-                cookie,
-                new ExponentialCost(cookietB[i], ML2(8775))
-            );
+            cookiet[i] = theory.createUpgrade(1000100 + i,cookie,new ExponentialCost(cookietB[i], ML2(8775)));
             cookiet[i].maxLevel = cookietName[i].length;
             cookiet[i].getDescription = () => {
                 if(bInfo==1){
@@ -1156,18 +1150,13 @@ var init = () => {
                     return cookietName[i][cookiet[i].level];
                 }
             };
-            cookiet[i].getInfo = (amount) => (bInfo==1)?`\$ CT_{${i}} =\$ ${Utils.getMathTo(BigP(cookietP[i],cookiet[i].level),BigP(cookietP[i],cookiet[i].level+amount))}`:
-                "Some nice Heavenly Cookies to boost CPS even more";
+            cookiet[i].getInfo = (amount) => (bInfo==1)?`\$ CT_{${i}} =\$ ${Utils.getMathTo(BigP(cookietP[i],cookiet[i].level),BigP(cookietP[i],cookiet[i].level+amount))}`:"Some nice Heavenly Cookies to boost CPS even more";
             cookiet[i].bought = (amount) => calcCPS();
         }
     }
     //Kitty
     {
-        kitty = theory.createUpgrade(
-            kittyID,
-            cookie,
-            new ExponentialCost(kittyCost, kittyExp)
-        );
+        kitty = theory.createUpgrade(kittyID,cookie,new ExponentialCost(kittyCost, kittyExp));
         kitty.getDescription = (_) => {
             if(bInfo==1){
                 return `\$K_{i} = ${kitty.level}, M = ${kittyPower(kitty.level)}\$`;
@@ -1225,14 +1214,6 @@ var init = () => {
                 terra.getDescription = () => terraName;
                 terra.getInfo = () => terraInfo;
                 terra.bought = (amount) => getEquationOverlay();
-                //Excavation
-                excavate = theory.createUpgrade(11003,cookie,new ExponentialCost(BF("1e365"), ML2(5e4)));
-                excavate.maxLevel = 8;
-                excavate.getDescription = () => `Establish ${elemFormalName[excavate.level]} excavation site`;
-                excavate.getInfo = () => `Allows you to mine ${elemFormalName[excavate.level]}`;
-                moreExcavator = theory.createUpgrade(11004,elements[0],new ExponentialCost(132500, ML2(1.15)));
-                moreExcavator.getDescription = () => `Improve excavator efficiency`;
-                moreExcavator.getInfo = () => `Excavation Power = ${(1+(0.2*BigP(moreExcavator.level,1.05)))}`;
                 break;
             case 4:
                 //Recombobulators
@@ -1467,8 +1448,34 @@ var init = () => {
         clickp.getInfo = () => "Improves how much more the cursor clicks $(P_{cp})$";
         clickp.bought = (amount) => lessPreciseCalcCPS();
     }
-    jetdrive = shortPermaUpgrade(baseI+15,elements[4],new ExponentialCost(2500,ML2(1.15)),"Jetmint Battery Cell","Electrifies your buildings by increasing $P_i$");
+    //Excavation + Elemental Upgrades
+    excavate = shortPermaUpgradeML(11003,cookie,new ExponentialCost(BF("1e365"), ML2(5e4)),`Excavation Site`,`Allows you to mine elements`,8);
+    excavate.getInfo = () => `Allows you to mine ${elemFormalName[excavate.level]}`;
+    excavate.getDescription = () => `Establish ${elemFormalName[excavate.level]} excavation site ${(excavate.level>0)?`(${BigTS(nextExcavateReq[excavate.level])}\$${elemName[excavate.level-1]}\$)`:""}`;
+    excavate.bought = (amount) => {
+        for(let i=0;i<amount;i++){
+            if((excavate.level-amount+i) == 0){
+                continue;
+            }
+            if(elements[excavate.level-(amount-i+1)].value >= nextExcavateReq[excavate.level-(amount-i)]){
+                elements[excavate.level-(amount-i+1)].value -= nextExcavateReq[excavate.level-(amount-i)];
+            }else{
+                cookie.value += BF("1e365")*BigP(5e4,excavate.level-1);
+                excavate.level-=amount-i;
+                break;
+            }
+        }
+    };
+
+    moreExcavator = shortPermaUpgrade(11004,elements[0],new ExponentialCost(132500, ML2(1.15)),`Improve excavator efficiency`,`Excavation Power goes here`);
+    moreExcavator.getInfo = () => `Excavation Power = ${(1+(0.2*BigP(moreExcavator.level,1.4)))}`;
+
+    crystalHoney = shortPermaUpgrade(69420,elements[1],new ExponentialCost(BF(7.1e10),ML2(9.99)),"Crystallized Honey","A heavenly shard of this honey adds 15 levels to $C_1$");
+    crystalHoney.bought = (amount) => calcCPS();
+
+    jetdrive = shortPermaUpgradeML(baseI+15,elements[4],new ExponentialCost(2500,ML2(1.2658e5)),"Jetmint Battery Cell","Electrifies your buildings by increasing $P_i$",3);
     jetdrive.bought = (amount) => calcCPS();
+
     const b50 = 1000;
     //Power Upgrade
     for (let i = 0; i < 19; i++) {
@@ -1634,6 +1641,7 @@ var init = () => {
     updateSpellLayer();
     updateAvailability();
     calcCPS();
+    calcCPS();
 };
 
 
@@ -1703,8 +1711,8 @@ var calcBuilding = (id,am) => {
     }
 };
 var getExpn = (index) => buiPerk[index] * buiexp + 1;
-var getPower = (index) => BigP(Utils.getStepwisePowerSum(buildingP[index].level,buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*1)+(jetdrive.level*0.05),5,1),1+(superP.level * 0.02));
-var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*1)+(jetdrive.level*0.05), 5, 1),1+(superP.level * 0.02));
+var getPower = (index) => BigP(Utils.getStepwisePowerSum(buildingP[index].level,buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*1)+(jetdrive.level*0.5),5,1),1+(superP.level * 0.02));
+var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*1)+(jetdrive.level*0.5), 5, 1),1+(superP.level * 0.02));
 var calcCPS = () => {
     if(Number.isNaN(dominate)){
         dominate = 0;
@@ -1910,14 +1918,14 @@ var tick = (multiplier) => {
         }
     }
     for(let i=0;i<excavate.level;i++){
-        elements[i].value += BigL2(Logistic())*building[3].level*BigP(getPower(3),0.05)*buildingUpgrade[3].level*BigP(150,-1*(i+1))*(1+(0.2*BigP(moreExcavator.level,1.05)));
+        elements[i].value += BigL2(Logistic())*building[3].level*BigP(getPower(3),0.05)*buildingUpgrade[3].level*BigP(150,-1*(i+1))*(1+(0.2*BigP(moreExcavator.level,1.4)));
         if(i==reactorMode){
             let rate = building[12].level*lambda*elements[i+2].value;
             if((elements[i+2].value) < (rate*lossfactor)){
                 continue;
             }
-            elements[i+1].value += elements[i+2].value*rate*(yieldfactor/lambda)*(elemWeight[i+1]/elemWeight[i+2]);
-            elements[i].value += elements[i+2].value*rate*(yieldfactor/lambda)*(elemWeight[i]/elemWeight[i+2]);
+            elements[i+1].value += BigP(elements[i+2].value,0.35)*rate*(yieldfactor/lambda)*(elemWeight[i+1]/elemWeight[i+2]);
+            elements[i].value += BigP(elements[i+2].value,0.35)*rate*(yieldfactor/lambda)*(elemWeight[i]/elemWeight[i+2]);
             cookie.value += BigL10(rate)*BigP(cookie.value,0.98)*(elemWeight[i]+elemWeight[i+1]+elemWeight[i+2])/228;
             elements[i+2].value -= rate*lossfactor;
         }
@@ -2072,11 +2080,11 @@ var getTertiaryEquation = () =>{
     return TertiaryEquation(eqC);
 }
 var getQuaternaryEntries = () => {
-    if (quartList.length == 0 && artArt.level > 12) {
+    if (quartList.length == 0 && ((artArt.level > 12) || (elements[0].value > 0))) {
         for(let i=0;i<9;i++){
             quartList.push(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{_{${elemName[i]}}}`,elements[i].value));
         }
-    }else if(artArt.level > 12){
+    }else if(((artArt.level > 12) || (elements[0].value > 0))){
         for(let i=0;i<9;i++){
             quartList[i].value = elements[i].value;
         }
@@ -2086,6 +2094,7 @@ var getQuaternaryEntries = () => {
 
 
 //==OTHER THEORY BACKBONE==
+var elemBefore = new Array(9);
 var get2DGraphValue = () => {
     if (vizType == 1)
         return (
@@ -2107,13 +2116,18 @@ var postPublish = () => {
     CPS = BigNumber.ZERO;
     getEquationOverlay();
     updateAvailability();
-    theory.invalidateQuaternaryValues();
+    for(let i=0;i<elements.length;i++){
+        elements[i].value = elemBefore[i];
+    }
 };
 var prePublish = () => {
     lumpbf = lump.value;
     hbf = hc.value;
     hbf += (cookie.value / BF("1e12")).pow(1 / 3);
     isSpellShown = 0;
+    for(let i=0;i<elements.length;i++){
+        elemBefore[i]=elements[i].value;
+    }
 };
 var getTau = () => (cookie.value.abs()).pow(0.2);
 
@@ -2147,6 +2161,14 @@ var getHelpText = () => {
     if(SpellView.isAvailable){
         ret.push(ui.createLabel({text:"Grimoire",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,15,2,10)}));
         ret.push(ui.createLabel({text:"Grimoire allows you to cast spells through the tomes you had. It costs Sugar Lumps to cast a spell, and each spell can be casted once(until it doesn't) before needing to recharge. A spell is ready to be casted again when the level is set back to 0. Discover the effects of each spell yourself, that's the part of the surprise.",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,10,2,10)}));
+    }
+    if(excavate.isAvailable){
+        ret.push(ui.createLabel({text:"Elements",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,15,2,10)}));
+        ret.push(ui.createLabel({text:"Elements are a new thing that populated the world once you purchased the 12th artifact. There are 2 ways to get elements: Mining and Atomic Decay other heavier elements. You can mine elements by first establishing an excavation site for a certain elements, the first site doesn't use any element but later sites do. You can further the gain by improving the excavation efficiency. All progression related to elements persist between publishing. Elements can be used in a lot of permanent upgrades unlocked at the same time.",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,10,2,10)}));
+    }
+    if(acceleratorMenu.isAvailable){
+        ret.push(ui.createLabel({text:"Atomic Decay",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,15,2,10)}));
+        ret.push(ui.createLabel({text:"Atomic decaying elements are the most efficient way of obtaining elements. It allows for one heavy element to be decayed into smaller ones, including cookies. To begin: click on the \"Open Reactor Control Panel\" coming with the fist reactor to open the screen to set up the element for decay. In the menu, the cross button turns off the reactor, and the rest sets to whatever element it displays(If you don't have that the text won\'t change). You have to click confirm before the reactor would begin to decay that element.",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,10,2,10)}));
     }
     ret.push(ui.createLabel({text:"Check back later for more in-game information",fontSize:15,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.NONE,padding:Thickness(2,15,2,15)}));
     return ret;
