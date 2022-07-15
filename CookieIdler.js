@@ -35,7 +35,7 @@ spqcey
 
 feel free to add more into the list.
 */
-var version = 1.3;
+var version = 1.4;
 
 //Function Name Reductions
 /**
@@ -148,7 +148,7 @@ let pubH = (i) => {
 
 /**
  * @desc Gives the equivalent amount of lumps for i ticks
- * @param {number} i 
+ * @param {number} i
  */
 let tickLump = (i) => {
     let dL = (BF(i)*LPS) + (1 / (lumpc / BigL10(BF(10)+(cookie.value).abs())))*BF(i);
@@ -831,9 +831,8 @@ const vizName = ["Classic", "Milk"];
 
 
 //==Permanent Building Upgrades==
-var clickp,jetdrive; //Click Power relative to CPS + Empowerments but I'm so original
+var clickp,jetDrive,sugarCoat; //Click Power relative to CPS + Empowerments but I'm so 🍪riginal
 var buildingUpgrade = new Array(19);
-var buildingPower = new Array(19);
 var buildingP = new Array(19);
 const clickpname = "Tougher Mouse";
 const buildingPMax = [
@@ -1507,11 +1506,11 @@ var init = () => {
     crystalHoney = shortPermaUpgrade(69420,elements[1],new ExponentialCost(BF(7.1e10),ML2(9.99)),"Crystallized Honey","A heavenly shard of this honey adds 10 levels to $C_1$");
     crystalHoney.bought = (amount) => calcCPS();
 
-    jetdrive = shortPermaUpgradeML(baseI+15,elements[4],new ExponentialCost(2500,ML2(1.2658e5)),"Jetmint Battery Cell","Electrifies your buildings by increasing $P_i$",3);
-    jetdrive.bought = (amount) => calcCPS();
+    jetDrive = shortPermaUpgradeML(baseI+15,elements[4],new ExponentialCost(2500,ML2(1.2658e5)),"Jetmint Battery Cell","Electrifies your buildings by increasing $P_i$",3);
+    jetDrive.bought = (amount) => calcCPS();
 
     const b50 = 1000;
-    //Power Upgrade
+    //P🍪wer Upgrade
     for (let i = 0; i < 19; i++) {
         buildingP[i] = theory.createPermanentUpgrade(4 + i,cookie,new ExponentialCost(b50 * baseCost[i], ML2(b50)));
         buildingP[i].getInfo = (amount) => `\$P_{${i.toString(10)}}${(superP.level > 0)?"^{1.02}":""} \\: = \\: \$${Utils.getMathTo(BigTS(getPower(i)),getPower2(i, buildingP[i].level + amount).toString(0))}`;
@@ -1685,7 +1684,8 @@ var updateAvailability = () => {
         buildingUpgrade[i].isAvailable = building[i].level > 10;
     }
     building[14].isAvailable = ((cookie.value >= baseCost[13]) && (artArt.level > 8));
-    jetdrive.isAvailable = (artArt.level > 12) || (jetdrive.level > 0);
+    jetDrive.isAvailable = (artArt.level > 12) || (jetDrive.level > 0);
+    crystalHoney.isAvailable = (artArt.level > 12) || (crystalHoney.level > 0);
     //Unique Upgrade
     covenant.isAvailable = cookie.value >= BF(1e60);
     ygg.isAvailable = cookie.value >= BF(1e100);
@@ -1699,8 +1699,8 @@ var updateAvailability = () => {
         Spell[i].isAvailable=isSpellShown;
     }
     timeDilate.isAvailable = artArt.level > 11;
-    excavate.isAvailable = artArt.level > 12;
-    moreExcavator.isAvailable = artArt.level > 12;
+    excavate.isAvailable = (artArt.level > 12) || (elements[0].value > 1);
+    moreExcavator.isAvailable = (artArt.level > 12) || (moreExcavator.level > 0);
     accelerator.isAvailable = artArt.level > 12;
     acceleratorMenu.isAvailable = accelerator.level > 0;
     //Cookie Flavor
@@ -1743,8 +1743,8 @@ var calcBuilding = (id,am) => {
     }
 };
 var getExpn = (index) => buiPerk[index] * buiexp + 1;
-var getPower = (index) => BigP(Utils.getStepwisePowerSum(buildingP[index].level,buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*1)+(jetdrive.level*0.5),5,1),1+(superP.level * 0.02));
-var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*1)+(jetdrive.level*0.5), 5, 1),1+(superP.level * 0.02));
+var getPower = (index) => BigP(Utils.getStepwisePowerSum(buildingP[index].level,buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*1)+(jetDrive.level*0.5),5,1),1+(superP.level * 0.02));
+var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*1)+(jetDrive.level*0.5), 5, 1),1+(superP.level * 0.02));
 var calcCPS = () => {
     if(Number.isNaN(dominate)){
         dominate = 0;
@@ -2335,7 +2335,7 @@ let perkLabel1 = ui.createLatexLabel({
 let perkLabel2 = ui.createLatexLabel({
     text:`You have ${perkHas} exponentium bars`,
     fontSize: 14,
-    //padding: new Thickness(10,10,10,10),
+    //padding: new Thickness(1🍪,10,10,10),
     horizontalTextAlignment: TextAlignment.CENTER
 });
 let perkForgeButton = ui.createButton({
