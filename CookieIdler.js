@@ -410,8 +410,8 @@ let baseCost = [
     BF("2.1e215"),
     BF("2.6e300"),
     BF("3.1e351"),//15
-    BF("7.1e1400"),//BREAK
-    BF("1.2e1450"),
+    BF("7.1e425"),//16
+    BF("1.2e1450"),//BREAK
     BF("1.9e1500"),
 ];
 //Ideally, 1/100 base
@@ -432,9 +432,9 @@ let bcps = [
     BF("4.9e96"),//13
     BF("2.1e123"),//14
     BF("2.2e150"),//15
-    BF("1.1e170"),//16
-    BF("8.3e183"),//17
-    BF("6.4e188"),//18
+    BF("3.1e187"),//16
+    BF("8.3e190"),//17
+    BF("6.4e195"),//18
 ];
 //Getting the info of a building but in a function
 var getInf = (index,am) => {
@@ -1028,9 +1028,9 @@ var buiAch2 = new Array(19);
 var buiAch3 = new Array(19);
 var buiAch4 = new Array(14);//Very endgame content right there
 var buiLumpAch = new Array(19);
-const bach1 = ["Mouse Wheel","Retirement Club","Home Organic","Stop! Drilling Time!","Industrial Act","Pretty Penny Pinchers","Way of the Temple","Bewitched","Local Expedition","Transmutation","Isekai\'d","Thyme Wrap","When does it matter?","Some rays of dough and batter","Lucked up","A while loop out and then true","Press F12","Manifest Destiny","Big Brain Thyme"];//not to be confused with a famous composer from the romantic age or something
+const bach1 = ["Mouse Wheel","Retirement Club","Home Organic","Stop! Drilling Time!","Industrial Act","Pretty Penny Pinchers","Way of the Temple","Bewitched","Local Expedition","Transmutation","Isekai\'d","Thyme Wrap","When does it matter?","Some rays of dough and batter","Lucked up","A while loop out and then true","Press F12","Manifest Destiny","O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA"];//not to be confused with a famous composer from the romantic age or something
 const bach2 = ["Clicktopia","Tootsie Roll Machine","100% Sustainable","Break the core","Age of Internet","Keynesian Cookinomics","Balance of Faith","Alakazamd","Cosmic Mapping","Polytranselementation","H̶e̷ ̶C̶o̴m̵e̸s̵","Thyme Pararegano","New Standard Model of Cookie and Flour","Total Enlightenment","Devil\'s Gambit","Apollonium Gasket","Infinite Theorycraft","Is there enough worlds?","Cardinal Synapsis"];
-const bach3 = ["Thumbs, Phalanges, Metacarpals","Ruler of the Ancients","Green Pasture lays live","Dysonian Society","Automatal Hysteria","New Neohyperglobalization Order","The Lord\'s Likeliness","Shaspie Colupis","Multiverse Ramble","With matter comes Cookies","I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎","Thyme Sagaporal Nutmegstant","Unified Complete Theory of the Cookieverse","O thy energy of sky, bring fourth the light rays","Gamber\'s Last Bet","Superliminal","I bring fourth reincarnation of reality","Lost your Cosmic Cookies","I declare thee on all ye inferiors. Despait before me, I am the Ozymandias"];
+const bach3 = ["Thumbs, Phalanges, Metacarpals","Ruler of the Ancients","Green Pasture lays live","Dysonian Society","Automatal Hysteria","New Neohyperglobalization Order","The Lord\'s Likeliness","Shaspie Colupis","Multiverse Ramble","With matter comes Cookies","I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎","Thyme Sagaporal Nutmegstant","Unified Complete Theory of the Cookieverse","O thy energy of sky, bring fourth the light rays","Gamber\'s Last Bet","Superliminal","I bring fourth reincarnation of reality","Lost your Cosmic Cookies","I declare thee on all ye inferiors. Despair before me, I am the Ozymandias"];
 const bach4 = ["Hands of fate lays bare their click upon thou","Shrivel, today we rise","Babylonian Conservatorium sits on the hill","Breaking through reality","The perfect game of Factorio","Money is just a human construct","Caricature of the forgotten Deities","Cookiera Avadra Creamdera","Omniverse Realization","Satiated in the gaudy mouths of Gold","Bottom of the abyss","Out of past, Out of future","Hypersize my String and Gluten","Neverending rays of bright brilliance shine on you all"];
 const bachlump = ["A hand and them a some more","Just like babies, but much more weird and terrifying","Farmer\'s Heaven","r/drillingmasterrace","Like the Japanese Inventors!","Hypermetaflation","Chief Artifact Curator","Hours to pronounce, effects very pronounced","A fleet of expeditors","Periodic Table","Is this reality or is it cookieverse?","No more Thyme Pararegano","Flavor Mathematics","4th Cone","Black Cat\'s Paw","Quite nearly but not so full","The \"C\" Language","You need a new bluestack","I am smart"];
 var featAchCat;
@@ -1100,7 +1100,7 @@ var thyme;
 function shortPermaUpgrade(id, cur, costModel, desc, info){
     var up = theory.createPermanentUpgrade(id,cur,costModel);
     up.getDescription = () => desc;
-    up.getInfo = () => info; 
+    up.getInfo = () => info;
     return up;
 }
 
@@ -1208,7 +1208,13 @@ var init = () => {
             }
         };
         building[i].getInfo = (amount) => `${getInf(i,amount)}, ${((bInfo==1)?`\$B(${i}) = ${arrcps[i]}\$`:"")}`;
-        building[i].bought = (amount) => universalBought(i);
+        building[i].bought = (amount) => {
+            if(building[i].level-amount == 0){
+                calcCPS();
+            }else{
+                universalBought(i);
+            }
+        };
         switch(i){
             case 1:
                 //Grandma's Covenant
@@ -1503,8 +1509,11 @@ var init = () => {
     moreExcavator = shortPermaUpgrade(11004,elements[0],new ExponentialCost(132500, ML2(1.15)),`Improve excavator efficiency`,`Excavation Power goes here`);
     moreExcavator.getInfo = () => `Excavation Power = ${(1+(0.2*BigP(moreExcavator.level,1.4)))}`;
 
-    crystalHoney = shortPermaUpgrade(69420,elements[1],new ExponentialCost(BF(7.1e10),ML2(9.99)),"Crystallized Honey","A heavenly shard of this honey adds 10 levels to $C_1$");
+    crystalHoney = shortPermaUpgradeML(12004,elements[1],new ExponentialCost(BF(7.1e10),ML2(19.99)),"Crystallized Honey","A heavenly shard of this honey adds 10 levels to $C_1$",11);
     crystalHoney.bought = (amount) => calcCPS();
+
+    sugarCoat = shortPermaUpgrade(13004,elements[3],new ExponentialCost(BF(1e6),ML2(11)),"Sugarmuck-Laced Sugar","Adds 2.5 $\\dot{L}$ per lump of sugarmuck");
+    sugarCoat.bought = (amount) => calcCPS();
 
     jetDrive = shortPermaUpgradeML(baseI+15,elements[4],new ExponentialCost(2500,ML2(1.2658e5)),"Jetmint Battery Cell","Electrifies your buildings by increasing $P_i$",3);
     jetDrive.bought = (amount) => calcCPS();
@@ -1637,7 +1646,7 @@ var init = () => {
     }
     //A lot of buildings
     BuildingAchievement = theory.createAchievementCategory(3,"Buildings");
-    for(let i=0;i<16;i++){
+    for(let i=0;i<17;i++){
         buiAch1[i] = theory.createAchievement(300+i,BuildingAchievement,bach1[i],`Get ${buildingName[0+Math.floor(bInfo/2)][i]} to level 100`,()=>CheckAchBui(i,100));
         buiAch2[i] = theory.createAchievement(400+i,BuildingAchievement,bach2[i],`Get ${buildingName[0+Math.floor(bInfo/2)][i]} to level 1000`,()=>CheckAchBui(i,1000));
         buiAch3[i] = theory.createSecretAchievement(500+i,BuildingAchievement,bach3[i],`Get ${buildingName[0+Math.floor(bInfo/2)][i]} to level 5000`,`${buildingName[0+Math.floor(bInfo/2)][i]} by 5000`,()=>CheckAchBui(i,5000));
@@ -1686,6 +1695,7 @@ var updateAvailability = () => {
     building[14].isAvailable = ((cookie.value >= baseCost[13]) && (artArt.level > 8));
     jetDrive.isAvailable = (artArt.level > 12) || (jetDrive.level > 0);
     crystalHoney.isAvailable = (artArt.level > 12) || (crystalHoney.level > 0);
+    sugarCoat.isAvailable = (artArt.level > 12) || (sugarCoat.level > 0);
     //Unique Upgrade
     covenant.isAvailable = cookie.value >= BF(1e60);
     ygg.isAvailable = cookie.value >= BF(1e100);
@@ -1698,6 +1708,7 @@ var updateAvailability = () => {
     for(let i=0;i<Spell.length;i++){
         Spell[i].isAvailable=isSpellShown;
     }
+    updateSpellLayer();
     timeDilate.isAvailable = artArt.level > 11;
     excavate.isAvailable = (artArt.level > 12) || (elements[0].value > 1);
     moreExcavator.isAvailable = (artArt.level > 12) || (moreExcavator.level > 0);
@@ -1809,8 +1820,9 @@ var calcCPS = () => {
         HPS = BF(hc.value).pow(0.9) * (recom.level+((artArt.level > 7)?10:0));
         LPS = (recom.level+((artArt.level > 7)?10:0)) * 0.01;
         arrcps[4] *= (recom.level > 1)?(BF(1e54) * BigP(1.9,recom.level - 1)):(BF(1e54));
-        lwC = Math.floor((BigL10(10+(cookie.value).abs())) / lumpc) + LPS / 10;
     }
+    LPS += sugarCoat.level * 2.5;
+    lwC = Math.floor((BigL10(10+(cookie.value).abs())) / lumpc) + LPS / 10;
     arrcps[14] = BigP(arrcps[14],RandR(1.01+(0.00005*buildingUpgrade[14].level),0.99+(0.00005*buildingUpgrade[14].level)));
     for(let i=0;i<19;i++){
         CPS += arrcps[i];
@@ -1839,6 +1851,7 @@ var lessPreciseCalcCPS = () => {
     let step1 = BF(calcBuilding(dominate,0)*BF(getPower(dominate))*BF(bcps[dominate]));
     arrcps[dominate] = (step1 * kittyPower(kitty.level) * BF(BF(100 + (BF(5) * achCount)) / BF(100)) * BF(buip).pow(buildingUpgrade[dominate].level)).pow(getExpn(dominate));
     LPS = (recom.level+((artArt.level > 7)?10:0)) * 0.01;
+    LPS += sugarCoat.level * 2.5;
     lwC = Math.floor((BigL10(10+(cookie.value).abs())) / lumpc) + LPS / 10;
     switch(dominate){
         case 0:
@@ -1905,12 +1918,13 @@ var lessPreciseCalcCPS = () => {
 let lwC = 0;
 let idle = false;
 let xBegin = BF("-1e100");
-const lambda = BF("1e-7");
-const yieldfactor = BF("1e-3");
+const lambda = BF("1e-6");
+const yieldfactor = BF("5e-2");
 const lossfactor = BF(25);
 var tick = (multiplier) => {
     if(game.isCalculatingOfflineProgress || idle){
         if(CPS == 0){
+            updateMult();
             lessPreciseCalcCPS();
         }
         cookie.value += (CPS * Logistic() * Dilate()) / BigNumber.TEN;
@@ -1923,9 +1937,7 @@ var tick = (multiplier) => {
 
         thyme.level+=(thyme.level < thyme.maxLevel)?1:0;
         if (thyme.level == 0 || thyme.level%200 == 0 || arrcps[dominate]==0 || arrcps[0]==0) {
-            if(mult==1){
-                updateMult();
-            }
+            updateMult();
             if(arrcps[0]==0){
                 calcCPS();
             }
@@ -1964,7 +1976,7 @@ var tick = (multiplier) => {
         }
 
         for(let i=0;i<excavate.level;i++){
-            elements[i].value += BigL2(Logistic())*building[3].level*BigP(getPower(3),0.05)*buildingUpgrade[3].level*BigP(150,-1*(i+1))*(1+(0.2*BigP(moreExcavator.level,1.4)));
+            elements[i].value += BigL2(Logistic())*building[3].level*BigP(getPower(3),0.05)*BigP(buildingUpgrade[3].level,1.15)*BigP(150,-1*(i+1))*(1+(0.2*BigP(moreExcavator.level,1.4)));
 
             if(i==reactorMode && (building[12].level > 0)){
                 let rate = building[12].level*lambda*elements[i+2].value;
@@ -1975,7 +1987,7 @@ var tick = (multiplier) => {
 
                 elements[i+1].value += BigP(elements[i+2].value,0.35)*rate*(yieldfactor/lambda)*(elemWeight[i+1]/elemWeight[i+2]);
                 elements[i].value += BigP(elements[i+2].value,0.35)*rate*(yieldfactor/lambda)*(elemWeight[i]/elemWeight[i+2]);
-                cookie.value += BigL10(rate)*BigP(cookie.value,0.98)*(elemWeight[i]+elemWeight[i+1]+elemWeight[i+2])/228;
+                cookie.value += BigL10(rate+elemWeight[i+2])*BigP(cookie.value,0.98)*(elemWeight[i]+elemWeight[i+1]+elemWeight[i+2])/228;
                 elements[i+2].value -= rate*lossfactor;
 
             }
