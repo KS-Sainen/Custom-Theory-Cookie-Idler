@@ -865,7 +865,7 @@ let buildingUpgradeMult = [
 ];
 
 //==HC Upgrade==
-var cookieTin,CookieH,CookieR,CookieS,CookieC,DivineD,CookieTau,TerraInf,TwinGates,ConjureBuild,ChronosAge,R9Box,conGrow,SpellStack,Empower,heavvis;
+var cookieTin,CookieH,CookieR,CookieS,CookieC,DivineD,CookieTau,TerraInf,TwinGates,ConjureBuild,ChronosAge,R9Box,conGrow,SpellStack,Empower,heavvis,milkOil;
 const cookieTinInfo =
     "Heavenly cookies that boosts your CPS more than normal cookie.";
     const cookieTinName = [
@@ -1385,6 +1385,14 @@ var init = () => {
                     };
                 }
                 break;
+            case 9:
+                aquaCrust = theory.createUpgrade(10009,elements[2],new ConstantCost(7.777e23));
+                aquaCrust.getDescription = () => "Aqua Crustulae";
+                aquaCrust.getInfo = () => "A fine drop of this mixture made from Buttergold empowers your alchemy lab by making them transmute gold into cookies(You commit to this by buying this upgrade until you pubbed).";
+                aquaCrust.maxLevel = 1;
+                aquaCrust.bought = (amount) => calcCPS();
+                aquaCrust.isAutoBuyable = false;
+                break;
             case 11:
                 timeDilate=theory.createUpgrade(10011,cookie,new ExponentialCost(BF("1e325"),ML2(1e7)));
                 timeDilate.maxLevel = 5;
@@ -1467,6 +1475,7 @@ var init = () => {
         SpellStack.bought = (amount) => updateSpellLayer();
         Empower = shortPermaUpgradeML(baseI+14,hc,new ExponentialCost(5e116,ML2(10^1.35)),"Empowerments of Buildings","Increases how fast $P$ grows",9);
         Empower.bought = (amount) => calcCPS();
+        milkOil = shortPermaUpgradeML(baseI+16,hc,new ExponentialCost(1e135,ML2(2e2)),"Milk-Flavored Drilling Fluids","Milk-Power Drilling Fluids really helps with the constant loss of mining outputs",10);
     }
     //==Building Upgrades==
     {
@@ -1528,7 +1537,7 @@ var init = () => {
     }
     //Lumpy Upgrade
     for (let i = 0; i < 19; i++) {
-        buildingUpgrade[i] = theory.createPermanentUpgrade(33 + i,lump,new LinearCost(i+1, i+1));
+        buildingUpgrade[i] = theory.createPermanentUpgrade(33 + i,lump,new LinearCost(i+1, (i+1)*((i>=13)?i*(i-5)*0.1:1)));
         buildingUpgrade[i].getDescription = (amount) => (bInfo==1)?`\$ ${buip}^{L[${i}]} = ${buip}^{${buildingUpgrade[i].level}} = ${BigP(buip,buildingUpgrade[i].level)}\$`:buildingUpgradeName[i];
         buildingUpgrade[i].getInfo = (amount) => {
             if(bInfo==1){
@@ -1921,7 +1930,12 @@ let xBegin = BF("-1e100");
 const lambda = BF("1e-6");
 const yieldfactor = BF("5e-2");
 const lossfactor = BF(25);
+const mineRate = BF(150);
 var tick = (multiplier) => {
+    if(aquaCrust.level > 0){
+        cookie.value += Math.min(1,BigP(elements[2].value,0.99)*BF("1e-20"))*((cookie.value*12.59)/BF(36000));
+        elements[2].value -= BigP(elements[2].value,0.87);
+    }
     if(game.isCalculatingOfflineProgress || idle){
         if(CPS == 0){
             updateMult();
@@ -1974,9 +1988,9 @@ var tick = (multiplier) => {
             }
 
         }
-
+        let realMRate = mineRate - (10*milkOil.level);
         for(let i=0;i<excavate.level;i++){
-            elements[i].value += BigL2(Logistic())*building[3].level*BigP(getPower(3),0.05)*BigP(buildingUpgrade[3].level,1.15)*BigP(150,-1*(i+1))*(1+(0.2*BigP(moreExcavator.level,1.4)));
+            elements[i].value += BigL2(Logistic())*building[3].level*BigP(getPower(3),0.05)*BigP(buildingUpgrade[3].level,1.15)*BigP(realMRate,-1*(i+1))*(1+(0.2*BigP(moreExcavator.level,1.4)));
 
             if(i==reactorMode && (building[12].level > 0)){
                 let rate = building[12].level*lambda*elements[i+2].value;
