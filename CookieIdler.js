@@ -1959,8 +1959,8 @@ var tick = (elapsedTime, multiplier) => {
     //dt magic
     let dt = BF(elapsedTime * multiplier);
     if(aquaCrust.level > 0){
-        cookie.value += dt * Math.min(1,BigP(elements[2].value,0.99)*BF("1e-20"))*((cookie.value*12.59)/BF(36000));
-        elements[2].value -= dt * BigP(elements[2].value,0.87);
+        cookie.value += Math.min(1,BigP(elements[2].value,0.99)*BF("1e-20"))*((cookie.value*12.59)/BF(36000));
+        elements[2].value -= BigP(elements[2].value,0.87);
     }
     if(game.isCalculatingOfflineProgress || idle){
         if(CPS == 0){
@@ -1988,15 +1988,15 @@ var tick = (elapsedTime, multiplier) => {
         }
 
         if(artArt.level > 13){
-            elements[8].value += BigL10(BF(10)+building[8].level)*BigL10(BF(10)+arrcps[8])*0.001;
+            elements[8].value += dt * BigL10(BF(10)+building[8].level)*BigL10(BF(10)+arrcps[8])*0.001;
         }
 
-        cookie.value += (CPS * Logistic() * Dilate()) / BigNumber.TEN;
-        lump.value += lwC;
-        lumpTotal += lwC;
+        cookie.value += dt * (CPS * Logistic() * Dilate()) / BigNumber.TEN;
+        lump.value += dt * lwC;
+        lumpTotal += dt * lwC;
 
         //Sugar Lump Incremental
-        hc.value += HPS / 10;
+        hc.value += dt * HPS / 10;
         if(thyme.level % 10 == 0){
 
             for(let i=0;i<Spell.length;i++){
@@ -2015,7 +2015,7 @@ var tick = (elapsedTime, multiplier) => {
         }
         let realMRate = mineRate - (10*milkOil.level);
         for(let i=0;i<excavate.level;i++){
-            elements[i].value += BigL2(Logistic())*building[3].level*BigP(getPower(3),0.05)*BigP(buildingUpgrade[3].level,1.15)*BigP(realMRate,-1*(i+1))*(1+(0.2*BigP(moreExcavator.level,1.4)));
+            elements[i].value += dt * BigL2(Logistic())*building[3].level*BigP(getPower(3),0.05)*BigP(buildingUpgrade[3].level,1.15)*BigP(realMRate,-1*(i+1))*(1+(0.2*BigP(moreExcavator.level,1.4)));
 
             if(i==reactorMode && (building[12].level > 0)){
                 let rate = building[12].level*lambda*elements[i+2].value;
@@ -2024,10 +2024,10 @@ var tick = (elapsedTime, multiplier) => {
                     continue;
                 }
 
-                elements[i+1].value += BigP(elements[i+2].value,0.35)*rate*(yieldfactor/lambda)*(elemWeight[i+1]/elemWeight[i+2]);
-                elements[i].value += BigP(elements[i+2].value,0.35)*rate*(yieldfactor/lambda)*(elemWeight[i]/elemWeight[i+2]);
-                cookie.value += BigL10(rate+elemWeight[i+2])*BigP(cookie.value,0.98)*(elemWeight[i]+elemWeight[i+1]+elemWeight[i+2])/228;
-                elements[i+2].value -= rate*lossfactor;
+                elements[i+1].value += dt * BigP(elements[i+2].value,0.35)*rate*(yieldfactor/lambda)*(elemWeight[i+1]/elemWeight[i+2]);
+                elements[i].value += dt * BigP(elements[i+2].value,0.35)*rate*(yieldfactor/lambda)*(elemWeight[i]/elemWeight[i+2]);
+                cookie.value += dt * BigL10(rate+elemWeight[i+2])*BigP(cookie.value,0.98)*(elemWeight[i]+elemWeight[i+1]+elemWeight[i+2])/228;
+                elements[i+2].value -= dt * rate*lossfactor;
 
             }
         }
