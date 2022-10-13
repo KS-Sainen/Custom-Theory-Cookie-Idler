@@ -24,7 +24,7 @@ import { QuaternaryEntry } from "../api/Theory";
 
 var id = "CookieIdler";
 var name = "Cookie Idler";
-var description = "🍪👵🍪\nA game within a theory involving baking a copius amounts of cookies in exchange for something far greater...\n🍪👵🍪\n\n🍪==FEATURES==🍪\n🍪 Click, Bake, Farm, Produce your way into the big leagues. With 19 buildings to buy, empower, and upgrade.\n🍪 Experience a whole new level of text richness in theories like never before. Boatloads of text waiting to be read in all aspects, from the buildings, achievements, all the way to upgrades(nerdy mode included).\n🍪 Unique upgrades and intresting game mechanics will involve you to no end! Tasty Cookies, even tastier cookies, breaking the fourth wall, and changing the game itself.\n🍪Absolute lack of big and scary mathematics, rated E for Everyone\n\n🍪==CREDITS==🍪\n🍪 Orteil for bringing such a legendary game idea to life\n🍪 ellipsis for suggesting ideas for the UI\n🍪 skyhigh173 for reformatting the code so it looks better\nspqcey(randomname#9373) for proofreading and fixing a majority of the text\n\n⚠WARNING⚠ : In ALL Circumstances, DO NOT attempt to purchase level 4 of the cookie tin upgrade, doing so may crash your game INSTANTLY(hang in there until you can afford level 5)";
+var description = "🍪👵🍪\nA game within a theory involving baking a copius amounts of cookies in exchange for something far greater...\n🍪👵🍪\n\n🍪==FEATURES==🍪\n🍪 Click, Bake, Farm, Produce your way into the big leagues. With 19 buildings to buy, empower, and upgrade.\n🍪 Experience a whole new level of text richness in theories like never before. Boatloads of text waiting to be read in all aspects, from the buildings, achievements, all the way to upgrades(nerdy mode included).\n🍪 Unique upgrades and intresting game mechanics will involve you to no end! Tasty Cookies, even tastier cookies, breaking the fourth wall, and changing the game itself.\n🍪Absolute lack of big and scary mathematics, rated E for Everyone\n\n🍪==CREDITS==🍪\n🍪 Orteil for bringing such a legendary game idea to life\n🍪 ellipsis for suggesting ideas for the UI\n🍪 skyhigh173 for reformatting the code so it looks better\nspqcey(randomname#9373) for proofreading and fixing a majority of the text";
 var authors = "Sainen Lv.420 #2684";
 
 /*
@@ -323,7 +323,7 @@ var isCurrencyVisible = (indx) => indx <= 2;
 const elemName = ["Be","Ch","Bg","Su","Jm","Cs","Hz","Mn","As"];
 const elemFormalName = ["Berrylium","Chalcedhoney","Buttergold","Sugarmuck","Jetmint","Cherrysilver","Hazelrald","Mooncandy","Astrofudge"];
 const elemWeight = [1,2,3,5,8,13,21,36,57];
-const nextExcavateReq = [0,1.35e13,5.5e12,1.5e9,6e7,500000,7500,1000];//req to unlock THAT element(comp: n-1)
+const nextExcavateReq = [0,1.35e13,1.1e12,1.5e11,6e9,5e8,7.5e6,100000];//req to unlock THAT element(comp: n-1)
 
 
 //==Buildings==
@@ -394,14 +394,14 @@ let buildingDesc = [
     "thinking up ",
 ];
 let baseCost = [
-    11,
-    1e3,
-    1.1e5,
-    1.2e8,
-    1.3e12,
-    1.4e18,
-    2e25,
-    3.3e50,
+    11,//0
+    1e3,//1
+    1.1e5,//2
+    1.2e8,//3
+    1.3e12,//4
+    1.4e18,//5
+    2e25,//6
+    3.3e50,//7
     5.1e75,
     7.5e100,
     1e125,
@@ -414,7 +414,7 @@ let baseCost = [
     BF("1.2e1450"),//BREAK
     BF("1.9e1500"),
 ];
-//Ideally, 1/100 base
+//Ideally, 1/a lot base
 let bcps = [
     7,//0
     310,//1
@@ -422,10 +422,10 @@ let bcps = [
     7.4e7,//3
     4.05e10,//4
     1.4e12,//5
-    1.6e18,//6
-    4.4e28,//7
+    4.8e18,//6
+    1.1e29,//7, 2.5x
     1.58e38,//8
-    5.6e49,//9
+    1.12e50,//9, doubled
     6.66e58,//10
     6.5e72,//11
     9.15e79,//12
@@ -708,20 +708,20 @@ var artCheck = (cond) => {
     }
 };
 //WIZARD TOWER - Grimoire
-var Spell = new Array (8);
+var Spell = new Array (9);
 var SpellView;
 var isSpellShown = 0;
 let effectCPSB=1;
 let templeLuck = 1000;
 let templeLuckDur = 30;
 let effectCPSBDur = 37;
-let spellCost = [15,20,75,25,30,100,10,0];
+let spellCost = [15,20,75,25,30,100,10,0,69];
 //! SECONDS ONLY
-let spellCool = [720,420,3600,600,420,900,660,1200];
+let spellCool = [720,420,3600,600,420,900,660,1200,1440];
 let logBoost = 1;
 let logBoostDue = 0;
 let updateSpellLayer = () => {
-    for(let i=0;i<8;i++){
+    for(let i=0;i<9;i++){
         Spell[i].maxLevel = 1 + SpellStack.level;
     }
 };
@@ -791,6 +791,16 @@ let castSpell = (index) => {
             log("Sweet Anyone?");
             if(RandI(100) > 5)tickLump(500+(25*SpellStack.level));
             break;
+        case 8:
+            let warpthyme = ((100+(10*SpellStack.level))*RandR(0.9,1.1+(0.05*SpellStack.level)) + (15*SpellStack.level));
+            log("Time goes brrrrrrrr " + warpthyme);
+            for(let i=0;i<warpthyme;i++){
+                tick();
+                if(i%10 == 0){
+                    log(i);
+                }
+            }
+            log("The spell wears off...")
     }
 };
 const spellName = [
@@ -801,7 +811,8 @@ const spellName = [
     "Replenish Extradionaire",
     "Asseto Accio",
     "Mimi Mami",
-    "Simply Sweetdelicious"
+    "Simply Sweetdelicious",
+    "The World"
 ];
 const spellDesc = [
     "You get more cookies, simple",
@@ -812,6 +823,7 @@ const spellDesc = [
     "Spawn buildings into existence, only works for a certain amounts",
     "Reduces the cooldown time of certain spells",
     "Spawn some sugar lumps in",
+    "haha jojo reference goes brrrrrrrrrr",
 ];
 //ALCHEMY LAB - Cookiearium Convertor + Aqua Crustulae
 var cookiearium,aquaCrust;
@@ -873,7 +885,7 @@ const cookieTinInfo =
     "Tin of Butter Cookies",
     "Tin of British Tea Biscuits",
     "Box of Brand Biscuits",
-    "Box of 100% Pastries",
+    "Box of 100\\%\\ Pastries",//brought to you by Lava#3374
     "Box of Cookie?",
     "Box of Cookien'\t",
     "Crate full of Exponential Idle Community References",
@@ -1276,6 +1288,7 @@ var init = () => {
                         }
                     }
                     if(amount < 10){
+                        updateMult();
                         lessPreciseCalcCPS();
                     }else{
                         calcCPS();
@@ -1381,7 +1394,9 @@ var init = () => {
                     Spell[i].isAutoBuyable = false;
                     Spell[i].maxLevel = 1;
                     Spell[i].bought = (amount) => {
-                        castSpell(i);
+                        for(let j=0;j<amount;j++){
+                            castSpell(i);
+                        }
                     };
                 }
                 break;
@@ -1402,7 +1417,7 @@ var init = () => {
                 break;
             case 12:
                 accelerator = theory.createUpgrade(10012,cookie,new ExponentialCost(BF("1e375"),ML2(1e25)));
-                accelerator.getDescription = () => `Build ${elemFormalName[accelerator.level+2]} Reactor`;
+                accelerator.getDescription = () => (accelerator.level<accelerator.maxLevel)?`Build ${elemFormalName[accelerator.level+2]} Reactor`:`All Reactors Built!`;
                 accelerator.getInfo = () => `Enables ${elemFormalName[accelerator.level+2]} to be decayed into ${elemFormalName[accelerator.level+1]} and ${elemFormalName[accelerator.level]}`;
                 accelerator.maxLevel = 7;
                 acceleratorMenu = theory.createUpgrade(11012,cookie,new FreeCost());
@@ -1452,23 +1467,23 @@ var init = () => {
     //Others
     {
         CookieH = shortPermaUpgradeML(baseI + 1,hc,new ConstantCost(500),cookieHName,cookieHInfo,1);
-        CookieH.bought = (amount) => lessPreciseCalcCPS();
+        CookieH.bought = (amount) => {updateMult();lessPreciseCalcCPS();}
         CookieS = shortPermaUpgradeML(baseI + 2,hc,new ConstantCost(15000),cookieSName,cookieSInfo,1);
-        CookieS.bought = (amount) => lessPreciseCalcCPS();
+        CookieS.bought = (amount) => {updateMult();lessPreciseCalcCPS();}
         CookieC = shortPermaUpgradeML(baseI + 3,hc,new ConstantCost(1e13),cookieCName,cookieCInfo,1);
-        CookieC.bought = (amount) => lessPreciseCalcCPS();
+        CookieC.bought = (amount) => {updateMult();lessPreciseCalcCPS();}
         DivineD = shortPermaUpgrade(baseI + 4,hc,new ExponentialCost(1e14, ML2(1e10)),divineDName,divineDInfo);
-        DivineD.bought = (amount) => lessPreciseCalcCPS();
+        DivineD.bought = (amount) => {updateMult();lessPreciseCalcCPS();}
         CookieTau = shortPermaUpgradeML(baseI + 5,hc,new ConstantCost(8e17),cookieTauName,cookieTauInfo,1);
-        CookieTau.bought = (amount) => lessPreciseCalcCPS();
+        CookieTau.bought = (amount) => {updateMult();lessPreciseCalcCPS();}
         TerraInf = shortPermaUpgradeML(baseI + 7,hc,new ExponentialCost(1e55, ML2(1e10)),terraInfName,terraInfInfo,7);
         ChronosAge = shortPermaUpgradeML(baseI + 8,hc,new ConstantCost(2.5e57),chronosageName,chronosageInfo,1);
         ChronosAge.bought = (amount) => calcCPS();
         ConjureBuild = shortPermaUpgradeML(baseI + 9,hc,new ExponentialCost(1e60, ML2(8)),conjurebuildName,conjurebulidInfo,3,{});
         TwinGates = shortPermaUpgradeML(baseI + 10,hc,new ConstantCost(1e65),twingateName,twingateInfo,1);
-        TwinGates.bought = (amount) => lessPreciseCalcCPS();
+        TwinGates.bought = (amount) => {updateMult();lessPreciseCalcCPS();}
         R9Box = shortPermaUpgradeML(baseI+11,hc,new ExponentialCost(1e80,ML2(1000)),boxrName,boxrInfo,3);
-        R9Box.bought = (amount) => lessPreciseCalcCPS();
+        R9Box.bought = (amount) => {updateMult();lessPreciseCalcCPS();}
         conGrow = shortPermaUpgradeML(baseI+12,hc,new ExponentialCost(1e103,ML2(1e5)),congrowName,congrowInfo,5);
         conGrow.bought = (amount) => calcCPS();
         SpellStack = shortPermaUpgradeML(baseI+13,hc,new ExponentialCost(1e105,ML2(1e5)),"Spell Cast Layering","Allows multiples of the same spell to be casted, cooldown all at once and slightly empowers the spell as well",3);
@@ -1482,7 +1497,7 @@ var init = () => {
         clickp = theory.createPermanentUpgrade(3,cookie,new ExponentialCost(1000, ML2(10)));
         clickp.getDescription = () => clickpname;
         clickp.getInfo = () => "Improves how much more the cursor clicks $(P_{cp})$";
-        clickp.bought = (amount) => lessPreciseCalcCPS();
+        clickp.bought = (amount) => {updateMult();lessPreciseCalcCPS();}
     }
     //Excavation + Elemental Upgrades
     excavate = shortPermaUpgradeML(11003,cookie,new ExponentialCost(BF("1e365"), ML2(5e4)),`Excavation Site`,`Allows you to mine elements`,8);
@@ -1717,6 +1732,7 @@ var updateAvailability = () => {
     for(let i=0;i<Spell.length;i++){
         Spell[i].isAvailable=isSpellShown;
     }
+    Spell[8].isAvailable = isSpellShown && (artArt.level > 11);
     updateSpellLayer();
     timeDilate.isAvailable = artArt.level > 11;
     excavate.isAvailable = (artArt.level > 12) || (elements[0].value > 1);
@@ -1931,24 +1947,25 @@ const lambda = BF("1e-6");
 const yieldfactor = BF("5e-2");
 const lossfactor = BF(25);
 const mineRate = BF(150);
-var tick = (multiplier) => {
+var tick = (elapsedTime, multiplier) => {
+    //dt magic
+    let dt = BF(elapsedTime * multiplier);
     if(aquaCrust.level > 0){
-        cookie.value += Math.min(1,BigP(elements[2].value,0.99)*BF("1e-20"))*((cookie.value*12.59)/BF(36000));
-        elements[2].value -= BigP(elements[2].value,0.87);
+        cookie.value += dt * Math.min(1,BigP(elements[2].value,0.99)*BF("1e-20"))*((cookie.value*12.59)/BF(36000));
+        elements[2].value -= dt * BigP(elements[2].value,0.87);
     }
     if(game.isCalculatingOfflineProgress || idle){
         if(CPS == 0){
             updateMult();
             lessPreciseCalcCPS();
         }
-        cookie.value += (CPS * Logistic() * Dilate()) / BigNumber.TEN;
-        hc.value += HPS / 10;
-        lump.value += lwC + (BigL10(cookie.value) / lumpc);
-        lumpTotal += lwC + (BigL10(cookie.value) / lumpc);
+        cookie.value += dt * (CPS * Logistic() * Dilate()) / BigNumber.TEN;
+        hc.value += dt * HPS / 10;
+        lump.value += dt * (lwC + (BigL10(cookie.value) / lumpc));
+        lumpTotal += dt * (lwC + (BigL10(cookie.value) / lumpc));
         thyme.level+=(thyme.level < thyme.maxLevel)?1:0;
         return;
     }else{
-
         thyme.level+=(thyme.level < thyme.maxLevel)?1:0;
         if (thyme.level == 0 || thyme.level%200 == 0 || arrcps[dominate]==0 || arrcps[0]==0) {
             updateMult();
@@ -2136,7 +2153,7 @@ var TertiaryEquation = (col) => {
     if(Number.isNaN(col)){
         col = 0;
     }
-    return `\\color{#${eqColor[col]}}{` + theory.latexSymbol + "=\\max C^{0.2}" + " \\quad " + "\\dot{C} = " + BF(CPS).toString(0) + (terra.level > 0 ? "\\quad T = " + Logistic().toString(10) : "") + ((artArt.level > 11)?`\\quad T_d = ${Dilate()}`:"") + "}";
+    return `\\color{#${eqColor[col]}}{` + theory.latexSymbol + "=\\max C^{0.2}" + " \\quad " + "\\dot{C} = " + BF(CPS*theory.publicationMultiplier).toString(0) + (terra.level > 0 ? "\\quad T = " + Logistic().toString(10) : "") + ((artArt.level > 11)?`\\quad T_d = ${Dilate()}`:"") + "}";
 }
 var getPrimaryEquation = () => {
     theory.primaryEquationScale = 1.15;
