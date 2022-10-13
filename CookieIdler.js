@@ -24,7 +24,7 @@ import { QuaternaryEntry } from "../api/Theory";
 
 var id = "CookieIdler";
 var name = "Cookie Idler";
-var description = "🍪👵🍪\nA game within a theory involving baking a copius amounts of cookies in exchange for something far greater...\n🍪👵🍪\n\n🍪==FEATURES==🍪\n🍪 Click, Bake, Farm, Produce your way into the big leagues. With 19 buildings to buy, empower, and upgrade.\n🍪 Experience a whole new level of text richness in theories like never before. Boatloads of text waiting to be read in all aspects, from the buildings, achievements, all the way to upgrades(nerdy mode included).\n🍪 Unique upgrades and intresting game mechanics will involve you to no end! Tasty Cookies, even tastier cookies, breaking the fourth wall, and changing the game itself.\n🍪Absolute lack of big and scary mathematics, rated E for Everyone\n\n🍪==CREDITS==🍪\n🍪 Orteil for bringing such a legendary game idea to life\n🍪 ellipsis for suggesting ideas for the UI\n🍪 skyhigh173 for reformatting the code so it looks better\nspqcey(randomname#9373) for proofreading and fixing a majority of the text";
+var description = "🍪👵🍪\nA game within a theory involving baking a copius amounts of cookies in exchange for something far greater...\n🍪👵🍪\n\n🍪==FEATURES==🍪\n🍪 Click, Bake, Farm, Produce your way into the big leagues. With 19 buildings to buy, empower, and upgrade.\n🍪 Experience a whole new level of text richness in theories like never before. Boatloads of text waiting to be read in all aspects, from the buildings, achievements, all the way to upgrades(nerdy mode included).\n🍪 Unique upgrades and intresting game mechanics will involve you to no end! Tasty Cookies, even tastier cookies, breaking the fourth wall, and changing the game itself.\n🍪Absolute lack of big and scary mathematics, rated E for Everyone\n\n🍪==CREDITS==🍪\n🍪 Orteil for bringing such a legendary game idea to life\n🍪 ellipsis for suggesting ideas for the UI\n🍪 skyhigh173 for reformatting the code so it looks better\nspqcey(randomname#9373) for proofreading and fixing a majority of the text\n🍪 Lava for fixing the legendary bug";
 var authors = "Sainen Lv.420 #2684";
 
 /*
@@ -32,6 +32,7 @@ Big thinks to these people!
 ellipsis
 sky
 spqcey
+Lava#3374
 
 feel free to add more into the list.
 */
@@ -452,6 +453,7 @@ var getInf = (index,am) => {
     return result;
 };
 var universalBought = (indx) =>{
+    updateMult();
     if((cookie.value>1e50) && indx!=dominate){
         return;
     }else if((cookie.value>1e50) && indx==dominate){
@@ -1010,9 +1012,9 @@ const cpsaName = [
     "Go ahead, try to comprehend the sheer amounts",
     "The problem of being faster than light is that you can only live in cookies",
     "Blazing Flamin' Bakery",
-    "A cookie is a baked or cooked snack or dessert that is typically small, flat and sweet. It usually contains flour, sugar, egg, and some type of oil, fat, or butter. It may include other ingredients such as raisins, oats, chocolate chips, nuts, etc. In most English-speaking countries except for the United States, crunchy cookies are called biscuits. Many Canadians also use this term. Chewier biscuits are sometimes called cookies even in the United Kingdom. Some cookies may also be named by their shape, such as date squares or bars.",
+    "A cookie is a baked or cooked snack or dessert that is typically small, flat and sweet. It usually contains flour, sugar, egg, and some type of oil, fat, or butter. It may include other ingredients such as raisins, oats, chocolate chips, nuts, etc. In most English-speaking countries except for the United States, crunchy cookies are called biscuits. Chewier biscuits are sometimes called cookies even in the United Kingdom. Some cookies may also be named by their shape, such as date squares or bars.",
     "Someone go stop him, he's TOO FAST AAAAAAAAAAAAAAAAAAAAAAAA",
-    ". . . dot dot dot . . .",
+    "The baking goes on, and ON, AND ONNNNNNNNN!!!!!!!!!!!!",
     "Cookie Idler Speedrun pubMult-100% 1 tick[0.1s] WR|SR|PB",
 ];
 const cpsaReq = [
@@ -1040,13 +1042,13 @@ var buiAch2 = new Array(19);
 var buiAch3 = new Array(19);
 var buiAch4 = new Array(14);//Very endgame content right there
 var buiLumpAch = new Array(19);
-const bach1 = ["Mouse Wheel","Retirement Club","Home Organic","Stop! Drilling Time!","Industrial Act","Pretty Penny Pinchers","Way of the Temple","Bewitched","Local Expedition","Transmutation","Isekai\'d","Thyme Wrap","When does it matter?","Some rays of dough and batter","Lucked up","A while loop out and then true","Press F12","Manifest Destiny","O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA"];//not to be confused with a famous composer from the romantic age or something
-const bach2 = ["Clicktopia","Tootsie Roll Machine","100% Sustainable","Break the core","Age of Internet","Keynesian Cookinomics","Balance of Faith","Alakazamd","Cosmic Mapping","Polytranselementation","H̶e̷ ̶C̶o̴m̵e̸s̵","Thyme Pararegano","New Standard Model of Cookie and Flour","Total Enlightenment","Devil\'s Gambit","Apollonium Gasket","Infinite Theorycraft","Is there enough worlds?","Cardinal Synapsis"];
-const bach3 = ["Thumbs, Phalanges, Metacarpals","Ruler of the Ancients","Green Pasture lays live","Dysonian Society","Automatal Hysteria","New Neohyperglobalization Order","The Lord\'s Likeliness","Shaspie Colupis","Multiverse Ramble","With matter comes Cookies","I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎","Thyme Sagaporal Nutmegstant","Unified Complete Theory of the Cookieverse","O thy energy of sky, bring fourth the light rays","Gamber\'s Last Bet","Superliminal","I bring fourth reincarnation of reality","Lost your Cosmic Cookies","I declare thee on all ye inferiors. Despair before me, I am the Ozymandias"];
-const bach4 = ["Hands of fate lays bare their click upon thou","Shrivel, today we rise","Babylonian Conservatorium sits on the hill","Breaking through reality","The perfect game of Factorio","Money is just a human construct","Caricature of the forgotten Deities","Cookiera Avadra Creamdera","Omniverse Realization","Satiated in the gaudy mouths of Gold","Bottom of the abyss","Out of past, Out of future","Hypersize my String and Gluten","Neverending rays of bright brilliance shine on you all"];
-const bachlump = ["A hand and them a some more","Just like babies, but much more weird and terrifying","Farmer\'s Heaven","r/drillingmasterrace","Like the Japanese Inventors!","Hypermetaflation","Chief Artifact Curator","Hours to pronounce, effects very pronounced","A fleet of expeditors","Periodic Table","Is this reality or is it cookieverse?","No more Thyme Pararegano","Flavor Mathematics","4th Cone","Black Cat\'s Paw","Quite nearly but not so full","The \"C\" Language","You need a new bluestack","I am smart"];
+const bach1 = ["Mouse Wheel","Retirement Club","Home Organic","Stop! Drilling Time!","Industrial Act","Pretty Penny Pinchers","Way of the Temple","Bewitched","Local Expedition","Transmutation","Isekai\'d","Thyme Wrap","When does it matter?","Some rays of dough and batter","Lucked up","Z_n+1 = (Z_n)^2 + c","Press F12","Manifest Destiny","O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA"];//not to be confused with a famous composer from the romantic age or something
+const bach2 = ["Clicktopia","Tootsie Roll Machine","100% Sustainable","Break the core","Age of Internet","Keynesian Cookinomics","Balance of Faith","Alakazamd","Cosmic Mapping","Polytranselementation","H̶e̷ ̶C̶o̴m̵e̸s̵","Thyme Pararegano","New Standard Model of Cookie and Flour","Total Enlightenment","Devil\'s Gambit","Apollonian Gasket","Infinite Theorycraft","Is there enough worlds?","Cardinal Synapsis"];
+const bach3 = ["Thumbs, Phalanges, Metacarpals","Ruler of the Ancients","Green Pasture lays live","Dysonian Society","Automatal Hysteria","New Neohyperglobalization Order","The Lord\'s Likeliness","Shaspie Colupis","Multiverse Ramble","With matter comes Cookies","I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎","Thyme Sagaporal Nutmegstant","Unified Complete Theory of the Cookieverse","O thy energy of sky, bring fourth the light rays","Gamber\'s Last Bet","C_n := (C_n-1 ∪ (2+C_n-1))/3, where C_0 := [0,1]","I bring fourth reincarnation of reality","Lost your Cosmic Cookies?","I declare thee on all ye inferiors. Despair before me, I am the Ozymandias"];
+const bach4 = ["Hands of fate lays bare their click upon thou","Shrivel, today we rise","Babylonian Conservatorium sits on the hill","Breaking through omnirealitimetaplanes","The perfect game of Factorio","Money is just a human construct","Caricature of the forgotten Deities","Cookiera Avadra Creamdera","Omniverse Realization","Satiated in the gaudy mouths of Gold","Bottom of the abyss","Out of past, Out of future","Hypersize my String and Gluten","Neverending rays of bright brilliance shine on you all"];
+const bachlump = ["A hand and them a some more","Just like babies, but much more weird and terrifying","Farmer\'s Heaven","r/drillingmasterrace","Overengineering Achieved","Hypermetaflation","Chief Artifact Curator","Hours to pronounce, effects very pronounced","You could make a chronicle out of those","Truly a Mendeleev's Nightmare","Is this reality or is it cookieverse?","No more Thyme Pararegano","Flavor Mathematics","4th Cone","Black Cat\'s Paw","Quite nearly but not so full","The \"C\" Language","You need a new bluestack","I am smart"];
 var featAchCat;
-var superIdle,hyperIdle,speedBake1,speedBake2,speedBake3,speedBake4,speedBake5,nice,insipid,leetnice,sigmaCurseof,timeSpeed;
+var superIdle,hyperIdle,speedBake1,speedBake2,speedBake3,speedBake4,speedBake5,speedBake6,nice,insipid,leetnice,sigmaCurseof,timeSpeed,timeOhNo;
 
 
 //==LORE==
@@ -1569,15 +1571,15 @@ var init = () => {
     theory.setMilestoneCost(new LinearCost(30, 30));
     superP = theory.createMilestoneUpgrade(0,1);
     superP.boughtOrRefunded = (amount) => calcCPS();
-    superP.description = "Increases $P_{i}$ exponent by $0.02$ for all values of $i$";
-    superP.info = superP.description;
+    superP.description = "Super Building Power";
+    superP.info = "Increases $P_{i}$ exponent by $0.02$ for all values of $i$";
     superL = theory.createMilestoneUpgrade(1,1);
-    superL.description = "Change $1.1$ in $L[i]$ to $1.11$";
-    superL.info = superL.description;
+    superL.description = "Super Lumps";
+    superL.info = "Change $1.1$ in $L[i]$ to $1.11$";
     superL.boughtOrRefunded = (amount) => calcCPS();
     superC = theory.createMilestoneUpgrade(2,1);
-    superC.description = "Increases $CP(l)$ exponent by $0.05$";
-    superC.info = superC.description;
+    superC.description = "Super Flavored Cookie";
+    superC.info = "Increases $CP(l)$ exponent by $0.05$";
     superC.boughtOrRefunded = (amount) => calcCPS();
 
     /////////////////
@@ -1670,32 +1672,36 @@ var init = () => {
     }
     //A lot of buildings
     BuildingAchievement = theory.createAchievementCategory(3,"Buildings");
-    for(let i=0;i<17;i++){
-        buiAch1[i] = theory.createAchievement(300+i,BuildingAchievement,bach1[i],`Get ${buildingName[0+Math.floor(bInfo/2)][i]} to level 100`,()=>CheckAchBui(i,100));
-        buiAch2[i] = theory.createAchievement(400+i,BuildingAchievement,bach2[i],`Get ${buildingName[0+Math.floor(bInfo/2)][i]} to level 1000`,()=>CheckAchBui(i,1000));
-        buiAch3[i] = theory.createSecretAchievement(500+i,BuildingAchievement,bach3[i],`Get ${buildingName[0+Math.floor(bInfo/2)][i]} to level 5000`,`${buildingName[0+Math.floor(bInfo/2)][i]} by 5000`,()=>CheckAchBui(i,5000));
-        /*if(i < 14){
-            buiAch3[i] = theory.createSecretAchievement(600+i,BuildingAchievement,bach4[i],`Get ${buildingName[i]} to level 10000`,`${buildingName[i]} by 10000`,()=>CheckAchBui(i,10000));
-        }*/
-        buiLumpAch = theory.createAchievement(700+i,BuildingAchievement,bachlump[i],`Upgrade ${buildingName[0+Math.floor(bInfo/2)][i]} to level 100`,()=>CheckAchBui2(i,100));
+    for(let i=0;i<19;i++){
+        //too lazy to add proper pluralization sorry not sorry
+        let indx = 0+Math.floor(bInfo/2);
+        buiAch1[i] = theory.createAchievement(300+i,BuildingAchievement,bach1[i],`Have 100 ${buildingName[indx][i]}s`,()=>CheckAchBui(i,100));
+        buiAch2[i] = theory.createAchievement(400+i,BuildingAchievement,bach2[i],`Have 1,000 ${buildingName[indx][i]}s`,()=>CheckAchBui(i,1000));
+        buiAch3[i] = theory.createSecretAchievement(500+i,BuildingAchievement,bach3[i],`Have 5,000 ${buildingName[indx][i]}s`,`${buildingName[0+Math.floor(bInfo/2)][i]} by 5000`,()=>CheckAchBui(i,5000));
+        if(i < 14){
+            buiAch4[i] = theory.createSecretAchievement(600+i,BuildingAchievement,bach4[i],`Have 10,000 ${buildingName[indx][i]}s`,`${buildingName[indx][i]} by 10000`,()=>CheckAchBui(i,10000));
+        }
+        buiLumpAch = theory.createAchievement(700+i,BuildingAchievement,bachlump[i],`Upgrade ${buildingName[indx][i]} to level 100`,()=>CheckAchBui2(i,100));
     }
     //Feats
     {
         featAchCat = theory.createAchievementCategory(4,"Feats");
         superIdle = theory.createAchievement(800,featAchCat,"Super Idler","(2) Have your cookie exceeds 1 day worth of CPS while having 0 levels of terraform upgrade",()=>CheckAchFeat(() => ((cookie.value).abs() > BF(86400)*CPS)&&(terra.level==0),2));
         hyperIdle = theory.createSecretAchievement(801,featAchCat,"Hyper Idler","(3) Have your cookie exceeds 1 year worth of CPS while having 0 levels of terraform upgrade\nhow in the world did you even managed that anyway","Gaseous",()=>CheckAchFeat(() => ((cookie.value).abs() > BF(0x1e13380)*CPS)&&(terra.level==0),3));
-        speedBake1 = theory.createAchievement(802,featAchCat,"Speed Bake I","(1) Get 1e25 CPS within 1 minute of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e25))&&(thyme.level <= 600),1));
-        speedBake2 = theory.createAchievement(803,featAchCat,"Speed Bake II","(2) Get 1e50 CPS within 45 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e50))&&(thyme.level <= 450),2));
-        speedBake3 = theory.createAchievement(804,featAchCat,"Speed Bake III","(3) Get 1e100 CPS within 30 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e100))&&(thyme.level <= 300),3));
-        speedBake4 = theory.createAchievement(805,featAchCat,"Speed Bake IV","(3) Get 1e200 CPS within 15 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e200))&&(thyme.level <= 150),3));
-        speedBake5 = theory.createAchievement(806,featAchCat,"Speed Bake V","(4) Get 1e300 CPS within 5 seconds of publishing\n\nhaha speed goes brrrrrr",()=>CheckAchFeat(() => (CPS >= BF(1e300))&&(thyme.level <= 50),4));
+        speedBake1 = theory.createAchievement(802,featAchCat,"Speed Baking I","(1) Get 1e25 CPS within 1 minute of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e25))&&(thyme.level <= 600),1));
+        speedBake2 = theory.createAchievement(803,featAchCat,"Speed Baking II","(2) Get 1e50 CPS within 45 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e50))&&(thyme.level <= 450),2));
+        speedBake3 = theory.createAchievement(804,featAchCat,"Speed Baking III","(3) Get 1e100 CPS within 30 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e100))&&(thyme.level <= 300),3));
+        speedBake4 = theory.createAchievement(805,featAchCat,"Speed Baking IV","(3) Get 1e200 CPS within 15 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e200))&&(thyme.level <= 150),3));
+        speedBake5 = theory.createAchievement(806,featAchCat,"Speed Baking V","(4) Get 1e300 CPS within 5 seconds of publishing\n\nhaha speed goes brrrrrr",()=>CheckAchFeat(() => (CPS >= BF(1e300))&&(thyme.level <= 50),4));
+        speedBake6 = theory.createSecretAchievement(812,featAchCat,"Speed Baking VI","(5) Get 1e500 CPS within 2.5 seconds of publishing\n\nwould you please just slow down?","we fast as 5",()=>CheckAchFeat(() => (CPS >= BF("1e500"))&&(thyme.level <= 25),5));
         nice = theory.createSecretAchievement(807,featAchCat,"nice","(1) Get exactly 69 heavenly lumps(decimals accepted)","nice",()=>CheckAchFeat(() => (0x46 > hc.value)&&(hc.value > 0x44),1));
-        insipid = theory.createAchievement(808,featAchCat,"Bland Taste","(2) Get to e55 without buying a single level of milk and cookie flavor",()=>CheckAchFeat(() => ((cookie.value).abs() >= BF(1e55))&&(kitty.level==0)&&(cookieT.level==0),2));
-        leetnice = theory.createSecretAchievement(809,featAchCat,"leet nice","(2) Have Temple+Alchemy Lab = 1337","[ni] + [ce] = leet",()=>CheckAchFeat(() => ((building[6].level + building[9].level) == 0x539),2));
+        insipid = theory.createAchievement(808,featAchCat,"Pure Chocolate Taste","(2) Get to e55 without buying a single level of milk and cookie flavor",()=>CheckAchFeat(() => ((cookie.value).abs() >= BF(1e55))&&(kitty.level==0)&&(cookieT.level==0),2));
+        leetnice = theory.createSecretAchievement(809,featAchCat,"you won the internet","(2) Have Temple+Alchemy Lab = 1337","[ni] + [ce] = leet",()=>CheckAchFeat(() => ((building[6].level + building[9].level) == 0x539),2));
         sigmaCurseof = theory.createSecretAchievement(810,featAchCat,"Sigma Fingers","(2) Have 1e100 Cursor CPS with only a single cursor\nThis feat also unlocks a special building display mode, find it out :)","Doing so much with only a single one",()=>CheckAchFeat(() => (arrcps[0] >= BF(1e100))&&(building[0].level==1),2));
         timeSpeed = theory.createAchievement(811,featAchCat,"Time is speed","(2) Dilate 15 whole seconds in a single tick",()=>CheckAchFeat(() => (Dilate() >= 150),2));
+        timeOhNo = theory.createSecretAchievement(813,featAchCat,"Time is rickroll","(6) Dilate an entire video of Rick Astley - Never Gonna Give You Up (Official Music Video) into a SINGLE tick (which is 312 seconds in a SINGLE tick)\n\nAlso check out https://www.youtube.com/watch?v=oHg5SJYRHA0, very cool video","No Hints >:)",()=>CheckAchFeat(() => (Dilate() >= 3120),6));
     }
-    //! Total sum of all feats : 24
+    //! Total sum of all feats : 38
 
     ///////////////////
     //// Story chapters
@@ -1734,6 +1740,7 @@ var updateAvailability = () => {
     }
     Spell[8].isAvailable = isSpellShown && (artArt.level > 11);
     updateSpellLayer();
+    aquaCrust.isAvailable = (artArt.level > 12);
     timeDilate.isAvailable = artArt.level > 11;
     excavate.isAvailable = (artArt.level > 12) || (elements[0].value > 1);
     moreExcavator.isAvailable = (artArt.level > 12) || (moreExcavator.level > 0);
@@ -1762,6 +1769,7 @@ var updateAvailability = () => {
     conGrow.isAvailable = hc.value > BF(1e100) && heavVis;
     SpellStack.isAvailable = hc.value > BF(1e100) && heavVis;
     Empower.isAvailable = hc.value > BF(1e115) && heavVis;
+    milkOil.isAvailable = hc.value > BF(1e130) && heavVis;
 };
 
 
@@ -2045,7 +2053,7 @@ var Logistic = () => {
 };
 var Dilate = () => {
     let res = building[10].level + building[12].level;//restricting buildings
-    let factor = (building[11].level >= (res))?0.5:1-(building[11].level/(2*res));
+    let factor = (building[11].level >= (res))?1 - 1/(2.125-(0.125*timeDilate.level)):1-(building[11].level/(2*res));
     return BF(1) + (BigP(building[11].level,1+0.025*timeDilate.level))/BigP(1000,factor);
 }
 
@@ -2135,7 +2143,7 @@ var secondaryEq = (mode,col) => {
             return `\\color{#${eqColor[col]}}{\\dot{H} = H^{0.9}(${rc})\\\\ \\dot{L} = 0.01${rc}\\\\ B(4) \\leftarrow B(4)10^{54}1.9^{${rc}-1}}`;
             break;
         case 8://Dilation
-            return `\\color{#${eqColor[col]}}{T_d = \\frac{B[11]^{1+0.025T_D}}{1000^{T_f}}\\\\T_f = 1-\\frac{min(B[11],B[10]+B[12])}{2B[10]+2B[12]}}`;
+            return `\\color{#${eqColor[col]}}{T_d = \\frac{B[11]^{1+0.025T_D}}{1000^{T_f}}\\\\T_f = 1-\\frac{min(B[11],B[10]+B[12])}{(2.125-0.125T_{D}))(B[10]+B[12])}}`;
         case 9://Elements
             theory.secondaryEquationScale = 0.85;
             return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{B[3]L[3]P_{3}^{0.05}log_2(T)}{150^{n+1}}, \\: n \\neq 8${(artArt.level > 13)?"\\\\ \\dot{E_{8}} = \\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}}":""}`;
@@ -2153,7 +2161,7 @@ var TertiaryEquation = (col) => {
     if(Number.isNaN(col)){
         col = 0;
     }
-    return `\\color{#${eqColor[col]}}{` + theory.latexSymbol + "=\\max C^{0.2}" + " \\quad " + "\\dot{C} = " + BF(CPS*theory.publicationMultiplier).toString(0) + (terra.level > 0 ? "\\quad T = " + Logistic().toString(10) : "") + ((artArt.level > 11)?`\\quad T_d = ${Dilate()}`:"") + "}";
+    return `\\color{#${eqColor[col]}}{` + theory.latexSymbol + "=\\max C^{0.2}" + " \\quad " + "\\dot{C} = " + BF(CPS).toString(0) + (terra.level > 0 ? "\\quad T = " + Logistic().toString(10) : "") + ((artArt.level > 11)?`\\quad T_d = ${Dilate()}`:"") + "}";
 }
 var getPrimaryEquation = () => {
     theory.primaryEquationScale = 1.15;
