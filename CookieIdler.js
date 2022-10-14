@@ -33,6 +33,7 @@ ellipsis
 sky
 spqcey
 Lava#3374
+Frozen Moon#7244 (alex)
 
 feel free to add more into the list.
 */
@@ -1037,17 +1038,20 @@ const lumpAchName = [
     "THAT\'S A LOTTA SUGARS",
 ];
 const lumpAchReq = [1, 10, 50, 100, 500, 1000, 10000, 100000, 1000000, 10000000];
+const perkAchReq = [1,5,25,50,95];
 var BuildingAchievement;
 var buiAch1 = new Array(19);
 var buiAch2 = new Array(19);
 var buiAch3 = new Array(19);
 var buiAch4 = new Array(14);//Very endgame content right there
 var buiLumpAch = new Array(19);
+var perkAch = new Array(5);//Forge them, get them
 const bach1 = ["Mouse Wheel","Retirement Club","Home Organic","Stop! Drilling Time!","Industrial Act","Pretty Penny Pinchers","Way of the Temple","Bewitched","Local Expedition","Transmutation","Isekai\'d","Thyme Wrap","When does it matter?","Some rays of dough and batter","Lucked up","Z_n+1 = (Z_n)^2 + c","Press F12","Manifest Destiny","O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA"];//not to be confused with a famous composer from the romantic age or something
 const bach2 = ["Clicktopia","Tootsie Roll Machine","100% Sustainable","Break the core","Age of Internet","Keynesian Cookinomics","Balance of Faith","Alakazamd","Cosmic Mapping","Polytranselementation","H̶e̷ ̶C̶o̴m̵e̸s̵","Thyme Pararegano","New Standard Model of Cookie and Flour","Total Enlightenment","Devil\'s Gambit","Apollonian Gasket","Infinite Theorycraft","Is there enough worlds?","Cardinal Synapsis"];
 const bach3 = ["Thumbs, Phalanges, Metacarpals","Ruler of the Ancients","Green Pasture lays live","Dysonian Society","Automatal Hysteria","New Neohyperglobalization Order","The Lord\'s Likeliness","Shaspie Colupis","Multiverse Ramble","With matter comes Cookies","I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎","Thyme Sagaporal Nutmegstant","Unified Complete Theory of the Cookieverse","O thy energy of sky, bring fourth the light rays","Gamber\'s Last Bet","C_n := (C_n-1 ∪ (2+C_n-1))/3, where C_0 := [0,1]","I bring fourth reincarnation of reality","Lost your Cosmic Cookies?","I declare thee on all ye inferiors. Despair before me, I am the Ozymandias"];
 const bach4 = ["Hands of fate lays bare their click upon thou","Shrivel, today we rise","Babylonian Conservatorium sits on the hill","Breaking through omnirealitimetaplanes","The perfect game of Factorio","Money is just a human construct","Caricature of the forgotten Deities","Cookiera Avadra Creamdera","Omniverse Realization","Satiated in the gaudy mouths of Gold","Bottom of the abyss","Out of past, Out of future","Hypersize my String and Gluten","Neverending rays of bright brilliance shine on you all"];
 const bachlump = ["A hand and them a some more","Just like babies, but much more weird and terrifying","Farmer\'s Heaven","r/drillingmasterrace","Overengineering Achieved","Hypermetaflation","Chief Artifact Curator","Hours to pronounce, effects very pronounced","You could make a chronicle out of those","Truly a Mendeleev's Nightmare","Is this reality or is it cookieverse?","No more Thyme Pararegano","Flavor Mathematics","4th Cone","Black Cat\'s Paw","Quite nearly but not so full","The \"C\" Language","You need a new bluestack","I am smart"];
+const pach = ["See the Exponent","Touch the Exponent","Feel the Exponent","Cherish the Exponent","Forfeit all mortal possessions to the Exponent"];
 var featAchCat;
 var superIdle,hyperIdle,speedBake1,speedBake2,speedBake3,speedBake4,speedBake5,speedBake6,nice,insipid,leetnice,sigmaCurseof,timeSpeed,timeOhNo;
 
@@ -1091,7 +1095,7 @@ const chapterLore = [
     "They said that time can't be stopped nor reversed\nYou, a young person decided to go against it\nFrom all the exploitation you made in the Cookieverse\nThey found a very chaotic piece of cookie ore that seems to warp and distort itself\nYour assistants determined it was the time continuum that the ore is messing with\nIn hopes of getting cookies through time itself, you assigned the scientist to break the law of time.",
     "18\n18 types of elementary particles\nNow there's 19 of them\nBut that's still 18 left to turn into cookies\nYou decided to commission the largest of the largest of particle accelerators to convert those particles into cookie particles\nYou gonna leak a lot of money for this, so you made the world dependent of cookies.",
     "How long has it been since you last saw the light of the day?\nYou went outside(and touched grass), only to find the sun instantly making you sweat bullets\nComing back into your den(grand office) you looked into the mirror and find yourself splattered with cookies\nIt seems that light itself is being turned into cookies as well\nMight just as well focus all of them into a big burst of cookies\nAnd in the meantime spray a bit of radiance to those worshippers as well",
-    "POOF! and there goes nothing!\nYou just saw one of your cookies disappear into nothingness\nThen you saw a black cat in the corner of your vision again\nIn a panic,you hastily read through the book on symbolisms, and found out that black cat means bad luck\nWith your amounts of cookies, fearing that it might all be GONE the next day,\nYou improvised up a device from that book that would apparently bring in good luck to your entire existence\nAnd your local spellcasters might take an interest in that too",
+    "POOF! And there goes nothing!\nYou just saw one of your cookies disappear into nothingness\nThen you saw a black cat in the corner of your vision again\nIn a panic, you hastily read through the book on symbolisms, and found out that a black cat means bad luck\nWith your amounts of cookies, fearing that it might all be GONE the next day,\nYou improvised up a device from that book that would apparently bring in good luck to your entire existence\nAnd your local spellcasters might take an interest in that too",
     "Does your cookie look empty?\nI know that might sound like nonsense but how much of the matter is really matter\nUsing your sheet amount of knowledge you got from working with your past projects\nYou somehow managed to convert mattern't to matter and the cookie just splits into a whole lot more cookies\nPresenting the plan, you assigned the engineers to work on standardizing the device used to convert mattern't to matter\nDoes going too deep might reveal something you weren\'t supposed to see?",
     "Having lost your mind being overwhelmed with the thoughts of cookie\nYou went out on a ramage with your cookies, tearing down any and all signs of resistance, even the fabric of reality itself\nYou went mad, in search of something you can use to bend reality\nOne of the madness you did is parting some poor soul(Orteil?) of their laptop\nOn the laptop there's a console with the word 'Javascript' written on it\nYou of course, politely pressure the programmers to decipher the complicated syntax of 'Javascript'",
     "I love cookies, why don't we enslave other idle games to produce cookies for us\nBreaking through dimensions, hijacking other \"innocent\" idle game universes to produce cookies for us",
@@ -1659,7 +1663,7 @@ var init = () => {
         cpsa[i] = theory.createAchievement(100 + i,CPSAchievement,cpsaName[i],CPSDesc(cpsaReq[i]),() => CheckAch2(i));
     }
     //10 Lumps
-    lumpAchCat = theory.createAchievementCategory(2, "Sugar Lumps");
+    lumpAchCat = theory.createAchievementCategory(2, "Others");
     var lumpDesc = (p) => {
         let res =
             `Get a total of ${BigTS(p)} sugar lump`;
@@ -1668,8 +1672,19 @@ var init = () => {
         }
         return res;
     };
+    var perkDesc = (p) => {
+        let res =
+            `Forge ${BigTS(p)} Exponentium Bar`;
+        if (p != 1) {
+            res += "s";
+        }
+        return res;
+    };
     for (let i = 0; i < 10; i++) {
         lumpAch[i] = theory.createAchievement(200 + i,lumpAchCat,lumpAchName[i],lumpDesc(lumpAchReq[i]),() => CheckAch3(i));
+    }
+    for (let i = 0; i < 5; i++){
+        perkAch[i] = theory.createAchievement(1000 + i,lumpAchCat,pach[i],perkDesc(perkAchReq[i]),() => CheckAchFeat(()=>perkPoint>=perkAchReq[i],1));
     }
     //A lot of buildings
     BuildingAchievement = theory.createAchievementCategory(3,"Buildings");
@@ -1682,7 +1697,7 @@ var init = () => {
         if(i < 14){
             buiAch4[i] = theory.createSecretAchievement(600+i,BuildingAchievement,bach4[i],`Have 10,000 ${buildingName[indx][i]}s`,`${buildingName[indx][i]} by 10000`,()=>CheckAchBui(i,10000));
         }
-        buiLumpAch = theory.createAchievement(700+i,BuildingAchievement,bachlump[i],`Upgrade ${buildingName[indx][i]} to level 100`,()=>CheckAchBui2(i,100));
+        buiLumpAch[i] = theory.createAchievement(700+i,BuildingAchievement,bachlump[i],`Upgrade ${buildingName[indx][i]} to level 100`,()=>CheckAchBui2(i,100));
     }
     //Feats
     {
@@ -1870,7 +1885,6 @@ var calcCPS = () => {
             //it's in the ratios!
             subconstant+=(BF(arrcps[dominate])/BF(arrcps[i]));
         }
-        log(subconstant.toString(0));//debug
         arrcps[i] *= mult;
     }
     if((spellCast[1]+(10*effectCPSBDur)) >= thyme.level){
@@ -2108,7 +2122,7 @@ var secondaryEq = (mode,col) => {
     //\color{#E6DFCF}{B(i) = B[i]P_{i}1.1^{L[i]}(\log_{10}\log_{10}\tau)^{2}}
     switch (mode) {
         case 0:
-            return `\\color{#${eqColor[col]}}{${(R9Box.level > 0)?"\\dot{C} \\leftarrow \\dot{C}\\sigma^{0.7R_{9}}\\\\":""}B(i) = B[i]P_{i}1.1^{L[i]}${(CookieTau.level > 0)?"(\\log_{10}\\log_{10}\\tau)^{2}":""}${(building[14].level > 0)?"\\\\B(14) \\leftarrow B(14)^{r(1.01+5\\cdot10^{-5}L[14],0.99+5\\cdot10^{-5}L[14])}":""}}`;
+            return `\\color{#${eqColor[col]}}{${(R9Box.level > 0)?"\\dot{C} \\leftarrow \\dot{C}\\sigma^{0.7R_{9}}\\\\":""}B(i) = B[i]P_{i}${buip}^{L[i]}${(CookieTau.level > 0)?"(\\log_{10}\\log_{10}\\tau)^{2}":""}${(building[14].level > 0)?"\\\\B(14) \\leftarrow B(14)^{r(1.01+5\\cdot10^{-5}L[14],0.99+5\\cdot10^{-5}L[14])}":""}}`;
             break;
         case 1:
             return (
@@ -2363,9 +2377,9 @@ let biButton = ui.createButton({
     }
 });
 //!1.5 : COLOR
-const eqColor = ["FFFFFF","E6DFCF","A06846","FFD4D8","FE3246","ABED6A","C48AE2","F4E4BA","FBF2D5","AC6329","E5BD46","E71334","E2DBD2","83F2BC","8F9098","FF6D98","AB5DF8","F1398D","00FFFF"];
-const eqColorName = ["White","Milk","Chocolate","Strawberry","Raspberry","Lime","Blueberry","Banana","Vanilla","Caramel","Honey","Cherry","Coconut","Mint","Licorice","Rose","Blackcurrant","Dragonfruit","Crystallized"];
-const eqColorAch = [0,10,15,20,25,30,40,50,60,70,75,80,85,90,100,110,120,130,140];
+const eqColor = ["FFFFFF","E6DFCF","A06846","FFD4D8","FE3246","ABED6A","EA8B01","C48AE2","F4E4BA","FBF2D5","AC6329","E5BD46","E71334","E2DBD2","83F2BC","8F9098","FF6D98","AB5DF8","F1398D","50AB21","00FFFF","8800FF"];
+const eqColorName = ["White","Milk","Chocolate","Strawberry","Raspberry","Lime","Pumpkin","Blueberry","Banana","Vanilla","Caramel","Honey","Cherry","Coconut","Mint","Licorice","Rose","Blackcurrant","Dragonfruit","Black Forest","Crystallized","Pentallized"];
+const eqColorAch = [0,10,15,20,25,30,35,40,50,60,70,75,80,85,90,100,110,120,130,140,150,194];
 let colorButton = ui.createButton({
     text: `Equation Color\n${eqColorName[eqC]}`, row: 0, column: 1,
     onClicked: () =>{
@@ -2635,7 +2649,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text:"Cookie Idler\nv0.4.0"
+                text:"Cookie Idler - P:faf122f\nv0.5.0a"
             })
         ]
     })
