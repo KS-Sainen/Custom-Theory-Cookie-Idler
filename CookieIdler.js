@@ -1862,6 +1862,7 @@ var calcCPS = () => {
         if(arrcps[dominate] < arrcps[i]){
             dominate = i;
         }
+        arrcps[i] *= mult;
     }
     if((spellCast[1]+(10*effectCPSBDur)) >= thyme.level){
         CPS *= effectCPSB;
