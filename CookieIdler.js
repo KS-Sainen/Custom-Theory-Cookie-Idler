@@ -799,7 +799,7 @@ let castSpell = (index) => {
             let warpthyme = ((100+(10*SpellStack.level))*RandR(0.9,1.1+(0.05*SpellStack.level)) + (15*SpellStack.level));
             log("Time goes brrrrrrrr " + warpthyme);
             for(let i=0;i<warpthyme;i++){
-                tick();
+                tick(0.1,1);
                 if(i%10 == 0){
                     log(i);
                 }
@@ -1874,13 +1874,18 @@ var calcCPS = () => {
     LPS += sugarCoat.level * 2.5;
     lwC = Math.floor((BigL10(10+(cookie.value).abs())) / lumpc) + LPS / 10;
     arrcps[14] = BigP(arrcps[14],RandR(1.01+(0.00005*buildingUpgrade[14].level),0.99+(0.00005*buildingUpgrade[14].level)));
+    log(dominate);
     for(let i=0;i<19;i++){
         CPS += arrcps[i];
-        if(arrcps[dominate] < arrcps[i]){
+        if(BF(arrcps[dominate]/mult) < BF(arrcps[i])){
             //recalc constant then replace
-            if(subconstant>BF(1))subconstant = ((arrcps[i] + (subconstant * arrcps[dominate]))/arrcps[i]);
-            else subconstant = BF(1);
+            if(subconstant>BF(1)){
+                subconstant = ((arrcps[i] + (subconstant * arrcps[dominate]))/arrcps[i]);
+            }else{
+                subconstant = BF(1);
+            }
             dominate = i;
+            log(dominate);
         }else if(arrcps[i]*BF(1000) > arrcps[dominate] && i!=dominate){//upper limit = 1/1000th of cps
             //it's in the ratios!
             subconstant+=(BF(arrcps[dominate])/BF(arrcps[i]));
@@ -2012,15 +2017,15 @@ var tick = (elapsedTime, multiplier) => {
         }
 
         if(artArt.level > 13){
-            elements[8].value += dt * BigL10(BF(10)+building[8].level)*BigL10(BF(10)+arrcps[8])*0.001;
+            elements[8].value += BigL10(BF(10)+building[8].level)*BigL10(BF(10)+arrcps[8])*0.001;
         }
 
-        cookie.value += dt * (CPS * Logistic() * Dilate()) / BigNumber.TEN;
-        lump.value += dt * lwC;
-        lumpTotal += dt * lwC;
+        cookie.value += (CPS * Logistic() * Dilate()) / BigNumber.TEN;
+        lump.value += lwC;
+        lumpTotal += lwC;
 
         //Sugar Lump Incremental
-        hc.value += dt * HPS / 10;
+        hc.value += HPS / 10;
         if(thyme.level % 10 == 0){
 
             for(let i=0;i<Spell.length;i++){
