@@ -311,6 +311,7 @@ const lumpc = 500;
 const buipb = 1.1;
 const buiexp = 0.05;
 const bcp = 0.01;
+let subconstant = BF(1);//filling in the missing parts
 let arrcps = new Array(21).fill(0);
 let getbuip = () => buipb+(0.01*superL.level);
 let lumpbf = BigNumber.ZERO;
@@ -1197,7 +1198,7 @@ var init = () => {
                 return `\$K_{i} = ${kitty.level}, M = ${kittyPower(kitty.level)}\$`;
             }
             if (kitty.level >= kittyName.length) {
-                return kittyDName;
+                return kittyDName
             } else {
                 return kittyName[kitty.level];
             }
@@ -1793,6 +1794,7 @@ var calcCPS = () => {
     if(Number.isNaN(dominate)){
         dominate = 0;
     }
+    subconstant = BF(1);
     buip = getbuip();
     CPS = BF(0);
     bc = BF(0);
@@ -1860,8 +1862,15 @@ var calcCPS = () => {
     for(let i=0;i<19;i++){
         CPS += arrcps[i];
         if(arrcps[dominate] < arrcps[i]){
+            //recalc constant then replace
+            if(subconstant>BF(1))subconstant = ((arrcps[i] + (subconstant * arrcps[dominate]))/arrcps[i]);
+            else subconstant = BF(1);
             dominate = i;
+        }else if(arrcps[i]*BF(1000) > arrcps[dominate] && i!=dominate){//upper limit = 1/1000th of cps
+            //it's in the ratios!
+            subconstant+=(BF(arrcps[dominate])/BF(arrcps[i]));
         }
+        log(subconstant.toString(0));//debug
         arrcps[i] *= mult;
     }
     if((spellCast[1]+(10*effectCPSBDur)) >= thyme.level){
@@ -1944,7 +1953,7 @@ var lessPreciseCalcCPS = () => {
             break;
     }
     arrcps[dominate] *= mult;
-    CPS = arrcps[dominate];
+    CPS = arrcps[dominate] * subconstant;
 }
 
 
