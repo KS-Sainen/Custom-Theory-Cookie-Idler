@@ -1196,7 +1196,7 @@ var init = () => {
             if(bInfo==1){
                 return `\$K_{i} = ${kitty.level}, M = ${kittyPower(kitty.level)}\$`;
             }
-            if (kitty.level > kittyName.length) {
+            if (kitty.level >= kittyName.length) {
                 return kittyDName;
             } else {
                 return kittyName[kitty.level];
