@@ -1575,17 +1575,27 @@ var init = () => {
     //// Milestone Upgrades
     theory.setMilestoneCost(new LinearCost(30, 30));
     superP = theory.createMilestoneUpgrade(0,1);
-    superP.boughtOrRefunded = (amount) => calcCPS();
+    superP.boughtOrRefunded = (amount) => {
+        calcCPS();
+        theory.invalidateSecondaryEquation();
+    }
     superP.description = "Super Building Power";
     superP.info = "Increases $P_{i}$ exponent by $0.02$ for all values of $i$";
     superL = theory.createMilestoneUpgrade(1,1);
     superL.description = "Super Lumps";
     superL.info = "Change $1.1$ in $L[i]$ to $1.11$";
-    superL.boughtOrRefunded = (amount) => calcCPS();
+    superL.boughtOrRefunded = (amount) => {
+        buip = getbuip();
+        calcCPS();
+        theory.invalidateSecondaryEquation();
+    }
     superC = theory.createMilestoneUpgrade(2,1);
     superC.description = "Super Flavored Cookie";
     superC.info = "Increases $CP(l)$ exponent by $0.05$";
-    superC.boughtOrRefunded = (amount) => calcCPS();
+    superC.boughtOrRefunded = (amount) => {
+        calcCPS();
+        theory.invalidateSecondaryEquation();
+    }
 
     /////////////////
     //// Achievements
