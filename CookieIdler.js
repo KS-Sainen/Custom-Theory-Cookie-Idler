@@ -153,7 +153,7 @@ let pubH = (i) => {
  * @param {number} i
  */
 let tickLump = (i) => {
-    let dL = (BF(i)*LPS) + (1 / (lumpc / BigL10(BF(10)+(cookie.value).abs())))*BF(i);
+    let dL = (BF(i)*(LPS-(sugarCoat.level * 2.475)-(recom.level+((artArt.level > 7)?10:0)) * 0.009)) + (1 / (lumpc / BigL10(BF(10)+(cookie.value).abs())))*BF(i);
     lump.value += dL;
     lumpTotal += dL;
 }
@@ -326,7 +326,7 @@ var isCurrencyVisible = (indx) => indx <= 2;
 const elemName = ["Be","Ch","Bg","Su","Jm","Cs","Hz","Mn","As"];
 const elemFormalName = ["Berrylium","Chalcedhoney","Buttergold","Sugarmuck","Jetmint","Cherrysilver","Hazelrald","Mooncandy","Astrofudge"];
 const elemWeight = [1,2,3,5,8,13,21,36,57];
-const nextExcavateReq = [0,1.35e13,1.1e12,1.5e11,6e9,5e8,7.5e6,100000];//req to unlock THAT element(comp: n-1)
+const nextExcavateReq = [0,1.2e13,9.5e11,1.25e11,4e8,5e7,7.5e6,100000];//req to unlock THAT element(comp: n-1)
 
 
 //==Buildings==
@@ -1336,22 +1336,22 @@ var init = () => {
                         case 0:
                             minCookie(60);
                             pubH(1);
-                            tickLump(5000);
+                            tickLump(2900);
                             break;
                         case 1:
-                            tickLump(5000);
+                            tickLump(2400);
                             break;
                         case 2:
-                            tickLump(2500);
+                            tickLump(1150);
                             break;
                         case 3:
-                            tickLump(2000);
+                            tickLump(900);
                             break;
                         case 4:
-                            tickLump(1500);
+                            tickLump(650);
                             break;
                         case 5:
-                            tickLump(1000);
+                            tickLump(400);
                             break;
                         case 6:
                             pubH(1);
@@ -1537,8 +1537,8 @@ var init = () => {
         }
     };
 
-    moreExcavator = shortPermaUpgrade(11004,elements[0],new ExponentialCost(132500, ML2(1.15)),`Improve excavator efficiency`,`Excavation Power goes here`);
-    moreExcavator.getInfo = () => `Excavation Power = ${(1+(0.2*BigP(moreExcavator.level,1.4)))}`;
+    moreExcavator = shortPermaUpgrade(11004,elements[0],new ExponentialCost(132500, ML2(1.15)),`Powered up Excavators $(E_{p})$`,`Excavation Power goes here`);
+    moreExcavator.getInfo = () => `\$E_{f}\$ = \$1+0.2E_{p}^{1.4}\$ = ${(1+(0.2*BigP(moreExcavator.level,1.4)))}`;
 
     crystalHoney = shortPermaUpgradeML(12004,elements[1],new ExponentialCost(BF(7.1e10),ML2(19.99)),"Crystallized Honey","A heavenly shard of this honey adds 10 levels to $C_1$",11);
     crystalHoney.bought = (amount) => calcCPS();
@@ -1559,7 +1559,7 @@ var init = () => {
     }
     //Lumpy Upgrade
     for (let i = 0; i < 19; i++) {
-        buildingUpgrade[i] = theory.createPermanentUpgrade(33 + i,lump,new LinearCost(i+1, (i+1)*((i>=13)?i*(i-5)*0.1:1)));
+        buildingUpgrade[i] = theory.createPermanentUpgrade(33 + i,lump,new LinearCost(i+1, (i+1)*((i>=13)?(i-1)*(i-6)*0.04:0.9)));
         buildingUpgrade[i].getDescription = (amount) => (bInfo==1)?`\$ ${buip}^{L[${i}]} = ${buip}^{${buildingUpgrade[i].level}} = ${BigP(buip,buildingUpgrade[i].level)}\$`:buildingUpgradeName[i];
         buildingUpgrade[i].getInfo = (amount) => {
             if(bInfo==1){
@@ -2053,8 +2053,9 @@ var tick = (elapsedTime, multiplier) => {
 
         }
         let realMRate = mineRate - (10*milkOil.level);
+        let excRate = (1+(0.2*BigP(moreExcavator.level,1.4)));
         for(let i=0;i<excavate.level;i++){
-            elements[i].value += dt * BigL2(Logistic())*building[3].level*BigP(getPower(3),0.05)*BigP(buildingUpgrade[3].level,1.15)*BigP(realMRate,-1*(i+1))*(1+(0.2*BigP(moreExcavator.level,1.4)));
+            elements[i].value += dt * BigL2(Logistic())*building[3].level*BigP(getPower(3),0.05)*BigP(buildingUpgrade[3].level,1.15)*BigP(realMRate,-1*(i+1))*excRate;
 
             if(i==reactorMode && (building[12].level > 0)){
                 let rate = building[12].level*lambda*elements[i+2].value;
@@ -2081,11 +2082,11 @@ var tick = (elapsedTime, multiplier) => {
 var Logistic = () => {
     var maxL =
         BF(terra.level).pow(2.4 + 0.05 * (TerraInf.level + ((artArt.level > 6)?1:0))) * 1500 +
-        BF(building[3].level).pow(1.2 + 0.03 * TerraInf.level) * ((spellCast[3]+(10*logBoostDue) >= thyme.level)?logBoost:1);
+        BF(building[3].level).pow(1.2 + 0.03 * TerraInf.level) * ((spellCast[3]+(10*logBoostDue) >= thyme.level)?logBoost:1) * ((moreExcavator.level > 0)?BigP((1+(0.2*BigP(moreExcavator.level,1.4))),1.5):1);
     return (
         BigNumber.ONE +
         maxL.pow(1 + 0.005*TerraInf.level) -
-        maxL.pow(0.99999 - 0.01 * TerraInf.level) /
+        maxL.pow(0.99999 - 0.001 * TerraInf.level) /
             (BigNumber.ONE +
                 BigNumber.E.pow(-1 * (time - (xBegin + terra.level * 300))))
     );
@@ -2175,7 +2176,7 @@ var secondaryEq = (mode,col) => {
             let tr = " T_{r}";
             let tf = " T_{\\infty}";
             let tm = " T_{m}"
-            return `\\color{#${eqColor[col]}}{${tm} = 1500${tr}^{2.5+0.05${tf}}\\\\T = \\frac{1+${tm}^{1+0.005${tf}}-${tm}^{0.99999-0.01${tf}}}{1+e^{-(t-(X_{b}+300${tr}))}}}`;
+            return `\\color{#${eqColor[col]}}{${tm} = 1500${(moreExcavator.level>0)?"E_{f}^{1.5}":""}${tr}^{2.5+0.05${tf}}\\\\T = \\frac{1+${tm}^{1+0.005${tf}}-${tm}^{0.99999-0.001${tf}}}{1+e^{-(t-(X_{b}+300${tr}))}}}`;
             break;
         case 7://Recom
             let rc = " R_{c}";
@@ -2185,7 +2186,7 @@ var secondaryEq = (mode,col) => {
             return `\\color{#${eqColor[col]}}{T_d = \\frac{B[11]^{1+0.025T_D}}{1000^{T_f}}\\\\T_f = 1-\\frac{min(B[11],B[10]+B[12])}{(2.125-0.125T_{D}))(B[10]+B[12])}}`;
         case 9://Elements
             theory.secondaryEquationScale = 0.85;
-            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{B[3]L[3]P_{3}^{0.05}log_2(T)}{150^{n+1}}, \\: n \\neq 8${(artArt.level > 13)?"\\\\ \\dot{E_{8}} = \\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}}":""}`;
+            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{f}B[3]L[3]P_{3}^{0.05}log_2(T)}{150^{n+1}}, \\: n \\neq 8${(artArt.level > 13)?"\\\\ \\dot{E_{8}} = \\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}}":""}`;
         case 10://Decay
             let ingre = (reactorMode==-1)?"E_{n}":`${elemName[reactorMode+2]}`;
             let r1 = (reactorMode==-1)?"E_{n-1}":`${elemName[reactorMode+1]}`;
@@ -2664,7 +2665,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text:"Cookie Idler - P:faf122f\nv0.5.0a"
+                text:"Cookie Idler - 0170034\nv0.5.0a"
             })
         ]
     })
