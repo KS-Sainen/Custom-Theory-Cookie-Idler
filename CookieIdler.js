@@ -218,7 +218,6 @@ var setInternalState = (state) => {
     }
     if (res.length > 3) {
         eqType = parseInt(res[3]);
-        seqButton.text = `Secondary Equation\n${eqName[eqType]}`;
     }
     if (res.length > 4) {
         artUnlock = parseInt(res[4]);
@@ -275,7 +274,6 @@ var setInternalState = (state) => {
     }
     reactorInterim = reactorMode;
     reactorMenu.content.children[2].text = `Current Element : ${(reactorInterim > -1)?elemFormalName[reactorInterim+2]:"OFF"}`;
-    colorButton.text = `Equation Color\n${eqColorName[eqC]}`;
 };
 
 //Initializes the variables for the serialized string(the scope is global)
@@ -1053,7 +1051,8 @@ const bach4 = ["Hands of fate lays bare their click upon thou","Shrivel, today w
 const bachlump = ["A hand and them a some more","Just like babies, but much more weird and terrifying","Farmer\'s Heaven","r/drillingmasterrace","Overengineering Achieved","Hypermetaflation","Chief Artifact Curator","Hours to pronounce, effects very pronounced","You could make a chronicle out of those","Truly a Mendeleev's Nightmare","Is this reality or is it cookieverse?","No more Thyme Pararegano","Flavor Mathematics","4th Cone","Black Cat\'s Paw","Quite nearly but not so full","The \"C\" Language","You need a new bluestack","I am smart"];
 const pach = ["See the Exponent","Touch the Exponent","Feel the Exponent","Cherish the Exponent","Forfeit all mortal possessions to the Exponent"];
 var featAchCat;
-var superIdle,hyperIdle,speedBake1,speedBake2,speedBake3,speedBake4,speedBake5,speedBake6,nice,insipid,leetnice,sigmaCurseof,timeSpeed,timeOhNo;
+var superIdle,hyperIdle,speedBake1,speedBake2,speedBake3,speedBake4,speedBake5,speedBake6,nice,insipid,leetnice,sigmaCurseof,timeSpeed,timeOhNo,sugarAddict1,sugarAddict2,sugarAddict3,jackpot;
+let templeJ = false;
 
 
 //==LORE==
@@ -1337,6 +1336,7 @@ var init = () => {
                             minCookie(60);
                             pubH(1);
                             tickLump(2900);
+                            templeJ=true;
                             break;
                         case 1:
                             tickLump(2400);
@@ -1559,7 +1559,7 @@ var init = () => {
     }
     //Lumpy Upgrade
     for (let i = 0; i < 19; i++) {
-        buildingUpgrade[i] = theory.createPermanentUpgrade(33 + i,lump,new LinearCost(i+1, (i+1)*((i>=13)?(i-1)*(i-6)*0.04:0.9)));
+        buildingUpgrade[i] = theory.createPermanentUpgrade(33 + i,lump,new LinearCost(i+1, (i+1)*((i>=13)?(i-1)*(i-5)*0.06:0.9)));
         buildingUpgrade[i].getDescription = (amount) => (bInfo==1)?`\$ ${buip}^{L[${i}]} = ${buip}^{${buildingUpgrade[i].level}} = ${BigP(buip,buildingUpgrade[i].level)}\$`:buildingUpgradeName[i];
         buildingUpgrade[i].getInfo = (amount) => {
             if(bInfo==1){
@@ -1720,14 +1720,19 @@ var init = () => {
         speedBake4 = theory.createAchievement(805,featAchCat,"Speed Baking IV","(3) Get 1e200 CPS within 15 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e200))&&(thyme.level <= 150),3));
         speedBake5 = theory.createAchievement(806,featAchCat,"Speed Baking V","(4) Get 1e300 CPS within 5 seconds of publishing\n\nhaha speed goes brrrrrr",()=>CheckAchFeat(() => (CPS >= BF(1e300))&&(thyme.level <= 50),4));
         speedBake6 = theory.createSecretAchievement(812,featAchCat,"Speed Baking VI","(5) Get 1e500 CPS within 2.5 seconds of publishing\n\nwould you please just slow down?","we fast as 5",()=>CheckAchFeat(() => (CPS >= BF("1e500"))&&(thyme.level <= 25),5));
+        sugarAddict1 = theory.createAchievement(814,featAchCat,"Sugar lump enjoyer","(2) Have the dominant building have 50 levels of sugar lump upgrade",()=>CheckAchFeat(() => (buildingUpgrade[dominate].level >= 50),2));
+        sugarAddict2 = theory.createAchievement(815,featAchCat,"Sugar lump addict","(3) Have the dominant building have 100 levels of sugar lump upgrade\n\n you have issues",()=>CheckAchFeat(() => (buildingUpgrade[dominate].level >= 100),3));
+        sugarAddict3 = theory.createAchievement(816,featAchCat,"Overpusher","(4) Have the dominant building have 150 levels of sugar lump upgrade\n\n stop overpushing and get back to progressing, please",()=>CheckAchFeat(() => (buildingUpgrade[dominate].level >= 150),4));
         nice = theory.createSecretAchievement(807,featAchCat,"nice","(1) Get exactly 69 heavenly lumps(decimals accepted)","nice",()=>CheckAchFeat(() => (0x46 > hc.value)&&(hc.value > 0x44),1));
         insipid = theory.createAchievement(808,featAchCat,"Pure Chocolate Taste","(2) Get to e55 without buying a single level of milk and cookie flavor",()=>CheckAchFeat(() => ((cookie.value).abs() >= BF(1e55))&&(kitty.level==0)&&(cookieT.level==0),2));
         leetnice = theory.createSecretAchievement(809,featAchCat,"you won the internet","(2) Have Temple+Alchemy Lab = 1337","[ni] + [ce] = leet",()=>CheckAchFeat(() => ((building[6].level + building[9].level) == 0x539),2));
         sigmaCurseof = theory.createSecretAchievement(810,featAchCat,"Sigma Fingers","(2) Have 1e100 Cursor CPS with only a single cursor\nThis feat also unlocks a special building display mode, find it out :)","Doing so much with only a single one",()=>CheckAchFeat(() => (arrcps[0] >= BF(1e100))&&(building[0].level==1),2));
         timeSpeed = theory.createAchievement(811,featAchCat,"Time is speed","(2) Dilate 15 whole seconds in a single tick",()=>CheckAchFeat(() => (Dilate() >= 150),2));
-        timeOhNo = theory.createSecretAchievement(813,featAchCat,"Time is rickroll","(6) Dilate an entire video of Rick Astley - Never Gonna Give You Up (Official Music Video) into a SINGLE tick (which is 312 seconds in a SINGLE tick)\n\nAlso check out https://www.youtube.com/watch?v=oHg5SJYRHA0, very cool video","No Hints >:)",()=>CheckAchFeat(() => (Dilate() >= 3120),6));
+        timeOhNo = theory.createSecretAchievement(813,featAchCat,"Time is rickroll","(6) Dilate an entire video of Rick Astley - Never Gonna Give You Up (Official Music Video) into a SINGLE tick (which is 312 seconds in a SINGLE tick)\n\nAlso check out https://www.youtube.com/watch?v=oHg5SJYRHA0, very cool video","No Hint >:)",()=>CheckAchFeat(() => (Dilate() >= 3120),6));
+        jackpot = theory.createSecretAchievement(817,featAchCat,"JJJJACKPOTTTTTTT","(1) Get the biggest W for exploring an temple","Just get lucky!",()=>CheckAchFeat(()=>{if(templeJ){return true;}else{return false;}},1));
     }
-    //! Total sum of all feats : 38
+    //! Total sum of all feats : 48
+    //! Latest Feat ID : 817
 
     ///////////////////
     //// Story chapters
@@ -2168,7 +2173,7 @@ var secondaryEq = (mode,col) => {
             );
             break;
         case 5://Ygg + Chronos
-            theory.secondaryEquationScale = 0.9;
+            //theory.secondaryEquationScale = 0.925;
             let ys = " Y_{g}"
             return `\\color{#${eqColor[col]}}{B(3) \\leftarrow 5(10^{10})B(3)P_{3}^{1.175 + 0.05${ys}}\\\\(B[6]+B[2])^{3.2 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{0.5}), \\quad i \\neq 2`:``}}`;
             break;
@@ -2336,6 +2341,8 @@ var InsPopup = ui.createPopup({
 //!1.2 : WHAT'S NEW
 var getUpdateNotes = () => {
     let ret = [];
+    ret.push(ui.createLabel({text:"Alpha Version 0.5.0 - Nuclear Elemental Physics",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,10,2,5)}));
+    ret.push(ui.createLabel({text:"\t- ⚛ NEW MECHANIC : \"Elements\" AND \"Elemental Decay\", mine them at mines and decay them with antimatter condensers(don\'t ask how)! The Elements have come to your side, and it\'s your job to use them for you majestic cookie empire. \n\t- NEW BUILDINGS : FRACTAL ENGINES and JAVASCRIPT CONSOLES\n\t- ARTIFACTS : Who knows? Maybe you could use them i guess.\n\t- CUSTOMIZATION : Now the menu is truly up to your style! Get all the new and delicious colors by achieving enough and express your inner math with the new secondary equation for an experience that\'s truly YOURS\n\t- Balanced EVEN MORE things at every stage of the game progression until this point. \n\t- Achievements for all stages of the games.\n\t - All sorts of bugs, including the legendary one fixed \n\t Check back for more update notes as I gradually finish this update",fontSize:11,horizontalTextAlignment:TextAlignment.START,fontAttributes:FontAttributes.NONE,padding:Thickness(2,5,2,10)}));
     ret.push(ui.createLabel({text:"Version 0.4.0 - Book of Spells",fontSize:18,horizontalTextAlignment:TextAlignment.CENTER,fontAttributes:FontAttributes.BOLD,padding:Thickness(2,10,2,5)}));
     ret.push(ui.createLabel({text:"\t- 🧙‍♂️ Added a NEW unique upgrade : \"Grimoire\", available at your nearest temples! Cast spells to further your progression, build new strategy revolving them, or to get unlucky and [DATA EXPUNGED]. \n\t- UI OVERHAUL : Everything\'s changed! From the equation overlay to the brand NEW main menu. Explore a whole new dimension of interacting with the theory you love(hopefully so).\n\t- CHANCEMAKERS : Those things really do depend on luck. I mean, REALLY.\n\t- Balanced out a lot of things at every stage of the game progression until this point. Changed up some upgrades and adjusted P_i growth rate for some rowdy CPS and revolutionized milestone upgrades.\n\t- Added a whole lot of achievements and feats, go get them all. There\'s rewards for achieving them so get achieving.",fontSize:11,horizontalTextAlignment:TextAlignment.START,fontAttributes:FontAttributes.NONE,padding:Thickness(2,5,2,10)}));
     return ret;
@@ -2362,24 +2369,10 @@ let whatsnewMenu = ui.createPopup({
 });
 //!1.3 : SECONDARY EQUATION
 let eqName = ["Building CPS","Building Power","Milk","Cookie Power","Covenant","Yggdrasil","Terra","Recombobulators","Dilation","Elements","Decay"];
-let seqButton = ui.createButton({
-    text: `Secondary Equation\n${eqName[eqType]}`, row: 1, column: 0, 
-    fontFamily: FontFamily.CMU_REGULAR,
-    onClicked: () => {
-        eqType++;
-        eqType = eqType % 11;
-        while(!secondaryCheck(eqType)){
-            eqType++;
-            eqType = eqType % 11;
-        }
-        seqButton.text = `Secondary Equation\n${eqName[eqType]}`;
-        theory.invalidateSecondaryEquation();
-    },
-});
 //!1.4 : BUILDING DISPLAY
 let binfoname = ["Normal","Compressed","Typw"];
 let biButton = ui.createButton({
-    text: `Building Display\n${binfoname[bInfo]}`, row: 0, column: 1,
+    text: `Building Display\n${binfoname[bInfo]}`, row: 1, column: 0,
     fontFamily: FontFamily.CMU_REGULAR,
     onClicked: () =>{
         if(sigmaCurseof.isUnlocked){
@@ -2396,20 +2389,187 @@ let biButton = ui.createButton({
 const eqColor = ["FFFFFF","E6DFCF","A06846","FFD4D8","FE3246","ABED6A","EA8B01","C48AE2","F4E4BA","FBF2D5","AC6329","E5BD46","E71334","E2DBD2","83F2BC","8F9098","FF6D98","AB5DF8","F1398D","50AB21","00FFFF","8800FF"];
 const eqColorName = ["White","Milk","Chocolate","Strawberry","Raspberry","Lime","Pumpkin","Blueberry","Banana","Vanilla","Caramel","Honey","Cherry","Coconut","Mint","Licorice","Rose","Blackcurrant","Dragonfruit","Black Forest","Crystallized","Pentallized"];
 const eqColorAch = [0,10,15,20,25,30,35,40,50,60,70,75,80,85,90,100,110,120,130,140,150,194];
-let colorButton = ui.createButton({
-    text: `Equation Color\n${eqColorName[eqC]}`, row: 0, column: 1,
-    onClicked: () =>{
-        if (achCount >= eqColorAch[eqC] && (eqC < eqColor.length - 1)) {
-            eqC++;
-        }else{
-            eqC=0;
-        }
-        colorButton.text = `Equation Color\n${eqColorName[eqC]}`;
-        theory.invalidatePrimaryEquation();
-        theory.invalidateSecondaryEquation();
-        theory.invalidateTertiaryEquation();
+let visButton = ui.createButton({
+    text: `Modify Visuals`, row:0, column:1,
+    onClicked: () => {
+        nexSec=eqType;
+        nexCol=eqC;
+        visualUI.content.children[2].text = `Chosen Equation : ${eqName[nexSec]}`;
+        visualUI.content.children[5].text = `Chosen Color : ${eqColorName[nexCol]}`;
+        visualUI.show();
     }
 })
+//complete image grid
+let templateImage = {
+    heightRequest:91,
+    source: ImageSource.ADD,
+    aspect: Aspect.ASPECT_FIT
+};
+var nexCol=0,nexSec=0;
+let templateFrame = {row:0,column:1,heightRequest:91};
+let completeSecGrid = [], completeColGrid = [];
+let imagUpdate = () => {
+    templateFrame.content = ui.createImage(templateImage);
+    completeSecGrid.push(ui.createFrame(templateFrame));
+    templateFrame.column+=1;
+};
+{
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/55/Chocolate_chip_cookie.png/revision/latest?cb=20210404132052");//building cps
+    imagUpdate();
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/2/29/Heavenly_confectionery.png/revision/latest?cb=20160226201343");//building power
+    imagUpdate();
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/cd/Plain_milk.png/revision/latest?cb=20151230175349");//milk
+    imagUpdate();
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/f1/Heavenly_cookies.png/revision/latest?cb=20180510065009");//cookie power
+    imagUpdate();
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/eb/One_mind.png/revision/latest?cb=20160220092603");//covenant
+    imagUpdate();
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/3/33/Keeper_of_the_conservatory.png/revision/latest?cb=20180416022615");//yggdrasil
+    imagUpdate();
+    templateFrame.row = 1;
+    templateFrame.column = 1;
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/6/6f/CookieProduction39.png/revision/latest?cb=20200620182721");//terra
+    imagUpdate();
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/1/18/Chalcedhoney_factory.png/revision/latest?cb=20160213150047");//recom
+    imagUpdate();
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/0/06/Sugarmuck_time_machine.png/revision/latest?cb=20160213150709");//dilation
+    imagUpdate();
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/0/07/Plain_antimatter_condenser.png/revision/latest?cb=20160213150228");//elem
+    imagUpdate();
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/eb/Heavenly_chip.png/revision/latest?cb=20160226200959");//decay
+    imagUpdate();
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/f4/Questionmark.png/revision/latest?cb=20200626021945");
+    imagUpdate();
+    for(let i=0;i<11;i++){
+        completeSecGrid[i].content.onTouched = (e) => {
+            if(secondaryCheck(i)){
+                nexSec = i;
+                visualUI.content.children[2].text = `Chosen Equation : ${eqName[nexSec]}`;
+            }
+        }
+    }
+}
+imagUpdate = () => {
+    templateFrame.content = ui.createImage(templateImage);
+    completeColGrid.push(ui.createFrame(templateFrame));
+    templateFrame.column+=1;
+};
+{
+    templateFrame = {row:0,column:1,heightRequest:91};
+    templateImage.source = ImageSource.MINUS;imagUpdate();//none
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/cd/Plain_milk.png/revision/latest?cb=20151230175349");imagUpdate();//milk
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/c1/Chocolate_milk.png/revision/latest?cb=20181024002025");imagUpdate();//chocolate
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/b/b8/Strawberry_milk.png/revision/latest?cb=20181024002158");imagUpdate();//strawberry
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/6/67/Raspberry_milk.png/revision/latest?cb=20181024002158");imagUpdate();//raspberry
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/a/a0/Lime_milk.png/revision/latest?cb=20181024002718");imagUpdate();//lime
+    templateFrame.row += 1;templateFrame.column = 1;
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/4/40/Orange_milk.png/revision/latest?cb=20181024002718");imagUpdate();//pumpkin spice
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/0/04/Blueberry_milk.png/revision/latest?cb=20181024002025");imagUpdate();//blueberry
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/58/Banana_milk.png/revision/latest?cb=20181024002025");imagUpdate();//banana
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/2/26/Vanilla_milk.png/revision/latest?cb=20181024002158");imagUpdate();//vanilla
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/c5/Caramel_milk.png/revision/latest?cb=20181024002025");imagUpdate();//caramel
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/2/26/Honey_milk.png/revision/latest?cb=20181024002718");imagUpdate();//honey
+    templateFrame.row += 1;templateFrame.column = 1;
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/c4/Cherry_milk.png/revision/latest?cb=20181024002025");imagUpdate();//cherry
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/3/38/Coconut_milk.png/revision/latest?cb=20181024002654");imagUpdate();//coconut
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/1/16/Mint_milk.png/revision/latest?cb=20190924042414");imagUpdate();//mint
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/9/96/Licorice_milk.png/revision/latest?cb=20200824174644");imagUpdate();//licorice
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/d/d4/Rose_milk.png/revision/latest?cb=20201030064717");imagUpdate();//rose
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/2/26/Blackcurrant_milk.png/revision/latest?cb=20211227060413");imagUpdate();//blackcurrant
+    templateFrame.row += 1;templateFrame.column = 1;
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/ee/Dragonfruit_milk.png/revision/latest?cb=20201030074359");imagUpdate();//dragonfruit
+    templateImage.source = ImageSource.fromUri("https://media.discordapp.net/attachments/572392960675545088/1031059256457306142/BlackForest_Milk.png");imagUpdate();//black forest
+    templateImage.source = ImageSource.fromUri("https://media.discordapp.net/attachments/572392960675545088/1031059255454879855/Crystallized_Milk.png");imagUpdate();//crystallized
+    templateImage.source = ImageSource.fromUri("https://media.discordapp.net/attachments/572392960675545088/1031059255991750706/Pentallized_Milk.png");imagUpdate();//pentallized
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/f4/Questionmark.png/revision/latest?cb=20200626021945");imagUpdate();
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/f4/Questionmark.png/revision/latest?cb=20200626021945");imagUpdate();//2 ext milk flavors
+    for(let i=0;i<22;i++){
+        completeColGrid[i].content.onTouched = (e) => {
+            if(achCount >= eqColorAch[i]){
+                nexCol = i;
+                visualUI.content.children[6].text = `Chosen Color : ${eqColorName[nexCol]}`;
+            }
+        }
+    }
+}
+let visualUI = ui.createPopup({
+    title: "Visuals Editor",
+    isPeekable: true,
+    content:ui.createStackLayout({
+        children:[
+            ui.createLabel({
+                text:"Secondary Equation",
+                fontSize:22,
+                horizontalTextAlignment:TextAlignment.CENTER,
+                fontAttributes:FontAttributes.BOLD
+            }),
+            ui.createScrollView({
+                heightRequest:250,
+                children:[
+                    ui.createGrid({
+                        columnDefinitions: ["5*","10*","10*","10*","10*","10*","10*","5*"],
+                        rowSpacing: 8,
+                        columnSpacing:6,
+                        padding: new Thickness(4,4,4,4),
+                        children:completeSecGrid
+                    })
+                ]
+            }),
+            ui.createLabel({
+                horizontalTextAlignment:TextAlignment.CENTER,
+                text:`Chosen Equation : ${eqName[nexSec]}`
+            }),
+            ui.createProgressBar({progress: 0}),
+            ui.createLabel({
+                text:"Equation Color",
+                fontSize:22,
+                horizontalTextAlignment:TextAlignment.CENTER,
+                fontAttributes:FontAttributes.BOLD
+            }),
+            ui.createScrollView({
+                heightRequest:250,
+                children:[
+                    ui.createGrid({
+                        columnDefinitions: ["5*","10*","10*","10*","10*","10*","10*","5*"],
+                        rowSpacing: 8,
+                        columnSpacing:6,
+                        padding: new Thickness(4,4,4,4),
+                        children:completeColGrid
+                    })
+                ]
+            }),
+            ui.createLabel({
+                horizontalTextAlignment:TextAlignment.CENTER,
+                text:`Chosen Color : ${eqColorName[nexCol]}`
+            }),
+            ui.createGrid({
+                columnDefinitions:["20*","25*","25*","20*"],
+                columnSpacing:10,
+                children:[
+                    ui.createButton({
+                        text:"Confirm",row:0,column:1,
+                        fontSize:18,
+                        onClicked: () => {
+                            eqType = nexSec;
+                            eqC = nexCol;
+                            theory.invalidatePrimaryEquation();
+                            theory.invalidateSecondaryEquation();
+                            theory.invalidateTertiaryEquation();
+                            visualUI.hide();
+                        }
+                    }),
+                    ui.createButton({
+                        text:"Cancel",row:0,column:2,
+                        fontSize:18,
+                        onClicked: () => {
+                            visualUI.hide();
+                        }
+                    })
+                ]
+            })
+        ]
+    })
+});
 //!1.6 : PERKS
 let calcCookieToPerk = (level) => {
     if(Number.isNaN(level)){
@@ -2650,14 +2810,8 @@ let popup = ui.createPopup({
                 children: [
                     ui.createButton({text: "Visualizer Type\nNormal", row: 0, column: 0}),
                     biButton,
-                    seqButton,
+                    visButton,
                     ui.createButton({text: "???", row: 1, column: 1}),
-                ]
-            }),
-            ui.createGrid({
-                columnDefinitions: ["25*", "50*","25*"],
-                children: [
-                    colorButton
                 ]
             }),
             ui.createProgressBar({progress: 0}),
@@ -2665,7 +2819,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text:"Cookie Idler - 0170034\nv0.5.0a"
+                text:"Cookie Idler - 76ede61\nv0.5.0a"
             })
         ]
     })
