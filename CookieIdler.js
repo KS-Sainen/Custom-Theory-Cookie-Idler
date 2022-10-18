@@ -193,9 +193,12 @@ var getInternalState = () => {
     }
     st += `${heavVis} ${bInfo} ${perkPoint} `;
     for(let i=0;i<19;i++){
-        st += `${buiPerk[i]} `
+        st += `${buiPerk[i]} `;
     }
-    st += `${eqC} ${reactorMode} ${dominate} `;
+    st += `${eqC} ${reactorMode} ${dominate} ${spellTotalCount} `; //!40
+    for(let i=0;i<9;i++){
+        st += `${spellCountCast[i]} `;
+    }
     return st;
 };
 
@@ -257,20 +260,12 @@ var setInternalState = (state) => {
         }
         perkMenu.content.children[3].children[0].children[i].children[1].text = `${buiPerk[i]} / ${maxbuiPerk(i)}`;
     }
-    if(res.length > 37){
-        eqC = parseInt(res[37]);
-    }else{
-        eqC = 0;
-    }
-    if(res.length > 38){
-        reactorMode = parseInt(res[38]);
-    }else{
-        reactorMode = -1;
-    }
-    if(res.length > 39){
-        dominate = parseInt(res[39]);
-    }else{
-        dominate = 0;
+    if(res.length > 37){eqC = parseInt(res[37]);}else{eqC = 0;}
+    if(res.length > 38){reactorMode = parseInt(res[38]);}else{reactorMode = -1;}
+    if(res.length > 39){dominate = parseInt(res[39]);}else{dominate = 0;}
+    if(res.length > 40){spellTotalCount = parseInt(res[40]);}else{spellTotalCount = 0;}
+    for(let i=0;i<9;i++){
+        if(res.length > (41+i)){spellCountCast[i] = parseInt(res[41+i]);}else{spellCountCast[i] = 0;}
     }
     reactorInterim = reactorMode;
     reactorMenu.content.children[2].text = `Current Element : ${(reactorInterim > -1)?elemFormalName[reactorInterim+2]:"OFF"}`;
@@ -296,6 +291,8 @@ let perkHas = 0;
 let eqC = 0;
 let reactorMode = -1,reactorInterim;
 let dominate = 0;
+let spellTotalCount = 0;
+let spellCountCast = [0,0,0,0,0,0,0,0,0];
 
 //End States
 
@@ -729,6 +726,8 @@ let updateSpellLayer = () => {
 };
 let castSpell = (index) => {
     spellCast[index]=thyme.level;
+    spellCountCast[index]+=1;
+    spellTotalCount+=1;
     switch(index){
         case 0:
             var rand = RandI(100);
@@ -1037,6 +1036,7 @@ const lumpAchName = [
 ];
 const lumpAchReq = [1, 10, 50, 100, 500, 1000, 10000, 100000, 1000000, 10000000];
 const perkAchReq = [1,5,25,50,95];
+const spellAchReq = [10,50,100,500,1000, 25,25,25,50,50,50,100,250,50];//5 number + 9 specific
 var BuildingAchievement;
 var buiAch1 = new Array(19);
 var buiAch2 = new Array(19);
@@ -1044,15 +1044,17 @@ var buiAch3 = new Array(19);
 var buiAch4 = new Array(14);//Very endgame content right there
 var buiLumpAch = new Array(19);
 var perkAch = new Array(5);//Forge them, get them
+var spellAch = new Array(14);//spell, 5 number + 9 specific
 const bach1 = ["Mouse Wheel","Retirement Club","Home Organic","Stop! Drilling Time!","Industrial Act","Pretty Penny Pinchers","Way of the Temple","Bewitched","Local Expedition","Transmutation","Isekai\'d","Thyme Wrap","When does it matter?","Some rays of dough and batter","Lucked up","Z_n+1 = (Z_n)^2 + c","Press F12","Manifest Destiny","O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA"];//not to be confused with a famous composer from the romantic age or something
 const bach2 = ["Clicktopia","Tootsie Roll Machine","100% Sustainable","Break the core","Age of Internet","Keynesian Cookinomics","Balance of Faith","Alakazamd","Cosmic Mapping","Polytranselementation","H̶e̷ ̶C̶o̴m̵e̸s̵","Thyme Pararegano","New Standard Model of Cookie and Flour","Total Enlightenment","Devil\'s Gambit","Apollonian Gasket","Infinite Theorycraft","Is there enough worlds?","Cardinal Synapsis"];
 const bach3 = ["Thumbs, Phalanges, Metacarpals","Ruler of the Ancients","Green Pasture lays live","Dysonian Society","Automatal Hysteria","New Neohyperglobalization Order","The Lord\'s Likeliness","Shaspie Colupis","Multiverse Ramble","With matter comes Cookies","I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎","Thyme Sagaporal Nutmegstant","Unified Complete Theory of the Cookieverse","O thy energy of sky, bring fourth the light rays","Gamber\'s Last Bet","C_n := (C_n-1 ∪ (2+C_n-1))/3, where C_0 := [0,1]","I bring fourth reincarnation of reality","Lost your Cosmic Cookies?","I declare thee on all ye inferiors. Despair before me, I am the Ozymandias"];
 const bach4 = ["Hands of fate lays bare their click upon thou","Shrivel, today we rise","Babylonian Conservatorium sits on the hill","Breaking through omnirealitimetaplanes","The perfect game of Factorio","Money is just a human construct","Caricature of the forgotten Deities","Cookiera Avadra Creamdera","Omniverse Realization","Satiated in the gaudy mouths of Gold","Bottom of the abyss","Out of past, Out of future","Hypersize my String and Gluten","Neverending rays of bright brilliance shine on you all"];
 const bachlump = ["A hand and them a some more","Just like babies, but much more weird and terrifying","Farmer\'s Heaven","r/drillingmasterrace","Overengineering Achieved","Hypermetaflation","Chief Artifact Curator","Hours to pronounce, effects very pronounced","You could make a chronicle out of those","Truly a Mendeleev's Nightmare","Is this reality or is it cookieverse?","No more Thyme Pararegano","Flavor Mathematics","4th Cone","Black Cat\'s Paw","Quite nearly but not so full","The \"C\" Language","You need a new bluestack","I am smart"];
 const pach = ["See the Exponent","Touch the Exponent","Feel the Exponent","Cherish the Exponent","Forfeit all mortal possessions to the Exponent"];
+const sach = ["Neophyte","Acolyte","Adept","Harry Cookier","Master of Spells","Lazy Wizard","Gambler Wizard","Ascendant Wizard","Mass Miner Wizard","Explorer Wizard","Mogul Wizard","Impatient Wizard","Very Sweet Wizard","やれやれだぜ!"];
 var featAchCat;
-var superIdle,hyperIdle,speedBake1,speedBake2,speedBake3,speedBake4,speedBake5,speedBake6,nice,insipid,leetnice,sigmaCurseof,timeSpeed,timeOhNo,sugarAddict1,sugarAddict2,sugarAddict3,jackpot;
-let templeJ = false;
+var superIdle,hyperIdle,speedBake1,speedBake2,speedBake3,speedBake4,speedBake5,speedBake6,nice,insipid,leetnice,sigmaCurseof,timeSpeed,timeOhNo,sugarAddict1,sugarAddict2,sugarAddict3,jackpot,indecisive;//actual
+let templeJ = false,indecide=0;//unlock
 
 
 //==LORE==
@@ -1691,10 +1693,17 @@ var init = () => {
         return res;
     };
     for (let i = 0; i < 10; i++) {
-        lumpAch[i] = theory.createAchievement(200 + i,lumpAchCat,lumpAchName[i],lumpDesc(lumpAchReq[i]),() => CheckAch3(i));
+        lumpAch[i] = theory.createAchievement(200 + i,lumpAchCat,lumpAchName[i],lumpDesc(lumpAchReq[i]),() => CheckAch3(i),() => (lumpTotal/lumpAchReq[i]));
     }
     for (let i = 0; i < 5; i++){
-        perkAch[i] = theory.createAchievement(1000 + i,lumpAchCat,pach[i],perkDesc(perkAchReq[i]),() => CheckAchFeat(()=>perkPoint>=perkAchReq[i],1));
+        perkAch[i] = theory.createAchievement(1000 + i,lumpAchCat,pach[i],perkDesc(perkAchReq[i]),() => CheckAchFeat(()=>(perkPoint>=perkAchReq[i]),1),() => (perkPoint/perkAchReq[i]));
+    }
+    for (let i = 0; i < 14; i++){
+        if(i<=4){
+            spellAch[i] = theory.createAchievement(1100 + i,lumpAchCat,sach[i],`Cast a total of ${spellAchReq[i]} spells${(i==4)?"\nHaving this achievement will boost the power of every spell":""}`,() => CheckAchFeat(() => (spellTotalCount>=spellAchReq[i]),1),() => (spellTotalCount/spellAchReq[i]));
+        }else{
+            spellAch[i] = theory.createAchievement(1200 + i,lumpAchCat,sach[i],`Cast ${spellName[i-5]} ${spellAchReq[i]} times\nHaving this achievement will boost the power of this spell`,() => CheckAchFeat(() => (spellCountCast[i-5]>=spellAchReq[i]),1),() => (spellCountCast[i-5]/spellAchReq[i]));
+        }
     }
     //A lot of buildings
     BuildingAchievement = theory.createAchievementCategory(3,"Buildings");
@@ -1723,16 +1732,17 @@ var init = () => {
         sugarAddict1 = theory.createAchievement(814,featAchCat,"Sugar lump enjoyer","(2) Have the dominant building have 50 levels of sugar lump upgrade",()=>CheckAchFeat(() => (buildingUpgrade[dominate].level >= 50),2));
         sugarAddict2 = theory.createAchievement(815,featAchCat,"Sugar lump addict","(3) Have the dominant building have 100 levels of sugar lump upgrade\n\n you have issues",()=>CheckAchFeat(() => (buildingUpgrade[dominate].level >= 100),3));
         sugarAddict3 = theory.createAchievement(816,featAchCat,"Overpusher","(4) Have the dominant building have 150 levels of sugar lump upgrade\n\n stop overpushing and get back to progressing, please",()=>CheckAchFeat(() => (buildingUpgrade[dominate].level >= 150),4));
-        nice = theory.createSecretAchievement(807,featAchCat,"nice","(1) Get exactly 69 heavenly lumps(decimals accepted)","nice",()=>CheckAchFeat(() => (0x46 > hc.value)&&(hc.value > 0x44),1));
+        nice = theory.createSecretAchievement(807,featAchCat,"nice","(2) Get 6.9 heavenly chips in any order of magnitude (decimals accepted)","nice",()=>CheckAchFeat(() => {let temp = TS10(cookie.value);return (temp[0]=='6')&&((temp[2]=='9')||temp[1]=='9')},2));
         insipid = theory.createAchievement(808,featAchCat,"Pure Chocolate Taste","(2) Get to e55 without buying a single level of milk and cookie flavor",()=>CheckAchFeat(() => ((cookie.value).abs() >= BF(1e55))&&(kitty.level==0)&&(cookieT.level==0),2));
         leetnice = theory.createSecretAchievement(809,featAchCat,"you won the internet","(2) Have Temple+Alchemy Lab = 1337","[ni] + [ce] = leet",()=>CheckAchFeat(() => ((building[6].level + building[9].level) == 0x539),2));
         sigmaCurseof = theory.createSecretAchievement(810,featAchCat,"Sigma Fingers","(2) Have 1e100 Cursor CPS with only a single cursor\nThis feat also unlocks a special building display mode, find it out :)","Doing so much with only a single one",()=>CheckAchFeat(() => (arrcps[0] >= BF(1e100))&&(building[0].level==1),2));
         timeSpeed = theory.createAchievement(811,featAchCat,"Time is speed","(2) Dilate 15 whole seconds in a single tick",()=>CheckAchFeat(() => (Dilate() >= 150),2));
         timeOhNo = theory.createSecretAchievement(813,featAchCat,"Time is rickroll","(6) Dilate an entire video of Rick Astley - Never Gonna Give You Up (Official Music Video) into a SINGLE tick (which is 312 seconds in a SINGLE tick)\n\nAlso check out https://www.youtube.com/watch?v=oHg5SJYRHA0, very cool video","No Hint >:)",()=>CheckAchFeat(() => (Dilate() >= 3120),6));
         jackpot = theory.createSecretAchievement(817,featAchCat,"JJJJACKPOTTTTTTT","(1) Get the biggest W for exploring an temple","Just get lucky!",()=>CheckAchFeat(()=>{if(templeJ){return true;}else{return false;}},1));
+        indecisive = theory.createSecretAchievement(818,featAchCat,"Indecisive","(1) 100 choices and yet you still can\'t decide on it","Identity Crisis",()=>(CheckAchFeat(()=>(indecide>=100),1)))
     }
-    //! Total sum of all feats : 48
-    //! Latest Feat ID : 817
+    //! Total sum of all feats : 50
+    //! Latest Feat ID : 818
 
     ///////////////////
     //// Story chapters
@@ -1900,7 +1910,7 @@ var calcCPS = () => {
                 subconstant = BF(1);
             }
             dominate = i;
-            log(dominate);
+            //log(dominate);
         }else if(arrcps[i]*BF(1000) > arrcps[dominate] && i!=dominate){//upper limit = 1/1000th of cps
             //it's in the ratios!
             subconstant+=(BF(arrcps[dominate])/BF(arrcps[i]));
@@ -2175,7 +2185,7 @@ var secondaryEq = (mode,col) => {
         case 5://Ygg + Chronos
             //theory.secondaryEquationScale = 0.925;
             let ys = " Y_{g}"
-            return `\\color{#${eqColor[col]}}{B(3) \\leftarrow 5(10^{10})B(3)P_{3}^{1.175 + 0.05${ys}}\\\\(B[6]+B[2])^{3.2 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{0.5}), \\quad i \\neq 2`:``}}`;
+            return `\\color{#${eqColor[col]}}{B(2) \\leftarrow 5(10^{10})B(2)P_{2}^{1.175 + 0.05${ys}}\\\\(B[6]+B[2])^{3 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{0.5}), \\quad i \\neq 2`:``}}`;
             break;
         case 6://Terra
             let tr = " T_{r}";
@@ -2368,7 +2378,7 @@ let whatsnewMenu = ui.createPopup({
     })
 });
 //!1.3 : SECONDARY EQUATION
-let eqName = ["Building CPS","Building Power","Milk","Cookie Power","Covenant","Yggdrasil","Terra","Recombobulators","Dilation","Elements","Decay"];
+let eqName = ["Building CPS","Building Power","Milk","Cookie Power","Covenant","Yggdrasil","Mass Terraforming","Recombobulators","Time Dilation","Elements","Elemental Decay"];
 //!1.4 : BUILDING DISPLAY
 let binfoname = ["Normal","Compressed","Typw"];
 let biButton = ui.createButton({
@@ -2444,6 +2454,7 @@ let imagUpdate = () => {
         completeSecGrid[i].content.onTouched = (e) => {
             if(secondaryCheck(i)){
                 nexSec = i;
+                indecide+=1;
                 visualUI.content.children[2].text = `Chosen Equation : ${eqName[nexSec]}`;
             }
         }
@@ -2487,6 +2498,7 @@ imagUpdate = () => {
         completeColGrid[i].content.onTouched = (e) => {
             if(achCount >= eqColorAch[i]){
                 nexCol = i;
+                indecide+=1;
                 visualUI.content.children[6].text = `Chosen Color : ${eqColorName[nexCol]}`;
             }
         }
@@ -2552,6 +2564,7 @@ let visualUI = ui.createPopup({
                         onClicked: () => {
                             eqType = nexSec;
                             eqC = nexCol;
+                            indecide=0;
                             theory.invalidatePrimaryEquation();
                             theory.invalidateSecondaryEquation();
                             theory.invalidateTertiaryEquation();
@@ -2562,6 +2575,7 @@ let visualUI = ui.createPopup({
                         text:"Cancel",row:0,column:2,
                         fontSize:18,
                         onClicked: () => {
+                            indecide=0;
                             visualUI.hide();
                         }
                     })
@@ -2819,7 +2833,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text:"Cookie Idler - 76ede61\nv0.5.0a"
+                text:"Cookie Idler - 5dbae4c\nv0.5.0a"
             })
         ]
     })
