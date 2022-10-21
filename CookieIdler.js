@@ -728,19 +728,20 @@ let castSpell = (index) => {
     spellCast[index]=thyme.level;
     spellCountCast[index]+=1;
     spellTotalCount+=1;
+    let spellBoost = spellAch[4+index].isUnlocked + spellAch[4].isUnlocked;
     switch(index){
         case 0:
             var rand = RandI(100);
             if(rand <= 90){
                 log("Cookies for you");
-                rand = RandI(15+(2*SpellStack.level));
+                rand = RandI(15+(2*SpellStack.level)) + spellBoost;
                 minCookie(rand*30);
             }else{
                 log("No Cookies for you");
             }
             break;
         case 1:
-            var rand = RandI(200+(7*SpellStack.level));
+            var rand = RandI(200+(7*SpellStack.level)) + 5*spellBoost;
             if(rand >= 200){
                 log("Sweet");
                 tickLump(100+(50*SpellStack.level));
@@ -762,13 +763,13 @@ let castSpell = (index) => {
             break;
         case 2:
             log("Get your chips");
-            pubH(1+(0.05*SpellStack.level));
+            pubH(1+(0.05*SpellStack.level)+(0.025*spellBoost));
             break;
         case 3:
             log("That\'s to the moon");
-            xBegin=time;
-            logBoost=50 + (2.5*SpellStack.level);
-            logBoostDue=terra.level * 30;
+            xBegin=thyme.level-600;
+            logBoost=50 + (2.5*SpellStack.level) + (5*spellBoost);
+            logBoostDue=terra.level * 30 * (spellBoost+1);
             break;
         case 4:
             log("HERE COMES THE LOOT");
@@ -776,24 +777,24 @@ let castSpell = (index) => {
         case 5:
             let rand = RandI(20);
             if(rand < 19){
-                if((building[rand].level > 0) && (building[rand].cost <= (BF(1e9)*cookie.value))){
-                    //log("Buildings For You!");
-                    building[rand].level += RandI(10)+1+SpellStack.level;
+                if((building[rand].level > 0) && (building[rand].cost.getCost(building[rand].level) <= (BF(1e9)*cookie.value))){
+                    log(`You won ${buildingName[0][rand]}`);
+                    building[rand].level += RandI(10+spellBoost)+1+SpellStack.level+spellBoost;
                 }
             }
             break;
         case 6:
             for(let i=0;i<Spell.length;i++){
-                spellCast[i]-=600+(150*SpellStack.level);
+                spellCast[i]-=600+(150*SpellStack.level)+(60*spellBoost);
             }
             log("It works!");
             break;
         case 7:
             log("Sweet Anyone?");
-            if(RandI(100) > 5)tickLump(500+(25*SpellStack.level));
+            if(RandI(100+spellBoost) > 5)tickLump(500+(25*SpellStack.level)+(25*spellBoost));
             break;
         case 8:
-            let warpthyme = ((100+(10*SpellStack.level))*RandR(0.9,1.1+(0.05*SpellStack.level)) + (15*SpellStack.level));
+            let warpthyme = ((100+(10*SpellStack.level))*RandR(0.9,1.1+(0.05*SpellStack.level)) + (15*SpellStack.level)) + (10*spellBoost);
             log("Time goes brrrrrrrr " + warpthyme);
             for(let i=0;i<warpthyme;i++){
                 tick(0.1,1);
@@ -916,7 +917,7 @@ const chronosageInfo = "Transmute the power of yggdrasil to all your buildings";
 const boxrName = "Box of R9 $(R_{9})$";
 const boxrInfo = `A very stange and mathematical box seemingly full of ${game.sigmaTotal} students`;
 const congrowName = "Continuos Growth";
-const congrowInfo = "Certain high-tech buildings gets more powerful the more of them you have";
+const congrowInfo = "Certain high-tech buildings get more powerful the more of them you have";
 //Conseq. HC Upgrade
 var cookiet = new Array(9);
 const cookietP = [1.2, 1.25, 1.35, 1.5, 1.55, 1.75, 1.8, 2, 2.25, 2.5];
@@ -1053,7 +1054,7 @@ const bachlump = ["A hand and them a some more","Just like babies, but much more
 const pach = ["See the Exponent","Touch the Exponent","Feel the Exponent","Cherish the Exponent","Forfeit all mortal possessions to the Exponent"];
 const sach = ["Neophyte","Acolyte","Adept","Harry Cookier","Master of Spells","Lazy Wizard","Gambler Wizard","Ascendant Wizard","Mass Miner Wizard","Explorer Wizard","Mogul Wizard","Impatient Wizard","Very Sweet Wizard","やれやれだぜ!"];
 var featAchCat;
-var superIdle,hyperIdle,speedBake1,speedBake2,speedBake3,speedBake4,speedBake5,speedBake6,nice,insipid,leetnice,sigmaCurseof,timeSpeed,timeOhNo,sugarAddict1,sugarAddict2,sugarAddict3,jackpot,indecisive;//actual
+var superIdle,hyperIdle,speedBake1,speedBake2,speedBake3,speedBake4,speedBake5,speedBake6,nice,insipid,leetnice,sigmaCurseof,timeSpeed,timeOhNo,sugarAddict1,sugarAddict2,sugarAddict3,jackpot,indecisive,PVCRK;//actual
 let templeJ = false,indecide=0;//unlock
 
 
@@ -1693,7 +1694,7 @@ var init = () => {
         return res;
     };
     for (let i = 0; i < 10; i++) {
-        lumpAch[i] = theory.createAchievement(200 + i,lumpAchCat,lumpAchName[i],lumpDesc(lumpAchReq[i]),() => CheckAch3(i),() => (lumpTotal/lumpAchReq[i]));
+        lumpAch[i] = theory.createAchievement(200 + i,lumpAchCat,lumpAchName[i],lumpDesc(lumpAchReq[i]),() => CheckAch3(i));
     }
     for (let i = 0; i < 5; i++){
         perkAch[i] = theory.createAchievement(1000 + i,lumpAchCat,pach[i],perkDesc(perkAchReq[i]),() => CheckAchFeat(()=>(perkPoint>=perkAchReq[i]),1),() => (perkPoint/perkAchReq[i]));
@@ -1721,8 +1722,8 @@ var init = () => {
     //Feats
     {
         featAchCat = theory.createAchievementCategory(4,"Feats");
-        superIdle = theory.createAchievement(800,featAchCat,"Super Idler","(2) Have your cookie exceeds 1 day worth of CPS while having 0 levels of terraform upgrade",()=>CheckAchFeat(() => ((cookie.value).abs() > BF(86400)*CPS)&&(terra.level==0),2));
-        hyperIdle = theory.createSecretAchievement(801,featAchCat,"Hyper Idler","(3) Have your cookie exceeds 1 year worth of CPS while having 0 levels of terraform upgrade\nhow in the world did you even managed that anyway","Gaseous",()=>CheckAchFeat(() => ((cookie.value).abs() > BF(0x1e13380)*CPS)&&(terra.level==0),3));
+        superIdle = theory.createAchievement(800,featAchCat,"Super Idler","(2) Have your cookies exceed 1 day worth of CPS while having 0 levels of terraform upgrade",()=>CheckAchFeat(() => ((cookie.value).abs() > BF(86400)*CPS)&&(terra.level==0),2));
+        hyperIdle = theory.createSecretAchievement(801,featAchCat,"Hyper Idler","(3) Have your cookies exceed 1 year worth of CPS while having 0 levels of terraform upgrade\nhow in the world did you even managed that anyway","Gaseous",()=>CheckAchFeat(() => ((cookie.value).abs() > BF(0x1e13380)*CPS)&&(terra.level==0),3));
         speedBake1 = theory.createAchievement(802,featAchCat,"Speed Baking I","(1) Get 1e25 CPS within 1 minute of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e25))&&(thyme.level <= 600),1));
         speedBake2 = theory.createAchievement(803,featAchCat,"Speed Baking II","(2) Get 1e50 CPS within 45 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e50))&&(thyme.level <= 450),2));
         speedBake3 = theory.createAchievement(804,featAchCat,"Speed Baking III","(3) Get 1e100 CPS within 30 seconds of publishing",()=>CheckAchFeat(() => (CPS >= BF(1e100))&&(thyme.level <= 300),3));
@@ -1732,17 +1733,18 @@ var init = () => {
         sugarAddict1 = theory.createAchievement(814,featAchCat,"Sugar lump enjoyer","(2) Have the dominant building have 50 levels of sugar lump upgrade",()=>CheckAchFeat(() => (buildingUpgrade[dominate].level >= 50),2));
         sugarAddict2 = theory.createAchievement(815,featAchCat,"Sugar lump addict","(3) Have the dominant building have 100 levels of sugar lump upgrade\n\n you have issues",()=>CheckAchFeat(() => (buildingUpgrade[dominate].level >= 100),3));
         sugarAddict3 = theory.createAchievement(816,featAchCat,"Overpusher","(4) Have the dominant building have 150 levels of sugar lump upgrade\n\n stop overpushing and get back to progressing, please",()=>CheckAchFeat(() => (buildingUpgrade[dominate].level >= 150),4));
+        insipid = theory.createSecretAchievement(808,featAchCat,"Pure Chocolate Taste","(2) Get e55 cookies without buying a single level of milk and cookie flavor","Forget something?",()=>CheckAchFeat(() => ((cookie.value).abs() >= BF(1e55))&&(kitty.level==0)&&(cookieT.level==0),2));
+        PVCRK = theory.createSecretAchievement(819,featAchCat,"Pure Vanilla Taste","(3) Get e250 cookies without a single level of milk, cookie flavors, and a LOT more....\n\nThis is NOT a CRK reference","forgor something??? 💀",()=>(CheckAchFeat(()=>(((cookie.value).abs() >= BF(1e250))&&(kitty.level==0)&&(cookieT.level==0)&&(terra.level==0)&&(ygg.level==0)&&(art.level==0)&&(artArt.level==0)&&(invest.level==0)&&(recom.level==0)&&(covenant.level==0)),3)));
         nice = theory.createSecretAchievement(807,featAchCat,"nice","(2) Get 6.9 heavenly chips in any order of magnitude (decimals accepted)","nice",()=>CheckAchFeat(() => {let temp = TS10(cookie.value);return (temp[0]=='6')&&((temp[2]=='9')||temp[1]=='9')},2));
-        insipid = theory.createAchievement(808,featAchCat,"Pure Chocolate Taste","(2) Get to e55 without buying a single level of milk and cookie flavor",()=>CheckAchFeat(() => ((cookie.value).abs() >= BF(1e55))&&(kitty.level==0)&&(cookieT.level==0),2));
         leetnice = theory.createSecretAchievement(809,featAchCat,"you won the internet","(2) Have Temple+Alchemy Lab = 1337","[ni] + [ce] = leet",()=>CheckAchFeat(() => ((building[6].level + building[9].level) == 0x539),2));
         sigmaCurseof = theory.createSecretAchievement(810,featAchCat,"Sigma Fingers","(2) Have 1e100 Cursor CPS with only a single cursor\nThis feat also unlocks a special building display mode, find it out :)","Doing so much with only a single one",()=>CheckAchFeat(() => (arrcps[0] >= BF(1e100))&&(building[0].level==1),2));
-        timeSpeed = theory.createAchievement(811,featAchCat,"Time is speed","(2) Dilate 15 whole seconds in a single tick",()=>CheckAchFeat(() => (Dilate() >= 150),2));
+        timeSpeed = theory.createSecretAchievement(811,featAchCat,"Time is speed","(2) Dilate 15 whole seconds in a single tick","Got any quarters to spare?",()=>CheckAchFeat(() => (Dilate() >= 150),2));
         timeOhNo = theory.createSecretAchievement(813,featAchCat,"Time is rickroll","(6) Dilate an entire video of Rick Astley - Never Gonna Give You Up (Official Music Video) into a SINGLE tick (which is 312 seconds in a SINGLE tick)\n\nAlso check out https://www.youtube.com/watch?v=oHg5SJYRHA0, very cool video","No Hint >:)",()=>CheckAchFeat(() => (Dilate() >= 3120),6));
         jackpot = theory.createSecretAchievement(817,featAchCat,"JJJJACKPOTTTTTTT","(1) Get the biggest W for exploring an temple","Just get lucky!",()=>CheckAchFeat(()=>{if(templeJ){return true;}else{return false;}},1));
         indecisive = theory.createSecretAchievement(818,featAchCat,"Indecisive","(1) 100 choices and yet you still can\'t decide on it","Identity Crisis",()=>(CheckAchFeat(()=>(indecide>=100),1)))
     }
-    //! Total sum of all feats : 50
-    //! Latest Feat ID : 818
+    //! Total sum of all feats : 53
+    //! Latest Feat ID : 819
 
     ///////////////////
     //// Story chapters
@@ -2004,7 +2006,7 @@ var lessPreciseCalcCPS = () => {
 //==TICK==
 let lwC = 0;
 let idle = false;
-let xBegin = BF("-1e100");
+let xBegin = BF(0);
 const lambda = BF("1e-6");
 const yieldfactor = BF("5e-2");
 const lossfactor = BF(25);
@@ -2017,6 +2019,7 @@ var tick = (elapsedTime, multiplier) => {
         elements[2].value -= BigP(elements[2].value,0.87);
     }
     if(game.isCalculatingOfflineProgress || idle){
+        xBegin = thyme.level - 300;
         if(CPS == 0){
             updateMult();
             lessPreciseCalcCPS();
@@ -2058,19 +2061,18 @@ var tick = (elapsedTime, multiplier) => {
                     Spell[i].level=0;
                 }
             }
-
             updateAvailability();
 
             if (cookie.value > 10 && Math.random() <= 1 / (lumpc / BigL10(cookie.value))) {
                 lump.value += BigNumber.ONE;
                 lumpTotal++;
             }
-
         }
-        let realMRate = mineRate - (10*milkOil.level);
+        //elemental increase
+        let realMRate = mineRate - ((10+(5*(kitty.level/(kitty.level+1))))*milkOil.level);
         let excRate = (1+(0.2*BigP(moreExcavator.level,1.4)));
         for(let i=0;i<excavate.level;i++){
-            elements[i].value += dt * BigL2(Logistic())*building[3].level*BigP(getPower(3),0.05)*BigP(buildingUpgrade[3].level,1.15)*BigP(realMRate,-1*(i+1))*excRate;
+            elements[i].value += dt * BigL2(Logistic()+BF(2))*building[3].level*BigP(getPower(3),0.05)*BigP(buildingUpgrade[3].level,1.15)*BigP(realMRate,-1*(i+1))*excRate;
 
             if(i==reactorMode && (building[12].level > 0)){
                 let rate = building[12].level*lambda*elements[i+2].value;
@@ -2096,15 +2098,9 @@ var tick = (elapsedTime, multiplier) => {
 //Display T, returns bignumber
 var Logistic = () => {
     var maxL =
-        BF(terra.level).pow(2.4 + 0.05 * (TerraInf.level + ((artArt.level > 6)?1:0))) * 1500 +
-        BF(building[3].level).pow(1.2 + 0.03 * TerraInf.level) * ((spellCast[3]+(10*logBoostDue) >= thyme.level)?logBoost:1) * ((moreExcavator.level > 0)?BigP((1+(0.2*BigP(moreExcavator.level,1.4))),1.5):1);
-    return (
-        BigNumber.ONE +
-        maxL.pow(1 + 0.005*TerraInf.level) -
-        maxL.pow(0.99999 - 0.001 * TerraInf.level) /
-            (BigNumber.ONE +
-                BigNumber.E.pow(-1 * (time - (xBegin + terra.level * 300))))
-    );
+        (BF(terra.level).pow(2.4 + 0.05 * (TerraInf.level + ((artArt.level > 6)?1:0))) * 1500) + BF(building[3].level).pow(1.2 + 0.03 * TerraInf.level) * ((spellCast[3]+(10*logBoostDue) >= thyme.level)?logBoost:1) * ((moreExcavator.level > 0)?BigP((1+(0.2*BigP(moreExcavator.level,1.4))),1.5):1);
+
+    return ((maxL.pow(1 + 0.005*TerraInf.level))/(BigNumber.ONE +(BigNumber.E.pow((thyme.level - (xBegin + terra.level * 600)))))) + ((TerraInf.level>0)?1+BigP(maxL,0.2 + (TerraInf.level*0.1)):1);
 };
 var Dilate = () => {
     let res = building[10].level + building[12].level;//restricting buildings
@@ -2191,7 +2187,7 @@ var secondaryEq = (mode,col) => {
             let tr = " T_{r}";
             let tf = " T_{\\infty}";
             let tm = " T_{m}"
-            return `\\color{#${eqColor[col]}}{${tm} = 1500${(moreExcavator.level>0)?"E_{f}^{1.5}":""}${tr}^{2.5+0.05${tf}}\\\\T = \\frac{1+${tm}^{1+0.005${tf}}-${tm}^{0.99999-0.001${tf}}}{1+e^{-(t-(X_{b}+300${tr}))}}}`;
+            return `\\color{#${eqColor[col]}}{${tm} = 1500${(moreExcavator.level>0)?"E_{f}^{1.5}":""}${tr}^{2.5+0.05${tf}}\\\\T = 1+${tm}^{0.2+0.1${tf}} + \\frac{${tm}^{1+0.005${tf}}}{1+e^{t-(X_{b}+600${tr})}}}`;
             break;
         case 7://Recom
             let rc = " R_{c}";
@@ -2413,7 +2409,8 @@ let visButton = ui.createButton({
 let templateImage = {
     heightRequest:91,
     source: ImageSource.ADD,
-    aspect: Aspect.ASPECT_FIT
+    aspect: Aspect.ASPECT_FIT,
+    useTint: false
 };
 var nexCol=0,nexSec=0;
 let templateFrame = {row:0,column:1,heightRequest:91};
@@ -2714,7 +2711,8 @@ function reactorChk (indx){
 let dummyImage = {
     heightRequest:91,
     onTouched: (e) => reactorChk(-1),
-    source: ImageSource.CLOSE
+    source: ImageSource.CLOSE,
+    useTint: false
 };
 let dummyFrame = {row:0,column:0,heightRequest:91};
 let dummyGrid = [];
@@ -2833,7 +2831,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text:"Cookie Idler - 5dbae4c\nv0.5.0a"
+                text:"Cookie Idler - d96f20c\nv0.5.0a"
             })
         ]
     })
@@ -2862,11 +2860,12 @@ var getEquationOverlay = () =>
                       verticalOptions: LayoutOptions.END,
                       aspect:Aspect.ASPECT_FIT,
                       heightRequest: 30,
+                      useTint: false,
                       margin: new Thickness(10, 0, 0, 0),
                       onTouched: (e) => {
                           if (e.type == TouchType.SHORTPRESS_RELEASED) {
                               log("Boost!");
-                              xBegin = time;
+                              xBegin = thyme.level;
                               calcCPS();
                           }
                       },
