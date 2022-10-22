@@ -199,6 +199,7 @@ var getInternalState = () => {
     for(let i=0;i<9;i++){
         st += `${spellCountCast[i]} `;
     }
+    st += `${quType} `//!50
     return st;
 };
 
@@ -266,7 +267,9 @@ var setInternalState = (state) => {
     if(res.length > 40){spellTotalCount = parseInt(res[40]);}else{spellTotalCount = 0;}
     for(let i=0;i<9;i++){
         if(res.length > (41+i)){spellCountCast[i] = parseInt(res[41+i]);}else{spellCountCast[i] = 0;}
+        if(Number.isNaN(spellCountCast[i])){spellCountCast[i]=0;}
     }
+    if(res.length > 50){quType = parseInt(res[50]);quartButton.text = `Quaternary Values\n${quName[quType]}`;;}else{quType=0;}
     reactorInterim = reactorMode;
     reactorMenu.content.children[2].text = `Current Element : ${(reactorInterim > -1)?elemFormalName[reactorInterim+2]:"OFF"}`;
 };
@@ -278,7 +281,7 @@ let CPS = BigNumber.ZERO,
 let achCount = 0;
 let vizType = 0;
 let lumpTotal = 0;
-let eqType = 0;
+let eqType = 0, quType=0;
 let artUnlock = 0;
 let time = 0; //degrees
 let spellCast = [0,0,0,0,0,0,0,0];
@@ -624,7 +627,7 @@ const artArtName = [
     "Antediluvian Engine",//11Time Dilation
     "Elementium Infused Chocolate Chunk",//12Secrets of the Elements
     "Scent of Vanilla Nebula",//13Shipment CPS + Astrofudge
-    "Iteration Drive",//Unlocks funny things
+    "Iteration Drive",//14Unlocks funny things
     "More artifacts coming soon",
 ];
 const artClue = [
@@ -641,7 +644,7 @@ const artClue = [
     "Time-Stopping Performance",//the world
     "Cavitilicious",//Choco Chunk
     "5 Cosmic Mappings ah ah ah",//Vanilla Neb
-    "2^50 = 1.125 × 10^15",//Itr Drive
+    "16=117.39, 15^=1.268e30, 8E=500,000",//Itr Drive
     "You have all artifacts, yay",
 ];
 const artArtDesc = [
@@ -701,7 +704,7 @@ var artCheck = (cond) => {
         case 12:
             return building[7].level >= 0b10011100010000/2;
         case 13:
-            return buildingUpgrade[15].level >= 0x4b;
+            return (buildingUpgrade[15].level >= [+!+[]]+[+[]]+[+[]]) && (buildingUpgrade[1<<4].level>=(-0x1d*-0xbd+-0x5b*0x62+0xd9f*0x1)) && (elements[1<<3].value >= (0x4d5*-0x129+0xdc627+-0x89ea));
         default:
             return false;
     }
@@ -1098,8 +1101,8 @@ const chapterLore = [
     "18\n18 types of elementary particles\nNow there's 19 of them\nBut that's still 18 left to turn into cookies\nYou decided to commission the largest of the largest of particle accelerators to convert those particles into cookie particles\nYou gonna leak a lot of money for this, so you made the world dependent of cookies.",
     "How long has it been since you last saw the light of the day?\nYou went outside(and touched grass), only to find the sun instantly making you sweat bullets\nComing back into your den(grand office) you looked into the mirror and find yourself splattered with cookies\nIt seems that light itself is being turned into cookies as well\nMight just as well focus all of them into a big burst of cookies\nAnd in the meantime spray a bit of radiance to those worshippers as well",
     "POOF! And there goes nothing!\nYou just saw one of your cookies disappear into nothingness\nThen you saw a black cat in the corner of your vision again\nIn a panic, you hastily read through the book on symbolisms, and found out that a black cat means bad luck\nWith your amounts of cookies, fearing that it might all be GONE the next day,\nYou improvised up a device from that book that would apparently bring in good luck to your entire existence\nAnd your local spellcasters might take an interest in that too",
-    "Does your cookie look empty?\nI know that might sound like nonsense but how much of the matter is really matter\nUsing your sheet amount of knowledge you got from working with your past projects\nYou somehow managed to convert mattern't to matter and the cookie just splits into a whole lot more cookies\nPresenting the plan, you assigned the engineers to work on standardizing the device used to convert mattern't to matter\nDoes going too deep might reveal something you weren\'t supposed to see?",
-    "Having lost your mind being overwhelmed with the thoughts of cookie\nYou went out on a ramage with your cookies, tearing down any and all signs of resistance, even the fabric of reality itself\nYou went mad, in search of something you can use to bend reality\nOne of the madness you did is parting some poor soul(Orteil?) of their laptop\nOn the laptop there's a console with the word 'Javascript' written on it\nYou of course, politely pressure the programmers to decipher the complicated syntax of 'Javascript'",
+    "Does your cookie look empty?\nI know that might sound like nonsense but how much of the matter is really matter\nUsing your sheer amount of knowledge you got from working with your past projects\nYou somehow managed to convert mattern't to matter and the cookie just splits into a whole lot more cookies\nPresenting the plan, you assigned the engineers to work on standardizing the device used to convert mattern't to matter\nDoes going too deep might reveal something you weren\'t supposed to see?",
+    "Having lost your mind being overwhelmed with the thoughts of cookie\nYou went out on a ramage with your cookies, tearing down any and all signs of resistance, even the fabric of reality itself\nYou went mad, in search of something you can use to bend reality\nOne of the madness you did is parting some poor soul(Orteil?) of their laptop\nOn the laptop there's a console with the word 'Javascript' written on it\nYou of course, politely pressure the programmers to decipher the complicated syntax of 'Javascript'\nAnd they can become full again.....",
     "I love cookies, why don't we enslave other idle games to produce cookies for us\nBreaking through dimensions, hijacking other \"innocent\" idle game universes to produce cookies for us",
     "Nothing stops you anymore\nNot even getting the counter to 750(it's now 500/750)\nIn one of the everlasting days at the Cookie Megacorporation...\nYou managed to manifest your desire of cookies out of thin air\nSeeing this opportunity, you cleared your way through the legal system to get some subjects to perform something on\nIt was a success, seeing them thinking up cookies out of thin air\nWhy bother with all your buildings when you can just think up cookies...",
     "The counter hit 750, and the sky immediately turned itself red...\n(To be continued)",
@@ -1168,7 +1171,7 @@ var init = () => {
             if(bInfo==1){
                 return `\$ C_{1}(${cookieT.level+(crystalHoney.level*10)}) = ${getCookieTP(cookieT.level)}, \\: CP(${cookieT.level})${superC.level > 0?"^{1.05}":""}=${getCookieP(cookieT.level)}\$`;
             }
-            if (cookieT.level > cookieType.length) {
+            if (cookieT.level+1 > cookieType.length) {
                 return defaultcookieType;
             } else {
                 return cookieType[cookieT.level];
@@ -1753,6 +1756,14 @@ var init = () => {
     }
     buip = getbuip();
     //Finishing up stuffs
+    for(let i=0;i<9;i++){
+        quartList[i]=(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{_{${elemName[i]}}}`,elements[i].value));
+    }
+    quartList2[0]=(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{\\dot{C}}`,null));
+    quartList2[1]=(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{t}`,null));
+    quartList2[2]=(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T}`,null));
+    quartList2[3]=(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_m}`,null));
+    quartList2[4]=(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_d}`,null));
     updateSpellLayer();
     updateAvailability();
 };
@@ -2103,6 +2114,7 @@ var Logistic = () => {
     return ((maxL.pow(1 + 0.005*TerraInf.level))/(BigNumber.ONE +(BigNumber.E.pow((thyme.level - (xBegin + terra.level * 600)))))) + ((TerraInf.level>0)?1+BigP(maxL,0.2 + (TerraInf.level*0.1)):1);
 };
 var Dilate = () => {
+    if(timeDilate.level==0){return 1;}
     let res = building[10].level + building[12].level;//restricting buildings
     let factor = (building[11].level >= (res))?1 - 1/(2.125-(0.125*timeDilate.level)):1-(building[11].level/(2*res));
     return BF(1) + (BigP(building[11].level,1+0.025*timeDilate.level))/BigP(1000,factor);
@@ -2111,7 +2123,7 @@ var Dilate = () => {
 
 //==EQUATIONS==
 const height = 60;
-var quartList = [];
+var quartList = new Array(9), quartList2 = new Array(5);
 var PrimaryEquation = (col) => {
     return `\\color{#${eqColor[col]}}{\\dot{C} = P(B(0) + P_{cp}\\sum_{i=1}^{18}{B(i)})}`;
 };
@@ -2212,7 +2224,7 @@ var TertiaryEquation = (col) => {
     if(Number.isNaN(col)){
         col = 0;
     }
-    return `\\color{#${eqColor[col]}}{` + theory.latexSymbol + "=\\max C^{0.2}" + " \\quad " + "\\dot{C} = " + BF(CPS).toString(0) + (terra.level > 0 ? "\\quad T = " + Logistic().toString(10) : "") + ((artArt.level > 11)?`\\quad T_d = ${Dilate()}`:"") + "}";
+    return `\\color{#${eqColor[col]}}{` + theory.latexSymbol + "=\\max C^{0.2}}";
 }
 var getPrimaryEquation = () => {
     theory.primaryEquationScale = 1.15;
@@ -2234,16 +2246,19 @@ var getTertiaryEquation = () =>{
     return TertiaryEquation(eqC);
 }
 var getQuaternaryEntries = () => {
-    if (quartList.length == 0 && ((artArt.level > 12) || (elements[0].value > 0))) {
-        for(let i=0;i<9;i++){
-            quartList.push(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{_{${elemName[i]}}}`,elements[i].value));
-        }
-    }else if(((artArt.level > 12) || (elements[0].value > 0))){
-        for(let i=0;i<9;i++){
-            quartList[i].value = elements[i].value;
-        }
+    for(let i=0;i<9;i++){
+        quartList[i].value = (excavate.level>=(i+1) || ((i==8)&&(artArt.level > 13)) || elements[i].value>0)?elements[i].value:null;
     }
-    return quartList;
+    quartList2[0].value = CPS;
+    quartList2[1].value = thyme.level/10;
+    quartList2[2].value = (terra.level>0)?Logistic():null;
+    quartList2[3].value = (terra.level>0)?((BF(terra.level).pow(2.4 + 0.05 * (TerraInf.level + ((artArt.level > 6)?1:0))) * 1500) + BF(building[3].level).pow(1.2 + 0.03 * TerraInf.level) * ((spellCast[3]+(10*logBoostDue) >= thyme.level)?logBoost:1) * ((moreExcavator.level > 0)?BigP((1+(0.2*BigP(moreExcavator.level,1.4))),1.5):1)):null;
+    quartList2[4].value = (timeDilate.level > 0)?Dilate():null;
+    if(quType==0){
+        return quartList2;
+    }else{
+        return quartList;
+    }
 }
 
 
@@ -2373,8 +2388,21 @@ let whatsnewMenu = ui.createPopup({
         ],
     })
 });
-//!1.3 : SECONDARY EQUATION
-let eqName = ["Building CPS","Building Power","Milk","Cookie Power","Covenant","Yggdrasil","Mass Terraforming","Recombobulators","Time Dilation","Elements","Elemental Decay"];
+//!1.3 : SECONDARY EQUATION + QUATERNARY
+const eqName = ["Building CPS","Building Power","Milk","Cookie Power","Covenant","Yggdrasil","Mass Terraforming","Recombobulators","Time Dilation","Elements","Elemental Decay"];
+const quName = ["Normal","Elements"]
+let quartButton = ui.createButton({
+    text: `Quaternary Values\n${quName[quType]}`, row:1, column:1,
+    fontFamily: FontFamily.CMU_REGULAR,
+    onClicked: () =>{
+        if((artArt.level > 12) || (elements[0].value > 0)){
+            quType^=1;
+            quartButton.text = `Quaternary Values\n${quName[quType]}`;
+        }else{
+            quType=0;
+        }
+    }
+})
 //!1.4 : BUILDING DISPLAY
 let binfoname = ["Normal","Compressed","Typw"];
 let biButton = ui.createButton({
@@ -2559,12 +2587,25 @@ let visualUI = ui.createPopup({
                         text:"Confirm",row:0,column:1,
                         fontSize:18,
                         onClicked: () => {
-                            eqType = nexSec;
-                            eqC = nexCol;
+                            if(eqC!=nexCol){
+                                eqC = nexCol;
+                                for(let i=0;i<9;i++){
+                                    quartList[i]=(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{_{${elemName[i]}}}`,elements[i].value));
+                                }
+                                quartList2[0]=(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{\\dot{C}}`,null));
+                                quartList2[1]=(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{t}`,null));
+                                quartList2[2]=(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T}`,null));
+                                quartList2[3]=(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_m}`,null));
+                                quartList2[4]=(new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_d}`,null));
+                                theory.invalidatePrimaryEquation();
+                                theory.invalidateSecondaryEquation();
+                            }
+                            if(eqType != nexSec){
+                                eqType = nexSec;
+                                theory.invalidateSecondaryEquation();
+                            }
                             indecide=0;
-                            theory.invalidatePrimaryEquation();
-                            theory.invalidateSecondaryEquation();
-                            theory.invalidateTertiaryEquation();
+                            //theory.invalidateTertiaryEquation();
                             visualUI.hide();
                         }
                     }),
@@ -2823,7 +2864,7 @@ let popup = ui.createPopup({
                     ui.createButton({text: "Visualizer Type\nNormal", row: 0, column: 0}),
                     biButton,
                     visButton,
-                    ui.createButton({text: "???", row: 1, column: 1}),
+                    quartButton,
                 ]
             }),
             ui.createProgressBar({progress: 0}),
@@ -2831,7 +2872,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text:"Cookie Idler - d96f20c\nv0.5.0a"
+                text:"Cookie Idler - bf00adb\nv0.5.0a"
             })
         ]
     })
@@ -2845,13 +2886,18 @@ var getEquationOverlay = () =>
                 source: ImageSource.INFO,
                 horizontalOptions: LayoutOptions.START,
                 verticalOptions: LayoutOptions.END,
-                heightRequest: 30,
-                margin: new Thickness(10, 10, 0, 10),
+                heightRequest: 25,
+                margin: new Thickness(9, 9, 0, 0),
                 onTouched: (e) => {
                     if (e.type == TouchType.SHORTPRESS_RELEASED) {
                         popup.show();
                     }
                 },
+            }),
+            ui.createLatexLabel({
+                text: "Menu",
+                fontSize: 10,
+                padding: new Thickness(9, 4, 0, 0),
             }),
             terra.level > 0
                 ? ui.createImage({
@@ -2861,7 +2907,7 @@ var getEquationOverlay = () =>
                       aspect:Aspect.ASPECT_FIT,
                       heightRequest: 30,
                       useTint: false,
-                      margin: new Thickness(10, 0, 0, 0),
+                      margin: new Thickness(9, 0, 0, 0),
                       onTouched: (e) => {
                           if (e.type == TouchType.SHORTPRESS_RELEASED) {
                               log("Boost!");
@@ -2875,18 +2921,18 @@ var getEquationOverlay = () =>
                       horizontalOptions: LayoutOptions.START,
                       verticalOptions: LayoutOptions.END,
                       heightRequest: 25,
-                      margin: new Thickness(10, 10, 0, 0),
+                      margin: new Thickness(9, 9, 0, 0),
                   }),
             terra.level > 0
                 ? ui.createLatexLabel({
                       text: "Terraform Buff",
                       fontSize: 10,
-                      padding: new Thickness(10, 10, 0, 0),
+                      padding: new Thickness(9, 9, 0, 0),
                   })
                 : ui.createLatexLabel({
                       text: "Locked",
                       fontSize: 10,
-                      padding: new Thickness(10, 10, 0, 0),
+                      padding: new Thickness(9, 9, 0, 0),
                   }),
         ],
 });
