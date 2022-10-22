@@ -1,4 +1,4 @@
-﻿import { ExponentialCost, FreeCost, LinearCost } from "./api/Costs";
+import { ExponentialCost, FreeCost, LinearCost } from "./api/Costs";
 import { Localization } from "./api/Localization";
 import { BigNumber } from "./api/BigNumber";
 import { theory } from "./api/Theory";
@@ -6,8 +6,8 @@ import { Utils } from "./api/Utils";
 //This is the classic version of the thoery that I'm working on. Contains the 10th logarirhm of the current version of the theorem. Extraordinarly unbalanced with a not so off chance of divergence.
 //I won't be fixing this theory unless the theory TRULY breaks
 
-var id = "CookieIdler";
-var name = "Cookie Idler";
+var id = "CookieIdlerC";
+var name = "Cookie Idler Classic";
 var description =
   'A ungodly large mess and nonmathematical of a theory involving copius amounts of cookies, tau, and other stuffs (NOT grandmas). A BIG credits to Orteil for bringing such a legendary game idea to life.\nThis "theory" contains: All Cookie Clicker Buildings, a looot of upgrades, a loot of achievements, no scary maths, and [DATA EXPUNGED], not thousands of lines of raw text because I\'m too lazy to encrypt it, bad JS coding, and e150 tau!';
 var authors = "Sainen Lv.420";
