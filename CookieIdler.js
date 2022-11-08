@@ -1844,7 +1844,7 @@ var getExpn = (index) => buiPerk[index] * buiexp + 1;
 var getPower = (index) => BigP(Utils.getStepwisePowerSum(buildingP[index].level,buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*1)+(jetDrive.level*0.5),5,1),1+(superP.level * 0.02));
 var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingUpgradeMult[index] + ((index==2 || index==1)?Empower.level*0.01:Empower.level*1)+(jetDrive.level*0.5), 5, 1),1+(superP.level * 0.02));
 var calcCPS = () => {
-    if(Number.isNaN(dominate)){
+    if(!Number.isFinite(dominate)){
         dominate = 0;
     }
     subconstant = BF(1);
@@ -1912,9 +1912,14 @@ var calcCPS = () => {
     LPS += sugarCoat.level * 2.5;
     lwC = Math.floor((BigL10(10+(cookie.value).abs())) / lumpc) + LPS / 10;
     arrcps[14] = BigP(arrcps[14],RandR(1.01+(0.00005*buildingUpgrade[14].level),0.99+(0.00005*buildingUpgrade[14].level)));
+
+    // calculate the dominant building
     log(dominate);
     for(let i=0;i<19;i++){
         CPS += arrcps[i];
+        if(!Number.isFinite(mult)) {
+            updateMult()
+        }
         if(BF(arrcps[dominate]/mult) < BF(arrcps[i])){
             //recalc constant then replace
             if(subconstant>BF(1)){
