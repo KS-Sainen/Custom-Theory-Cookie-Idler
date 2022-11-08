@@ -2162,7 +2162,6 @@ var secondaryEq = (mode,col) => {
     switch (mode) {
         case 0:
             return `\\color{#${eqColor[col]}}{${(R9Box.level > 0)?"\\dot{C} \\leftarrow \\dot{C}\\sigma^{0.7R_{9}}\\\\":""}B(i) = B[i]P_{i}${buip}^{L[i]}${(CookieTau.level > 0)?"(\\log_{10}\\log_{10}\\tau)^{2}":""}${(building[14].level > 0)?"\\\\B(14) \\leftarrow B(14)^{r(1.01+5\\cdot10^{-5}L[14],0.99+5\\cdot10^{-5}L[14])}":""}}`;
-            break;
         case 1:
             return (
                 `\\color{#${eqColor[col]}}{` +
@@ -2171,10 +2170,8 @@ var secondaryEq = (mode,col) => {
                 (CookieH.level > 0 ? "(log_{10}(H + 10))^{1.25}" : "") +
                 (CookieC.level > 0 ? "\\\\(log_{10}(C + 10))^{0.9}" : "") + "}"
             );
-            break;
         case 2:
             return `\\color{#${eqColor[col]}}{M = M_{i}K(0.2)+(K-10)(0.3)\\\\+(K-25)(0.4)+(K-50)(0.5)${(artArt.level > 2)?"\\\\M \\leftarrow M^{1.5+0.01A_{c}}":""}}`;
-            break;
         case 3:
             theory.secondaryEquationScale = 0.9;
             return (
@@ -2183,33 +2180,28 @@ var secondaryEq = (mode,col) => {
                 (invest.level > 0 ? "I_{o}^{1.01}" : "") +
                 "\\\\C_{1}(l) = max_{l}:[0,25,50,75,100,150]\\\\ \\rightarrow [1.03,1.05,1.07,1.09,1.11,1.13]^{l}\\\\C_{2}() = \\prod_{i=0}^{8}{TP[i]^{CT[i]}}}"
             );
-            break;
         case 4://Cov
             let cp = " C_{v}";
             return (
                 `\\color{#${eqColor[col]}}{B(2) \\leftarrow B(2)${cp}\\\\(\\sum_{i=0 \\: i\\neq 1}^{18}{P_{1}^{0.9}}{B[i]^{0.8}}${cp})^{${covDelta}${cp}^{0.45} + ${covExp}}}`
             );
-            break;
         case 5://Ygg + Chronos
             //theory.secondaryEquationScale = 0.925;
             let ys = " Y_{g}"
             return `\\color{#${eqColor[col]}}{B(2) \\leftarrow 5(10^{10})B(2)P_{2}^{1.175 + 0.05${ys}}\\\\(B[6]+B[2])^{3 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0)?`\\\\ B(i) \\leftarrow B(i)(1+t^{0.5}), \\quad i \\neq 2`:``}}`;
-            break;
         case 6://Terra
             let tr = " T_{r}";
             let tf = " T_{\\infty}";
             let tm = " T_{m}"
             return `\\color{#${eqColor[col]}}{${tm} = 1500${(moreExcavator.level>0)?"E_{f}^{1.5}":""}${tr}^{2.5+0.05${tf}}\\\\T = 1+${tm}^{0.2+0.1${tf}} + \\frac{${tm}^{1+0.005${tf}}}{1+e^{t-(X_{b}+600${tr})}}}`;
-            break;
         case 7://Recom
             let rc = " R_{c}";
             return `\\color{#${eqColor[col]}}{\\dot{H} = H^{0.9}(${rc})\\\\ \\dot{L} = 0.01${rc}\\\\ B(4) \\leftarrow B(4)10^{54}1.9^{${rc}-1}}`;
-            break;
         case 8://Dilation
             return `\\color{#${eqColor[col]}}{T_d = \\frac{B[11]^{1+0.025T_D}}{1000^{T_f}}\\\\T_f = 1-\\frac{min(B[11],B[10]+B[12])}{(2.125-0.125T_{D}))(B[10]+B[12])}}`;
         case 9://Elements
             theory.secondaryEquationScale = 0.85;
-            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{f}B[3]L[3]P_{3}^{0.05}log_2(T)}{150^{n+1}}, \\: n \\neq 8${(artArt.level > 13)?"\\\\ \\dot{E_{8}} = \\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}}":""}`;
+            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{f}B[3]L[3]P_{3}^{0.05}log_2(T)}{150^{n+1}},\\: n \\neq 8${(artArt.level > 13)?`\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}`:``}}`;
         case 10://Decay
             let ingre = (reactorMode==-1)?"E_{n}":`${elemName[reactorMode+2]}`;
             let r1 = (reactorMode==-1)?"E_{n-1}":`${elemName[reactorMode+1]}`;
