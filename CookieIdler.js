@@ -776,6 +776,7 @@ let castSpell = (index) => {
             break;
         case 4:
             log("HERE COMES THE LOOT");
+            templeLuck += 100*spellBoost
             break;
         case 5:
             let rand = RandI(20);
@@ -1331,7 +1332,7 @@ var init = () => {
                     //1000/1500/2000/2500/5000 tick lumps
                     //All of the above(JACKPOT)
                     let r = RandI(10000);
-                    if((spellCast[5]+(10*templeLuckDur)) >= thyme.level){
+                    if((spellCast[4]+(10*templeLuckDur)) >= thyme.level){
                         r+=templeLuck;
                     }
                     let chance = [10000,9995,9945,9845,9735,9615,9565,9555,9530,9430,9320,9200,9100,9000];
