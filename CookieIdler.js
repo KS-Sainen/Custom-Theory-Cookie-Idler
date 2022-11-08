@@ -1331,59 +1331,61 @@ var init = () => {
                     //1 prestige H
                     //1000/1500/2000/2500/5000 tick lumps
                     //All of the above(JACKPOT)
-                    let r = RandI(10000);
-                    if((spellCast[4]+(10*templeLuckDur)) >= thyme.level){
-                        r+=templeLuck;
-                    }
-                    let chance = [10000,9995,9945,9845,9735,9615,9565,9555,9530,9430,9320,9200,9100,9000];
-                    //bsearch to find slot
-                    prize = bsearch(chance,r);
-                    switch(prize){
-                        case 0:
-                            minCookie(60);
-                            pubH(1);
-                            tickLump(2900);
-                            templeJ=true;
-                            break;
-                        case 1:
-                            tickLump(2400);
-                            break;
-                        case 2:
-                            tickLump(1150);
-                            break;
-                        case 3:
-                            tickLump(900);
-                            break;
-                        case 4:
-                            tickLump(650);
-                            break;
-                        case 5:
-                            tickLump(400);
-                            break;
-                        case 6:
-                            pubH(1);
-                            break;
-                        case 7:
-                            minCookie(60);
-                            break;
-                        case 8:
-                            minCookie(30);
-                            break;
-                        case 9:
-                            minCookie(15);
-                            break;
-                        case 10:
-                            minCookie(10);
-                            break;
-                        case 11:
-                            minCookie(5);
-                            break;
-                        case 12:
-                            minCookie(3);
-                            break;
-                        case 13:
-                            minCookie(1);
-                            break;
+                    for(let i=0;i<amount;i++) {
+                        let r = RandI(10000);
+                        if ((spellCast[4] + (10 * templeLuckDur)) >= thyme.level) {
+                            r += templeLuck;
+                        }
+                        let chance = [10000, 9995, 9945, 9845, 9735, 9615, 9565, 9555, 9530, 9430, 9320, 9200, 9100, 9000];
+                        //bsearch to find slot
+                        prize = bsearch(chance, r);
+                        switch (prize) {
+                            case 0:
+                                minCookie(60);
+                                pubH(1);
+                                tickLump(2900);
+                                templeJ = true;
+                                break;
+                            case 1:
+                                tickLump(2400);
+                                break;
+                            case 2:
+                                tickLump(1150);
+                                break;
+                            case 3:
+                                tickLump(900);
+                                break;
+                            case 4:
+                                tickLump(650);
+                                break;
+                            case 5:
+                                tickLump(400);
+                                break;
+                            case 6:
+                                pubH(1);
+                                break;
+                            case 7:
+                                minCookie(60);
+                                break;
+                            case 8:
+                                minCookie(30);
+                                break;
+                            case 9:
+                                minCookie(15);
+                                break;
+                            case 10:
+                                minCookie(10);
+                                break;
+                            case 11:
+                                minCookie(5);
+                                break;
+                            case 12:
+                                minCookie(3);
+                                break;
+                            case 13:
+                                minCookie(1);
+                                break;
+                        }
                     }
                     if(artArt.maxLevel < artArt.level)artArt.maxLevel = artArt.level;
                 };
