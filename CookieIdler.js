@@ -165,20 +165,25 @@ let tickLump = (i) => {
  * @returns {number} the index where the next element is less than, -1 if it's beyond the end of the array
  */
 let bsearch = (arr,f) => {
-    let l=0;
-    let r=arr.length;
-    let mid = 0;
-    let ret = -1;
-    while(l<r){
-        mid=(l+r)/2;
-        if(arr[mid] > f){
-            l=mid+1;
-        }else if(arr[mid] <= f){
-            ret=mid;
-            r=mid-1;
+    if (f >= arr[0]) {
+        return 0;
+    }
+    if (f < arr[arr.length - 1]) {
+        return -1;
+    }
+    let l = 0, r = arr.length - 1;
+    let mid = 0
+    while (l < r) {
+        mid = l + r >> 1;
+        if (f > arr[mid]) {
+            r = mid - 1;
+        } else if (f < arr[mid]) {
+            l = mid + 1;
+        } else {
+            return mid;
         }
     }
-    return ret;
+    return arr[r] <= f ? r : r + 1;
 }
 
 //States (And thus begins the spoilers)
@@ -1326,7 +1331,7 @@ var init = () => {
                     if((artArt.maxLevel >= artArt.level) && (artUnlock+1 > artArt.maxLevel))artArt.maxLevel=artUnlock+1;
                     //Incentives
                     //sucks to sucks
-                    //1/2/3/5/10/15/30/60 minute CPS
+                    //1/3/5/10/15/30/60 minute CPS
                     //1 prestige H
                     //1000/1500/2000/2500/5000 tick lumps
                     //All of the above(JACKPOT)
