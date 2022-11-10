@@ -2276,7 +2276,6 @@ var get2DGraphValue = () => {
 var getPublicationMultiplier = (tau) => tau.pow(1.078);
 var getPublicationMultiplierFormula = (symbol) => symbol + "^{1.078}";
 var postPublish = () => {
-    quartList = [];
     lump.value = lumpbf;
     hc.value = hbf;
     CPS = BigNumber.ZERO;
