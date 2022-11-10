@@ -1928,7 +1928,7 @@ var calcCPS = () => {
         if(!Number.isFinite(mult) || Number.isNaN(mult) || mult == 0) {
             updateMult()
         }
-        if(BF(arrcps[dominate]/mult) < BF(arrcps[i])){
+        if(BF(arrcps[dominate])/BF(mult) < BF(arrcps[i])){
             //recalc constant then replace
             if(subconstant>BF(1)){
                 subconstant = ((arrcps[i] + (subconstant * arrcps[dominate]))/arrcps[i]);
