@@ -1925,7 +1925,7 @@ var calcCPS = () => {
     log(dominate);
     for(let i=0;i<19;i++){
         CPS += arrcps[i];
-        if(!Number.isFinite(mult)) {
+        if(!Number.isFinite(mult) || Number.isNaN(mult) || mult == 0) {
             updateMult()
         }
         if(BF(arrcps[dominate]/mult) < BF(arrcps[i])){
