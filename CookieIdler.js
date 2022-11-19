@@ -34,6 +34,7 @@ sky
 spqcey
 Lava#3374
 Frozen Moon#7244 (alex)
+elkshadow5#7952
 
 feel free to add more into the list.
 */
@@ -285,7 +286,7 @@ let CPS = BigNumber.ZERO,
     LPS = BigNumber.ZERO;
 let achCount = 0;
 let vizType = 0;
-let lumpTotal = 0;
+let lumpTotal = BigNumber.ZERO;
 let eqType = 0, quType=0;
 let artUnlock = 0;
 let time = 0; //degrees
@@ -1838,7 +1839,7 @@ var updateAvailability = () => {
 //==CPS==
 //Calculates Building Level
 //id = ID, am = Offset Amount
-let bc = BF(0);
+let bc = BigNumber.ZERO;
 var calcBuilding = (id,am) => {
     if(conGrow.level > 0 && id >= 11){
         return Utils.getStepwisePowerSum(building[id].level+am,2.4+(0.2*conGrow.level)+(0.011*(id-11)),50-conGrow.level,1)-1;
@@ -1857,8 +1858,8 @@ var calcCPS = () => {
     }
     subconstant = BF(1);
     buip = getbuip();
-    CPS = BF(0);
-    bc = BF(0);
+    CPS = BigNumber.ZERO;
+    bc = BigNumber.ZERO;
     milk = BigNumber.FIVE * achCount;
     HPS = BF(hc.value).pow(0.9) * (recom.level+((artArt.level > 7)?10:0));
     LPS = (recom.level+((artArt.level > 7)?10:0)) * 0.01;
@@ -1868,7 +1869,7 @@ var calcCPS = () => {
             arrcps[i]=0;
             continue;
         }
-        arrcps[i] = BF(0);
+        arrcps[i] = BigNumber.ZERO;
         let step1 = BF(calcBuilding(i,0)*BF(getPower(i))*BF(bcps[i]));
         arrcps[i] = (step1 * kp * BF(buip).pow(buildingUpgrade[i].level)).pow(getExpn(i));
         //arrcps[i]=BF("1e180");
@@ -1925,10 +1926,10 @@ var calcCPS = () => {
     log(dominate);
     for(let i=0;i<19;i++){
         CPS += arrcps[i];
-        if(!Number.isFinite(mult)) {
+        if(!Number.isFinite(mult) || Number.isNaN(mult) || mult == 0) {
             updateMult()
         }
-        if(BF(arrcps[dominate]/mult) < BF(arrcps[i])){
+        if(BF(arrcps[dominate])/BF(mult) < BF(arrcps[i])){
             //recalc constant then replace
             if(subconstant>BF(1)){
                 subconstant = ((arrcps[i] + (subconstant * arrcps[dominate]))/arrcps[i]);
@@ -2030,7 +2031,7 @@ var lessPreciseCalcCPS = () => {
 //==TICK==
 let lwC = 0;
 let idle = false;
-let xBegin = BF(0);
+let xBegin = BigNumber.ZERO;
 const lambda = BF("1e-6");
 const yieldfactor = BF("5e-2");
 const lossfactor = BF(25);
@@ -2050,8 +2051,8 @@ var tick = (elapsedTime, multiplier) => {
         }
         cookie.value += dt * (CPS * Logistic() * Dilate()) / BigNumber.TEN;
         hc.value += dt * HPS / 10;
-        lump.value += dt * (lwC + (BigL10(cookie.value) / lumpc));
-        lumpTotal += dt * (lwC + (BigL10(cookie.value) / lumpc));
+        lump.value += dt * (BF(lwC) + (BigL10(cookie.value) / BF(lumpc)));
+        lumpTotal += dt * (BF(lwC) + (BigL10(cookie.value) / BF(lumpc)));
         thyme.level+=(thyme.level < thyme.maxLevel)?1:0;
         return;
     }else{
