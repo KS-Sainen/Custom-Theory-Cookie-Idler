@@ -204,8 +204,10 @@ var getInternalState = () => {
     for (let i = 0; i < 19; i++) {
         st += `${buiPerk[i]} `;
     }
-    // 37, 38, 39, 40
-    st += `${eqC} ${reactorMode} ${dominate} ${spellTotalCount} `;
+    // 37, 38, 39
+    st += `${eqC} ${reactorMode} ${dominate} `;
+    // 40
+    // [REMOVED]
     // 41->49
     for (let i = 0; i < 9; i++) {
         st += `${spellCountCast[i]} `;
@@ -289,9 +291,7 @@ var setInternalState = (state) => {
         dominate = 0;
     }
     if (res.length > 40) {
-        spellTotalCount = parseInt(res[40]);
-    } else {
-        spellTotalCount = 0;
+        // [REMOVED]
     }
     for (let i = 0; i < 9; i++) {
         if (res.length > (41 + i)) {
@@ -305,6 +305,9 @@ var setInternalState = (state) => {
     }
     if (res.length > 50) {
         quType = parseInt(res[50]);
+        if(Number.isNaN(quType) || !Number.isFinite(quType)) {
+            quType = 0;
+        }
         quartButton.text = `Quaternary Values\n${quName[quType]}`;
     } else {
         quType = 0;
@@ -333,7 +336,6 @@ let perkHas = 0;
 let eqC = 0;
 let reactorMode = -1, reactorInterim;
 let dominate = 0;
-let spellTotalCount = 0;
 let spellCountCast = new Array(9).fill(0);
 
 // End States
@@ -769,7 +771,6 @@ let updateSpellLayer = () => {
 let castSpell = (index) => {
     spellCast[index] = thyme.level;
     spellCountCast[index] += 1;
-    spellTotalCount += 1;
     let spellBoost = spellAch[4 + index].isUnlocked + spellAch[4].isUnlocked;
     switch (index) {
         case 0:
@@ -1776,7 +1777,7 @@ var init = () => {
     }
     for (let i = 0; i < 14; i++) {
         if (i <= 4) {
-            spellAch[i] = theory.createAchievement(1100 + i, lumpAchCat, sach[i], `Cast a total of ${spellAchReq[i]} spells${(i == 4) ? "\nHaving this achievement will boost the power of every spell" : ""}`, () => CheckAchFeat(() => (spellTotalCount >= spellAchReq[i]), 1), () => (spellTotalCount / spellAchReq[i]));
+            spellAch[i] = theory.createAchievement(1100 + i, lumpAchCat, sach[i], `Cast a total of ${spellAchReq[i]} spells${(i == 4) ? "\nHaving this achievement will boost the power of every spell" : ""}`, () => CheckAchFeat(() => (spellCountCast.reduce((a, b) => a + b, 0) >= spellAchReq[i]), 1), () => (spellCountCast.reduce((a, b) => a + b, 0) / spellAchReq[i]));
         } else {
             spellAch[i] = theory.createAchievement(1200 + i, lumpAchCat, sach[i], `Cast ${spellName[i - 5]} ${spellAchReq[i]} times\nHaving this achievement will boost the power of this spell`, () => CheckAchFeat(() => (spellCountCast[i - 5] >= spellAchReq[i]), 1), () => (spellCountCast[i - 5] / spellAchReq[i]));
         }
