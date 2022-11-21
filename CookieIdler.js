@@ -685,7 +685,7 @@ const artClue = [
     "Time-Stopping Performance",// the world
     "Cavitilicious",// Choco Chunk
     "5 Cosmic Mappings ah ah ah",// Vanilla Neb
-    "16=117.39, 15^=1.268e30, 8E=500,000",// Itr Drive
+    "15$(^=)$1.268e30, 16=117.39, 8E=500,000",// Itr Drive
     "You have all artifacts, yay",
 ];
 const artArtDesc = [
