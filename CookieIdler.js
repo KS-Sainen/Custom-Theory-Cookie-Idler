@@ -192,19 +192,26 @@ let bsearch = (arr, f) => {
  * @returns {string} The internal state of the array, compatible with setInternalState()
  */
 var getInternalState = () => {
+    // 0, 1, 2, 3, 4, 5, 6
     let st = `${achCount} ${vizType} ${lumpTotal} ${eqType} ${artUnlock} ${BigTS(CPS)} ${BigTS(HPS)} `;
+    // 7-14
     for (let i = 0; i < 8; i++) {
         st += `${spellCast[i]} `;
     }
+    // 15, 16, 17
     st += `${heavVis} ${bInfo} ${perkPoint} `;
+    // 18->36
     for (let i = 0; i < 19; i++) {
         st += `${buiPerk[i]} `;
     }
-    st += `${eqC} ${reactorMode} ${dominate} ${spellTotalCount} `; //!40
+    // 37, 38, 39, 40
+    st += `${eqC} ${reactorMode} ${dominate} ${spellTotalCount} `;
+    // 41->49
     for (let i = 0; i < 9; i++) {
         st += `${spellCountCast[i]} `;
     }
-    st += `${quType} `//!50
+    // 50
+    st += `${quType} `
     return st;
 };
 
@@ -299,7 +306,6 @@ var setInternalState = (state) => {
     if (res.length > 50) {
         quType = parseInt(res[50]);
         quartButton.text = `Quaternary Values\n${quName[quType]}`;
-        ;
     } else {
         quType = 0;
     }
