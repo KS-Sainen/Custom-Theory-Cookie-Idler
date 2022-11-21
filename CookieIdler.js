@@ -2102,7 +2102,8 @@ var tick = (elapsedTime, multiplier) => {
             if(i==reactorMode && (building[12].level > 0)){
                 let rate = building[12].level*lambda*elements[i+2].value;
 
-                if((elements[i+2].value) < (rate*lossfactor)){
+                if((elements[i+2].value) <= (rate*lossfactor)){
+                    elements[i+2].value = rate*lossfactor;
                     continue;
                 }
 
