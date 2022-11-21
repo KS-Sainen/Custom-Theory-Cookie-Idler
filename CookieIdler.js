@@ -49,7 +49,7 @@ var version = 1.4;
 let BF = (i) => BigNumber.from(i);
 
 /**
- * Returns the value of i^p, identical to to Math.pow(i,p)
+ * Returns the value of i^p, identical to Math.pow(i,p)
  * @param {number} i The base
  * @param {number} p The exponent
  * @return {number} The value of i^p
@@ -323,10 +323,10 @@ let lumpTotal = BigNumber.ZERO;
 let eqType = 0, quType = 0;
 let artUnlock = 0;
 let time = 0; //degrees
-let spellCast = [0, 0, 0, 0, 0, 0, 0, 0];
+let spellCast = new Array(8).fill(0);
 let heavVis = 0;
 let bInfo = 0;
-let buiPerk = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+let buiPerk = new Array(21).fill(0);
 let maxbuiPerk = (indx) => (indx == 2) ? 3 : 5;
 let perkPoint = 0;
 let perkHas = 0;
@@ -334,7 +334,7 @@ let eqC = 0;
 let reactorMode = -1, reactorInterim;
 let dominate = 0;
 let spellTotalCount = 0;
-let spellCountCast = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+let spellCountCast = new Array(9).fill(0);
 
 //End States
 
