@@ -2,7 +2,7 @@ import { ExponentialCost, FreeCost, LinearCost } from "./api/Costs";
 import { Localization } from "./api/Localization";
 import { BigNumber } from "./api/BigNumber";
 import { theory } from "./api/Theory";
-import { Utils } from "./api/Utils";
+import { log, Utils } from "./api/Utils";
 import { UI } from "./api/ui/UI";
 import { Game } from "./api/Game";
 import { ConstantCost, CustomCost } from "../api/Costs";
@@ -15,12 +15,12 @@ import { profilers } from "../api/Profiler";
 import { TextAlignment } from "../api/ui/properties/TextAlignment";
 import { FontAttributes } from "../api/ui/properties/FontAttributes";
 import { QuaternaryEntry } from "../api/Theory";
-//Hello to the person reading this "code"
-//Spoilers alert for ALL of the upgrades, buildings and achievements
-//Before leaving, please try and find any bugs or bad JS coding practices for me
+// Hello to the person reading this "code"
+// Spoilers alert for ALL of the upgrades, buildings and achievements
+// Before leaving, please try and find any bugs or bad JS coding practices for me
 
-//Some parameters
-//If you're wondering why the refund button doesn't appear, please refer to line 646 and you would know something's up
+// Some parameters
+// If you're wondering why the refund button doesn't appear, please refer to line 646 and you would know something's up
 
 var id = "CookieIdler";
 var name = "Cookie Idler";
@@ -28,19 +28,19 @@ var description = "🍪👵🍪\nA game within a theory involving baking a copiu
 var authors = "Sainen Lv.420 #2684";
 
 /*
-Big thinks to these people!
-ellipsis
-sky
-spqcey
-Lava#3374
-Frozen Moon#7244 (alex)
-elkshadow5#7952
+ Big thinks to these people!
+ ellipsis
+ sky
+ spqcey
+ Lava#3374
+ Frozen Moon#7244 (alex)
+ elkshadow5#7952
 
-feel free to add more into the list.
-*/
+ feel free to add more into the list.
+ */
 var version = 1.4;
 
-//Function Name Reductions
+// Function Name Reductions
 /**
  * Returns the BigNumber equivalent of any of the following arguments. Functionally IDENTICAL to BigNumber.from()
  * @param {number|string|BigNumber} i
@@ -93,7 +93,7 @@ let BigP = (i, p) => BF(i).pow(p);
 let BigL10 = (i) => BF(i).log10();
 
 /**
- * Identical to Math.log(i) but for big numbers; also automatically converts any valid BigNumber inputted
+ * Identical to Math.i) but for big numbers; also automatically converts any valid BigNumber inputted
  * @param {number|string|BigNumber} i The number used
  * @return {BigNumber} The value of log2(i)
  */
@@ -129,7 +129,7 @@ let RandI = (i) => Math.floor(MR() * i);
 let RandR = (s, e) => e + (MR() * (s - e));
 
 
-//Prize Functions
+// Prize Functions
 let prize = 0;
 /**
  * @desc Gives the equivalent cookies compared to i minutes of your CPS
@@ -137,7 +137,7 @@ let prize = 0;
  */
 let minCookie = (i) => {
     cookie.value += BF(60) * CPS * BF(i) * Logistic();
-}
+};
 
 /**
  * @desc Gives the equivalent heavenly chips if you pubbed at this moment
@@ -146,7 +146,7 @@ let minCookie = (i) => {
 let pubH = (i) => {
     if (cookie.value <= 0) return;
     hc.value += BF(i) * (cookie.value / BF("1e12")).pow(1 / 3);
-}
+};
 
 /**
  * @desc Gives the equivalent amount of lumps for i ticks
@@ -156,7 +156,7 @@ let tickLump = (i) => {
     let dL = (BF(i) * (LPS - (sugarCoat.level * 2.475) - (recom.level + ((artArt.level > 7) ? 10 : 0)) * 0.009)) + (1 / (lumpc / BigL10(BF(10) + (cookie.value).abs()))) * BF(i);
     lump.value += dL;
     lumpTotal += dL;
-}
+};
 
 /**
  * @desc Binary searches through an array arr to the desired number f
@@ -172,7 +172,7 @@ let bsearch = (arr, f) => {
         return -1;
     }
     let l = 0, r = arr.length - 1;
-    let mid = 0
+    let mid = 0;
     while (l < r) {
         mid = l + r >> 1;
         if (f > arr[mid]) {
@@ -184,9 +184,9 @@ let bsearch = (arr, f) => {
         }
     }
     return arr[r] <= f ? r : r + 1;
-}
+};
 
-//States (And thus begins the spoilers)
+// States (And thus begins the spoilers)
 /**
  * @desc Serializes the state of the theory
  * @returns {string} The internal state of the array, compatible with setInternalState()
@@ -211,7 +211,7 @@ var getInternalState = () => {
         st += `${spellCountCast[i]} `;
     }
     // 50
-    st += `${quType} `
+    st += `${quType} `;
     return st;
 };
 
@@ -313,7 +313,7 @@ var setInternalState = (state) => {
     reactorMenu.content.children[2].text = `Current Element : ${(reactorInterim > -1) ? elemFormalName[reactorInterim + 2] : "OFF"}`;
 };
 
-//Initializes the variables for the serialized string(the scope is global)
+// Initializes the variables for the serialized string(the scope is global)
 let CPS = BigNumber.ZERO,
     HPS = BigNumber.ZERO,
     LPS = BigNumber.ZERO;
@@ -322,7 +322,7 @@ let vizType = 0;
 let lumpTotal = BigNumber.ZERO;
 let eqType = 0, quType = 0;
 let artUnlock = 0;
-let time = 0; //degrees
+let time = 0; // degrees
 let spellCast = new Array(8).fill(0);
 let heavVis = 0;
 let bInfo = 0;
@@ -336,10 +336,10 @@ let dominate = 0;
 let spellTotalCount = 0;
 let spellCountCast = new Array(9).fill(0);
 
-//End States
+// End States
 
 
-//Profiling things for performance and optimizations
+// Profiling things for performance and optimizations
 var profiler1 = profilers.get("profiler1");
 
 
@@ -349,7 +349,7 @@ const lumpc = 500;
 const buipb = 1.1;
 const buiexp = 0.05;
 const bcp = 0.01;
-let subconstant = BF(1);//filling in the missing parts
+let subconstant = BF(1);// filling in the missing parts
 let arrcps = new Array(21).fill(0);
 let getbuip = () => buipb + (0.01 * superL.level);
 let lumpbf = BigNumber.ZERO;
@@ -363,7 +363,7 @@ var isCurrencyVisible = (indx) => indx <= 2;
 const elemName = ["Be", "Ch", "Bg", "Su", "Jm", "Cs", "Hz", "Mn", "As"];
 const elemFormalName = ["Berrylium", "Chalcedhoney", "Buttergold", "Sugarmuck", "Jetmint", "Cherrysilver", "Hazelrald", "Mooncandy", "Astrofudge"];
 const elemWeight = [1, 2, 3, 5, 8, 13, 21, 36, 57];
-const nextExcavateReq = [0, 1.2e13, 9.5e11, 1.25e11, 4e8, 5e7, 7.5e6, 100000];//req to unlock THAT element(comp: n-1)
+const nextExcavateReq = [0, 1.2e13, 9.5e11, 1.25e11, 4e8, 5e7, 7.5e6, 100000];// req to unlock THAT element(comp: n-1)
 
 
 //==Buildings==
@@ -434,14 +434,14 @@ let buildingDesc = [
     "thinking up ",
 ];
 let baseCost = [
-    11,//0
-    1e3,//1
-    1.1e5,//2
-    1.2e8,//3
-    1.3e12,//4
-    1.4e18,//5
-    2e25,//6
-    3.3e50,//7
+    11,// 0
+    1e3,// 1
+    1.1e5,// 2
+    1.2e8,// 3
+    1.3e12,// 4
+    1.4e18,// 5
+    2e25,// 6
+    3.3e50,// 7
     5.1e75,
     7.5e100,
     1e125,
@@ -449,37 +449,37 @@ let baseCost = [
     BF("1.7e180"),
     BF("2.1e215"),
     BF("2.6e300"),
-    BF("3.1e351"),//15
-    BF("7.1e425"),//16
-    BF("1.2e1450"),//BREAK
+    BF("3.1e351"),// 15
+    BF("7.1e425"),// 16
+    BF("1.2e1450"),// BREAK
     BF("1.9e1500"),
 ];
-//Ideally, 1/a lot base
+// Ideally, 1/a lot base
 let bcps = [
-    7,//0
-    310,//1
-    5.3e4,//2
-    7.4e7,//3
-    4.05e10,//4
-    1.4e12,//5
-    4.8e18,//6
-    1.1e29,//7, 2.5x
-    1.58e38,//8
-    1.12e50,//9, doubled
-    6.66e58,//10
-    6.5e72,//11
-    9.15e79,//12
-    BF("4.9e96"),//13
-    BF("2.1e123"),//14
-    BF("2.2e150"),//15
-    BF("3.1e187"),//16
-    BF("8.3e190"),//17
-    BF("6.4e195"),//18
+    7,// 0
+    310,// 1
+    5.3e4,// 2
+    7.4e7,// 3
+    4.05e10,// 4
+    1.4e12,// 5
+    4.8e18,// 6
+    1.1e29,// 7, 2.5x
+    1.58e38,// 8
+    1.12e50,// 9, doubled
+    6.66e58,// 10
+    6.5e72,// 11
+    9.15e79,// 12
+    BF("4.9e96"),// 13
+    BF("2.1e123"),// 14
+    BF("2.2e150"),// 15
+    BF("3.1e187"),// 16
+    BF("8.3e190"),// 17
+    BF("6.4e195"),// 18
 ];
-//Getting the info of a building but in a function
+// Getting the info of a building but in a function
 var getInf = (index, am) => {
     if (bInfo == 1) {
-        return `\$B[${index}]^{${(getExpn(index) > 1) ? getExpn(index) : ""}}\$ = ${Utils.getMathTo(calcBuilding(index, 0), calcBuilding(index, am))}`
+        return `\$B[${index}]^{${(getExpn(index) > 1) ? getExpn(index) : ""}}\$ = ${Utils.getMathTo(calcBuilding(index, 0), calcBuilding(index, am))}`;
     }
     let result = buildingName[0 + Math.floor(bInfo / 2)][index];
     if (building[index].level == 1) {
@@ -487,7 +487,7 @@ var getInf = (index, am) => {
     } else {
         result += "s ";
     }
-    //Sorry, but you CAN'T get 1 CPS per building skill issue lol
+    // Sorry, but you CAN'T get 1 CPS per building skill issue lol
     result += buildingDesc[index] + BF(arrcps[index]).toString(0) + " cookies per second";
     return result;
 };
@@ -509,24 +509,24 @@ var mult = BF(1);
 var updateMult = () => {
     mult = BF(1);
     mult *= (getCookieP(cookieT.level) * (1 + (CookieTau.level * game.tau.log10().log10().pow(2))));
-    //log("cookiep : " + (getCookieP(cookieT.level) * (1+(CookieTau.level * game.tau.log10().log10().pow(2)))));
+    //"cookiep : " + (getCookieP(cookieT.level) * (1+(CookieTau.level * game.tau.log10().log10().pow(2)))));
     mult *= (1 + (BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp));
-    //log("click : " + (1+(BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp)));
+    //"click : " + (1+(BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp)));
     mult *= ((TwinGates.level > 0) ? hc.value.pow(0.03 * TwinGates.level) : 1);
-    //log("twin : " + ((TwinGates.level > 0) ? hc.value.pow(0.03 * TwinGates.level) : 1));
+    //"twin : " + ((TwinGates.level > 0) ? hc.value.pow(0.03 * TwinGates.level) : 1));
     mult *= theory.publicationMultiplier;
-    //log("pub : " + theory.publicationMultiplier);
+    //"pub : " + theory.publicationMultiplier);
     mult *= (BigP(game.sigmaTotal, R9Box.level * 0.7));
-    //log("r9 : " + (BigP(game.sigmaTotal,R9Box.level*0.7)));
+    //"r9 : " + (BigP(game.sigmaTotal,R9Box.level*0.7)));
     mult *= ((artArt.level > 9) ? BF(100) : BF(1));
-    //log("art9 : " + ((artArt.level > 9)?BF(100):BF(1)));
+    //"art9 : " + ((artArt.level > 9)?BF(100):BF(1)));
     mult *= ((ChronosAge.level > 0) ? (BF(1) + BF(thyme.level).pow(0.5)) : BF(1));
-    //log("chrono : " + ((ChronosAge.level > 0)?(BF(1) + BF(thyme.level).pow(0.5)):BF(1)));
+    //"chrono : " + ((ChronosAge.level > 0)?(BF(1) + BF(thyme.level).pow(0.5)):BF(1)));
     mult *= ((artArt.level > 4) ? BigP(building[1].level, 0.61) : BF(1));
-    //log("art4 : " + ((artArt.level > 4)?BigP(building[1].level,0.61):BF(1)));
+    //"art4 : " + ((artArt.level > 4)?BigP(building[1].level,0.61):BF(1)));
     mult *= ((((spellCast[1] + (10 * effectCPSBDur)) >= thyme.level)) ? effectCPSB : BF(1));
-    //log("spellsus : " + ((((spellCast[1]+(10*effectCPSBDur)) >= thyme.level))?effectCPSB:BF(1)));
-}
+    //"spellsus : " + ((((spellCast[1]+(10*effectCPSBDur)) >= thyme.level))?effectCPSB:BF(1)));
+};
 /**
  * Calculates the total boost from the different types of cookies you have
  * @param {BigNumber} level, The amount of cookie upgrade level you have from the cookieT.level
@@ -556,7 +556,7 @@ var getCookieTP = (level) => {
  * @returns {BigNumber} The total amount of cookie boost you have
  */
 var getCookieP = (level) => {
-    //let bn = (num) => BF(num);
+    // let bn = (num) => BF(num);
     let res = getCookieTP(level);
     for (let i = 0; i < cookieTinName.length; i++) {
         res *= BigP(cookietP[i], cookiet[i].level);
@@ -571,7 +571,7 @@ var getCookieP = (level) => {
     }
     return res;
 };
-//An array of strings containing every single cookies types for use in displaying the name
+// An array of strings containing every single cookies types for use in displaying the name
 const cookieType = ["Plain Cookie", "Chocolate Chip Cookie", "Sugar Cookie", "Oatmeal Raisin Cookie", "Peanut Butter Cookie", "Coconut Cookie", "Almond Cookie", "Hazelnut Cookie", "Walnut Cookie", "Cashew Cookie", "White Chocolate Cookie", "Milk Chocolate Cookie", "Macadamia Cookie", "Double Chip Cookie", "White Chocolate Macadamia Cookie", "All-Chocolate Cookie", "Dark-Chocolated Coated Cookie", "White-Chocolate Coated Cookie", "Eclipse Cookie", "Zebra Cookie", "Snickerdoodle", "Stroopwafel", "Macaroon", "Madeleine", "Palmier", "Palets", "Sables", "Pure Black Chocolate Cookie", "Pure White Chocolate Cookie", "Ladyfingers", "Tullies", "Checker Cookie", "Butter Cookie", "Vanilla Cream Cookie", "Gingersnap", "Cinnamon Cookie", "Vanity Cookie", "Pinwheel Cookie", "Shortbread Biscuits", "Millionare\'s Shortbread", "Caramel Cookie", "Pecan Sandies", "Moravian Spice Cookie", "Anzac Biscuit", "Whole Grain Cookie", "Candy Cookie", "Big Chipped Cookie", "Spinkled Cookie", "Anti-Idle Cookie", "Florentine", "Chocolate Crinkles", "Zero-Idle Cookie", "Maple Cookie", "Persian Rice Cookie", "Norwegian Cookie", "Crispy Rice Cookie", "Ube Cookie", "Butterscotch Cookie", "Speculaas", "Chocolate Oatmeal Cookie", "Molasses Cookie", "Biscotti", "Waffle Cookie", "Custard Cream Cookie", "Bourbon Biscuits", "Mini-Cookie", "Whoopie Pies", "Caramel Wafer Biscuits", "Chocolate Chip Mocha Cookie", "Earl Grey Cookie", "Chai Tea Cookie", "Myanmar Tea Cookie", "Thai Tea Cookie", "Corn Syrup Cookie", "Icebox Cookie", "Graham Cracker", "Hardtack", "Tofu Cookie", "Gluten-Free Cookie", "Lebkuchen", "Aachener Printen", "Canistrelli", "Petit Beurre", "Nanaimo Bars", "Berger Cookie", "Chinsuko", "Putri Salju", "Milk Cookie", "Kruidnoten", "Marie Biscuits", "Meringue Cookie", "Yogurt Cookie", "Thumbprint", "Pizzelle", "Granola Cookie", "Ricotta Cookie", "Roze Koeken", "Peanut Butter Cup Cookie", "Sesame Cookie", "Vanillekipferl", "Battenberg Biscuits", "Rosette Cookie", "Gangmakers", "Welsh Cookie", "Raspberry Cheesecake Cookies", "Bokkenpootjes", "Fat Rascals", "Ischler Cookies", "Matcha Cookie", "Super Fusion Cookie", "Spicy Cookie", "Kolachy Cookie", "Gomma Cookie", "Coyotas", "Frosted Sugar Cookie", "Marshmallow Sandwich Cookie", "Chocolate Chip Covered Chocolate Chip Cookie", "Benne Wafers", "Bizcochitos", "Yakgwa", "Alfajores", "Super Idler Flavored Cookie"];
 const basect = 2.2e6;
 const ctr = ML2(2700);
@@ -582,7 +582,7 @@ const cookieInf = "Increases overall CPS by making your cookie taste better.";
 //==Kitty==
 var kitty;
 const kittyDName = "Very Chawwtic Kitty";
-const kittyID = 69420; //ouo
+const kittyID = 69420; // ouo
 const kittyExp = ML2(9750);
 const kittyCost = 75000;
 const kittyName = [
@@ -627,63 +627,63 @@ var kittyPower = (level) => {
 
 
 //==UNIQUE UPGRADES==
-//GRANDMA - Covenant Upgrade (Shipment -> Alchemy Lab)
+// GRANDMA - Covenant Upgrade (Shipment -> Alchemy Lab)
 var covenant;
 const covExp = 5.1;
 const covDelta = 0.6;
-//FARM - Yggdrasil
+// FARM - Yggdrasil
 var ygg;
 const yggName = "Yggdrasil $(Y_{g})$";
 const yggInfo = "Empower your farms with the power of time and cookie ancients";
-//MINE - Terra + Excavation Site
+// MINE - Terra + Excavation Site
 var terra, excavate, moreExcavator;
 const terraName = "Mass Terraforming $(T_{r})$";
 const terraInfo = "Unlocks/Improves a buff that temporarily boosts your CPS by a lot";
-//FACTORY - Recombobulators
+// FACTORY - Recombobulators
 var recom;
 const recomName = "Recombobulators $(R_{e})$";
 const recomInfo = "Produces a constant stream of all currencies! What a dream!";
-//BANK - Investment
+// BANK - Investment
 var invest;
 const investName = "Investment Openings $(I_{o})$";
 const investInfo = "Open your very own investments forms. Grants 5 buildings of random type and a flat 1.01 CPS boost!(chance of failure included)";
-//TEMPLE - Archaeology
+// TEMPLE - Archaeology
 var art, artArt;
 const artName = "Archaeology $(A_{r})$";
 const artInfo = "Go into your own temples to discover some secrets lost to mankind";
 const artArtName = [
-    "Rhombus of Chocolatance",//0Temple CPS goes up
-    "Occam\'s Lazer",//1Prism CPS goes up
-    "All-Natural ouo sugar",//2Cats become CPS
-    "Doctor T\'s Thesis",//3Cursor CPS
-    "Bountiful box of Gilles-Philippe",//4Grandma CPS
-    "Key to the Conservatorium",//5Farm CPS
-    "Coreforge Bar",//6Terra-Finity + Mine CPS
-    "Da Vinci Manuscript",//7Factory CPS
-    "A very curious tulip bulb",//8Bank CPS
-    "Book of Symbolisms",//9Chancemaker Unlock
-    "Grimoire of Basic Cookie Magic",//10Grimoire
-    "Antediluvian Engine",//11Time Dilation
-    "Elementium Infused Chocolate Chunk",//12Secrets of the Elements
-    "Scent of Vanilla Nebula",//13Shipment CPS + Astrofudge
-    "Iteration Drive",//14Unlocks funny things
+    "Rhombus of Chocolatance",// 0Temple CPS goes up
+    "Occam\'s Lazer",// 1Prism CPS goes up
+    "All-Natural ouo sugar",// 2Cats become CPS
+    "Doctor T\'s Thesis",// 3Cursor CPS
+    "Bountiful box of Gilles-Philippe",// 4Grandma CPS
+    "Key to the Conservatorium",// 5Farm CPS
+    "Coreforge Bar",// 6Terra-Finity + Mine CPS
+    "Da Vinci Manuscript",// 7Factory CPS
+    "A very curious tulip bulb",// 8Bank CPS
+    "Book of Symbolisms",// 9Chancemaker Unlock
+    "Grimoire of Basic Cookie Magic",// 10Grimoire
+    "Antediluvian Engine",// 11Time Dilation
+    "Elementium Infused Chocolate Chunk",// 12Secrets of the Elements
+    "Scent of Vanilla Nebula",// 13Shipment CPS + Astrofudge
+    "Iteration Drive",// 14Unlocks funny things
     "More artifacts coming soon",
 ];
 const artClue = [
-    "One is One, Five is Two",//0-1
-    "Achieved Enough?",//1-2
-    "YEAH SCIENCE!!!!!!!!",//2-3
-    "There\'s kings in cookies",//3-4
-    "Explore more, duh",//4-5
-    "A bit deeper",//5-6
-    "Get those patents out, ya stingy",//6-7
-    "Hoard, Hoard, Hoard more",//7-8
-    "Am I lucky? enough?",//8-9
-    "haha mana goes brrrrrr",//9-10
-    "Time-Stopping Performance",//the world
-    "Cavitilicious",//Choco Chunk
-    "5 Cosmic Mappings ah ah ah",//Vanilla Neb
-    "16=117.39, 15^=1.268e30, 8E=500,000",//Itr Drive
+    "One is One, Five is Two",// 0-1
+    "Achieved Enough?",// 1-2
+    "YEAH SCIENCE!!!!!!!!",// 2-3
+    "There\'s kings in cookies",// 3-4
+    "Explore more, duh",// 4-5
+    "A bit deeper",// 5-6
+    "Get those patents out, ya stingy",// 6-7
+    "Hoard, Hoard, Hoard more",// 7-8
+    "Am I lucky? enough?",// 8-9
+    "haha mana goes brrrrrr",// 9-10
+    "Time-Stopping Performance",// the world
+    "Cavitilicious",// Choco Chunk
+    "5 Cosmic Mappings ah ah ah",// Vanilla Neb
+    "16=117.39, 15^=1.268e30, 8E=500,000",// Itr Drive
     "You have all artifacts, yay",
 ];
 const artArtDesc = [
@@ -736,7 +736,7 @@ var artCheck = (cond) => {
         case 9:
             return building[7].level >= (parseInt([+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[]]) ^ parseInt([+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[]])) + 50;
             break;
-        case 10://oops looks like someone spilled a [][][[][[]][][](}()()})(!+{)({)([!({)}())])})})]] in there....
+        case 10:// oops looks like someone spilled a [][][[][[]][][](}()()})(!+{)({)([!({)}())])})})]] in there....
             return arrcps[0x36 - 0x34 + 0x6 + 0x4 + 0x59 + 0x2d - 0x9c + 0x14] >= BF([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]][([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]]((!![] + [])[+!+[]] + (!![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + ([][[]] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+!+[]] + (+[![]] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+!+[]]] + (!![] + [])[!+[] + !+[] + !+[]] + (+(!+[] + !+[] + !+[] + [+!+[]]))[(!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([] + [])[([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]][([][[]] + [])[+!+[]] + (![] + [])[+!+[]] + ((+[])[([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + ([][[]] + [])[+!+[]] + (![] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [])[+!+[]] + ([][[]] + [])[+[]] + ([][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]] + [])[!+[] + !+[] + !+[]] + (!![] + [])[+[]] + (!![] + [][(![] + [])[+[]] + (![] + [])[!+[] + !+[]] + (![] + [])[+!+[]] + (!![] + [])[+[]]])[+!+[] + [+[]]] + (!![] + [])[+!+[]]] + [])[+!+[] + [+!+[]]] + (!![] + [])[!+[] + !+[] + !+[]]]](!+[] + !+[] + !+[] + [!+[] + !+[]]) + (![] + [])[+!+[]] + (![] + [])[!+[] + !+[]])()([+!+[]] + (!![] + [])[!+[] + !+[] + !+[]] + [+!+[]] + [!+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [!+[] + !+[] + !+[] + !+[] + !+[]]));
         case 11:
             return lump.value >= 0b10011100010000;
@@ -748,7 +748,7 @@ var artCheck = (cond) => {
             return false;
     }
 };
-//WIZARD TOWER - Grimoire
+// WIZARD TOWER - Grimoire
 var Spell = new Array(9);
 var SpellView;
 var isSpellShown = 0;
@@ -793,12 +793,14 @@ let castSpell = (index) => {
             } else if (rand >= 60) {
                 log("Frenzy");
                 effectCPSB = 7 + (0.5 * SpellStack.level);
+                calcCPS();
             } else if (rand >= 50) {
                 log("Clot");
                 minCookie(-6 + (0.1 * SpellStack.level));
             } else if (rand >= 40) {
                 log("Bleed");
                 effectCPSB = 0.6 + (0.05 * SpellStack.level);
+                calcCPS();
             } else {
                 log("Nothing Happened");
             }
@@ -815,7 +817,7 @@ let castSpell = (index) => {
             break;
         case 4:
             log("HERE COMES THE LOOT");
-            templeLuck += 100 * spellBoost
+            templeLuck += 100 * spellBoost;
             break;
         case 5:
             let rand = RandI(20);
@@ -845,7 +847,7 @@ let castSpell = (index) => {
                     log(i);
                 }
             }
-            log("The spell wears off...")
+            log("The spell wears off...");
     }
 };
 const spellName = [
@@ -870,13 +872,13 @@ const spellDesc = [
     "Spawn some sugar lumps in",
     "haha jojo reference goes brrrrrrrrrr",
 ];
-//ALCHEMY LAB - Cookiearium Convertor + Aqua Crustulae
+// ALCHEMY LAB - Cookiearium Convertor + Aqua Crustulae
 var cookiearium, aquaCrust;
-//TIME MACHINE - Tile Dilation
+// TIME MACHINE - Tile Dilation
 var timeDilate;
 const timeDilateName = "Time Dilation $(T_{D})$";
 const timeDilateInfo = "Dilates the time to produce more cookies that isn\'t affected by Conjure Idled Goods";
-//ANTIMATTER CONDENSER - Quark Accelerator
+// ANTIMATTER CONDENSER - Quark Accelerator
 var accelerator, acceleratorMenu;
 
 
@@ -888,7 +890,7 @@ const vizName = ["Classic", "Milk"];
 
 
 //==Permanent Building Upgrades==
-var clickp, jetDrive, sugarCoat; //Click Power relative to CPS + Empowerments but I'm so 🍪riginal
+var clickp, jetDrive, sugarCoat; // Click Power relative to CPS + Empowerments but I'm so 🍪riginal
 var buildingUpgrade = new Array(19);
 var buildingP = new Array(19);
 const clickpname = "Tougher Mouse";
@@ -931,7 +933,7 @@ const cookieTinName = [
     "Tin of Butter Cookies",
     "Tin of British Tea Biscuits",
     "Box of Brand Biscuits",
-    "Box of 100\\%\\ Pastries",//brought to you by Lava#3374
+    "Box of 100\\%\\ Pastries",// brought to you by Lava#3374
     "Box of Cookie?",
     "Box of Cookien'\t",
     "Crate full of Exponential Idle Community References",
@@ -962,7 +964,7 @@ const boxrName = "Box of R9 $(R_{9})$";
 const boxrInfo = `A very stange and mathematical box seemingly full of ${game.sigmaTotal} students`;
 const congrowName = "Continuos Growth";
 const congrowInfo = "Certain high-tech buildings get more powerful the more of them you have";
-//Conseq. HC Upgrade
+// Conseq. HC Upgrade
 var cookiet = new Array(9);
 const cookietP = [1.2, 1.25, 1.35, 1.5, 1.55, 1.75, 1.8, 2, 2.25, 2.5];
 const cookietB = [
@@ -989,12 +991,12 @@ const cookietName = [
     ["Gigaloopite", "Tetraloopite", "Enium Cookie", "Orate Cookie", "Dxygen Cookie", "IUSpawn Cookie", "egg", "Euler Serion Cookies"],
     ["Mutated Cookie", "Magic Marbled Cookie", "Shortcake-like Cookie", "Truffle Cookie", "Salt Pretzels", "Seaweed Sesame Cookie", "Dulce De Leche", "Keylime Pie", "S\'Mores", "Chocolate Drizzle Cookie", "Peppermint Kiss Cookie", "Sprinkled Jelly Cookie", "Galaxial Drop", "Reflective Frosted Cookie", "Pecan Walnut Cookie", "White Mine Cookie", "Jelly Triangle", "Gold Leafed Cookie", "Grand Chocolate Wafer Sprinkles"]
 ];
-//Want your self insert? DM me your very own cookie name and I might add it!
+// Want your self insert? DM me your very own cookie name and I might add it!
 
 
 //==MILESTONES==
 var superP, superL, superC;
-//P Exponent, L Mult Increase, C Power Increase
+// P Exponent, L Mult Increase, C Power Increase
 
 
 //==Achievements==
@@ -1065,7 +1067,7 @@ const cpsaReq = [
     1, 2, 5, 11, 24, 49, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 350,
     400, 450, 500, 550, 600, 650, 700, 725, 751,
 ];
-var lumpAch = new Array(10); //10 tiers
+var lumpAch = new Array(10); // 10 tiers
 var lumpAchCat;
 const lumpAchName = [
     "Dude, Sweet",
@@ -1081,16 +1083,16 @@ const lumpAchName = [
 ];
 const lumpAchReq = [1, 10, 50, 100, 500, 1000, 10000, 100000, 1000000, 10000000];
 const perkAchReq = [1, 5, 25, 50, 95];
-const spellAchReq = [10, 50, 100, 500, 1000, 25, 25, 25, 50, 50, 50, 100, 250, 50];//5 number + 9 specific
+const spellAchReq = [10, 50, 100, 500, 1000, 25, 25, 25, 50, 50, 50, 100, 250, 50];// 5 number + 9 specific
 var BuildingAchievement;
 var buiAch1 = new Array(19);
 var buiAch2 = new Array(19);
 var buiAch3 = new Array(19);
-var buiAch4 = new Array(14);//Very endgame content right there
+var buiAch4 = new Array(14);// Very endgame content right there
 var buiLumpAch = new Array(19);
-var perkAch = new Array(5);//Forge them, get them
-var spellAch = new Array(14);//spell, 5 number + 9 specific
-const bach1 = ["Mouse Wheel", "Retirement Club", "Home Organic", "Stop! Drilling Time!", "Industrial Act", "Pretty Penny Pinchers", "Way of the Temple", "Bewitched", "Local Expedition", "Transmutation", "Isekai\'d", "Thyme Wrap", "When does it matter?", "Some rays of dough and batter", "Lucked up", "Z_n+1 = (Z_n)^2 + c", "Press F12", "Manifest Destiny", "O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA"];//not to be confused with a famous composer from the romantic age or something
+var perkAch = new Array(5);// Forge them, get them
+var spellAch = new Array(14);// spell, 5 number + 9 specific
+const bach1 = ["Mouse Wheel", "Retirement Club", "Home Organic", "Stop! Drilling Time!", "Industrial Act", "Pretty Penny Pinchers", "Way of the Temple", "Bewitched", "Local Expedition", "Transmutation", "Isekai\'d", "Thyme Wrap", "When does it matter?", "Some rays of dough and batter", "Lucked up", "Z_n+1 = (Z_n)^2 + c", "Press F12", "Manifest Destiny", "O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA"];// not to be confused with a famous composer from the romantic age or something
 const bach2 = ["Clicktopia", "Tootsie Roll Machine", "100% Sustainable", "Break the core", "Age of Internet", "Keynesian Cookinomics", "Balance of Faith", "Alakazamd", "Cosmic Mapping", "Polytranselementation", "H̶e̷ ̶C̶o̴m̵e̸s̵", "Thyme Pararegano", "New Standard Model of Cookie and Flour", "Total Enlightenment", "Devil\'s Gambit", "Apollonian Gasket", "Infinite Theorycraft", "Is there enough worlds?", "Cardinal Synapsis"];
 const bach3 = ["Thumbs, Phalanges, Metacarpals", "Ruler of the Ancients", "Green Pasture lays live", "Dysonian Society", "Automatal Hysteria", "New Neohyperglobalization Order", "The Lord\'s Likeliness", "Shaspie Colupis", "Multiverse Ramble", "With matter comes Cookies", "I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎", "Thyme Sagaporal Nutmegstant", "Unified Complete Theory of the Cookieverse", "O thy energy of sky, bring fourth the light rays", "Gamber\'s Last Bet", "C_n := (C_n-1 ∪ (2+C_n-1))/3, where C_0 := [0,1]", "I bring fourth reincarnation of reality", "Lost your Cosmic Cookies?", "I declare thee on all ye inferiors. Despair before me, I am the Ozymandias"];
 const bach4 = ["Hands of fate lays bare their click upon thou", "Shrivel, today we rise", "Babylonian Conservatorium sits on the hill", "Breaking through omnirealitimetaplanes", "The perfect game of Factorio", "Money is just a human construct", "Caricature of the forgotten Deities", "Cookiera Avadra Creamdera", "Omniverse Realization", "Satiated in the gaudy mouths of Gold", "Bottom of the abyss", "Out of past, Out of future", "Hypersize my String and Gluten", "Neverending rays of bright brilliance shine on you all"];
@@ -1099,8 +1101,8 @@ const pach = ["See the Exponent", "Touch the Exponent", "Feel the Exponent", "Ch
 const sach = ["Neophyte", "Acolyte", "Adept", "Harry Cookier", "Master of Spells", "Lazy Wizard", "Gambler Wizard", "Ascendant Wizard", "Mass Miner Wizard", "Explorer Wizard", "Mogul Wizard", "Impatient Wizard", "Very Sweet Wizard", "やれやれだぜ!"];
 var featAchCat;
 var superIdle, hyperIdle, speedBake1, speedBake2, speedBake3, speedBake4, speedBake5, speedBake6, nice, insipid,
-    leetnice, sigmaCurseof, timeSpeed, timeOhNo, sugarAddict1, sugarAddict2, sugarAddict3, jackpot, indecisive, PVCRK;//actual
-let templeJ = false, indecide = 0;//unlock
+    leetnice, sigmaCurseof, timeSpeed, timeOhNo, sugarAddict1, sugarAddict2, sugarAddict3, jackpot, indecisive, PVCRK;// actual
+let templeJ = false, indecide = 0;// unlock
 
 
 //==LORE==
@@ -1152,8 +1154,8 @@ const chapterLore = [
 
 
 var thyme;
-//All Secondary Equations
-//1.Building CPS, 2.P formula, 3.Milk, 4.Cookie Power, 5.Covenant, 6.Yggdrasil, 7.Terra
+// All Secondary Equations
+// 1.Building CPS, 2.P formula, 3.Milk, 4.Cookie Power, 5.Covenant, 6.Yggdrasil, 7.Terra
 /**
  * Returns a permanent upgrade object from the arguments given.
  * @param {number} id, The ID of the upgrade, must be unique.
@@ -1188,7 +1190,7 @@ function shortPermaUpgradeML(id, cur, costModel, desc, info, maxLevel) {
 
 
 var init = () => {
-    //Variable Creation
+    // Variable Creation
     cookie = theory.createCurrency("C", "C");
     hc = theory.createCurrency("H", "H");
     lump = theory.createCurrency("L", "L");
@@ -1198,15 +1200,15 @@ var init = () => {
 
     ///////////////////
     // Regular Upgrades
-    //Shush
+    // Shush
     {
         thyme = theory.createUpgrade(1e9, cookie, new ConstantCost(BF("1e1000")));
         thyme.isAvailable = false;
-        thyme.maxLevel = 1262304000;//1461 Days
+        thyme.maxLevel = 1262304000;// 1461 Days
         thyme.getDescription = () => "Time (time)";
         thyme.getInfo = () => "how the fuck did you managed to see it";
     }
-    //Tasty Cookies
+    // Tasty Cookies
     {
         cookieT = theory.createUpgrade(0, cookie, new ExponentialCost(basect, ctr));
         cookieT.getDescription = (_) => {
@@ -1222,7 +1224,7 @@ var init = () => {
         cookieT.getInfo = (amount) => (bInfo == 1) ? `\$ C_{1}(l) = \$ ${Utils.getMathTo(getCookieTP(cookieT.level), getCookieTP(cookieT.level + amount))}` : cookieInf;
         cookieT.bought = (amount) => calcCPS();
     }
-    //Heavely Tasty Cookie
+    // Heavely Tasty Cookie
     {
         for (let i = 0; i < cookieTinName.length; i++) {
             cookiet[i] = theory.createUpgrade(1000100 + i, cookie, new ExponentialCost(cookietB[i], ML2(8775)));
@@ -1241,7 +1243,7 @@ var init = () => {
             cookiet[i].bought = (amount) => calcCPS();
         }
     }
-    //Kitty
+    // Kitty
     {
         kitty = theory.createUpgrade(kittyID, cookie, new ExponentialCost(kittyCost, kittyExp));
         kitty.getDescription = (_) => {
@@ -1249,7 +1251,7 @@ var init = () => {
                 return `\$K_{i} = ${kitty.level}, M = ${kittyPower(kitty.level)}\$`;
             }
             if (kitty.level >= kittyName.length) {
-                return kittyDName
+                return kittyDName;
             } else {
                 return kittyName[kitty.level];
             }
@@ -1270,7 +1272,7 @@ var init = () => {
             if (bInfo == 1) {
                 return `${bi} = ${calcBuilding(i, 0)}`;
             } else {
-                return `${bi} - ${buildingName[0 + Math.floor(bInfo / 2)][i]}`
+                return `${bi} - ${buildingName[0 + Math.floor(bInfo / 2)][i]}`;
             }
         };
         building[i].getInfo = (amount) => `${getInf(i, amount)}, ${((bInfo == 1) ? `\$B(${i}) = ${arrcps[i]}\$` : "")}`;
@@ -1283,7 +1285,7 @@ var init = () => {
         };
         switch (i) {
             case 1:
-                //Grandma's Covenant
+                // Grandma's Covenant
                 covenant = theory.createUpgrade(10001, cookie, new ExponentialCost(1e65, ML2(1e15)));
                 covenant.getDescription = (_) => "Grandmother's Covenant $(C_{v})$";
                 covenant.getInfo = () =>
@@ -1292,7 +1294,7 @@ var init = () => {
                 covenant.bought = (amount) => universalBought(1);
                 break;
             case 2:
-                //Yggdrasil
+                // Yggdrasil
                 ygg = theory.createUpgrade(10002, cookie, new ExponentialCost(1e110, ML2(1e25)));
                 ygg.getDescription = () => yggName;
                 ygg.getInfo = () => yggInfo;
@@ -1300,7 +1302,7 @@ var init = () => {
                 ygg.bought = (amount) => universalBought(2);
                 break;
             case 3:
-                //Terra
+                // Terra
                 terra = theory.createUpgrade(10003, cookie, new ExponentialCost(1e130, ML2(1e10))
                 );
                 terra.maxLevel = 20;
@@ -1309,7 +1311,7 @@ var init = () => {
                 terra.bought = (amount) => getEquationOverlay();
                 break;
             case 4:
-                //Recombobulators
+                // Recombobulators
                 recom = theory.createUpgrade(10004, cookie, new ExponentialCost(1e170, ML2(1e5)));
                 recom.maxLevel = 50;
                 recom.getDescription = () => recomName;
@@ -1317,7 +1319,7 @@ var init = () => {
                 recom.bought = (amount) => universalBought(4); //+e65, then +e3
                 break;
             case 5:
-                //Investment
+                // Investment
                 invest = theory.createUpgrade(10005, cookie, new ExponentialCost(1e190, ML2(1.05)));
                 invest.getDescription = () => investName;
                 invest.getInfo = () => investInfo;
@@ -1366,19 +1368,19 @@ var init = () => {
                     }
                     if (artArt.maxLevel < artArt.level) artArt.maxLevel = artArt.level;
                     if ((artArt.maxLevel >= artArt.level) && (artUnlock + 1 > artArt.maxLevel)) artArt.maxLevel = artUnlock + 1;
-                    //Incentives
-                    //sucks to sucks
-                    //1/3/5/10/15/30/60 minute CPS
-                    //1 prestige H
-                    //1000/1500/2000/2500/5000 tick lumps
-                    //All of the above(JACKPOT)
+                    // Incentives
+                    // sucks to sucks
+                    // 1/3/5/10/15/30/60 minute CPS
+                    // 1 prestige H
+                    // 1000/1500/2000/2500/5000 tick lumps
+                    // All of the above(JACKPOT)
                     for (let i = 0; i < amount; i++) {
                         let r = RandI(10000);
                         if ((spellCast[4] + (10 * templeLuckDur)) >= thyme.level) {
                             r += templeLuck;
                         }
                         let chance = [10000, 9995, 9945, 9845, 9735, 9615, 9565, 9555, 9530, 9430, 9320, 9200, 9100, 9000];
-                        //bsearch to find slot
+                        // bsearch to find slot
                         prize = bsearch(chance, r);
                         switch (prize) {
                             case 0:
@@ -1426,13 +1428,15 @@ var init = () => {
                             case 13:
                                 minCookie(1);
                                 break;
+                            default:
+                                break;
                         }
                     }
                     if (artArt.maxLevel < artArt.level) artArt.maxLevel = artArt.level;
                 };
                 artArt.bought = (amount) => {
                     calcCPS();
-                }
+                };
                 break;
             case 7:
                 SpellView = theory.createUpgrade(10008, cookie, new FreeCost());
@@ -1443,7 +1447,7 @@ var init = () => {
                     SpellView.level = 0;
                     isSpellShown ^= 1;
                     updateAvailability();
-                }
+                };
                 for (let i = 0; i < Spell.length; i++) {
                     Spell[i] = theory.createUpgrade(i + 20000, lump, new ConstantCost(spellCost[i]));
                     Spell[i].getDescription = () => spellName[i];
@@ -1485,7 +1489,7 @@ var init = () => {
                 acceleratorMenu.bought = (amount) => {
                     reactorMenu.show();
                     acceleratorMenu.level = 0;
-                }
+                };
         }
 
     }
@@ -1507,7 +1511,7 @@ var init = () => {
             updateAvailability();
         };
     }
-    //Heavenly Cookies
+    // Heavenly Cookies
     let baseI = 1000000;
     {
         cookieTin = theory.createPermanentUpgrade(baseI, hc, new ExponentialCost(25, ML2(1e6)));
@@ -1521,33 +1525,33 @@ var init = () => {
         cookieTin.getInfo = () => (bInfo == 1) ? `Unlocks an additional Heavely Cookie upgrade` : cookieTinInfo;
         cookieTin.maxLevel = cookieTinName.length;
     }
-    //Others
+    // Others
     {
         CookieH = shortPermaUpgradeML(baseI + 1, hc, new ConstantCost(500), cookieHName, cookieHInfo, 1);
         CookieH.bought = (amount) => {
             updateMult();
             lessPreciseCalcCPS();
-        }
+        };
         CookieS = shortPermaUpgradeML(baseI + 2, hc, new ConstantCost(15000), cookieSName, cookieSInfo, 1);
         CookieS.bought = (amount) => {
             updateMult();
             lessPreciseCalcCPS();
-        }
+        };
         CookieC = shortPermaUpgradeML(baseI + 3, hc, new ConstantCost(1e13), cookieCName, cookieCInfo, 1);
         CookieC.bought = (amount) => {
             updateMult();
             lessPreciseCalcCPS();
-        }
+        };
         DivineD = shortPermaUpgrade(baseI + 4, hc, new ExponentialCost(1e14, ML2(1e10)), divineDName, divineDInfo);
         DivineD.bought = (amount) => {
             updateMult();
             lessPreciseCalcCPS();
-        }
+        };
         CookieTau = shortPermaUpgradeML(baseI + 5, hc, new ConstantCost(8e17), cookieTauName, cookieTauInfo, 1);
         CookieTau.bought = (amount) => {
             updateMult();
             lessPreciseCalcCPS();
-        }
+        };
         TerraInf = shortPermaUpgradeML(baseI + 7, hc, new ExponentialCost(1e55, ML2(1e10)), terraInfName, terraInfInfo, 7);
         ChronosAge = shortPermaUpgradeML(baseI + 8, hc, new ConstantCost(2.5e57), chronosageName, chronosageInfo, 1);
         ChronosAge.bought = (amount) => calcCPS();
@@ -1556,12 +1560,12 @@ var init = () => {
         TwinGates.bought = (amount) => {
             updateMult();
             lessPreciseCalcCPS();
-        }
+        };
         R9Box = shortPermaUpgradeML(baseI + 11, hc, new ExponentialCost(1e80, ML2(1000)), boxrName, boxrInfo, 3);
         R9Box.bought = (amount) => {
             updateMult();
             lessPreciseCalcCPS();
-        }
+        };
         conGrow = shortPermaUpgradeML(baseI + 12, hc, new ExponentialCost(1e103, ML2(1e5)), congrowName, congrowInfo, 5);
         conGrow.bought = (amount) => calcCPS();
         SpellStack = shortPermaUpgradeML(baseI + 13, hc, new ExponentialCost(1e105, ML2(1e5)), "Spell Cast Layering", "Allows multiples of the same spell to be casted, cooldown all at once and slightly empowers the spell as well", 3);
@@ -1578,9 +1582,9 @@ var init = () => {
         clickp.bought = (amount) => {
             updateMult();
             lessPreciseCalcCPS();
-        }
+        };
     }
-    //Excavation + Elemental Upgrades
+    // Excavation + Elemental Upgrades
     excavate = shortPermaUpgradeML(11003, cookie, new ExponentialCost(BF("1e365"), ML2(5e4)), `Excavation Site`, `Allows you to mine elements`, 8);
     excavate.getInfo = () => {
         if (excavate.maxLevel == excavate.level) {
@@ -1624,14 +1628,14 @@ var init = () => {
     jetDrive.bought = (amount) => calcCPS();
 
     const b50 = 1000;
-    //P🍪wer Upgrade
+    // P🍪wer Upgrade
     for (let i = 0; i < 19; i++) {
         buildingP[i] = theory.createPermanentUpgrade(4 + i, cookie, new ExponentialCost(b50 * baseCost[i], ML2(b50)));
         buildingP[i].getInfo = (amount) => `\$P_{${i.toString(10)}}${(superP.level > 0) ? "^{1.02}" : ""} \\: = \\: \$${Utils.getMathTo(BigTS(getPower(i)), getPower2(i, buildingP[i].level + amount).toString(0))}`;
         buildingP[i].getDescription = () => `\$P_{${BigTS(i)}}${(superP.level > 0) ? "^{1.02}" : ""}\$ = ${BigTS(getPower(i))}`;
         buildingP[i].bought = (amount) => universalBought(i);
     }
-    //Lumpy Upgrade
+    // Lumpy Upgrade
     for (let i = 0; i < 19; i++) {
         buildingUpgrade[i] = theory.createPermanentUpgrade(33 + i, lump, new LinearCost(i + 1, (i + 1) * ((i >= 13) ? (i - 1) * (i - 5) * 0.06 : 0.9)));
         buildingUpgrade[i].getDescription = (amount) => (bInfo == 1) ? `\$ ${buip}^{L[${i}]} = ${buip}^{${buildingUpgrade[i].level}} = ${BigP(buip, buildingUpgrade[i].level)}\$` : buildingUpgradeName[i];
@@ -1639,7 +1643,7 @@ var init = () => {
             if (bInfo == 1) {
                 return `\$ L[${i}] = \$ ${Utils.getMathTo(BigP(buip, buildingUpgrade[i].level), BigP(buip, buildingUpgrade[i].level + amount))}`;
             }
-            return `Improves ${buildingName[0 + Math.floor(bInfo / 2)][i]}  by a factor of ${TS10(buip)}`
+            return `Improves ${buildingName[0 + Math.floor(bInfo / 2)][i]}  by a factor of ${TS10(buip)}`;
         };
         buildingUpgrade[i].maxLevel = buildingPMax[i];
         buildingUpgrade[i].bought = (amount) => universalBought(i);
@@ -1652,7 +1656,7 @@ var init = () => {
     superP.boughtOrRefunded = (amount) => {
         calcCPS();
         theory.invalidateSecondaryEquation();
-    }
+    };
     superP.description = "Super Building Power";
     superP.info = "Increases $P_{i}$ exponent by $0.02$ for all values of $i$";
     superL = theory.createMilestoneUpgrade(1, 1);
@@ -1662,18 +1666,18 @@ var init = () => {
         buip = getbuip();
         calcCPS();
         theory.invalidateSecondaryEquation();
-    }
+    };
     superC = theory.createMilestoneUpgrade(2, 1);
     superC.description = "Super Flavored Cookie";
     superC.info = "Increases $CP(l)$ exponent by $0.05$";
     superC.boughtOrRefunded = (amount) => {
         calcCPS();
         theory.invalidateSecondaryEquation();
-    }
+    };
 
     /////////////////
     //// Achievements
-    //Utils Achievement Checker
+    // Utils Achievement Checker
     var CheckAch1 = (i) => {
         if (BigL10((cookie.value).abs() + 1) >= BF(caReq[i])) {
             achCount++;
@@ -1728,13 +1732,13 @@ var init = () => {
             return false;
         }
     };
-    //25 Layers of Cookies
+    // 25 Layers of Cookies
     cookiesAchievement = theory.createAchievementCategory(0, cookiesAchievementCatName);
     var cookieADesc = (p) => `Reach e${BigTS(p)} cookies`;
     for (let i = 0; i < 25; i++) {
         ca[i] = theory.createAchievement(i, cookiesAchievement, caName[i], cookieADesc(caReq[i]), () => CheckAch1(i));
     }
-    //26 CPS
+    // 26 CPS
     CPSAchievement = theory.createAchievementCategory(1, "Cookies Per Second");
     var CPSDesc = (p) => {
         let result = "Reach e" + BF(p).toString(0) + " cookies per second without publication multipliers";
@@ -1746,7 +1750,7 @@ var init = () => {
     for (let i = 0; i < 26; i++) {
         cpsa[i] = theory.createAchievement(100 + i, CPSAchievement, cpsaName[i], CPSDesc(cpsaReq[i]), () => CheckAch2(i));
     }
-    //10 Lumps
+    // 10 Lumps
     lumpAchCat = theory.createAchievementCategory(2, "Others");
     var lumpDesc = (p) => {
         let res =
@@ -1777,10 +1781,10 @@ var init = () => {
             spellAch[i] = theory.createAchievement(1200 + i, lumpAchCat, sach[i], `Cast ${spellName[i - 5]} ${spellAchReq[i]} times\nHaving this achievement will boost the power of this spell`, () => CheckAchFeat(() => (spellCountCast[i - 5] >= spellAchReq[i]), 1), () => (spellCountCast[i - 5] / spellAchReq[i]));
         }
     }
-    //A lot of buildings
+    // A lot of buildings
     BuildingAchievement = theory.createAchievementCategory(3, "Buildings");
     for (let i = 0; i < 19; i++) {
-        //too lazy to add proper pluralization sorry not sorry
+        // too lazy to add proper pluralization sorry not sorry
         let indx = 0 + Math.floor(bInfo / 2);
         buiAch1[i] = theory.createAchievement(300 + i, BuildingAchievement, bach1[i], `Have 100 ${buildingName[indx][i]}s`, () => CheckAchBui(i, 100));
         buiAch2[i] = theory.createAchievement(400 + i, BuildingAchievement, bach2[i], `Have 1,000 ${buildingName[indx][i]}s`, () => CheckAchBui(i, 1000));
@@ -1790,7 +1794,7 @@ var init = () => {
         }
         buiLumpAch[i] = theory.createAchievement(700 + i, BuildingAchievement, bachlump[i], `Upgrade ${buildingName[indx][i]} to level 100`, () => CheckAchBui2(i, 100));
     }
-    //Feats
+    // Feats
     {
         featAchCat = theory.createAchievementCategory(4, "Feats");
         superIdle = theory.createAchievement(800, featAchCat, "Super Idler", "(2) Have your cookies exceed 1 day worth of CPS while having 0 levels of terraform upgrade", () => CheckAchFeat(() => ((cookie.value).abs() > BF(86400) * CPS) && (terra.level == 0), 2));
@@ -1808,7 +1812,7 @@ var init = () => {
         PVCRK = theory.createSecretAchievement(819, featAchCat, "Pure Vanilla Taste", "(3) Get e250 cookies without a single level of milk, cookie flavors, and a LOT more....\n\nThis is NOT a CRK reference", "forgor something??? 💀", () => (CheckAchFeat(() => (((cookie.value).abs() >= BF(1e250)) && (kitty.level == 0) && (cookieT.level == 0) && (terra.level == 0) && (ygg.level == 0) && (art.level == 0) && (artArt.level == 0) && (invest.level == 0) && (recom.level == 0) && (covenant.level == 0)), 3)));
         nice = theory.createSecretAchievement(807, featAchCat, "nice", "(2) Get 6.9 heavenly chips in any order of magnitude (decimals accepted)", "nice", () => CheckAchFeat(() => {
             let temp = TS10(cookie.value);
-            return (temp[0] == '6') && ((temp[2] == '9') || temp[1] == '9')
+            return (temp[0] == '6') && ((temp[2] == '9') || temp[1] == '9');
         }, 2));
         leetnice = theory.createSecretAchievement(809, featAchCat, "you won the internet", "(2) Have Temple+Alchemy Lab = 1337", "[ni] + [ce] = leet", () => CheckAchFeat(() => ((building[6].level + building[9].level) == 0x539), 2));
         sigmaCurseof = theory.createSecretAchievement(810, featAchCat, "Sigma Fingers", "(2) Have 1e100 Cursor CPS with only a single cursor\nThis feat also unlocks a special building display mode, find it out :)", "Doing so much with only a single one", () => CheckAchFeat(() => (arrcps[0] >= BF(1e100)) && (building[0].level == 1), 2));
@@ -1821,7 +1825,7 @@ var init = () => {
                 return false;
             }
         }, 1));
-        indecisive = theory.createSecretAchievement(818, featAchCat, "Indecisive", "(1) 100 choices and yet you still can\'t decide on it", "Identity Crisis", () => (CheckAchFeat(() => (indecide >= 100), 1)))
+        indecisive = theory.createSecretAchievement(818, featAchCat, "Indecisive", "(1) 100 choices and yet you still can\'t decide on it", "Identity Crisis", () => (CheckAchFeat(() => (indecide >= 100), 1)));
     }
     //! Total sum of all feats : 53
     //! Latest Feat ID : 819
@@ -1832,7 +1836,7 @@ var init = () => {
         chapter[i] = theory.createStoryChapter(i, chapterName[i], chapterLore[i], () => checkChapter(i));
     }
     buip = getbuip();
-    //Finishing up stuffs
+    // Finishing up stuffs
     for (let i = 0; i < 9; i++) {
         quartList[i] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{_{${elemName[i]}}}`, elements[i].value));
     }
@@ -1847,7 +1851,7 @@ var init = () => {
 
 
 var updateAvailability = () => {
-    //Buildings
+    // Buildings
     for (let i = 0; i < 19; i++) {
         if (i >= 3) building[i].isAvailable = cookie.value >= baseCost[i - 1];
         buildingP[i].isAvailable = building[i].level > 0;
@@ -1857,7 +1861,7 @@ var updateAvailability = () => {
     jetDrive.isAvailable = (artArt.level > 12) || (jetDrive.level > 0);
     crystalHoney.isAvailable = (artArt.level > 12) || (crystalHoney.level > 0);
     sugarCoat.isAvailable = (artArt.level > 12) || (sugarCoat.level > 0);
-    //Unique Upgrade
+    // Unique Upgrade
     covenant.isAvailable = cookie.value >= BF(1e60);
     ygg.isAvailable = cookie.value >= BF(1e100);
     terra.isAvailable = cookie.value >= BF(1e125);
@@ -1877,7 +1881,7 @@ var updateAvailability = () => {
     moreExcavator.isAvailable = (artArt.level > 12) || (moreExcavator.level > 0);
     accelerator.isAvailable = artArt.level > 12;
     acceleratorMenu.isAvailable = accelerator.level > 0;
-    //Cookie Flavor
+    // Cookie Flavor
     cookieT.isAvailable = building[2].level > 0;
     for (let i = 0; i < cookieTinName.length; i++) {
         cookiet[i].isAvailable =
@@ -1885,7 +1889,7 @@ var updateAvailability = () => {
             cookie.value > BF(cookietB[i]);
     }
     kitty.isAvailable = achCount >= 5;
-    //Heavenly Upgrade
+    // Heavenly Upgrade
     cookieTin.isAvailable = hc.value >= BF(10) && heavVis;
     CookieH.isAvailable = hc.value >= BF(500) && heavVis;
     CookieS.isAvailable = hc.value >= BF(10000) && heavVis;
@@ -1905,8 +1909,8 @@ var updateAvailability = () => {
 
 
 //==CPS==
-//Calculates Building Level
-//id = ID, am = Offset Amount
+// Calculates Building Level
+// id = ID, am = Offset Amount
 let bc = BigNumber.ZERO;
 var calcBuilding = (id, am) => {
     if (conGrow.level > 0 && id >= 11) {
@@ -1914,7 +1918,7 @@ var calcBuilding = (id, am) => {
     } else if (conGrow.level > 1 && id < 11) {
         return Utils.getStepwisePowerSum(building[id].level + am, 1.2 + (0.07 * conGrow.level) + (0.021 * (id + 1)), 50 - conGrow.level, 1) - 1;
     } else {
-        return BF(building[id].level + am)
+        return BF(building[id].level + am);
     }
 };
 var getExpn = (index) => buiPerk[index] * buiexp + 1;
@@ -1940,33 +1944,33 @@ var calcCPS = () => {
         arrcps[i] = BigNumber.ZERO;
         let step1 = BF(calcBuilding(i, 0) * BF(getPower(i)) * BF(bcps[i]));
         arrcps[i] = (step1 * kp * BF(buip).pow(buildingUpgrade[i].level)).pow(getExpn(i));
-        //arrcps[i]=BF("1e180");
+        // arrcps[i]=BF("1e180");
         bc += BigP(building[i].level, 0.8) * getPower(1).pow(0.9);
     }
     if (artArt.level > 0) {
-        //Multiplies temple CPS by 8e57
+        // Multiplies temple CPS by 8e57
         arrcps[6] *= BF(8e57);
         if (artArt.level > 1) {
-            //Multiplies Temple CPS by the amount of prisms you have.
-            //Multiplies Prism CPS by 55 and the amount of temples you have.
+            // Multiplies Temple CPS by the amount of prisms you have.
+            // Multiplies Prism CPS by 55 and the amount of temples you have.
             arrcps[13] *= BF(1) + (BF(55) * building[6].level);
             arrcps[6] *= (building[13].level) + BF(1);
             if (artArt.level > 3) {
-                //Multiplies Cursor CPS by 3.24e65
+                // Multiplies Cursor CPS by 3.24e65
                 arrcps[0] *= BF(3.24e65);
                 if (artArt.level > 5) {
-                    //Multiplies Farm CPS by 200
-                    //Multiplies Prism CPS by 750
+                    // Multiplies Farm CPS by 200
+                    // Multiplies Prism CPS by 750
                     arrcps[13] *= BF(750);
                     arrcps[2] *= BF(200);
                     if (artArt.level > 6) {
-                        //Multiplies Mine CPS by 3.5e63
+                        // Multiplies Mine CPS by 3.5e63
                         arrcps[3] *= BF(3.5e63);
                         if (artArt.level > 7) {
-                            //Multiplies Factory CPS by 1.08e18
+                            // Multiplies Factory CPS by 1.08e18
                             arrcps[4] *= BF(1.08e18);
                             if (artArt.level > 8) {
-                                //Multiplies Bank CPS by 4.08e68
+                                // Multiplies Bank CPS by 4.08e68
                                 arrcps[5] *= BF(4.08e68);
                             }
                         }
@@ -1995,19 +1999,19 @@ var calcCPS = () => {
     for (let i = 0; i < 19; i++) {
         CPS += arrcps[i];
         if (!Number.isFinite(mult) || Number.isNaN(mult) || mult == 0) {
-            updateMult()
+            updateMult();
         }
         if (BF(arrcps[dominate]) / BF(mult) < BF(arrcps[i])) {
-            //recalc constant then replace
+            // recalc constant then replace
             if (subconstant > BF(1)) {
                 subconstant = ((arrcps[i] + (subconstant * arrcps[dominate])) / arrcps[i]);
             } else {
                 subconstant = BF(1);
             }
             dominate = i;
-            //log(dominate);
-        } else if (arrcps[i] * BF(1000) > arrcps[dominate] && i != dominate) {//upper limit = 1/1000th of cps
-            //it's in the ratios!
+            // log(dominate);
+        } else if (arrcps[i] * BF(1000) > arrcps[dominate] && i != dominate) {// upper limit = 1/1000th of cps
+            // it's in the ratios!
             subconstant += (BF(arrcps[dominate]) / BF(arrcps[i]));
         }
         arrcps[i] *= mult;
@@ -2016,7 +2020,7 @@ var calcCPS = () => {
         CPS *= effectCPSB;
     }
     if (artArt.level > 4) {
-        //Multiplies the CPS from all buildings by the amount of grandmas you have to the power of 0.61
+        // Multiplies the CPS from all buildings by the amount of grandmas you have to the power of 0.61
         CPS *= BigP(building[1].level, 0.61);
     }
     CPS *= (1 + (BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp)) * getCookieP(cookieT.level) * (1 + (CookieTau.level * game.tau.log10().log10().pow(2)));
@@ -2029,7 +2033,7 @@ var calcCPS = () => {
     CPS *= (TwinGates.level > 0 ? hc.value.pow(0.03 * TwinGates.level) : 1) * theory.publicationMultiplier * (BigP(game.sigmaTotal, R9Box.level * 0.7));
 };
 var lessPreciseCalcCPS = () => {
-    //basic
+    // basic
     let step1 = BF(calcBuilding(dominate, 0) * BF(getPower(dominate)) * BF(bcps[dominate]));
     arrcps[dominate] = (step1 * kittyPower(kitty.level) * BF(BF(100 + (BF(5) * achCount)) / BF(100)) * BF(buip).pow(buildingUpgrade[dominate].level)).pow(getExpn(dominate));
     LPS = (recom.level + ((artArt.level > 7) ? 10 : 0)) * 0.01;
@@ -2093,7 +2097,7 @@ var lessPreciseCalcCPS = () => {
     }
     arrcps[dominate] *= mult;
     CPS = arrcps[dominate] * subconstant;
-}
+};
 
 
 //==TICK==
@@ -2105,7 +2109,7 @@ const yieldfactor = BF("5e-2");
 const lossfactor = BF(25);
 const mineRate = BF(150);
 var tick = (elapsedTime, multiplier) => {
-    //dt magic
+    // dt magic
     let dt = BF(elapsedTime * multiplier);
     if (aquaCrust.level > 0) {
         cookie.value += Math.min(1, BigP(elements[2].value, 0.99) * BF("1e-20")) * ((cookie.value * 12.59) / BF(36000));
@@ -2122,6 +2126,9 @@ var tick = (elapsedTime, multiplier) => {
         lump.value += dt * (BF(lwC) + (BigL10(cookie.value) / BF(lumpc)));
         lumpTotal += dt * (BF(lwC) + (BigL10(cookie.value) / BF(lumpc)));
         thyme.level += (thyme.level < thyme.maxLevel) ? 1 : 0;
+        if (artArt.level > 13) {
+            elements[8].value += dt * (BigL10(BF(10) + building[8].level) * BigL10(BF(10) + arrcps[8]) * 0.001);
+        }
         return;
     } else {
         thyme.level += (thyme.level < thyme.maxLevel) ? 1 : 0;
@@ -2145,7 +2152,7 @@ var tick = (elapsedTime, multiplier) => {
         lump.value += lwC;
         lumpTotal += lwC;
 
-        //Sugar Lump Incremental
+        // Sugar Lump Incremental
         hc.value += HPS / 10;
         if (thyme.level % 10 == 0) {
 
@@ -2161,7 +2168,7 @@ var tick = (elapsedTime, multiplier) => {
                 lumpTotal++;
             }
         }
-        //elemental increase
+        // elemental increase
         let realMRate = mineRate - ((10 + (5 * (kitty.level / (kitty.level + 1)))) * milkOil.level);
         let excRate = (1 + (0.2 * BigP(moreExcavator.level, 1.4)));
         for (let i = 0; i < excavate.level; i++) {
@@ -2187,23 +2194,22 @@ var tick = (elapsedTime, multiplier) => {
         theory.invalidateTertiaryEquation();
     }
 };
-//Logistic funtion for Mine+
-//Param -> midpoint=30*L, max=500*L - 1, min=0
-//Display T, returns bignumber
+// Logistic funtion for Mine+
+// Param -> midpoint=30*L, max=500*L - 1, min=0
+// Display T, returns bignumber
 var Logistic = () => {
     var maxL =
-        (BF(terra.level).pow(2.4 + 0.05 * (TerraInf.level + ((artArt.level > 6) ? 1 : 0))) * 1500) + BF(building[3].level).pow(1.2 + 0.03 * TerraInf.level) * ((spellCast[3] + (10 * logBoostDue) >= thyme.level) ? logBoost : 1) * ((moreExcavator.level > 0) ? BigP((1 + (0.2 * BigP(moreExcavator.level, 1.4))), 1.5) : 1);
+        (BF(terra.level).pow(2.4 + 0.05 * (TerraInf.level + ((artArt.level > 6) ? 1 : 0))) * 1500) +
+        BF(building[3].level).pow(1.2 + 0.03 * TerraInf.level) * ((spellCast[3] + (10 * logBoostDue) >= thyme.level) ? logBoost : 1) * ((moreExcavator.level > 0) ? BigP((1 + (0.2 * BigP(moreExcavator.level, 1.4))), 1.5) : 1);
 
     return ((maxL.pow(1 + 0.005 * TerraInf.level)) / (BigNumber.ONE + (BigNumber.E.pow((thyme.level - (xBegin + terra.level * 600)))))) + ((TerraInf.level > 0) ? 1 + BigP(maxL, 0.2 + (TerraInf.level * 0.1)) : 1);
 };
 var Dilate = () => {
-    if (timeDilate.level == 0) {
-        return 1;
-    }
-    let res = building[10].level + building[12].level;//restricting buildings
+    if (timeDilate.level == 0) {return 1;}
+    let res = building[10].level + building[12].level;// restricting buildings
     let factor = (building[11].level >= (res)) ? 1 - 1 / (2.125 - (0.125 * timeDilate.level)) : 1 - (building[11].level / (2 * res));
     return BF(1) + (BigP(building[11].level, 1 + 0.025 * timeDilate.level)) / BigP(1000, factor);
-}
+};
 
 
 //==EQUATIONS==
@@ -2265,44 +2271,44 @@ var secondaryEq = (mode, col) => {
                 (invest.level > 0 ? "I_{o}^{1.01}" : "") +
                 "\\\\C_{1}(l) = max_{l}:[0,25,50,75,100,150]\\\\ \\rightarrow [1.03,1.05,1.07,1.09,1.11,1.13]^{l}\\\\C_{2}() = \\prod_{i=0}^{8}{TP[i]^{CT[i]}}}"
             );
-        case 4://Cov
+        case 4:// Cov
             let cp = " C_{v}";
             return (
                 `\\color{#${eqColor[col]}}{B(2) \\leftarrow B(2)${cp}\\\\(\\sum_{i=0 \\: i\\neq 1}^{18}{P_{1}^{0.9}}{B[i]^{0.8}}${cp})^{${covDelta}${cp}^{0.45} + ${covExp}}}`
             );
-        case 5://Ygg + Chronos
-            //theory.secondaryEquationScale = 0.925;
-            let ys = " Y_{g}"
+        case 5:// Ygg + Chronos
+            // theory.secondaryEquationScale = 0.925;
+            let ys = " Y_{g}";
             return `\\color{#${eqColor[col]}}{B(2) \\leftarrow 5(10^{10})B(2)P_{2}^{1.175 + 0.05${ys}}\\\\(B[6]+B[2])^{3 + 0.2${ys}^{0.9}}(1+t)^{1.4}${(ChronosAge.level > 0) ? `\\\\ B(i) \\leftarrow B(i)(1+t^{0.5}), \\quad i \\neq 2` : ``}}`;
-        case 6://Terra
+        case 6:// Terra
             let tr = " T_{r}";
             let tf = " T_{\\infty}";
-            let tm = " T_{m}"
+            let tm = " T_{m}";
             return `\\color{#${eqColor[col]}}{${tm} = 1500${(moreExcavator.level > 0) ? "E_{f}^{1.5}" : ""}${tr}^{2.5+0.05${tf}}\\\\T = 1+${tm}^{0.2+0.1${tf}} + \\frac{${tm}^{1+0.005${tf}}}{1+e^{t-(X_{b}+600${tr})}}}`;
-        case 7://Recom
+        case 7:// Recom
             let rc = " R_{c}";
             return `\\color{#${eqColor[col]}}{\\dot{H} = H^{0.9}(${rc})\\\\ \\dot{L} = 0.01${rc}\\\\ B(4) \\leftarrow B(4)10^{54}1.9^{${rc}-1}}`;
-        case 8://Dilation
+        case 8:// Dilation
             return `\\color{#${eqColor[col]}}{T_d = \\frac{B[11]^{1+0.025T_D}}{1000^{T_f}}\\\\T_f = 1-\\frac{min(B[11],B[10]+B[12])}{(2.125-0.125T_{D}))(B[10]+B[12])}}`;
-        case 9://Elements
+        case 9:// Elements
             theory.secondaryEquationScale = 0.85;
             return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{f}B[3]L[3]P_{3}^{0.05}log_2(T)}{150^{n+1}},\\: n \\neq 8${(artArt.level > 13) ? `\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}` : ``}}`;
-        case 10://Decay
+        case 10:// Decay
             let ingre = (reactorMode == -1) ? "E_{n}" : `${elemName[reactorMode + 2]}`;
             let r1 = (reactorMode == -1) ? "E_{n-1}" : `${elemName[reactorMode + 1]}`;
             let r2 = (reactorMode == -1) ? "E_{n-2}" : `${elemName[reactorMode]}`;
             let b1 = (reactorMode == -1) ? "" : `${elemName[reactorMode + 2]}=${elemWeight[reactorMode + 2]}u`;
             let b2 = (reactorMode == -1) ? "" : `${elemName[reactorMode + 1]}=${elemWeight[reactorMode + 1]}u`;
             let b3 = (reactorMode == -1) ? "" : `${elemName[reactorMode]}=${elemWeight[reactorMode]}u`;
-            return `\\color{#${eqColor[col]}}{${b1} \\quad ${b2} \\quad ${b3}\\\\${ingre} \\rightarrow ${ingre}(${r1}) + ${ingre}(${r2}) + \\frac{${(reactorMode == -1) ? "\\lambda " : elemWeight[reactorMode + 2] + elemWeight[reactorMode + 1] + elemWeight[reactorMode]}C^{0.98}}{228}\\\\\\dot{R} = B[12]\\lambda ${ingre}}`
+            return `\\color{#${eqColor[col]}}{${b1} \\quad ${b2} \\quad ${b3}\\\\${ingre} \\rightarrow ${ingre}(${r1}) + ${ingre}(${r2}) + \\frac{${(reactorMode == -1) ? "\\lambda " : elemWeight[reactorMode + 2] + elemWeight[reactorMode + 1] + elemWeight[reactorMode]}C^{0.98}}{228}\\\\\\dot{R} = B[12]\\lambda ${ingre}}`;
     }
-}
+};
 var TertiaryEquation = (col) => {
     if (Number.isNaN(col)) {
         col = 0;
     }
     return `\\color{#${eqColor[col]}}{` + theory.latexSymbol + "=\\max C^{0.2}}";
-}
+};
 var getPrimaryEquation = () => {
     theory.primaryEquationScale = 1.15;
     theory.primaryEquationHeight = height;
@@ -2321,7 +2327,7 @@ var getTertiaryEquation = () => {
         eqC = 0;
     }
     return TertiaryEquation(eqC);
-}
+};
 var getQuaternaryEntries = () => {
     for (let i = 0; i < 9; i++) {
         quartList[i].value = (excavate.level >= (i + 1) || ((i == 8) && (artArt.level > 13)) || elements[i].value > 0) ? elements[i].value : null;
@@ -2336,7 +2342,7 @@ var getQuaternaryEntries = () => {
     } else {
         return quartList;
     }
-}
+};
 
 
 //==OTHER THEORY BACKBONE==
@@ -2525,7 +2531,7 @@ var getHelpText = () => {
         padding: Thickness(2, 15, 2, 15)
     }));
     return ret;
-}
+};
 var InsPopup = ui.createPopup({
     title: "Instructions",
     content: ui.createStackLayout({
@@ -2581,7 +2587,7 @@ var getUpdateNotes = () => {
         padding: Thickness(2, 5, 2, 10)
     }));
     return ret;
-}
+};
 let whatsnewMenu = ui.createPopup({
     title: "What's New",
     isPeekable: true,
@@ -2604,7 +2610,7 @@ let whatsnewMenu = ui.createPopup({
 });
 //!1.3 : SECONDARY EQUATION + QUATERNARY
 const eqName = ["Building CPS", "Building Power", "Milk", "Cookie Power", "Covenant", "Yggdrasil", "Mass Terraforming", "Recombobulators", "Time Dilation", "Elements", "Elemental Decay"];
-const quName = ["Normal", "Elements"]
+const quName = ["Normal", "Elements"];
 let quartButton = ui.createButton({
     text: `Quaternary Values\n${quName[quType]}`, row: 1, column: 1,
     fontFamily: FontFamily.CMU_REGULAR,
@@ -2616,7 +2622,7 @@ let quartButton = ui.createButton({
             quType = 0;
         }
     }
-})
+});
 //!1.4 : BUILDING DISPLAY
 let binfoname = ["Normal", "Compressed", "Typw"];
 let biButton = ui.createButton({
@@ -2646,8 +2652,8 @@ let visButton = ui.createButton({
         visualUI.content.children[5].text = `Chosen Color : ${eqColorName[nexCol]}`;
         visualUI.show();
     }
-})
-//complete image grid
+});
+// complete image grid
 let templateImage = {
     heightRequest: 91,
     source: ImageSource.ADD,
@@ -2663,29 +2669,29 @@ let imagUpdate = () => {
     templateFrame.column += 1;
 };
 {
-    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/55/Chocolate_chip_cookie.png/revision/latest?cb=20210404132052");//building cps
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/55/Chocolate_chip_cookie.png/revision/latest?cb=20210404132052");// building cps
     imagUpdate();
-    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/2/29/Heavenly_confectionery.png/revision/latest?cb=20160226201343");//building power
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/2/29/Heavenly_confectionery.png/revision/latest?cb=20160226201343");// building power
     imagUpdate();
-    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/cd/Plain_milk.png/revision/latest?cb=20151230175349");//milk
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/cd/Plain_milk.png/revision/latest?cb=20151230175349");// milk
     imagUpdate();
-    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/f1/Heavenly_cookies.png/revision/latest?cb=20180510065009");//cookie power
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/f1/Heavenly_cookies.png/revision/latest?cb=20180510065009");// cookie power
     imagUpdate();
-    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/eb/One_mind.png/revision/latest?cb=20160220092603");//covenant
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/eb/One_mind.png/revision/latest?cb=20160220092603");// covenant
     imagUpdate();
-    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/3/33/Keeper_of_the_conservatory.png/revision/latest?cb=20180416022615");//yggdrasil
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/3/33/Keeper_of_the_conservatory.png/revision/latest?cb=20180416022615");// yggdrasil
     imagUpdate();
     templateFrame.row = 1;
     templateFrame.column = 1;
-    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/6/6f/CookieProduction39.png/revision/latest?cb=20200620182721");//terra
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/6/6f/CookieProduction39.png/revision/latest?cb=20200620182721");// terra
     imagUpdate();
-    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/1/18/Chalcedhoney_factory.png/revision/latest?cb=20160213150047");//recom
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/1/18/Chalcedhoney_factory.png/revision/latest?cb=20160213150047");// recom
     imagUpdate();
-    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/0/06/Sugarmuck_time_machine.png/revision/latest?cb=20160213150709");//dilation
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/0/06/Sugarmuck_time_machine.png/revision/latest?cb=20160213150709");// dilation
     imagUpdate();
-    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/0/07/Plain_antimatter_condenser.png/revision/latest?cb=20160213150228");//elem
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/0/07/Plain_antimatter_condenser.png/revision/latest?cb=20160213150228");// elem
     imagUpdate();
-    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/eb/Heavenly_chip.png/revision/latest?cb=20160226200959");//decay
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/eb/Heavenly_chip.png/revision/latest?cb=20160226200959");// decay
     imagUpdate();
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/f4/Questionmark.png/revision/latest?cb=20200626021945");
     imagUpdate();
@@ -2696,7 +2702,7 @@ let imagUpdate = () => {
                 indecide += 1;
                 visualUI.content.children[2].text = `Chosen Equation : ${eqName[nexSec]}`;
             }
-        }
+        };
     }
 }
 imagUpdate = () => {
@@ -2707,59 +2713,59 @@ imagUpdate = () => {
 {
     templateFrame = {row: 0, column: 1, heightRequest: 91};
     templateImage.source = ImageSource.MINUS;
-    imagUpdate();//none
+    imagUpdate();// none
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/cd/Plain_milk.png/revision/latest?cb=20151230175349");
-    imagUpdate();//milk
+    imagUpdate();// milk
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/c1/Chocolate_milk.png/revision/latest?cb=20181024002025");
-    imagUpdate();//chocolate
+    imagUpdate();// chocolate
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/b/b8/Strawberry_milk.png/revision/latest?cb=20181024002158");
-    imagUpdate();//strawberry
+    imagUpdate();// strawberry
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/6/67/Raspberry_milk.png/revision/latest?cb=20181024002158");
-    imagUpdate();//raspberry
+    imagUpdate();// raspberry
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/a/a0/Lime_milk.png/revision/latest?cb=20181024002718");
-    imagUpdate();//lime
+    imagUpdate();// lime
     templateFrame.row += 1;
     templateFrame.column = 1;
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/4/40/Orange_milk.png/revision/latest?cb=20181024002718");
-    imagUpdate();//pumpkin spice
+    imagUpdate();// pumpkin spice
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/0/04/Blueberry_milk.png/revision/latest?cb=20181024002025");
-    imagUpdate();//blueberry
+    imagUpdate();// blueberry
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/58/Banana_milk.png/revision/latest?cb=20181024002025");
-    imagUpdate();//banana
+    imagUpdate();// banana
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/2/26/Vanilla_milk.png/revision/latest?cb=20181024002158");
-    imagUpdate();//vanilla
+    imagUpdate();// vanilla
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/c5/Caramel_milk.png/revision/latest?cb=20181024002025");
-    imagUpdate();//caramel
+    imagUpdate();// caramel
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/2/26/Honey_milk.png/revision/latest?cb=20181024002718");
-    imagUpdate();//honey
+    imagUpdate();// honey
     templateFrame.row += 1;
     templateFrame.column = 1;
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/c4/Cherry_milk.png/revision/latest?cb=20181024002025");
-    imagUpdate();//cherry
+    imagUpdate();// cherry
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/3/38/Coconut_milk.png/revision/latest?cb=20181024002654");
-    imagUpdate();//coconut
+    imagUpdate();// coconut
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/1/16/Mint_milk.png/revision/latest?cb=20190924042414");
-    imagUpdate();//mint
+    imagUpdate();// mint
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/9/96/Licorice_milk.png/revision/latest?cb=20200824174644");
-    imagUpdate();//licorice
+    imagUpdate();// licorice
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/d/d4/Rose_milk.png/revision/latest?cb=20201030064717");
-    imagUpdate();//rose
+    imagUpdate();// rose
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/2/26/Blackcurrant_milk.png/revision/latest?cb=20211227060413");
-    imagUpdate();//blackcurrant
+    imagUpdate();// blackcurrant
     templateFrame.row += 1;
     templateFrame.column = 1;
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/ee/Dragonfruit_milk.png/revision/latest?cb=20201030074359");
-    imagUpdate();//dragonfruit
+    imagUpdate();// dragonfruit
     templateImage.source = ImageSource.fromUri("https://media.discordapp.net/attachments/572392960675545088/1031059256457306142/BlackForest_Milk.png");
-    imagUpdate();//black forest
+    imagUpdate();// black forest
     templateImage.source = ImageSource.fromUri("https://media.discordapp.net/attachments/572392960675545088/1031059255454879855/Crystallized_Milk.png");
-    imagUpdate();//crystallized
+    imagUpdate();// crystallized
     templateImage.source = ImageSource.fromUri("https://media.discordapp.net/attachments/572392960675545088/1031059255991750706/Pentallized_Milk.png");
-    imagUpdate();//pentallized
+    imagUpdate();// pentallized
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/f4/Questionmark.png/revision/latest?cb=20200626021945");
     imagUpdate();
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/f4/Questionmark.png/revision/latest?cb=20200626021945");
-    imagUpdate();//2 ext milk flavors
+    imagUpdate();// 2 ext milk flavors
     for (let i = 0; i < 22; i++) {
         completeColGrid[i].content.onTouched = (e) => {
             if (achCount >= eqColorAch[i]) {
@@ -2767,7 +2773,7 @@ imagUpdate = () => {
                 indecide += 1;
                 visualUI.content.children[6].text = `Chosen Color : ${eqColorName[nexCol]}`;
             }
-        }
+        };
     }
 }
 let visualUI = ui.createPopup({
@@ -2846,7 +2852,7 @@ let visualUI = ui.createPopup({
                                 theory.invalidateSecondaryEquation();
                             }
                             indecide = 0;
-                            //theory.invalidateTertiaryEquation();
+                            // theory.invalidateTertiaryEquation();
                             visualUI.hide();
                         }
                     }),
@@ -2869,17 +2875,17 @@ let calcCookieToPerk = (level) => {
         return calcCookieToPerk(0);
     }
     return BigP(10, 7.5 * (level + 1));
-}
+};
 let perkLabel1 = ui.createLatexLabel({
     text: "You can forge your cookies into exponentium bars to exponentiate your buildings for faster cookie production here.\n\nEach bar you give to a building increases their exponent by 0.05",
     fontSize: 14,
-    //padding: new Thickness(10,10,10,10),
+    // padding: new Thickness(10,10,10,10),
     horizontalTextAlignment: TextAlignment.CENTER
 });
 let perkLabel2 = ui.createLatexLabel({
     text: `You have ${perkHas} exponentium bars`,
     fontSize: 14,
-    //padding: new Thickness(1🍪,10,10,10),
+    // padding: new Thickness(1🍪,10,10,10),
     horizontalTextAlignment: TextAlignment.CENTER
 });
 let perkForgeButton = ui.createButton({
@@ -3120,7 +3126,7 @@ let popup = ui.createPopup({
     })
 });
 //!1.10 : OVERLAY
-//ellipsis you're so epic for contributing to getEquationOverlay() function
+// ellipsis you're so epic for contributing to getEquationOverlay() function
 var getEquationOverlay = () =>
     ui.createStackLayout({
         children: [
