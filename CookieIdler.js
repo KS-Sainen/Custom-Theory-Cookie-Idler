@@ -2113,7 +2113,7 @@ var tick = (elapsedTime, multiplier) => {
     // dt magic
     let dt = BF(elapsedTime * multiplier);
     if (aquaCrust.level > 0) {
-        cookie.value += Math.min(1, BigP(elements[2].value, 0.99) * BF("1e-20")) * ((cookie.value * 12.59) / BF(36000));
+        cookie.value += Math.min(BigNumber.ONE, BigP(elements[2].value, 0.99) * BF("1e-20")) * ((cookie.value * 12.59) / BF(36000));
         elements[2].value -= BigP(elements[2].value, 0.87);
     }
     if (game.isCalculatingOfflineProgress || idle) {
