@@ -1819,13 +1819,7 @@ var init = () => {
         sigmaCurseof = theory.createSecretAchievement(810, featAchCat, "Sigma Fingers", "(2) Have 1e100 Cursor CPS with only a single cursor\nThis feat also unlocks a special building display mode, find it out :)", "Doing so much with only a single one", () => CheckAchFeat(() => (arrcps[0] >= BF(1e100)) && (building[0].level == 1), 2));
         timeSpeed = theory.createSecretAchievement(811, featAchCat, "Time is speed", "(2) Dilate 15 whole seconds in a single tick", "Got any quarters to spare?", () => CheckAchFeat(() => (Dilate() >= 150), 2));
         timeOhNo = theory.createSecretAchievement(813, featAchCat, "Time is rickroll", "(6) Dilate an entire video of Rick Astley - Never Gonna Give You Up (Official Music Video) into a SINGLE tick (which is 312 seconds in a SINGLE tick)\n\nAlso check out https://www.youtube.com/watch?v=oHg5SJYRHA0, very cool video", "No Hint >:)", () => CheckAchFeat(() => (Dilate() >= 3120), 6));
-        jackpot = theory.createSecretAchievement(817, featAchCat, "JJJJACKPOTTTTTTT", "(1) Get the biggest W for exploring an temple", "Just get lucky!", () => CheckAchFeat(() => {
-            if (templeJ) {
-                return true;
-            } else {
-                return false;
-            }
-        }, 1));
+        jackpot = theory.createSecretAchievement(817, featAchCat, "JJJJACKPOTTTTTTT", "(1) Get the biggest W for exploring an temple", "Just get lucky!", () => CheckAchFeat(() => {return templeJ;}, 1));
         indecisive = theory.createSecretAchievement(818, featAchCat, "Indecisive", "(1) 100 choices and yet you still can\'t decide on it", "Identity Crisis", () => (CheckAchFeat(() => (indecide >= 100), 1)));
     }
     //! Total sum of all feats : 53
@@ -2113,7 +2107,7 @@ var tick = (elapsedTime, multiplier) => {
     // dt magic
     let dt = BF(elapsedTime * multiplier);
     if (aquaCrust.level > 0) {
-        cookie.value += Math.min(1, BigP(elements[2].value, 0.99) * BF("1e-20")) * ((cookie.value * 12.59) / BF(36000));
+        cookie.value += Math.min(BigNumber.ONE, BigP(elements[2].value, 0.99) * BF("1e-20")) * ((cookie.value * 12.59) / BF(36000));
         elements[2].value -= BigP(elements[2].value, 0.87);
     }
     if (game.isCalculatingOfflineProgress || idle) {
@@ -2382,6 +2376,7 @@ var prePublish = () => {
     }
 };
 var getTau = () => (cookie.value.abs()).pow(0.2);
+var getCurrencyFromTau = (tau) => [tau.max(BigNumber.ONE).pow(5), cookie.symbol];
 
 
 //==UI==
