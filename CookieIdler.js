@@ -90,14 +90,14 @@ let BigP = (i, p) => BF(i).pow(p);
  * @param {number|string|BigNumber} i The number used
  * @return {BigNumber} The value of log10(i)
  */
-let BigL10 = (i) => BF(i).log10();
+let BigL10 = (i) => BF(i).max(BigNumber.ONE).log10();
 
 /**
  * Identical to Math.i) but for big numbers; also automatically converts any valid BigNumber inputted
  * @param {number|string|BigNumber} i The number used
  * @return {BigNumber} The value of log2(i)
  */
-let BigL2 = (i) => BF(i).log2();
+let BigL2 = (i) => BF(i).max(BigNumber.ONE).log2();
 
 /**
  * Converts the given valid BigNumber string into a string without any decimal places
@@ -510,7 +510,7 @@ var cookieT, crystalHoney;
 var mult = BF(1);
 var updateMult = () => {
     mult = BF(1);
-    mult *= (getCookieP(cookieT.level) * (1 + (CookieTau.level * game.tau.log10().log10().pow(2))));
+    mult *= (getCookieP(cookieT.level) * (1 + (CookieTau.level * game.tau.log10().max(BigNumber.ONE).log10().pow(2))));
     //"cookiep : " + (getCookieP(cookieT.level) * (1+(CookieTau.level * game.tau.log10().log10().pow(2)))));
     mult *= (1 + (BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp));
     //"click : " + (1+(BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp)));
@@ -2018,7 +2018,7 @@ var calcCPS = () => {
         // Multiplies the CPS from all buildings by the amount of grandmas you have to the power of 0.61
         CPS *= BigP(building[1].level, 0.61);
     }
-    CPS *= (1 + (BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp)) * getCookieP(cookieT.level) * (1 + (CookieTau.level * game.tau.log10().log10().pow(2)));
+    CPS *= (1 + (BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp)) * getCookieP(cookieT.level) * (1 + (CookieTau.level * game.tau.log10().max(BigNumber.ONE).log10().pow(2)));
     if (artArt.level > 9) {
         CPS *= BF(100);
     }
