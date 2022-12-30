@@ -352,7 +352,7 @@ const buipb = 1.1;
 const buiexp = 0.05;
 const bcp = 0.01;
 let subconstant = BF(1);// filling in the missing parts
-let arrcps = new Array(21).fill(0);
+let arrcps = new Array(21).fill(0), arreps = new Array(9).fill(BigNumber.ZERO);
 let getbuip = () => buipb + (0.01 * superL.level);
 let lumpbf = BigNumber.ZERO;
 let hbf = BigNumber.ZERO;
@@ -365,7 +365,7 @@ var isCurrencyVisible = (indx) => indx <= 2;
 const elemName = ["Be", "Ch", "Bg", "Su", "Jm", "Cs", "Hz", "Mn", "As"];
 const elemFormalName = ["Berrylium", "Chalcedhoney", "Buttergold", "Sugarmuck", "Jetmint", "Cherrysilver", "Hazelrald", "Mooncandy", "Astrofudge"];
 const elemWeight = [1, 2, 3, 5, 8, 13, 21, 36, 57];
-const nextExcavateReq = [0, 1.2e13, 9.5e11, 1.25e11, 4e8, 5e7, 7.5e6, 100000];// req to unlock THAT element(comp: n-1)
+const nextExcavateReq = [0, 1.2e13, 9.5e11, 1.25e11, 4e8, 5e7, 6e9, 1e9];// req to unlock THAT element(comp: n-1)
 
 
 //==Buildings==
@@ -512,9 +512,9 @@ var updateMult = () => {
     mult = BF(1);
     mult *= (getCookieP(cookieT.level) * (1 + (CookieTau.level * game.tau.log10().max(BigNumber.ONE).log10().pow(2))));
     //"cookiep : " + (getCookieP(cookieT.level) * (1+(CookieTau.level * game.tau.log10().log10().pow(2)))));
-    mult *= (1 + (BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp));
+    mult *= (BF(1) + (BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp));
     //"click : " + (1+(BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp)));
-    mult *= ((TwinGates.level > 0) ? hc.value.pow(0.03 * TwinGates.level) : 1);
+    mult *= ((TwinGates.level > 0) ? hc.value.pow(BF(0.03) * TwinGates.level) : BF(1));
     //"twin : " + ((TwinGates.level > 0) ? hc.value.pow(0.03 * TwinGates.level) : 1));
     mult *= theory.publicationMultiplier;
     //"pub : " + theory.publicationMultiplier);
@@ -526,7 +526,7 @@ var updateMult = () => {
     //"chrono : " + ((ChronosAge.level > 0)?(BF(1) + BF(thyme.level).pow(0.5)):BF(1)));
     mult *= ((artArt.level > 4) ? BigP(building[1].level, 0.61) : BF(1));
     //"art4 : " + ((artArt.level > 4)?BigP(building[1].level,0.61):BF(1)));
-    mult *= ((((spellCast[1] + (10 * effectCPSBDur)) >= thyme.level)) ? effectCPSB : BF(1));
+    mult *= (((BF(BF(spellCast[1]) + (BF(10) * effectCPSBDur)) >= BF(thyme.level))) ? effectCPSB : BF(1));
     //"spellsus : " + ((((spellCast[1]+(10*effectCPSBDur)) >= thyme.level))?effectCPSB:BF(1)));
 };
 /**
@@ -574,7 +574,7 @@ var getCookieP = (level) => {
     return res;
 };
 // An array of strings containing every single cookies types for use in displaying the name
-const cookieType = ["Plain Cookie", "Chocolate Chip Cookie", "Sugar Cookie", "Oatmeal Raisin Cookie", "Peanut Butter Cookie", "Coconut Cookie", "Almond Cookie", "Hazelnut Cookie", "Walnut Cookie", "Cashew Cookie", "White Chocolate Cookie", "Milk Chocolate Cookie", "Macadamia Cookie", "Double Chip Cookie", "White Chocolate Macadamia Cookie", "All-Chocolate Cookie", "Dark-Chocolated Coated Cookie", "White-Chocolate Coated Cookie", "Eclipse Cookie", "Zebra Cookie", "Snickerdoodle", "Stroopwafel", "Macaroon", "Madeleine", "Palmier", "Palets", "Sables", "Pure Black Chocolate Cookie", "Pure White Chocolate Cookie", "Ladyfingers", "Tullies", "Checker Cookie", "Butter Cookie", "Vanilla Cream Cookie", "Gingersnap", "Cinnamon Cookie", "Vanity Cookie", "Pinwheel Cookie", "Shortbread Biscuits", "Millionare\'s Shortbread", "Caramel Cookie", "Pecan Sandies", "Moravian Spice Cookie", "Anzac Biscuit", "Whole Grain Cookie", "Candy Cookie", "Big Chipped Cookie", "Spinkled Cookie", "Anti-Idle Cookie", "Florentine", "Chocolate Crinkles", "Zero-Idle Cookie", "Maple Cookie", "Persian Rice Cookie", "Norwegian Cookie", "Crispy Rice Cookie", "Ube Cookie", "Butterscotch Cookie", "Speculaas", "Chocolate Oatmeal Cookie", "Molasses Cookie", "Biscotti", "Waffle Cookie", "Custard Cream Cookie", "Bourbon Biscuits", "Mini-Cookie", "Whoopie Pies", "Caramel Wafer Biscuits", "Chocolate Chip Mocha Cookie", "Earl Grey Cookie", "Chai Tea Cookie", "Myanmar Tea Cookie", "Thai Tea Cookie", "Corn Syrup Cookie", "Icebox Cookie", "Graham Cracker", "Hardtack", "Tofu Cookie", "Gluten-Free Cookie", "Lebkuchen", "Aachener Printen", "Canistrelli", "Petit Beurre", "Nanaimo Bars", "Berger Cookie", "Chinsuko", "Putri Salju", "Milk Cookie", "Kruidnoten", "Marie Biscuits", "Meringue Cookie", "Yogurt Cookie", "Thumbprint", "Pizzelle", "Granola Cookie", "Ricotta Cookie", "Roze Koeken", "Peanut Butter Cup Cookie", "Sesame Cookie", "Vanillekipferl", "Battenberg Biscuits", "Rosette Cookie", "Gangmakers", "Welsh Cookie", "Raspberry Cheesecake Cookies", "Bokkenpootjes", "Fat Rascals", "Ischler Cookies", "Matcha Cookie", "Super Fusion Cookie", "Spicy Cookie", "Kolachy Cookie", "Gomma Cookie", "Coyotas", "Frosted Sugar Cookie", "Marshmallow Sandwich Cookie", "Chocolate Chip Covered Chocolate Chip Cookie", "Benne Wafers", "Bizcochitos", "Yakgwa", "Alfajores", "Super Idler Flavored Cookie"];
+const cookieType = ["Plain Cookie", "Chocolate Chip Cookie", "Sugar Cookie", "Oatmeal Raisin Cookie", "Peanut Butter Cookie", "Coconut Cookie", "Almond Cookie", "Hazelnut Cookie", "Walnut Cookie", "Cashew Cookie", "White Chocolate Cookie", "Milk Chocolate Cookie", "Macadamia Cookie", "Double Chip Cookie", "White Chocolate Macadamia Cookie", "All-Chocolate Cookie", "Dark-Chocolated Coated Cookie", "White-Chocolate Coated Cookie", "Eclipse Cookie", "Zebra Cookie", "Snickerdoodle", "Stroopwafel", "Macaroon", "Madeleine", "Palmier", "Palets", "Sables", "Pure Black Chocolate Cookie", "Pure White Chocolate Cookie", "Ladyfingers", "Tullies", "Checker Cookie", "Butter Cookie", "Vanilla Cream Cookie", "Gingersnap", "Cinnamon Cookie", "Vanity Cookie", "Pinwheel Cookie", "Shortbread Biscuits", "Millionare\'s Shortbread", "Caramel Cookie", "Pecan Sandies", "Moravian Spice Cookie", "Anzac Biscuit", "Whole Grain Cookie", "Candy Cookie", "Big Chipped Cookie", "Spinkled Cookie", "Anti-Idle Cookie", "Florentine", "Chocolate Crinkles", "Zero-Idle Cookie", "Maple Cookie", "Persian Rice Cookie", "Norwegian Cookie", "Crispy Rice Cookie", "Ube Cookie", "Butterscotch Cookie", "Speculaas", "Chocolate Oatmeal Cookie", "Molasses Cookie", "Biscotti", "Waffle Cookie", "Custard Cream Cookie", "Bourbon Biscuits", "Mini-Cookie", "Whoopie Pies", "Caramel Wafer Biscuits", "Chocolate Chip Mocha Cookie", "Earl Grey Cookie", "Chai Tea Cookie", "Myanmar Tea Cookie", "Thai Tea Cookie", "Corn Syrup Cookie", "Icebox Cookie", "Graham Cracker", "Hardtack", "Tofu Cookie", "Gluten-Free Cookie", "Lebkuchen", "Aachener Printen", "Canistrelli", "Petit Beurre", "Nanaimo Bars", "Berger Cookie", "Chinsuko", "Putri Salju", "Milk Cookie", "Kruidnoten", "Marie Biscuits", "Meringue Cookie", "Yogurt Cookie", "Thumbprint", "Pizzelle", "Granola Cookie", "Ricotta Cookie", "Roze Koeken", "Peanut Butter Cup Cookie", "Sesame Cookie","Vanilla Crescent Cookie","Amaretti di Saronno Cookie", "Vanillekipferl", "Battenberg Biscuits", "Rosette Cookie", "Gangmakers", "Welsh Cookie", "Raspberry Cheesecake Cookie", "Bokkenpootjes", "Fat Rascals", "Ischler Cookies", "Matcha Cookie", "Super Fusion Cookie", "Spicy Cookie", "Kolachy Cookie", "Gomma Cookie", "Coyotas", "Frosted Sugar Cookie", "Marshmallow Sandwich Cookie", "Chocolate Chip Covered Chocolate Chip Cookie", "Benne Wafers", "Bizcochitos", "Yakgwa", "Alfajores", "Financier Cakes","Krumkake","Cuccidati","Torcetti","Finnish Pinwheels","Jammy Dodgers","Silvanas","Pfeffernüsse","Ma\'amoul","Koulourakia","Melomakarono","Qurabiya","Lengua de Gato","Acibadem Kurabiyesi","Ghoriba Bahla","Kaab el Ghazal","Lange Vinger","Taaitaai","Pepernoot","Super Idler Flavored Cookie"];
 const basect = 2.2e6;
 const ctr = ML2(2700);
 const defaultcookieType = "Exotic Undefined Cookies";
@@ -605,7 +605,7 @@ const kittyName = [
     "The meowy boss",
 ];
 /**
- * Calculated the amount of kitty power you have
+ * Calculates the amount of kitty power you have
  * @param {number} level The level of the kitty upgrade
  * @returns {BigNumber} The amount of kitty boost you have
  */
@@ -668,7 +668,7 @@ const artArtName = [
     "Antediluvian Engine",// 11Time Dilation
     "Elementium Infused Chocolate Chunk",// 12Secrets of the Elements
     "Scent of Vanilla Nebula",// 13Shipment CPS + Astrofudge
-    "Iteration Drive",// 14Unlocks funny things
+    "Cherrysilverium Meld",// 14Unlocks funny things
     "More artifacts coming soon",
 ];
 const artClue = [
@@ -685,7 +685,7 @@ const artClue = [
     "Time-Stopping Performance",// the world
     "Cavitilicious",// Choco Chunk
     "5 Cosmic Mappings ah ah ah",// Vanilla Neb
-    "15$(^=)$1.268e30, 16=117.39, 8E=500,000",// Itr Drive
+    "15$(^=)$1.268e30, 16=117.39, 8E=500,000, Cs",// Itr Drive
     "You have all artifacts, yay",
 ];
 const artArtDesc = [
@@ -703,7 +703,7 @@ const artArtDesc = [
     "You feel a strange compulsion in the engine, and you know it\'s time shout \"THE WORLD\" as loud as possible",
     "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?",
     "Some astronomers go crazy over these",
-    "I don\'t think we should go deep, I heard the buildings get strange if we go too deep",
+    "A curious blob of metal, potentially game changing for us",
     "The temple is currently empty and fully explored for artifacts, but not for long....",
 ];
 var artCheck = (cond) => {
@@ -745,7 +745,7 @@ var artCheck = (cond) => {
         case 12:
             return building[7].level >= 0b10011100010000 / 2;
         case 13:
-            return (buildingUpgrade[15].level >= [+!+[]] + [+[]] + [+[]]) && (buildingUpgrade[1 << 4].level >= (-0x1d * -0xbd + -0x5b * 0x62 + 0xd9f * 0x1)) && (elements[1 << 3].value >= (0x4d5 * -0x129 + 0xdc627 + -0x89ea));
+            return (buildingUpgrade[(1<<4)-1].level >= [+!+[]] + [+[]] + [+[]]) && (buildingUpgrade[1 << 4].level >= (-0x1d * -0xbd + -0x5b * 0x62 + 0xd9f * 0x1)) && (elements[1 << 3].value >= (0x4d5 * -0x129 + 0xdc627 + -0x89ea)) && (elements[(1<<2)|1].value >= 2023);
         default:
             return false;
     }
@@ -881,7 +881,25 @@ const timeDilateName = "Time Dilation $(T_{D})$";
 const timeDilateInfo = "Dilates the time to produce more cookies that isn\'t affected by Conjure Idled Goods";
 // ANTIMATTER CONDENSER - Quark Accelerator
 var accelerator, acceleratorMenu;
-
+// JS CONSOLE - Synergy
+var synergy;
+const synName = ["Intertwined Clickers","Conjurer\'s Hivemind","Gardens of Eden","Mines of Moria","Cookiearium Manipulator","Box of Avarice","Solarium","Metaengineers","Interuniversal Transport","Extradimensional Laboratory","Wormhole Generators","Eternal Fluxors","Atomium Decayment Reactor","Maboroshi Crystals","Chances Breaker","Modulus Formalizer"];//name
+const synMCost = [
+    //format : Be,Ch,Bg,Su,Jm,Cs,relative second,Hz,Lumps
+    [1e31,0,0,0,0,10000,10,0,10000],//cursor
+    [5e32,0,0,0,0,50000,30,0,25000],//grandma
+    [2e33,0,0,0,0,100000,60,0,50000],//farm
+    [5e35,1e34,0,0,0,500000,120,0,100000],//mine
+    [1e36,5e35,0,0,0,1000000,175,0,150000],//factory
+];//a matrix representing the cost of each initial unlock, each row represents one building
+const synRatio = [
+    //format : beginning, delta
+    [0.01,0.00001],
+    [0.1,0.0001],
+    [1,0.001],
+    [2,0.005],
+    [4,0.01],
+];//a matrix representing the initial and delta ratio, each row represents one building
 
 //==Visualizer==
 var viz;
@@ -1211,7 +1229,7 @@ var init = () => {
     }
     // Tasty Cookies
     {
-        cookieT = theory.createUpgrade(0, cookie, new ExponentialCost(basect, ctr));
+        cookieT = theory.createUpgrade(0, cookie, new ExponentialCost(basect, ctr));//2,200,000 base cost x2700
         cookieT.getDescription = (_) => {
             if (bInfo == 1) {
                 return `\$ C_{1}(${cookieT.level + (crystalHoney.level * 10)}) = ${getCookieTP(cookieT.level)}, \\: CP(${cookieT.level})${superC.level > 0 ? "^{1.05}" : ""}=${getCookieP(cookieT.level)}\$`;
@@ -1224,6 +1242,7 @@ var init = () => {
         };
         cookieT.getInfo = (amount) => (bInfo == 1) ? `\$ C_{1}(l) = \$ ${Utils.getMathTo(getCookieTP(cookieT.level), getCookieTP(cookieT.level + amount))}` : cookieInf;
         cookieT.bought = (amount) => calcCPS();
+        cookieT.maxLevel = 150;//would be around e520
     }
     // Heavely Tasty Cookie
     {
@@ -1246,7 +1265,7 @@ var init = () => {
     }
     // Kitty
     {
-        kitty = theory.createUpgrade(kittyID, cookie, new ExponentialCost(kittyCost, kittyExp));
+        kitty = theory.createUpgrade(kittyID, cookie, new ExponentialCost(kittyCost, kittyExp));//75,000 base x9750
         kitty.getDescription = (_) => {
             if (bInfo == 1) {
                 return `\$K_{i} = ${kitty.level}, M = ${kittyPower(kitty.level)}\$`;
@@ -1258,7 +1277,8 @@ var init = () => {
             }
         };
         kitty.getInfo = (amount) => (bInfo == 1) ? `\$ K_{i} = \$ ${Utils.getMathTo(kittyPower(kitty.level), kittyPower(kitty.level + amount))} ` : "You gain more CPS the more kittens you have";
-        kitty.bought = (amount) => calcCPS();
+        kitty.bought = (amount) => {calcCPS();calcEPS();}
+        kitty.maxLevel = 120;
     }
     // All 19 Buildings
     let LOG = ML2(1.15);
@@ -1309,7 +1329,7 @@ var init = () => {
                 terra.maxLevel = 20;
                 terra.getDescription = () => terraName;
                 terra.getInfo = () => terraInfo;
-                terra.bought = (amount) => getEquationOverlay();
+                terra.bought = (amount) => {getEquationOverlay();calcEPS();}
                 break;
             case 4:
                 // Recombobulators
@@ -1451,7 +1471,7 @@ var init = () => {
                 };
                 for (let i = 0; i < Spell.length; i++) {
                     Spell[i] = theory.createUpgrade(i + 20000, lump, new ConstantCost(spellCost[i]));
-                    Spell[i].getDescription = () => spellName[i];
+                    Spell[i].getDescription = () => `${spellName[i]} (${Math.max(0,spellCast[i]-thyme.level+(10*spellCool[i]))}/${spellCool[i]*10})`;
                     Spell[i].getInfo = () => spellDesc[i];
                     Spell[i].isAutoBuyable = false;
                     Spell[i].maxLevel = 1;
@@ -1574,6 +1594,7 @@ var init = () => {
         Empower = shortPermaUpgradeML(baseI + 14, hc, new ExponentialCost(5e116, ML2(10 ^ 1.35)), "Empowerments of Buildings", "Increases how fast $P$ grows", 9);
         Empower.bought = (amount) => calcCPS();
         milkOil = shortPermaUpgradeML(baseI + 16, hc, new ExponentialCost(1e135, ML2(2e2)), "Milk-Flavored Drilling Fluids", "Milk-Power Drilling Fluids really helps with the constant loss of mining outputs", 10);
+        milkOil.bought = (amount) => calcEPS();
     }
     //==Building Upgrades==
     {
@@ -1584,6 +1605,7 @@ var init = () => {
             updateMult();
             lessPreciseCalcCPS();
         };
+        clickp.maxLevel = 495;
     }
     // Excavation + Elemental Upgrades
     excavate = shortPermaUpgradeML(11003, cookie, new ExponentialCost(BF("1e365"), ML2(5e4)), `Excavation Site`, `Allows you to mine elements`, 8);
@@ -1614,10 +1636,12 @@ var init = () => {
                 break;
             }
         }
+        calcEPS();
     };
 
     moreExcavator = shortPermaUpgrade(11004, elements[0], new ExponentialCost(132500, ML2(1.15)), `Powered up Excavators $(E_{p})$`, `Excavation Power goes here`);
     moreExcavator.getInfo = () => `\$E_{f}\$ = \$1+0.2E_{p}^{1.4}\$ = ${(1 + (0.2 * BigP(moreExcavator.level, 1.4)))}`;
+    moreExcavator.bought = (amount) => calcEPS();
 
     crystalHoney = shortPermaUpgradeML(12004, elements[1], new ExponentialCost(BF(7.1e10), ML2(19.99)), "Crystallized Honey", "A heavenly shard of this honey adds 10 levels to $C_1$", 11);
     crystalHoney.bought = (amount) => calcCPS();
@@ -1631,7 +1655,7 @@ var init = () => {
     const b50 = 1000;
     // P🍪wer Upgrade
     for (let i = 0; i < 19; i++) {
-        buildingP[i] = theory.createPermanentUpgrade(4 + i, cookie, new ExponentialCost(b50 * baseCost[i], ML2(b50)));
+        buildingP[i] = theory.createPermanentUpgrade(4 + i, cookie, new ExponentialCost((i+1)*b50 * baseCost[i], ML2(b50)));
         buildingP[i].getInfo = (amount) => `\$P_{${i.toString(10)}}${(superP.level > 0) ? "^{1.02}" : ""} \\: = \\: \$${Utils.getMathTo(BigTS(getPower(i)), getPower2(i, buildingP[i].level + amount).toString(0))}`;
         buildingP[i].getDescription = () => `\$P_{${BigTS(i)}}${(superP.level > 0) ? "^{1.02}" : ""}\$ = ${BigTS(getPower(i))}`;
         buildingP[i].bought = (amount) => universalBought(i);
@@ -1733,13 +1757,13 @@ var init = () => {
             return false;
         }
     };
-    // 25 Layers of Cookies
+    // 25 Layers of Cookies = 0xx
     cookiesAchievement = theory.createAchievementCategory(0, cookiesAchievementCatName);
     var cookieADesc = (p) => `Reach e${BigTS(p)} cookies`;
     for (let i = 0; i < 25; i++) {
         ca[i] = theory.createAchievement(i, cookiesAchievement, caName[i], cookieADesc(caReq[i]), () => CheckAch1(i));
     }
-    // 26 CPS
+    // 26 CPS = 1xx
     CPSAchievement = theory.createAchievementCategory(1, "Cookies Per Second");
     var CPSDesc = (p) => {
         let result = "Reach e" + BF(p).toString(0) + " cookies per second without publication multipliers";
@@ -1751,7 +1775,7 @@ var init = () => {
     for (let i = 0; i < 26; i++) {
         cpsa[i] = theory.createAchievement(100 + i, CPSAchievement, cpsaName[i], CPSDesc(cpsaReq[i]), () => CheckAch2(i));
     }
-    // 10 Lumps
+    // 10 Lumps, 2xx = amount, 10xx=perk point,11xx and 12xx=spells
     lumpAchCat = theory.createAchievementCategory(2, "Others");
     var lumpDesc = (p) => {
         let res =
@@ -1782,7 +1806,7 @@ var init = () => {
             spellAch[i] = theory.createAchievement(1200 + i, lumpAchCat, sach[i], `Cast ${spellName[i - 5]} ${spellAchReq[i]} times\nHaving this achievement will boost the power of this spell`, () => CheckAchFeat(() => (spellCountCast[i - 5] >= spellAchReq[i]), 1), () => (spellCountCast[i - 5] / spellAchReq[i]));
         }
     }
-    // A lot of buildings
+    // A lot of buildings, 3xx = 100, 4xx = 1000, 5xx=5000, 6xx=10000, 7xx=100 lump
     BuildingAchievement = theory.createAchievementCategory(3, "Buildings");
     for (let i = 0; i < 19; i++) {
         // too lazy to add proper pluralization sorry not sorry
@@ -1795,7 +1819,7 @@ var init = () => {
         }
         buiLumpAch[i] = theory.createAchievement(700 + i, BuildingAchievement, bachlump[i], `Upgrade ${buildingName[indx][i]} to level 100`, () => CheckAchBui2(i, 100));
     }
-    // Feats
+    // Feats 8xx,9xx
     {
         featAchCat = theory.createAchievementCategory(4, "Feats");
         superIdle = theory.createAchievement(800, featAchCat, "Super Idler", "(2) Have your cookies exceed 1 day worth of CPS while having 0 levels of terraform upgrade", () => CheckAchFeat(() => ((cookie.value).abs() > BF(86400) * CPS) && (terra.level == 0), 2));
@@ -1818,9 +1842,11 @@ var init = () => {
         leetnice = theory.createSecretAchievement(809, featAchCat, "you won the internet", "(2) Have Temple+Alchemy Lab = 1337", "[ni] + [ce] = leet", () => CheckAchFeat(() => ((building[6].level + building[9].level) == 0x539), 2));
         sigmaCurseof = theory.createSecretAchievement(810, featAchCat, "Sigma Fingers", "(2) Have 1e100 Cursor CPS with only a single cursor\nThis feat also unlocks a special building display mode, find it out :)", "Doing so much with only a single one", () => CheckAchFeat(() => (arrcps[0] >= BF(1e100)) && (building[0].level == 1), 2));
         timeSpeed = theory.createSecretAchievement(811, featAchCat, "Time is speed", "(2) Dilate 15 whole seconds in a single tick", "Got any quarters to spare?", () => CheckAchFeat(() => (Dilate() >= 150), 2));
-        timeOhNo = theory.createSecretAchievement(813, featAchCat, "Time is rickroll", "(6) Dilate an entire video of Rick Astley - Never Gonna Give You Up (Official Music Video) into a SINGLE tick (which is 312 seconds in a SINGLE tick)\n\nAlso check out https://www.youtube.com/watch?v=oHg5SJYRHA0, very cool video", "No Hint >:)", () => CheckAchFeat(() => (Dilate() >= 3120), 6));
+        timeOhNo = theory.createSecretAchievement(813, featAchCat, "Time is rickroll", "(6) Dilate an entire video of Rick Astley - Never Gonna Give You Up (Official Music Video) into a SINGLE tick (which is 312 seconds in a SINGLE tick)\n\nAlso check out https://www.youtube.com/watch?v=oHg5SJYRHA0, very cool video", "This hint won\'t let you down", () => CheckAchFeat(() => (Dilate() >= 3120), 6));
         jackpot = theory.createSecretAchievement(817, featAchCat, "JJJJACKPOTTTTTTT", "(1) Get the biggest W for exploring an temple", "Just get lucky!", () => CheckAchFeat(() => {return templeJ;}, 1));
         indecisive = theory.createSecretAchievement(818, featAchCat, "Indecisive", "(1) 100 choices and yet you still can\'t decide on it", "Identity Crisis", () => (CheckAchFeat(() => (indecide >= 100), 1)));
+        //insert exclusive achievements here
+        var exclusiveAch = theory.createSecretAchievement(999,featAchCat,"Happy 2023!","(2) Play this theory during the new years\n\nWishing you the best of 2023!","2023",()=>(CheckAchFeat(()=>{return true;}, 2)));
     }
     //! Total sum of all feats : 53
     //! Latest Feat ID : 819
@@ -1842,6 +1868,7 @@ var init = () => {
     quartList2[4] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_d}`, null));
     updateSpellLayer();
     updateAvailability();
+    calcEPS();
 };
 
 
@@ -2093,6 +2120,17 @@ var lessPreciseCalcCPS = () => {
     arrcps[dominate] *= mult;
     CPS = arrcps[dominate] * subconstant;
 };
+var calcEPS = () => {
+    let realMRate = mineRate - ((10 + (5 * (kitty.level / (kitty.level + 1)))) * milkOil.level);
+    let excRate = (1 + (0.2 * BigP(moreExcavator.level, 1.4)));
+    arreps.fill(BigNumber.ZERO);
+    for (let i = 0; i < excavate.level; i++) {
+        arreps[i] = BigL2(Logistic() + BF(2)) * building[3].level * BigP(getPower(3), 0.05) * BigP(buildingUpgrade[3].level, 1.15) * BigP(realMRate, -1 * (i + 1)) * excRate;
+    }
+    if (artArt.level > 13) {
+        arreps[8] += BigL10(BF(10) + building[8].level) * BigL10(BF(10) + arrcps[8]) * 0.001;
+    }
+}
 
 
 //==TICK==
@@ -2103,9 +2141,33 @@ const lambda = BF("1e-6");
 const yieldfactor = BF("5e-2");
 const lossfactor = BF(25);
 const mineRate = BF(150);
+let setupTick = true;//a tick to calc extra stuffs in
+let terraBoost = 1;
+let dilateBoost = 1;
 var tick = (elapsedTime, multiplier) => {
     // dt magic
     let dt = BF(elapsedTime * multiplier);
+    if(setupTick){
+        setupTick = false;
+        if((cookie.value == BigNumber.ZERO) || (id != "CookieIdler")){
+            //setting progress
+            for(let i=0;i<16;i++){
+                chapter[i].isUnlocked = true;
+            }
+            artUnlock = 14;
+            excavate.level = 5;
+            cookie.value = BF("1e475");
+            hc.value = BF("1e150");
+            lump.value = BF("6.9e7");
+        }
+        calcEPS();
+        calcCPS();
+        updateSpellLayer();
+        updateAvailability();
+        terraBoost = Logistic();
+        dilateBoost = Dilate();
+        setupTick = false;
+    }
     if (aquaCrust.level > 0) {
         cookie.value += Math.min(BigNumber.ONE, BigP(elements[2].value, 0.99) * BF("1e-20")) * ((cookie.value * 12.59) / BF(36000));
         elements[2].value -= BigP(elements[2].value, 0.87);
@@ -2115,12 +2177,16 @@ var tick = (elapsedTime, multiplier) => {
         if (CPS == 0) {
             updateMult();
             lessPreciseCalcCPS();
+            calcEPS();
         }
         cookie.value += dt * (CPS * Logistic() * Dilate()) / BigNumber.TEN;
         hc.value += dt * HPS / 10;
         lump.value += dt * (BF(lwC) + (BigL10(cookie.value) / BF(lumpc)));
         lumpTotal += dt * (BF(lwC) + (BigL10(cookie.value) / BF(lumpc)));
         thyme.level += (thyme.level < thyme.maxLevel) ? 1 : 0;
+        for (let i = 0; i < 9; i++) {
+            elements[i].value += dt * arreps[i];
+        }
         if (artArt.level > 13) {
             elements[8].value += dt * (BigL10(BF(10) + building[8].level) * BigL10(BF(10) + arrcps[8]) * 0.001);
         }
@@ -2137,20 +2203,19 @@ var tick = (elapsedTime, multiplier) => {
             } else if ((cookie.value <= 1e50) || thyme.level % 500 == 0) {
                 calcCPS();
             }
+        }else if(thyme.level % 230 == 0){
+            calcEPS();
         }
 
-        if (artArt.level > 13) {
-            elements[8].value += BigL10(BF(10) + building[8].level) * BigL10(BF(10) + arrcps[8]) * 0.001;
-        }
-
-        cookie.value += (CPS * Logistic() * Dilate()) / BigNumber.TEN;
+        cookie.value += (CPS * terraBoost * dilateBoost) / BigNumber.TEN;
         lump.value += lwC;
         lumpTotal += lwC;
 
         // Sugar Lump Incremental
         hc.value += HPS / 10;
         if (thyme.level % 10 == 0) {
-
+            terraBoost = Logistic();
+            dilateBoost = Dilate();
             for (let i = 0; i < Spell.length; i++) {
                 if ((spellCast[i] / 10) + spellCool[i] <= (thyme.level / 10)) {
                     Spell[i].level = 0;
@@ -2166,8 +2231,8 @@ var tick = (elapsedTime, multiplier) => {
         // elemental increase
         let realMRate = mineRate - ((10 + (5 * (kitty.level / (kitty.level + 1)))) * milkOil.level);
         let excRate = (1 + (0.2 * BigP(moreExcavator.level, 1.4)));
-        for (let i = 0; i < excavate.level; i++) {
-            elements[i].value += dt * BigL2(Logistic() + BF(2)) * building[3].level * BigP(getPower(3), 0.05) * BigP(buildingUpgrade[3].level, 1.15) * BigP(realMRate, -1 * (i + 1)) * excRate;
+        for (let i = 0; i < 9; i++) {
+            elements[i].value += dt * arreps[i];
 
             if (i == reactorMode && (building[12].level > 0)) {
                 let rate = building[12].level * lambda * elements[i + 2].value;
@@ -2193,6 +2258,7 @@ var tick = (elapsedTime, multiplier) => {
 // Param -> midpoint=30*L, max=500*L - 1, min=0
 // Display T, returns bignumber
 var Logistic = () => {
+    if(terra.level == 0){return 1;}
     var maxL =
         (BF(terra.level).pow(2.4 + 0.05 * (TerraInf.level + ((artArt.level > 6) ? 1 : 0))) * 1500) +
         BF(building[3].level).pow(1.2 + 0.03 * TerraInf.level) * ((spellCast[3] + (10 * logBoostDue) >= thyme.level) ? logBoost : 1) * ((moreExcavator.level > 0) ? BigP((1 + (0.2 * BigP(moreExcavator.level, 1.4))), 1.5) : 1);
