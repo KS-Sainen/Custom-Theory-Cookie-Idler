@@ -2149,7 +2149,7 @@ var tick = (elapsedTime, multiplier) => {
     let dt = BF(elapsedTime * multiplier);
     if(setupTick){
         setupTick = false;
-        if((cookie.value == BigNumber.ZERO) || (id != "CookieIdler")){
+        if((cookie.value == BigNumber.ZERO) && (id != "CookieIdler")){
             //setting progress
             for(let i=0;i<16;i++){
                 chapter[i].isUnlocked = true;
