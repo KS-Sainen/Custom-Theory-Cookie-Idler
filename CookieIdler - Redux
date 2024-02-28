@@ -85,7 +85,10 @@ var version = 1.0;
      * @param {number} p The exponent
      * @return {BigNumber} The value of i^p
      */
-    var BigP = (i, p) => BF(i).pow(p);
+    var BigP = (i, p) => {
+        //if(Number.isNaN(p) || Number.isNaN(i)) return 1;
+        return BF(i).pow(p);
+    }
 
     /**
      * Gives the equivalent cookies compared to i minutes of your CPS
@@ -317,7 +320,7 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0;
      */
     var getInternalState = () => {
         return stateTable.getStateString();
-    };
+    }
     var setInternalState = (state) => {
         let res = state.split(" ");
         stateTable.buildTable(res);
@@ -332,7 +335,8 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0;
         dominate = Math.floor(dominatestore.value);
         perkHas = perkPoint.value;
         for (let i = 0; i < 19; i++) {
-            buildingExponentLv[i] = Math.floor(buildingExponentLvStore[i].value)
+            buildingExponentLv[i] = Math.floor(buildingExponentLvStore[i].value);
+            log(buildingExponentLv[i]);
             perkHas -= buildingExponentLv[i];
             perkMenu.content.children[3].children[0].children[i].children[1].text = `${buildingExponentLv[i]} / ${maxbuiPerk(i)}`;
         }
@@ -341,7 +345,8 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0;
         eqType = Math.floor(eqTypeStore.value);
         quType = Math.floor(quTypeStore.value);
         bInfo = Math.floor(bInfoStore.value);
-    };
+        log("Read the data!");
+    }
 }
 
 //! Buildings INFO + GIMMICKS
@@ -502,13 +507,13 @@ var Logistic = () => {
     maxL += BF(building[3].level).pow(maxLBPowBase + maxLBPowMod * TerraInf.level) * ((spellCast[3] + (10 * logBoostDue) >= thyme.level) ? logBoost : 1);
 
     return ((maxL.pow(1 + terraInfPow * TerraInf.level)) / (BigNumber.ONE + (BigNumber.E.pow((thyme.level - (xBegin + terra.level * terraDurMod))))));
-};
+}
 var Dilate = () => {
     if (timeDilate.level == 0) {return 1;}
     let res = building[10].level + building[12].level;// restricting buildings
     let factor = (building[11].level >= (res)) ? 1 - 1 / (dilateFactorDivBase - (dilateFactorDivMod * timeDilate.level)) : 1 - (building[11].level / (2 * res));
     return BF(1) + (BigP(building[11].level, dilatePowBase + dilatePowMod * timeDilate.level)) / BigP(dilateFactorBase, factor);
-};
+}
 
 //others
 var magicLoop = 12600;//lcm of 10-50, just in case
@@ -523,29 +528,35 @@ var calcBuilding = (id, am) => {
     } else {
         return BF(building[id].level + am);
     }
-};
+}
 
 //building power
 var getPower = (index) => BigP(Utils.getStepwisePowerSum(buildingPower[index].level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * 1) + (jetDrive.level * 0.5), 5, 1), 1 + (superP.level * 0.02));
 var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * 1) + (jetDrive.level * 0.5), 5, 1), 1 + (superP.level * 0.02));
 
 //building exponents
-var getBuildingExp = (index) => buildingExponentLv[index] * buildingExponent + 1;
+var getBuildingExp = (index) => {
+    if(Number.isNaN(buildingExponentLv[index])){
+        buildingExponentLv[index] = 0;
+        return 1;
+    }
+    return buildingExponentLv[index] * buildingExponent + 1;
+}
 
 //building description + info
 var getBuildingDesc = (indx) => {
     var bi = `\$B[${BigTS(indx)}]^{${(getBuildingExp(indx) > 1) ? getBuildingExp(indx).toString(10) : ""}}\$`;
     switch(bInfo){
         case 0:
-            return `${bi} - ${buildingData[indx].names[0]}` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
+            return `${bi} - ${buildingData[indx].names[0]} ` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
         case 1:
-            return `${bi} = ${calcBuilding(indx, 0)}` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
+            return `${bi} = ${calcBuilding(indx, 0)} ` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
         case 2:
-            return `${bi} - ${buildingData[indx].names[1]}` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
+            return `${bi} - ${buildingData[indx].names[1]} ` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
         default:
             return "Building Desc. Error!";
     }
-};
+}
 var getBuildingInfo = (indx,amount) => `${getBuildingInfo2(indx, amount)}, ${((bInfo == 1) ? `\$B(${indx}) = ${generateCookie(indx,buildingData[indx].collectionTime,1)}\$` : "")}`;
 var getBuildingInfo2 = (index, am) => {
     if (bInfo == 1) {
@@ -560,10 +571,10 @@ var getBuildingInfo2 = (index, am) => {
     // Sorry, but you CAN'T get 1 CPS per building skill issue lol
     result += buildingData[index].desc + BF(generateCookie(index,buildingData[index].collectionTime,1)).toString(0) + " cookies per second";
     return result;
-};
+}
 var onBuildingBought = (indx,amount) => {
     //pass
-};
+}
 
 // building power data
 log(building50);
@@ -580,7 +591,7 @@ var getBuildingLumpDesc = (i) => {
     }else{
         return buildingData[i].lumpBName;
     }
-};
+}
 var getBuildingLumpInfo = (indx,amount) => {
     switch(bInfo){
         case 0:
@@ -590,7 +601,7 @@ var getBuildingLumpInfo = (indx,amount) => {
         case 2:
             return `Improves ${buildingData[indx].names[1]}  by a factor of ${TS10(buildingLumpMult)}`;
     }
-};
+}
 function TestBuildingDisplay(indx){
     let temp = bInfo;
     bInfo = 0;log(`==Literal==`);
@@ -1725,8 +1736,14 @@ var thymeInc = (ticks) => {
 }
 var generateCookie = (id, ticks, mult) => {
     let ret = calcBuilding(id,0) * globalMult * buildingData[id].mult * buildingData[id].baseCPS * (ticks / 10) * mult;
+    let pow = getBuildingExp(id);
+    if(Number.isNaN(pow)){
+        pow = 1;
+        buildingExponentLv[id] = 0;
+    }
+    log(`generating for ${id}, base = ${ret}, pow = ${pow}`);
     //cursor power
-    ret = BigP(ret,getBuildingExp(id));
+    if(!setupTick && buildingExponentLv[id] != 0){ret = BigP(ret,pow);}
     if(ret > CPS){
         CPS = ret;
         dominate = id;dominatestore.setValue(dominate);
