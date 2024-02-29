@@ -372,8 +372,8 @@ var buildingData = [
         uid: 10001,
         name: "Grandmother's Covenant $(C_{v})$",
         info: "Synergyzing Grandmas together to boost their CPS depending on the buildings owned",
-        costModel: new ExponentialCost(1e65, ML2(1e15)),
-        maxLevel: 20,
+        costModel: new ExponentialCost(1e65, ML2(1e25)),
+        maxLevel: 1,
         onBought: (amount) => {updateGlobalMult();updateLocalMult(1);}
      }]},
     {id: 2,
@@ -495,7 +495,7 @@ var buildingData = [
 var covenant, ygg, terra, excavate, moreExcavator, recom, invest, art, artArt, cookiearium, aquaCrust, timeDilate, accelerator, acceleratorMenu,synergy;
 var jetDrive, sugarCoat, crystalHoney;
 const covExp = 5;
-const covDelta = 0.1;
+const covDelta = 0.3;
 const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.45), yggPowBase = BF(1.175), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.2), yggBPowBase = BF(3), yggThymePow = BF(1.4), yggBoost = BF(5e10), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005);
 var buildingCount = 0;
 
@@ -572,7 +572,7 @@ var getBuildingInfo2 = (index, am) => {
         result += "s ";
     }
     // Sorry, but you CAN'T get 1 CPS per building skill issue lol
-    result += buildingData[index].desc + BF(generateCookie(index,buildingData[index].collectionTime,1)).toString(0) + " cookies per second";
+    result += buildingData[index].desc + BF(generateCookie(index,buildingData[index].collectionTime,1)).toString(0) + " cookies per collection";
     return result;
 }
 var onBuildingBought = (indx,amount) => {
@@ -933,6 +933,7 @@ var updateLocalMult = (indx) => {
             //buildingData[indx].mult *= BigP(arrcps[14], RandR(chanceBaseMax + (chanceBiasMod * buildingUpgrade[14].level), chanceBaseMin + (chanceBiasMod * buildingUpgrade[14].level)));
             break;
     }
+    if(buildingData[indx].mult == BF(0)){buildingData[indx].mult = BF(1)};
 };
 
 //building bar indicator : - = empty, | = 1 tick, O = 5 tick (over 25 tick)
@@ -1710,7 +1711,7 @@ var init = () => {
     for (let i = 0; i < 16; i++) {
         chapter[i] = theory.createStoryChapter(i, chapterName[i], chapterLore[i], () => checkChapter(i));
     }
-    quartList2[0] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{\\dot{C}}`, null));
+    quartList2[0] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{C_m}`, null));
     quartList2[1] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{t}`, null));
     quartList2[2] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T}`, null));
     quartList2[3] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_m}`, null));
@@ -2006,6 +2007,9 @@ var postPublish = () => {
     getEquationOverlay();
     updateAvailability();
     updateGlobalMult();
+    for(let i=0;i<19;i++){
+        updateLocalMult(i);
+    }
     // for (let i = 0; i < elements.length; i++) {
     //     elements[i].value = elemBefore[i];
     // }
@@ -2269,7 +2273,7 @@ let biButton = ui.createButton({
 //!1.5 : COLOR
 var indecide = 0;
 const eqColor = ["FFFFFF", "E6DFCF", "A06846", "FFD4D8", "FE3246", "ABED6A", "EA8B01", "C48AE2", "F4E4BA", "FBF2D5", "AC6329", "E5BD46", "E71334", "E2DBD2", "83F2BC", "8F9098", "FF6D98", "AB5DF8", "F1398D", "50AB21", "D08072", "B08F7A", "00FFFF", "8800FF"];
-const eqColorName = ["White", "Milk", "Chocolate", "Strawberry", "Raspberry", "Lime", "Pumpkin", "Blueberry", "Banana", "Vanilla", "Caramel", "Honey", "Cherry", "Coconut", "Mint", "Licorice", "Rose", "Blackcurrant", "Dragonfruit", "Black Forest", "Peach", "Hazelnut", "Crystallized", "Pentallized"];
+const eqColorName = ["White", "Milk", "Chocolate", "Strawberry", "Raspberry", "Lime", "Orange", "Blueberry", "Banana", "Vanilla", "Caramel", "Honey", "Cherry", "Coconut", "Mint", "Licorice", "Rose", "Blackcurrant", "Dragonfruit", "Black Forest", "Peach", "Hazelnut", "Crystallized", "Pentallized"];
 const eqColorAch = [0, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 75, 80, 85, 90, 100, 110, 120, 130, 140, 150, 160, 170, 194];
 let visButton = ui.createButton({
     text: `Modify Visuals`, row: 0, column: 1,
@@ -2384,24 +2388,24 @@ imagUpdate = () => {
     templateFrame.column = 1;
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/ee/Dragonfruit_milk.png/revision/latest?cb=20201030074359");
     imagUpdate();// dragonfruit
-    templateImage.source = ImageSource.fromUri("https://media.discordapp.net/attachments/572392960675545088/1031059256457306142/BlackForest_Milk.png");
+    templateImage.source = ImageSource.fromUri("https://github.com/KS-Sainen/Custom-Theory-Cookie-Idler/blob/main/Assets/BlackForest_Milk.png?raw=true");
     imagUpdate();// black forest
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/a/a9/Peach_milk.png/revision/latest?cb=20230309090440");
     imagUpdate();//peach
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/fb/Hazelnut_milk.png/revision/latest?cb=20230309090448");
     imagUpdate();//hazelnut - 2 ext milk flavors
-    templateImage.source = ImageSource.fromUri("https://media.discordapp.net/attachments/572392960675545088/1031059255454879855/Crystallized_Milk.png");
+    templateImage.source = ImageSource.fromUri("https://github.com/KS-Sainen/Custom-Theory-Cookie-Idler/blob/main/Assets/Crystallized_Milk.png?raw=true");
     imagUpdate();// crystallized
-    templateImage.source = ImageSource.fromUri("https://media.discordapp.net/attachments/572392960675545088/1031059255991750706/Pentallized_Milk.png");
+    templateImage.source = ImageSource.fromUri("https://github.com/KS-Sainen/Custom-Theory-Cookie-Idler/blob/main/Assets/Pentallized_Milk.png?raw=true");
     imagUpdate();// pentallized
-    for (let i = 0; i < 22; i++) {
+    for (let i = 0; i < 24; i++) {
         completeColGrid[i].content.onTouched = (e) => {
             if (achCount >= eqColorAch[i]) {
                 nexCol = i;
                 indecide += 1;
                 visualUI.content.children[6].text = `Chosen Color : ${eqColorName[nexCol]}`;
             }else{
-                visualUI.content.children[6].text = `Chosen Color : Locked [${achCount}/${eqColorAch[i]}]}`
+                visualUI.content.children[6].text = `Chosen Color : Locked [${achCount}/${eqColorAch[i]}]`;
             }
         };
     }
@@ -2470,7 +2474,7 @@ let visualUI = ui.createPopup({
                                 // for (let i = 0; i < 9; i++) {
                                 //     quartList[i] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{_{${elemName[i]}}}`, elements[i].value));
                                 // }
-                                quartList2[0] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{\\dot{C}}`, null));
+                                quartList2[0] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{C_m}`, null));
                                 quartList2[1] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{t}`, null));
                                 quartList2[2] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T}`, null));
                                 quartList2[3] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_m}`, null));
