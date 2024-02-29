@@ -424,7 +424,7 @@ var buildingData = [
      }]},
     {id: 6,
      names: ["Temple","Tmelpe"], desc: "directing in ", lumpBName: "Sacred Chocolate Artifact",
-     baseCPS: 4.8e18, baseCost: 2e25, powerUpgradeMult: 8, mult: 1, collectionTime : 25,maxExpLevel: 5,
+     baseCPS: 1.8e18, baseCost: 2e25, powerUpgradeMult: 8, mult: 1, collectionTime : 25,maxExpLevel: 5,
      achName: ["Way of the Temple","Balance of Faith","The Lord\'s Likeliness","Caricature of the forgotten Deities","Chief Artifact Curator"],
     },
     {id: 7,
@@ -687,21 +687,21 @@ var cookieTinInfo = [
         order: 1, //unused, just for reference
         name: "Box of Macarons",
         baseCost: 1.5e17,//base cost
-        costMult: 8775,//multiplier for cost, will be put through ML2() later on
+        costMult: 17550,//multiplier for cost, will be put through ML2() later on
         mult: 1.2,//mult from 1 level
         cookieOrder: ["Basic Macaron", "Rose Macaron", "Lemon Macaron", "Chocolate Macaron", "Pistachio Macaron", "Hazelnut Macaron", "Violet Macaron", "Caramel Macaron", "Licorice Macaron", "Earl Grey Macaron"]
     },{
         order: 2, //unused, just for reference
         name: "Tin of Butter Cookies",
         baseCost: 1.5e32,//base cost
-        costMult: 8775,//multiplier for cost, will be put through ML2() later on
+        costMult: 17550,//multiplier for cost, will be put through ML2() later on
         mult: 1.25,//mult from 1 level
         cookieOrder: ["Butter Horseshoe", "Butter Pucks", "Butter Knots", "Butter Swirls", "One Million Square Inches Butter per Cookie", "Slab of Pure Butter", "French Pure Butter Cookie", "Garlic Butter Braised Cookie", "I can\'t believe it\'s not Butter Cookies"]
     },{
         order: 3, //unused, just for reference
         name: "Tin of British Tea Biscuits",
         baseCost: 1.5e47,//base cost
-        costMult: 8775,//multiplier for cost, will be put through ML2() later on
+        costMult: 17550,//multiplier for cost, will be put through ML2() later on
         mult: 1.35,//mult from 1 level
         cookieOrder: ["Empire Biscuits", "British Tea Biscuits", "Chocolate British Tea Biscuits", "Round British Tea Biscuits", "Round Chocolate Tea Biscuits", "Round British Tea Biscuits with Heart Motif", "Round Chocolate British Tea Biscuits with Heart Motif", "Big Ben Cookie", "Hobnobs Biscuits"]
     },{
@@ -947,28 +947,28 @@ var heavenlyUpgradeData = [
         uid: 1,
         name: "Mystery Cookie Tin",
         info: "Unlocks a new set of cookies that are more powerful than their normal counterparts, ooooooooo what could it be?",
-        costModel: new ExponentialCost(1000, ML2(10)),
+        costModel: new ExponentialCost(25, ML2(1e6)),
         maxLevel: cookieTinInfo.length,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 2,
         name: "Heavenly Cookie",
         info: "You gain more CPS the more HC you have",
-        costModel: new ExponentialCost(1000, ML2(10)),
+        costModel: new ConstantCost(500),
         maxLevel: 1,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 3,
         name: "Sugar Crystal Cookie",
         info: "This cookie gets tastier the more sweetness you have",
-        costModel: new ExponentialCost(1000, ML2(10)),
+        costModel: new ConstantCost(15000),
         maxLevel: 1,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 4,
         name: "Cookie Cookie",
         info: "This cookie makes you get more cookies the more cookies you have",
-        costModel: new ExponentialCost(1000, ML2(10)),
+        costModel: new ConstantCost(1e13),
         maxLevel: 1,
         onBought: (amount) => {updateGlobalMult();}
     },{
@@ -976,55 +976,55 @@ var heavenlyUpgradeData = [
         name: "Divine Doubling ($D_{d}$)",
         info: "Doubles your CPS",
         maxLevel: 0,
-        costModel: new ExponentialCost(1000, ML2(10)),
+        costModel: new ExponentialCost(1e14, ML2(1e10)),
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 6,
         name: "Tauonium Cookie",
         info: "An experimental type of antimatter-based cookie that is based on tau",
-        costModel: new ExponentialCost(1000, ML2(10)),
+        costModel: new ConstantCost(8e17),
         maxLevel: 1,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 7,
         name: "Terra-Infinity $(T_{\\infty})$",
         info: "Makes the ground forever bountiful with materials",
-        costModel: new ExponentialCost(1000, ML2(10)),
+        costModel: new ExponentialCost(1e55, ML2(1e10)),
         maxLevel: 7,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 8,
         name: "Chronos Aging",
         info: "Transmute the power of Yggdrasil to all your buildings",
-        costModel: new ExponentialCost(1000, ML2(10)),
+        costModel: new ConstantCost(2.5e57),
         maxLevel: 1,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 9,
         name: "Blessing of the Capital",
         info: "Your investment returns increase, stonks",
-        costModel: new ExponentialCost(1000, ML2(10)),
+        costModel: new ExponentialCost(1e60, ML2(8)),
         maxLevel: 3,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 10,
         name: "Twin Gates of Transcendence",
         info: "Makes Heavenly Chips actually boost your cookie production",
-        costModel: new ExponentialCost(1000, ML2(10)),
+        costModel: new ConstantCost(1e65),
         maxLevel: 1,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 11,
         name: "Box of R9 $(R_{9})$",
         info: "A very stange and mathematical box seemingly full of ${game.sigmaTotal} students",
-        costModel: new ExponentialCost(1000, ML2(10)),
+        costModel: new ExponentialCost(1e80, ML2(10)),
         maxLevel: 3,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 12,
         name: "Continuos Growth",
         info: "Certain high-tier buildings get more powerful the more of them you have",
-        costModel: new ExponentialCost(1000, ML2(10)),
+        costModel: new ExponentialCost(1e103, ML2(1e5)),
         maxLevel: 5,
         onBought: (amount) => {updateGlobalMult();}
     },{
@@ -1070,6 +1070,7 @@ var superP, superL, superC;
             achCount += cnt;
             achCountStore.setValue(achCount);
             updateGlobalMult();
+            log("Achievement!");
             return true;
         } else {
             return false;
@@ -1225,9 +1226,9 @@ var superP, superL, superC;
 }
 function buildFeatAch(featAchObj){
     if(featAchObj.secretClue != ""){
-        return theory.createSecretAchievement(800 + featAchObj.order,featAchObj.name,`[${featAchObj.weight}] - ${featAchObj.desc}`,featAchObj.secretClue,() => checkAchBase(featAchObj.unlock,featAchObj.weight));
+        return theory.createSecretAchievement(800 + featAchObj.order,featAchievement1,featAchObj.name,`[${featAchObj.weight}] - ${featAchObj.desc}`,featAchObj.secretClue,() => checkAchBase(featAchObj.unlock,featAchObj.weight));
     }else{
-        return theory.createAchievement(800 + featAchObj.order,featAchObj.name,`[${featAchObj.weight}] - ${featAchObj.desc}`,() => checkAchBase(featAchObj.unlock,featAchObj.weight));
+        return theory.createAchievement(800 + featAchObj.order,featAchievement1,featAchObj.name,`[${featAchObj.weight}] - ${featAchObj.desc}`,() => checkAchBase(featAchObj.unlock,featAchObj.weight));
     }
 }
 
@@ -1615,10 +1616,6 @@ var init = () => {
             return checkAchBase(() => {buildingLump[indx].level >= lv}, 1);
         }
         var cookieADesc = (p) => `Reach e${BigTS(p)} cookies`;
-        for (let i = 0; i < 26; i++) {
-            ca[i] = theory.createAchievement(i, cookiesAchievement, caName[i], cookieADesc(caReq[i]), () => checkAchC(caReq[i]));
-            achCountTV += 1;
-        }
         var CPSDesc = (p) => {
             let result = "Have e" + BF(p).toString(0) + " peak cookies collected from a building without publication multipliers";
             if (p >= 751) {
@@ -1634,8 +1631,12 @@ var init = () => {
             }
             return res;
         };
-
+        // COOKIES = 0xx
         cookiesAchievement = theory.createAchievementCategory(0, cookiesAchievementCatName);
+        for (let i = 0; i < 26; i++) {
+            ca[i] = theory.createAchievement(i, cookiesAchievement, caName[i], cookieADesc(caReq[i]), () => checkAchC(caReq[i]));
+            achCountTV += 1;
+        }
         // 26 CPS = 1xx
         CPSAchievement = theory.createAchievementCategory(1, "Cookies Per Collection");
         for (let i = 0; i < 27; i++) {
@@ -1688,7 +1689,7 @@ var init = () => {
 var updateAvailability = () => {
     // Buildings
     for (let i = 0; i < 19; i++) {
-        if (i >= 3) {building[i].isAvailable = COOKIE.value >= buildingData[i - 1].baseCost;}
+        if (i >= 3) {building[i].isAvailable = (COOKIE.value >= buildingData[i - 1].baseCost) || (building[i].level > 0);}
         else {building[i].isAvailable = true;}
         building[i].isAvailable &= (normalUpgradeMenu.level % 2) == 0;
         buildingPower[i].isAvailable = building[i].level > 0 && (permUpgradeMenu.level % 2) == 0;
@@ -1698,7 +1699,7 @@ var updateAvailability = () => {
     cookieTasty.isAvailable = COOKIE.value > BF(1e5) && normalUpgradeMenu.level == 1;
     kitty.isAvailable = achCount > 1 && (normalUpgradeMenu.level % 2) == 1;
     for(let i=0;i<(cookieTinInfo.length);i++){
-        cookieTin[i].isAvailable = (cookieTinUnlock.level > i) && (COOKIE.value > (cookieTinInfo[i].baseCost)/BF(50)) && (normalUpgradeMenu.level % 2) == 1;
+        cookieTin[i].isAvailable = (cookieTinUnlock.level > i) && (COOKIE.value > (cookieTinInfo[i].baseCost)/BF(50) || cookieTin[i].level > 0) && (normalUpgradeMenu.level % 2) == 1;
     }
     // Heavenly Upgrades
     cookieTinUnlock.isAvailable = HEAVENLY_CHIP.value >= BF(10) && (permUpgradeMenu.level % 2) == 1;
@@ -1741,7 +1742,7 @@ var generateCookie = (id, ticks, mult) => {
         pow = 1;
         buildingExponentLv[id] = 0;
     }
-    log(`generating for ${id}, base = ${ret}, pow = ${pow}`);
+    //log(`generating for ${id}, base = ${ret}, pow = ${pow}`);
     //cursor power
     if(!setupTick && buildingExponentLv[id] != 0){ret = BigP(ret,pow);}
     if(ret > CPS){
@@ -1749,10 +1750,17 @@ var generateCookie = (id, ticks, mult) => {
         dominate = id;dominatestore.setValue(dominate);
         CPSstore.setValue(ret);
     }
-    if(id == 0){
+    if(id == 0 && clickPower.level > 0){
         ret += Math.max(CPS,BF(1)) * (((BF(clickPower.level) * BigP(buildingLumpMult, buildingLump[0].level)) * BF(baseClickPower)));
+        //failsafe, only really triggers if values get ABSURDLY BIG
+        if(ret > (COOKIE.value*BF(1e100)) && COOKIE.value > BF(1e25)){
+            ret -= Math.max(CPS,BF(1)) * (((BF(clickPower.level) * BigP(buildingLumpMult, buildingLump[0].level)) * BF(baseClickPower)));
+            ret += COOKIE.value/BF(500);
+        }else if(ret > (COOKIE.value*BF(1e100)) && COOKIE.value <= BF(1e25)){
+            ret = 1000;//get a grandma and GO
+        }
     }
-    log(`${id} generated ${ret}`);
+    //log(`${id} generated ${ret}`);
     //log(`get ${ret}`);
     return ret;
 }
@@ -2506,7 +2514,7 @@ let perkAssign = (indx) => ui.createGrid({
                 if (perkHas > 0 && (buildingExponentLv[indx] < maxbuiPerk(indx))) {
                     perkHas--;
                     buildingExponentLv[indx]+=1;
-                    buildingExponentLvStore[indx].setValue(buildingExponentLv);
+                    buildingExponentLvStore[indx].setValue(buildingExponentLv[indx]);
                     perkLabel2.text = `You have ${perkHas} exponentium bars`;
                     perkMenu.content.children[3].children[0].children[indx].children[1].text = `${buildingExponentLv[indx]} / ${maxbuiPerk(indx)}`;
                 }
@@ -2518,7 +2526,7 @@ let perkAssign = (indx) => ui.createGrid({
                 if (buildingExponentLv[indx] > 0) {
                     perkHas++;
                     buildingExponentLv[indx]-=1;
-                    buildingExponentLvStore[indx].setValue(buildingExponentLv);
+                    buildingExponentLvStore[indx].setValue(buildingExponentLv[indx]);
                     perkLabel2.text = `You have ${perkHas} exponentium bars`;
                     perkMenu.content.children[3].children[0].children[indx].children[1].text = `${buildingExponentLv[indx]} / ${maxbuiPerk(indx)}`;
                 }
