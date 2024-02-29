@@ -384,7 +384,7 @@ var buildingData = [
         uid: 10002,
         name: "Yggdrasil $(Y_{g})$",
         info: "Empower your farms with the power of time and cookie ancients",
-        costModel: new ExponentialCost(1e110, ML2(1e25)),
+        costModel: new ExponentialCost(1e115, ML2(1e25)),
         maxLevel: 4,
         onBought: (amount) => {updateGlobalMult();updateLocalMult(2);}
      }]},
@@ -436,17 +436,17 @@ var buildingData = [
     },
     {id: 8,
      names: ["Shipment","Shipemtn"], desc: "bringing in ", lumpBName: "Cosmic Exploration",
-     baseCPS: 5.395e33, baseCost: 5.1e75, powerUpgradeMult: 25, mult: 1, collectionTime : 30,maxExpLevel: 5, sweetLimit: 125, sweetMax: 500,
+     baseCPS: 9e32, baseCost: 5.1e75, powerUpgradeMult: 25, mult: 1, collectionTime : 30,maxExpLevel: 5, sweetLimit: 125, sweetMax: 500,
      achName: ["Local Expedition","Cosmic Mapping","Multiverse Ramble","Omniverse Realization","You could make a chronicle out of those"],
     },
     {id: 9,
      names: ["Alchemy Lab","Alehfcehy Lba"], desc: "transmuting ", lumpBName: "New Esoteric Elements", sweetLimit: 150, sweetMax: 500,
-     baseCPS: 1.15e48, baseCost: 7.5e100, powerUpgradeMult: 23, mult: 1, collectionTime : 30,maxExpLevel: 5,
+     baseCPS: 1.15e43, baseCost: 7.5e100, powerUpgradeMult: 23, mult: 1, collectionTime : 30,maxExpLevel: 5,
      achName: ["Transmutation","Polytranselementation","With matter comes Cookies","Satiated in the gaudy mouths of Gold","Truly a Mendeleev's Nightmare"],
     },
     {id: 10,
      names: ["Portal","Proalt"], desc: "retrieving ", lumpBName: "Normalize Dimension",
-     baseCPS: 6.66e58, baseCost: BF("1e125"), powerUpgradeMult: 21, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 200, sweetMax: 450,
+     baseCPS: 6.66e50, baseCost: BF("1e125"), powerUpgradeMult: 21, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 200, sweetMax: 450,
      achName: ["Isekai\'d","H̶e̷ ̶C̶o̴m̵e̸s̵","I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎","Bottom of the abyss","Is this reality or is it cookieverse?"],
     },
     {id: 11,
@@ -496,7 +496,7 @@ var covenant, ygg, terra, excavate, moreExcavator, recom, invest, art, artArt, c
 var jetDrive, sugarCoat, crystalHoney;
 const covExp = 5;
 const covDelta = 0.3;
-const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.3), yggPowBase = BF(1.175), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.2), yggBPowBase = BF(3), yggThymePow = BF(1.4), yggBoost = BF(5e10), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005);
+const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.3), yggPowBase = BF(1.175), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.15), yggBPowBase = BF(1.95), yggThymePow = BF(0.9), yggBoost = BF(5), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005);
 var buildingCount = 0;
 
 // gimmick upgrades
@@ -615,15 +615,15 @@ function TestBuildingDisplay(indx){
     let temp = bInfo;
     bInfo = 0;log(`==Literal==`);
     log(getBuildingDesc(indx));log(getBuildingInfo(indx,1));
-    log(getBuildingPowerDesc(indx));log(getBuildingInfo(indx,1));
+    log(getBuildingPowerDesc(indx));log(getBuildingPowerInfo(indx,1));
     log(getBuildingLumpDesc(indx));log(getBuildingLumpInfo(indx,1));
     bInfo = 1;log(`==Compressed==`);
     log(getBuildingDesc(indx));log(getBuildingInfo(indx,1));
-    log(getBuildingPowerDesc(indx));log(getBuildingInfo(indx,1));
+    log(getBuildingPowerDesc(indx));log(getBuildingPowerInfo(indx,1));
     log(getBuildingLumpDesc(indx));log(getBuildingLumpInfo(indx,1));
     bInfo = 2;log(`==Typo==`);
     log(getBuildingDesc(indx));log(getBuildingInfo(indx,1));
-    log(getBuildingPowerDesc(indx));log(getBuildingInfo(indx,1));
+    log(getBuildingPowerDesc(indx));log(getBuildingPowerInfo(indx,1));
     log(getBuildingLumpDesc(indx));log(getBuildingLumpInfo(indx,1));
     bInfo = temp;
 }
@@ -884,7 +884,7 @@ var updateLocalMult = (indx) => {
             break;
         case 1:
             if (covenant.level > 0) {
-                buildingData[indx].mult *= BigP(buildingCount,(BF(covenant.level).pow(covLvMod) * covDelta + covExp) * covenant.level);
+                buildingData[indx].mult *= BigP(buildingCount,(BF(covenant.level).pow(covLvMod) * covDelta + covExp) * (1 + ((covenant.level-1)*0.5)));
             }
             break;
         case 2:
