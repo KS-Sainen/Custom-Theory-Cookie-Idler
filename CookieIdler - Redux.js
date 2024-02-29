@@ -496,7 +496,7 @@ var covenant, ygg, terra, excavate, moreExcavator, recom, invest, art, artArt, c
 var jetDrive, sugarCoat, crystalHoney;
 const covExp = 5;
 const covDelta = 0.3;
-const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.3), yggPowBase = BF(1.175), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.15), yggBPowBase = BF(1.95), yggThymePow = BF(0.9), yggBoost = BF(5), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005);
+const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.3), yggPowBase = BF(1.175), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.15), yggBPowBase = BF(1.95), yggThymePow = BF(0.7), yggBoost = BF(2.5), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005);
 var buildingCount = 0;
 
 // gimmick upgrades
@@ -504,12 +504,13 @@ var buildingCount = 0;
 // Param -> midpoint=30*L, max=500*L - 1, min=0
 // Display T, returns bignumber
 const terraDurMod = BF(600), terraInfPow = BF(0.005), maxLPowBase = BF(2.4), maxLPowMod = BF(0.05), maxLBPowBase = BF(1.2), maxLBPowMod = BF(0.03), dilateFactorDivBase = BF(2.125), dilateFactorDivMod = BF(0.125), dilateFactorBase = BF(1000), dilatePowBase = BF(1), dilatePowMod = BF(0.025);
+var xBegin = 0;
 var Logistic = () => {
     if(terra.level == 0){return 1;}
     var maxL = (BF(terra.level).pow(maxLPowBase + maxLPowMod * (TerraInf.level + ((artArt.level > 6) ? 1 : 0))) * 1500);
-    maxL += BF(building[3].level).pow(maxLBPowBase + maxLBPowMod * TerraInf.level) * ((spellCast[3] + (10 * logBoostDue) >= thyme.level) ? logBoost : 1);
+    maxL += BF(building[3].level).pow(maxLBPowBase + maxLBPowMod * TerraInf.level);
 
-    return ((maxL.pow(1 + terraInfPow * TerraInf.level)) / (BigNumber.ONE + (BigNumber.E.pow((thyme.level - (xBegin + terra.level * terraDurMod))))));
+    return ((maxL.pow(1 + terraInfPow * TerraInf.level)) / (BigNumber.ONE + (BigNumber.E.pow((thyme.level - (xBegin + terra.level * terraDurMod)))))) + 1;
 }
 var Dilate = () => {
     if (timeDilate.level == 0) {return 1;}
@@ -560,7 +561,7 @@ var getBuildingDesc = (indx) => {
             return "Building Desc. Error!";
     }
 }
-var getBuildingInfo = (indx,amount) => `${getBuildingInfo2(indx, amount)}, ${((bInfo == 1) ? `\$B(${indx}) = ${generateCookie(indx,buildingData[indx].collectionTime,1)}\$` : "")}`;
+var getBuildingInfo = (indx,amount) => `${getBuildingInfo2(indx, amount)}, ${((bInfo == 1) ? `\$B(${indx}) = ${generateCookie(indx,buildingData[indx].collectionTime,terraBoost)}\$` : "")}`;
 var getBuildingInfo2 = (index, am) => {
     if (bInfo == 1) {
         return `\$B[${index}]^{${(getBuildingExp(index) > 1) ? getBuildingExp(index) : ""}}\$ = ${Utils.getMathTo(calcBuilding(index, 0), calcBuilding(index, am))}`;
@@ -572,7 +573,7 @@ var getBuildingInfo2 = (index, am) => {
         result += "s ";
     }
     // Sorry, but you CAN'T get 1 CPS per building skill issue lol
-    result += buildingData[index].desc + BF(generateCookie(index,buildingData[index].collectionTime,1)).toString(0) + " cookies per collection";
+    result += buildingData[index].desc + BF(generateCookie(index,buildingData[index].collectionTime,terraBoost)).toString(0) + " cookies per collection";
     return result;
 }
 var onBuildingBought = (indx,amount) => {
@@ -1421,7 +1422,7 @@ function getBuildingCollect(){
     log(`Global Mult : ${globalMult}`);
     for(let i=0;i<19;i++){
         if(building[i].level > 0){
-            log(`B[${i}] = ${buildingData[i].mult}x = ${generateCookie(i,buildingData[i].collectionTime,1)}`);
+            log(`B[${i}] = ${buildingData[i].mult}x = ${generateCookie(i,buildingData[i].collectionTime,terraBoost)}`);
         }
     }
 }
@@ -1430,7 +1431,7 @@ function getBuildingCollect(){
 function CPSrefresh(){
     CPS = BF(0);
     for(let i=0;i<19;i++){
-        let res = generateCookie(i,buildingData[i].collectionTime,1);
+        let res = generateCookie(i,buildingData[i].collectionTime,terraBoost);
         if(res > CPS){res = CPS;}
     }
     log(`New CPS = ${CPS}`);
@@ -1831,10 +1832,10 @@ var tick = (elapsedTime,multiplier) => {
         updateAvailability();
         for(let i=0;i<19;i++){
             if(dilateBoost >= buildingData[i].collectionTime){
-                COOKIE.value += generateCookie(i,dilateBoost,1);
+                COOKIE.value += generateCookie(i,dilateBoost,terraBoost);
             }else if(building[i].level > 0 && thyme.level % buildingData[i].collectionTime == 0){
                 //log(`${i} due!`);
-                COOKIE.value += generateCookie(i,buildingData[i].collectionTime,1);
+                COOKIE.value += generateCookie(i,buildingData[i].collectionTime,terraBoost);
             }
         }
     }
@@ -2811,7 +2812,7 @@ var getEquationOverlay = () =>
                         if (e.type == TouchType.SHORTPRESS_RELEASED) {
                             log("Boost!");
                             xBegin = thyme.level;
-                            calcCPS();
+                            updateGlobalMult();
                         }
                     },
                 })
@@ -2821,6 +2822,13 @@ var getEquationOverlay = () =>
                     verticalOptions: LayoutOptions.END,
                     heightRequest: 25,
                     margin: new Thickness(9, 9, 0, 0),
+                    onTouched: (e) => {
+                        if (e.type == TouchType.SHORTPRESS_RELEASED && terra.level > 0) {
+                            log("Boost!");
+                            xBegin = thyme.level;
+                            updateGlobalMult();
+                        }
+                    },
                 }),
             terra.level > 0
                 ? ui.createLatexLabel({
