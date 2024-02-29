@@ -185,7 +185,7 @@ function shortPermaUpgradeObj(permanentUpgradeObject,cur){
         ret.maxLevel = permanentUpgradeObject.maxLevel;
     }
     ret.bought = permanentUpgradeObject.onBought;
-    log(`ID:${baseHeavenlyUpgradeID + permanentUpgradeObject.uid} ${permanentUpgradeObject.name}`);
+    //log(`ID:${baseHeavenlyUpgradeID + permanentUpgradeObject.uid} ${permanentUpgradeObject.name}`);
     return ret;
 }
 function shortUpgrade(id, cur, costModel, desc, info) {
@@ -429,12 +429,12 @@ var buildingData = [
     },
     {id: 7,
      names: ["Wizard Tower","Wixaradf Trower"], desc: "spawning in ", lumpBName: "Syllables",
-     baseCPS: 5.5e23, baseCost: 3.3e50, powerUpgradeMult: 17, mult: 1, collectionTime : 25,maxExpLevel: 5,
+     baseCPS: 9.16e17, baseCost: 3.3e50, powerUpgradeMult: 17, mult: 1, collectionTime : 25,maxExpLevel: 5,
      achName: ["Bewitched","Alakazamd","Shaspie Colupis","Cookiera Avadra Creamdera","Hours to pronounce, effects very pronounced"],
     },
     {id: 8,
      names: ["Shipment","Shipemtn"], desc: "bringing in ", lumpBName: "Cosmic Exploration",
-     baseCPS: 1.58e38, baseCost: 5.1e75, powerUpgradeMult: 25, mult: 1, collectionTime : 30,maxExpLevel: 5,
+     baseCPS: 1.079e34, baseCost: 5.1e75, powerUpgradeMult: 25, mult: 1, collectionTime : 30,maxExpLevel: 5,
      achName: ["Local Expedition","Cosmic Mapping","Multiverse Ramble","Omniverse Realization","You could make a chronicle out of those"],
     },
     {id: 9,
@@ -492,8 +492,8 @@ var buildingData = [
 // gimmick upgrade constants
 var covenant, ygg, terra, excavate, moreExcavator, recom, invest, art, artArt, cookiearium, aquaCrust, timeDilate, accelerator, acceleratorMenu,synergy;
 var jetDrive, sugarCoat, crystalHoney;
-const covExp = 5.1;
-const covDelta = 0.6;
+const covExp = 5;
+const covDelta = 0.1;
 const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.45), yggPowBase = BF(1.175), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.2), yggBPowBase = BF(3), yggThymePow = BF(1.4), yggBoost = BF(5e10), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005);
 var buildingCount = 0;
 
@@ -1305,7 +1305,7 @@ function getAllUpgradeMultiplierFromCookie(cookie){
     log(`==Report==`);log(`C = ${cookie}, HC = ${hc}, L = ${l}`);
     log(`1) Normal Cookie Lv.${lv} = ${getCookieTP(lv)}x`);ret *= getCookieTP(lv);
     for (let i = 0; i < cookieTinInfo.length; i++) {
-        lv = getUpgradeLvFromCookie(cookieTin[i],hc);
+        lv = getUpgradeLvFromCookie(cookieTin[i],cookie);
         if(lv > 0){
             log(`Special Cookie ${i} Lv.${lv} = ${BigP(cookieTinInfo[i].mult, lv)}`);ret *= BigP(cookieTinInfo[i].mult, lv);
         }
@@ -1314,24 +1314,24 @@ function getAllUpgradeMultiplierFromCookie(cookie){
     lv = getUpgradeLvFromCookie(kitty,cookie);
     log(`2) Cat Lv.${lv} with A=${achCount} = ${kittyPowerFull(lv)}x`);ret *= kittyPowerFull(lv);
     //part 3 : weird cookies
-    lv = getUpgradeLvFromCookie(CookieS,cookie);
+    lv = getUpgradeLvFromCookie(CookieS,hc);
     if(lv > 0){log(`3) Sugar Crystal Cookie with L=${SUGAR_LUMP.value} = ${(BigNumber.TWO + l).log2().pow(1.5)}x`);ret*=(BigNumber.TWO + l).log2().pow(1.5);}
-    lv = getUpgradeLvFromCookie(CookieH,cookie);
+    lv = getUpgradeLvFromCookie(CookieH,hc);
     if(lv>0){log(`Heavenly Cookie = ${(BigNumber.TEN + hc).log10().pow(1.25)}x`);ret*=(BigNumber.TEN + hc).log10().pow(1.25);}
-    lv = getUpgradeLvFromCookie(CookieC,cookie);
+    lv = getUpgradeLvFromCookie(CookieC,hc);
     if(lv>0){log(`Cookie Cookie = ${(BigNumber.TEN + cookie).log10().pow(0.9)}x`);ret*=(BigNumber.TEN + cookie).log10().pow(0.9);}
-    lv = getUpgradeLvFromCookie(CookieTau,cookie);
+    lv = getUpgradeLvFromCookie(CookieTau,hc);
     if(lv>0){log(`Tau Cookie = ${game.tau.log10().log10().pow(2)}x`);ret*=game.tau.log10().log10().pow(2);}
     //part 4 : publication
     log(`4) Publication, Rho = ${BigP(cookie,0.2)} = ${getPublicationMultiplier(BigP(cookie,0.2))}`);ret*=getPublicationMultiplier(BigP(cookie,0.2));
     //part 5 : heavenly non-cookie
-    lv = getUpgradeLvFromCookie(DivineD,cookie);
+    lv = getUpgradeLvFromCookie(DivineD,hc);
     if(lv>0){log(`5) Divine Doulbing Lv.${lv} = ${BigNumber.TWO.pow(lv)}x`);ret*=BigNumber.TWO.pow(lv);}
-    lv = getUpgradeLvFromCookie(R9Box,cookie);lv = Math.min(lv,R9Box.maxLevel);
+    lv = getUpgradeLvFromCookie(R9Box,hc);lv = Math.min(lv,R9Box.maxLevel);
     if(lv>0){log(`R9 Box Lv.${lv} = ${(BigP(game.sigmaTotal, lv * R9BoxMult))}x`);ret*=(BigP(game.sigmaTotal, lv * R9BoxMult));}
-    lv = getUpgradeLvFromCookie(ChronosAge,cookie);lv = Math.min(lv,ChronosAge.maxLevel);
+    lv = getUpgradeLvFromCookie(ChronosAge,hc);lv = Math.min(lv,ChronosAge.maxLevel);
     if(lv>0){log(`Chronos Lv.${lv} = ${(BF(1) + BF(thyme.level).pow(chronosPow))}x`);ret*=(BF(1) + BF(thyme.level).pow(chronosPow));}
-    lv = getUpgradeLvFromCookie(TwinGates,cookie);lv = Math.min(lv,TwinGates.maxLevel);
+    lv = getUpgradeLvFromCookie(TwinGates,hc);lv = Math.min(lv,TwinGates.maxLevel);
     if(lv>0){log(`Twin Gates Lv.${lv} = ${hc.pow(twinGateExp * TwinGates.level)}x`);ret*=hc.pow(twinGateExp * TwinGates.level);}
     //part 6 : logistic
     lv = getUpgradeLvFromCookie(terra,cookie);lv = Math.min(lv,terra.maxLevel);
@@ -1353,12 +1353,13 @@ function getCPSBuildingFromCookie(cookie, index, lumpLv){
     let conLv = getUpgradeLvFromCookie(conGrow,hc), empLv = getUpgradeLvFromCookie(Empower,hc), superPLv = (cookie >= BF(1e150))?1:0;conLv = Math.min(conLv,conGrow.maxLevel);empLv = Math.min(empLv,Empower.maxLevel);
     let lvA = calcBuildingLv(index, lv, conLv), bp = getPowerLv(index,lvP,empLv,superPLv);
     conLv=Math.min(conGrow.maxLevel,conLv);empLv = Math.min(Empower.maxLevel,empLv);
-    log(`Mult : ${gbMult}`);log(`Building Name : ${buildingData[index].names[0]}\nLevel : ${lv} = ${lvA} (Con Lv.${conLv})\nPower Lv.${lvP} : ${bp} (Emp Lv.${empLv})\nLump Lv.${lumpLv}^${buildingLumpMult} = ${BigP(lumpLv,buildingLumpMult)}x`);
+    log(`Mult : ${gbMult}`);log(`Building Name : ${buildingData[index].names[0]}\nLevel : ${lv} = ${lvA} (Con Lv.${conLv})\nPower Lv.${lvP} : ${bp} (Emp Lv.${empLv})\nLump Lv.${buildingLumpMult}^${lumpLv} = ${BigP(buildingLumpMult,lumpLv)}x`);
     if(index == 0){
         var cLv = getUpgradeLvFromCookie(clickPower,cookie);
         log(`Cursor Power : ${CPS * (BF(1) + (BF(cLv) * BigP(buildingLumpMult, lumpLv)) * BF(baseClickPower))}`);
     }
-    let res = buildingData[index].baseCPS * lvA * bp * gbMult * BigP(lumpLv,buildingLumpMult);
+    let res = BF(1);
+    res = buildingData[index].baseCPS * lvA * bp * gbMult * BigP(buildingLumpMult,lumpLv);
     log(`Total CPS : ${res}`);
     for(let i=1;i<=5;i++){
         log(`^${1 + 0.05*i} = ${BigP(res,1 + 0.05*i)}`);
@@ -1402,6 +1403,17 @@ function getBuildingCollect(){
             log(`B[${i}] = ${buildingData[i].mult}x = ${generateCookie(i,buildingData[i].collectionTime,1)}`);
         }
     }
+}
+
+//? 7. Refreshes CPS
+function CPSrefresh(){
+    CPS = BF(0);
+    for(let i=0;i<19;i++){
+        let res = generateCookie(i,buildingData[i].collectionTime,1);
+        if(res > CPS){res = CPS;}
+    }
+    log(`New CPS = ${CPS}`);
+    CPSstore.setValue(CPS);
 }
 
 //!==INIT==
@@ -1570,7 +1582,7 @@ var init = () => {
     // All 19 Buildings
     for (let i = 0; i < 19; i++) {
         //main upgrade
-        log(`B${i}`);
+        //log(`B${i}`);
         //power
         buildingPower[i] = shortPermaUpgrade(4 + i, COOKIE, buildingPowerCost(i),"getBuildingPowerDesc(i)", "(amount) => getBuildingPowerInfo(i,amount)");
         buildingPower[i].getDescription = () => getBuildingPowerDesc(i);
@@ -1877,7 +1889,7 @@ var secondaryEq = (mode, col) => {
         case 4:// Cov
             let cp = " C_{v}";
             return (
-                `\\color{#${eqColor[col]}}{B(2) \\leftarrow B(2)${cp}\\\\(\\sum_{i=0 \\: i\\neq 1}^{18}{P_{1}^{0.9}}{B[i]^{0.8}}${cp})^{${covDelta}${cp}^{${covLvMod}} + ${covExp}}}`
+                `\\color{#${eqColor[col]}}{B(2) \\leftarrow B(2)(\\sum_{i=0}^{18}{B[i]})^{${covDelta}${cp}^{${covLvMod}} + ${covExp}}}`
             );
         case 5:// Ygg + Chronos
             // theory.secondaryEquationScale = 0.925;
