@@ -295,6 +295,7 @@ class ISV {
     var heavVis = new ISV(0, 0, 7);
     var bInfoStore = new ISV(0, 0, 8);
     var dominatestore = new ISV(0, 0, 9);
+    var maxBuildStore = new ISV(0, 0, 10);//maximum building
     // block 5 - VIZ
     var eqTypeStore = new ISV(0, 7, 0),
         quTypeStore = new ISV(0, 7, 1);
@@ -310,7 +311,7 @@ class ISV {
     var perkHas;
     //let time = ISV(0,0,0); // degrees
 }
-var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0;
+var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxBuild = 0;
 
 //internal state work
 {
@@ -327,7 +328,7 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0;
         //assign!
         CPSstore.readValue();HPSstore.readValue();
         achCountStore.readValue();lumpTotal.readValue();artUnlock.readValue();reactorMode.readValue();perkPoint.readValue();heavVis.readValue();
-        bInfoStore.readValue();dominatestore.readValue();eqTypeStore.readValue();quTypeStore.readValue();vizType.readValue();eqCStore.readValue();
+        bInfoStore.readValue();dominatestore.readValue();eqTypeStore.readValue();quTypeStore.readValue();vizType.readValue();eqCStore.readValue();maxBuildStore.readValue();
         for(let i=0;i<19;i++){
             buildingExponentLvStore[i].readValue();
         }
@@ -336,7 +337,7 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0;
         perkHas = perkPoint.value;
         for (let i = 0; i < 19; i++) {
             buildingExponentLv[i] = Math.floor(buildingExponentLvStore[i].value);
-            log(buildingExponentLv[i]);
+            //log(buildingExponentLv[i]);
             perkHas -= buildingExponentLv[i];
             perkMenu.content.children[3].children[0].children[i].children[1].text = `${buildingExponentLv[i]} / ${maxbuiPerk(i)}`;
         }
@@ -345,6 +346,7 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0;
         eqType = Math.floor(eqTypeStore.value);if(Number.isNaN(eqType)){eqType = 0;}
         quType = Math.floor(quTypeStore.value);if(Number.isNaN(quType)){quType = 0;}
         bInfo = Math.floor(bInfoStore.value);if(Number.isNaN(bInfo)){bInfo = 0;}
+        maxBuild = Math.floor(maxBuildStore.value);if(Number.isNaN(maxBuild)){maxBuild = 0;}
         log("Read the data!");
     }
 }
@@ -352,19 +354,19 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0;
 //! Buildings INFO + GIMMICKS
 var buildingPriceMult = ML2(1.15);
 var building50 = BigP(BigP(2,buildingPriceMult),50);
-var buildingExponent = 0.05;
+var buildingExponent = 0.05, defaultSweetLim = 1;
 
 //the funni
 //achName : 100, 1000, 5000, 10000, lump 100
 var buildingData = [
     {id: 0,
      names: ["Cursor","Curseof"], desc: "clicking ", lumpBName: "Extra Finger",
-     baseCPS: 7, baseCost: 11, powerUpgradeMult: 250, mult: 1, collectionTime : 10,maxExpLevel: 5,
+     baseCPS: 7, baseCost: 11, powerUpgradeMult: 250, mult: 1, collectionTime : 10,maxExpLevel: 5, sweetLimit: 5, sweetMax: 150,
      achName: ["Mouse Wheel","Clicktopia","Thumbs, Phalanges, Metacarpals","Hands of fate lays bare their click upon thou","A hand and them a some more"]
     },
     {id: 1,
      names: ["Grandma","Gradnma"], desc: "backing ", lumpBName: "Anti-Aging Cream",
-     baseCPS: 310, baseCost: 1000, powerUpgradeMult: 3.5, mult: 1, collectionTime : 10,maxExpLevel: 5,
+     baseCPS: 310, baseCost: 1000, powerUpgradeMult: 3.5, mult: 1, collectionTime : 10,maxExpLevel: 5, sweetLimit: 10, sweetMax: 350,
      achName: ["Retirement Club","Tootsie Roll Machine","Ruler of the Ancients","Shrivel, today we rise","Just like babies, but much more weird and terrifying"],
      gimmicks: [{
         uid: 10001,
@@ -376,7 +378,7 @@ var buildingData = [
      }]},
     {id: 2,
      names: ["Farm","Famr"], desc: "growing ", lumpBName: "Electrolytes and Acres",
-     baseCPS: 5.3e4, baseCost: 1.1e5, powerUpgradeMult: 60, mult: 1, collectionTime : 15,maxExpLevel: 5,
+     baseCPS: 5.3e4, baseCost: 1.1e5, powerUpgradeMult: 60, mult: 1, collectionTime : 15,maxExpLevel: 5, sweetLimit: 15, sweetMax: 250,
      achName: ["Home Organic","100% Sustainable","Green Pasture lays live","Babylonian Conservatorium sits on the hill","Farmer\'s Heaven"],
      gimmicks: [{
         uid: 10002,
@@ -388,7 +390,7 @@ var buildingData = [
      }]},
     {id: 3,
      names: ["Mine","Mein"], desc: "mining ", lumpBName: "Drilling Overclock",
-     baseCPS: 7.4e7, baseCost: 1.2e8, powerUpgradeMult: 125, mult: 1, collectionTime : 15,maxExpLevel: 5,
+     baseCPS: 7.4e7, baseCost: 1.2e8, powerUpgradeMult: 125, mult: 1, collectionTime : 15,maxExpLevel: 5, sweetLimit: 25, sweetMax: 500,
      achName: ["Stop! Drilling Time!","Break the core","Dysonian Society","Breaking through omnirealitimetaplanes","r/drillingmasterrace"],
      gimmicks: [{
         uid: 10003,
@@ -400,7 +402,7 @@ var buildingData = [
      }]},
     {id: 4,
      names: ["Factory","Fcotyr"], desc: "mass producing ", lumpBName: "Patent Publishing",
-     baseCPS: 4.05e10, baseCost: 1.3e12, powerUpgradeMult: 59, mult: 1, collectionTime : 20,maxExpLevel: 5,
+     baseCPS: 4.05e10, baseCost: 1.3e12, powerUpgradeMult: 59, mult: 1, collectionTime : 20,maxExpLevel: 5, sweetLimit: 25, sweetMax: 500,
      achName: ["Industrial Act","Age of Internet","Automatal Hysteria","The perfect game of Factorio","Overengineering Achieved"],
      gimmicks: [{
         uid: 10004,
@@ -412,7 +414,7 @@ var buildingData = [
      }]},
     {id: 5,
      names: ["Bank","Bkan"], desc: "interesting ", lumpBName: "Increase Interest Rates",
-     baseCPS: 1.4e12, baseCost: 1.4e18, powerUpgradeMult: 35, mult: 1, collectionTime : 20,maxExpLevel: 5,
+     baseCPS: 1.4e12, baseCost: 1.4e18, powerUpgradeMult: 35, mult: 1, collectionTime : 20,maxExpLevel: 5, sweetLimit: 25, sweetMax: 500,
      achName: ["Pretty Penny Pinchers","Keynesian Cookinomics","New Neohyperglobalization Order","Money is just a human construct","Hypermetaflation"],
      gimmicks: [{
         uid: 10005,
@@ -424,67 +426,67 @@ var buildingData = [
      }]},
     {id: 6,
      names: ["Temple","Tmelpe"], desc: "directing in ", lumpBName: "Sacred Chocolate Artifact",
-     baseCPS: 1.18e18, baseCost: 2e25, powerUpgradeMult: 8, mult: 1, collectionTime : 25,maxExpLevel: 5,
+     baseCPS: 1.18e18, baseCost: 2e25, powerUpgradeMult: 8, mult: 1, collectionTime : 25,maxExpLevel: 5, sweetLimit: 50, sweetMax: 500,
      achName: ["Way of the Temple","Balance of Faith","The Lord\'s Likeliness","Caricature of the forgotten Deities","Chief Artifact Curator"],
     },
     {id: 7,
      names: ["Wizard Tower","Wixaradf Trower"], desc: "spawning in ", lumpBName: "Syllables",
-     baseCPS: 9.16e17, baseCost: 3.3e50, powerUpgradeMult: 17, mult: 1, collectionTime : 25,maxExpLevel: 5,
+     baseCPS: 9.16e22, baseCost: 3.3e50, powerUpgradeMult: 17, mult: 1, collectionTime : 25,maxExpLevel: 5, sweetLimit: 100, sweetMax: 500,
      achName: ["Bewitched","Alakazamd","Shaspie Colupis","Cookiera Avadra Creamdera","Hours to pronounce, effects very pronounced"],
     },
     {id: 8,
      names: ["Shipment","Shipemtn"], desc: "bringing in ", lumpBName: "Cosmic Exploration",
-     baseCPS: 1.079e34, baseCost: 5.1e75, powerUpgradeMult: 25, mult: 1, collectionTime : 30,maxExpLevel: 5,
+     baseCPS: 1.079e34, baseCost: 5.1e75, powerUpgradeMult: 25, mult: 1, collectionTime : 30,maxExpLevel: 5, sweetLimit: 125, sweetMax: 500,
      achName: ["Local Expedition","Cosmic Mapping","Multiverse Ramble","Omniverse Realization","You could make a chronicle out of those"],
     },
     {id: 9,
-     names: ["Alchemy Lab","Alehfcehy Lba"], desc: "transmuting ", lumpBName: "New Esoteric Elements",
+     names: ["Alchemy Lab","Alehfcehy Lba"], desc: "transmuting ", lumpBName: "New Esoteric Elements", sweetLimit: 150, sweetMax: 500,
      baseCPS: 1.15e50, baseCost: 7.5e100, powerUpgradeMult: 23, mult: 1, collectionTime : 30,maxExpLevel: 5,
      achName: ["Transmutation","Polytranselementation","With matter comes Cookies","Satiated in the gaudy mouths of Gold","Truly a Mendeleev's Nightmare"],
     },
     {id: 10,
      names: ["Portal","Proalt"], desc: "retrieving ", lumpBName: "Normalize Dimension",
-     baseCPS: 6.66e58, baseCost: BF("1e125"), powerUpgradeMult: 21, mult: 1, collectionTime : 35,maxExpLevel: 5,
+     baseCPS: 6.66e58, baseCost: BF("1e125"), powerUpgradeMult: 21, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 200, sweetMax: 450,
      achName: ["Isekai\'d","H̶e̷ ̶C̶o̴m̵e̸s̵","I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎","Bottom of the abyss","Is this reality or is it cookieverse?"],
     },
     {id: 11,
      names: ["Time Machine","Tie Macine"], desc: "preventing cookies from being eaten by ", lumpBName: "Paradox Resolve",
-     baseCPS: BF("6.5e72"), baseCost: BF("1.4e150"), powerUpgradeMult: 20, mult: 1, collectionTime : 35,maxExpLevel: 5,
+     baseCPS: BF("6.5e72"), baseCost: BF("1.4e150"), powerUpgradeMult: 20, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 225, sweetMax: 400,
      achName: ["Thyme Wrap","Thyme Pararegano","Thyme Sagaporal Nutmegstant","Out of past, Out of future","No more Thyme Pararegano"],
     },
     {id: 12,
      names: ["Antimatter Condenser","Antimatter Condenstor"], desc: "synthesizing ", lumpBName: "Derived Elementary Flavor",
-     baseCPS: BF("9.15e79"), baseCost: BF("1.7e180"), powerUpgradeMult: 15, mult: 1, collectionTime : 40,maxExpLevel: 5,
+     baseCPS: BF("9.15e79"), baseCost: BF("1.7e180"), powerUpgradeMult: 15, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 250, sweetMax: 350,
      achName: ["When does it matter?","New Standard Model of Cookie and Flour","Unified Complete Theory of the Cookieverse","Hypersize my String and Gluten","Flavor Mathematics"],
     },
     {id: 13,
      names: ["Prism","Prius"], desc: "matterifying from light ", lumpBName: "Extended Spectrum",
-     baseCPS: BF("4.9e96"), baseCost: BF("2.1e215"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5,
+     baseCPS: BF("4.9e96"), baseCost: BF("2.1e215"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 350,
      achName: ["Some rays of dough and batter","Total Enlightenment","O thy energy of sky, bring fourth the light rays","Neverending rays of bright brilliance shine on you all","4th Cone"],
     },
     {id: 14,
      names: ["Chamceamekr","Cursof"], desc: "lucking in ", lumpBName: "Serendipity",
-     baseCPS: BF("2.1e123"), baseCost: BF("2.6e300"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5,
+     baseCPS: BF("2.1e123"), baseCost: BF("2.6e300"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 300, sweetMax: 350,
      achName: ["Lucked up","Devil\'s Gambit","Gambler\'s Last Bet","Remember, the house always wins","Black Cat\'s Paw"],
     },
     {id: 15,
      names: ["Fractal Engine","Framcael Engeen"], desc: "duplicating in ", lumpBName: "Gone Iterative",
-     baseCPS: BF("2.2e150"), baseCost: BF("3.1e351"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5,
+     baseCPS: BF("2.2e150"), baseCost: BF("3.1e351"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 350, sweetMax: 350,
      achName: ["Z_n+1 = (Z_n)^2 + c","Apollonian Gasket","C_n := (C_n-1 ∪ (2+C_n-1))/3, where C_0 := [0,1]","Divide by zero, now, I dare you","Quite nearly but not so full"],
     },
     {id: 16,
      names: ["Javascript Console","Jacascipr Conseoul"], desc: "hacking in ", lumpBName: "Reformat JS Script",
-     baseCPS: BF("3.1e187"), baseCost: BF("7.1e425"), powerUpgradeMult: 9, mult: 1, collectionTime : 50,maxExpLevel: 5,
+     baseCPS: BF("3.1e187"), baseCost: BF("7.1e425"), powerUpgradeMult: 9, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 400, sweetMax: 300,
      achName: ["Press F12","Infinite Theorycraft","I bring fourth reincarnation of reality","","The \"C\" Language"],
     },
     {id: 17,
      names: ["Idleverse","IDledeverse"], desc: "clicking ", lumpBName: "Install Another Idle Game",
-     baseCPS: 69420, baseCost: BF("6.9e1337"), powerUpgradeMult: 7, mult: 1, collectionTime : 50,maxExpLevel: 5,
+     baseCPS: 69420, baseCost: BF("6.9e1337"), powerUpgradeMult: 7, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 450, sweetMax: 250,
      achName: ["Manifest Destiny","Is there enough worlds?","Lost your Cosmic Cookies?","We the People of the Cookieverse, in Order to form a more perfect Dimensional Union, establish Justice, insure domestic Tranquility, provide for the common defense, promote the general Welfare, and secure the Blessings of Cookies to ourselves and our Posterity, do ordain and establish this Constitution for the Cookieverse.","You need a new bluestack"],
     },
     {id: 18,
      names: ["Cortex Baker","Corex Bakr"], desc: "clicking ", lumpBName: "Get an extra IQ Point",
-     baseCPS: 69420, baseCost: BF("6.9e1337"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5,
+     baseCPS: 69420, baseCost: BF("6.9e1337"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 500, sweetMax: 200,
      achName: ["O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA","Cardinal Synapsis","I declare thee on all ye inferiors. Despair before me, I am the Ozymandias","Who are you? I̷ a̵͇̋͂̌m̷̡̨̉̀̂ s̷̬̏̓̓ø̷̘̜͚̒͒̓l̸͍̄͐͘i̷̡̛̞̯p̷͈̞̳̉̃s̶̬̲͕̝̓̕͝","I am smart"],
     },
 ];
@@ -575,6 +577,11 @@ var getBuildingInfo2 = (index, am) => {
 }
 var onBuildingBought = (indx,amount) => {
     //pass
+    if(maxBuild < indx){
+        maxBuild = indx;
+        maxBuildStore.setValue(maxBuild);
+        updateBuildingLumpMaxLv();
+    }
     buildingCount += amount;
 }
 
@@ -619,6 +626,19 @@ function TestBuildingDisplay(indx){
     log(getBuildingPowerDesc(indx));log(getBuildingInfo(indx,1));
     log(getBuildingLumpDesc(indx));log(getBuildingLumpInfo(indx,1));
     bInfo = temp;
+}
+var updateBuildingLumpMaxLv = () => {
+    if(Number.isNaN(maxBuild)){maxBuild = 0;}
+    let maxLv = buildingData[maxBuild].sweetLimit;
+    log(`Max = ${maxBuild}, lim = ${maxLv}`);
+    for(let i=0;i<19;i++){
+        //log(`L${i} = Lv.${buildingLump[i].level}`);
+        if(buildingLump[i].level < maxLv){
+            buildingLump[i].maxLevel = Math.min(maxLv,buildingData[i].sweetMax);
+        }else{
+            buildingLump[i].maxLevel = buildingLump[i].level + 1;
+        }
+    }
 }
 
 //! CPS
@@ -943,12 +963,12 @@ var COOKIE, HEAVENLY_CHIP, SUGAR_LUMP;
 var thyme, normalUpgradeMenu, permUpgradeMenu;
 
 //! Heavenly Upgrades
-var cookieTinUnlock, CookieH, CookieR, CookieS, CookieC, DivineD, CookieTau, TerraInf, TwinGates, ConjureBuild, ChronosAge, R9Box, conGrow, SpellStack, Empower, milkOil;
+var cookieTinUnlock, CookieH, CookieR, CookieS, CookieC, DivineD, CookieTau, TerraInf, TwinGates, ConjureBuild, ChronosAge, R9Box, conGrow, SpellStack, Empower, milkOil;//"Unlocks a new set of cookies that are more powerful than their normal counterparts, ooooooooo what could it be?"
 var heavenlyUpgradeData = [
     {
         uid: 1,
         name: "Mystery Cookie Tin",
-        info: "Unlocks a new set of cookies that are more powerful than their normal counterparts, ooooooooo what could it be?",
+        info: "Unlocks a new set of cookies that are more powerful than their normal counterparts",
         costModel: new ExponentialCost(25, ML2(1e6)),
         maxLevel: cookieTinInfo.length,
         onBought: (amount) => {updateGlobalMult();}
@@ -1018,7 +1038,7 @@ var heavenlyUpgradeData = [
     },{
         uid: 11,
         name: "Box of R9 $(R_{9})$",
-        info: "A very stange and mathematical box seemingly full of ${game.sigmaTotal} students",
+        info: `A very stange and mathematical box seemingly full of ${game.sigmaTotal} students`,
         costModel: new ExponentialCost(1e80, ML2(10)),
         maxLevel: 3,
         onBought: (amount) => {updateGlobalMult();}
@@ -1045,8 +1065,8 @@ var heavenlyUpgradeData = [
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 15,
-        name: "",
-        info: "",
+        name: "empty",
+        info: "empty",
         costModel: new ExponentialCost(1000, ML2(10)),
         maxLevel: 69420,
         onBought: (amount) => {updateGlobalMult();}
@@ -1577,7 +1597,6 @@ var init = () => {
         };
         kitty.getInfo = (amount) => (bInfo == 1) ? `\$ K_{i} = \$ ${Utils.getMathTo(kittyPower(kitty.level), kittyPower(kitty.level + amount))} ` : "You gain more CPS the more milk you have.";
         kitty.bought = (amount) => {updateGlobalMult();}
-        kitty.maxLevel = 120;
     }
     // All 19 Buildings
     for (let i = 0; i < 19; i++) {
@@ -1782,10 +1801,12 @@ var tick = (elapsedTime,multiplier) => {
     //log(`ET : ${elapsedTime}, M : ${multiplier}`);
     //log(`B : ${buildingLumpMult}`);
     if(setupTick){
+        log("setup tick");
         for(let i=0;i<19;i++){
             updateLocalMult(i);
             buildingCount += building[i].level;
         }
+        updateBuildingLumpMaxLv();
         updateGlobalMult();
         setupTick = false;
     }
