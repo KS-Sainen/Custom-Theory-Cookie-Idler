@@ -711,7 +711,7 @@ var cookieTinInfo = [
         baseCost: 1.5e17,//base cost
         costMult: 17550,//multiplier for cost, will be put through ML2() later on
         mult: 1.2,//mult from 1 level
-        cookieOrder: ["Basic Macaron", "Rose Macaron", "Lemon Macaron", "Chocolate Macaron", "Pistachio Macaron", "Hazelnut Macaron", "Violet Macaron", "Caramel Macaron", "Licorice Macaron", "Earl Grey Macaron"]
+        cookieOrder: ["Basic Macaron", "Rose Macaron", "Lemon Macaron", "Chocolate Macaron", "Pistachio Macaron", "Hazelnut Macaron", "Violet Macaron", "Caramel Macaron", "Licorice Macaron", "Earl Grey Macaron", "Butter-Chocolate-Strawberry Tricaron"]
     },{
         order: 2, //unused, just for reference
         name: "Tin of Butter Cookies",
@@ -2116,7 +2116,7 @@ var getHelpText = () => {
             padding: Thickness(2, 10, 2, 10)
         }));
     }
-    if (SpellView.isAvailable) {
+    if (false) {
         ret.push(ui.createLabel({
             text: "Grimoire",
             fontSize: 18,
@@ -2132,7 +2132,7 @@ var getHelpText = () => {
             padding: Thickness(2, 10, 2, 10)
         }));
     }
-    if (excavate.isAvailable) {
+    if (false) {
         ret.push(ui.createLabel({
             text: "Elements",
             fontSize: 18,
@@ -2148,7 +2148,7 @@ var getHelpText = () => {
             padding: Thickness(2, 10, 2, 10)
         }));
     }
-    if (acceleratorMenu.isAvailable) {
+    if (false) {
         ret.push(ui.createLabel({
             text: "Atomic Decay",
             fontSize: 18,
