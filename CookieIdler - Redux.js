@@ -1665,7 +1665,7 @@ var init = () => {
                 return `${clickPowerMaterialTier[Math.floor((clickPower.level % (clickPowerMaterialTier.length * clickPowerMaterialTierLevel))/clickPowerMaterialTierLevel)]} ${clickPowerMaterials[Math.floor(clickPower.level / (clickPowerMaterialTier.length * clickPowerMaterialTierLevel))]} Mouse Tier ${(clickPower.level % clickPowerMaterialTierLevel) + 1}`;
             }
         };
-        clickPower.getInfo = () => "Cursors gain 1% more of your highest cookie collected from a building, compounds with L[0] $(P_{cp})$";
+        clickPower.getInfo = () => "Cursors gain 1 percent more of your highest cookie collected from a building, compounds with L[0] $(P_{cp})$";
     }
     //Heavenly Upgrades
     {
