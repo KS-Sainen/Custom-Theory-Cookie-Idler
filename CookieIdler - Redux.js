@@ -746,19 +746,19 @@ var cookieTinInfo = [
         name: "Box of Cookie?",
         baseCost: BF("1.5e101"),//base cost
         costMult: 8775,//multiplier for cost, will be put through ML2() later on
-        mult: 1.75,//mult from 1 level
+        mult: 1.7,//mult from 1 level
         cookieOrder: ["Cookie Dough", "Cookie Dough(No Salmonella)", "Burnt Cookie", "A normal chocolate chip cookie but there\'s no chips at all for some reason", "4K Cookie", "Ray-Traced Cookie", "Crackers", "Deep-Fried Cookie", "Flavor Text Cookie"]
     },{
         order: 7, //unused, just for reference
         name: "Box of Cookien'\t",
-        baseCost: BF("1.5e119"),//base cost
+        baseCost: BF("1.5e120"),//base cost
         costMult: 8775,//multiplier for cost, will be put through ML2() later on
-        mult: 1.8,//mult from 1 level
+        mult: 1.7,//mult from 1 level
         cookieOrder: ["Toast", "Pancakes", "Marshmellows", "PB amd J", "Wookies", "Cheeseburger", "Beesechurger", "One lone chocolate Chip", "Pizza", "Candy", "Brownies", "Flavor text Food that is not cookie", "Medovik", "Fudge"]
     },{
         order: 8, //unused, just for reference
         name: "Crate full of Exponential Idle Community References",
-        baseCost: BF("1.5e137"),//base cost
+        baseCost: BF("1.5e150"),//base cost
         costMult: 8775,//multiplier for cost, will be put through ML2() later on
         mult: 2,//mult from 1 level
         cookieOrder: ["Gilles-Cookie Paillé", "liver", "Mathmatically Illegal Cookie", "! [ Snakey Snickerdoodles ] !", "Nerdy as f Cookie", ":exCookie:", "JS-Formed ellipsis Cookie", "SkyXCookie", "Weierstra🅱️ Cookie Spiral", "Exponential Cookie", "ouo cookie", "Orteil β Cookie"]
@@ -1761,7 +1761,7 @@ var updateAvailability = () => {
 };
 
 //!Tick
-var terraBoost = BF(1), dilateBoost = BF(1), setupTick = true;
+var terraBoost = BF(1), dilateBoost = BF(1), setupTick = true, IdleCPS = BF(0);
 var thymeInc = () => {
     //thyme = ticks elapsed
     thyme.level += (thyme.level < thyme.maxLevel) ? 1 : 0;
@@ -1808,9 +1808,17 @@ var refreshLocalMult = () => {
         }
     }
 }
+var calcIdleCPS = () => {
+    IdleCPS = BF(0);
+    for(let i=0;i<19;i++){
+        updateLocalMult(i);
+        IdleCPS += generateCookie(i,10,1);
+    }
+}
 var tick = (elapsedTime,multiplier) => {
     //log(`ET : ${elapsedTime}, M : ${multiplier}`);
     //log(`B : ${buildingLumpMult}`);
+    //dt = 0.1 normally, so x10 for 1 second
     if(setupTick){
         log("setup tick");
         for(let i=0;i<19;i++){
@@ -1823,28 +1831,42 @@ var tick = (elapsedTime,multiplier) => {
     }
     terraBoost = Logistic();
     dilateBoost = Dilate();
-    let dt =elapsedTime * multiplier * 10;//we'll see about this later
+    let dt =elapsedTime * multiplier * 10 * dilateBoost;//we'll see about this later
     thymeInc(Math.round(dt * dilateBoost));
     theory.invalidateSecondaryEquation();
     //let theoryBonus = theory.publicationMultiplier;
-    //cookie
-    if(thyme.level % 5 == 0){
-        updateAvailability();
-        for(let i=0;i<19;i++){
-            if(dilateBoost >= buildingData[i].collectionTime){
-                COOKIE.value += generateCookie(i,dilateBoost,terraBoost);
-            }else if(building[i].level > 0 && thyme.level % buildingData[i].collectionTime == 0){
-                //log(`${i} due!`);
-                COOKIE.value += generateCookie(i,buildingData[i].collectionTime,terraBoost);
+    //idle
+    if(game.isCalculatingOfflineProgress){
+        xBegin = thyme.level - (250 * (terra.level + 1));
+        terraBoost = Logistic();
+        if(IdleCPS == BF(0)){
+            updateGlobalMult();
+            refreshLocalMult();
+            calcIdleCPS();
+        }
+        COOKIE.value += IdleCPS * dt * terraBoost;
+    }else{
+            //cookie
+        if(thyme.level % 5 == 0){
+            updateAvailability();
+            for(let i=0;i<19;i++){
+                if(dt >= buildingData[i].collectionTime){
+                    COOKIE.value += generateCookie(i,dt,terraBoost);
+                }else if(building[i].level > 0 && thyme.level % buildingData[i].collectionTime == 0){
+                    //log(`${i} due!`);
+                    COOKIE.value += generateCookie(i,buildingData[i].collectionTime,terraBoost);
+                }
             }
         }
-    }
-    if(thyme.level % 10 == 0){
-        refreshLocalMult();
+        if(thyme.level % 10 == 0){
+            refreshLocalMult();
+        }
     }
     //lumps
-    let dLump = BF(0) + (sugarCoat.level * 2.5) + ((recom.level + ((artArt.level > 7) ? 10 : 0)) * 0.01);
-    if (Math.random() <= 1 / (lumpTickChance / Math.log10(COOKIE.value))) {
+    let lumpChance = ((dt*10)) / (lumpTickChance / Math.log10(COOKIE.value + 10));//it's normally 1/x
+    let dLump = BF(Math.floor(lumpChance)) + (sugarCoat.level * 2.5) + ((recom.level + ((artArt.level > 7) ? 10 : 0)) * 0.01);
+    lumpChance -= Math.floor(lumpChance);
+    if (Math.random() <= lumpChance) {
         dLump += BF(1);
     }
     if(dLump > BF(0)){
