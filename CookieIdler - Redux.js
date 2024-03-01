@@ -361,7 +361,7 @@ var buildingPriceMult = ML2(1.15);
 var building50 = BigP(BigP(2,buildingPriceMult),50);
 var buildingExponent = 0.05, defaultSweetLim = 1;
 //upgrade variables
-var covenant, ygg, terra, excavate, moreExcavator, recom, invest, investRespec, investHelp = new Array(19), art, artArt, cookiearium, aquaCrust, timeDilate, accelerator, acceleratorMenu,synergy;
+var covenant, ygg, terra, excavate, moreExcavator, recom, invest, investRespec, investHelp = new Array(19), archaeology, artArt, templeReset, artifactPouch, cookiearium, aquaCrust, timeDilate, accelerator, acceleratorMenu,synergy;
 var jetDrive, sugarCoat, crystalHoney;
 
 //the funni
@@ -462,6 +462,39 @@ var buildingData = [
      names: ["Temple","Tmelpe"], desc: "directing in ", lumpBName: "Sacred Chocolate Artifact",
      baseCPS: 1.18e18, baseCost: 2e25, powerUpgradeMult: 8, mult: 1, collectionTime : 25,maxExpLevel: 5, sweetLimit: 50, sweetMax: 500,
      achName: ["Way of the Temple","Balance of Faith","The Lord\'s Likeliness","Caricature of the forgotten Deities","Chief Artifact Curator"],
+     gimmicks: [{
+        uid: 10007,
+        name: "Archaeology $(A_{r})$",
+        info: "Go into your own temples to discover secrets lost to mankind",
+        costModel: new ExponentialCost(1e255, ML2(2)),
+        maxLevel: 1000,
+        onBought: (amount) => {
+            for(let i=0;i<amount;i++){
+                rollLoot();
+                checkArtifactUnlock();
+            }
+        }
+     },{
+        uid: 10008,
+        name: "Templar Resetti",
+        info: "An boring switch lying in a boring room, yet the archaeologists won\'t stop telling you how significant this switch is",
+        costModel: new LinearCost(10000,10000), currency: 2,
+        maxLevel: 50,
+        onBought: (amount) => {
+            archaeology.level = 0;
+        }
+     },{
+        uid: 10009,
+        name: "Artifact Pouch",
+        info: "View the list of artifacts",
+        costModel: new FreeCost(),
+        maxLevel: 2,
+        onBought: (amount) => {
+            if(artifactPouch.level > 1){
+                artifactPouch.level = 0;
+            }
+        }
+     }]
     },
     {id: 7,
      names: ["Wizard Tower","Wixaradf Trower"], desc: "spawning in ", lumpBName: "Syllables",
@@ -495,7 +528,7 @@ var buildingData = [
     },
     {id: 13,
      names: ["Prism","Prius"], desc: "matterifying from light ", lumpBName: "Extended Spectrum",
-     baseCPS: BF("4.9e96"), baseCost: BF("2.1e225"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 350,
+     baseCPS: BF("4.9e90"), baseCost: BF("2.1e225"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 350,
      achName: ["Some rays of dough and batter","Total Enlightenment","O thy energy of sky, bring fourth the light rays","Neverending rays of bright brilliance shine on you all","4th Cone"],
     },
     {id: 14,
@@ -630,7 +663,7 @@ var onBuildingBought = (indx,amount) => {
 log(building50);
 var buildingPowerCost = (i) => new ExponentialCost(BF(building50) * buildingData[i].baseCost, ML2(building50));
 var getBuildingPowerDesc = (indx) => `\$P_{${BigTS(indx)}}${(superP.level > 0) ? "^{1.02}" : ""}\$ = ${BigTS(getPower(indx))}`;
-var getBuildingPowerInfo = (indx,amount) => `\$P_{${TS10(indx)}}${(superP.level > 0) ? "^{1.02}" : ""} \\: = \\: \$${Utils.getMathTo(BigTS(getPower(indx)), getPower2(indx, buildingPower[indx].level + amount).toString(0))}`;
+var getBuildingPowerInfo = (indx,amount) => `\$P_{${TS10(indx)}}${(superP.level > 0) ? "^{1.02}" : ""} \\: = \\: \$ ${Utils.getMathTo(BigTS(getPower(indx)), getPower2(indx, buildingPower[indx].level + amount).toString(0))}`;
 
 // building lump data
 var buildingLumpMult = 1.1
@@ -993,52 +1026,123 @@ var getCollectionBar = (indx, cur) => {
 //! Artifacts
 var artArt, templeJ = false, artifactUpgrade = new Array(99), artifactUnlock = new Array(99), artifactCount = 0;
 const artifactLockText = "Not Discovered";
-var artifactInfo = [{
+var artifactData = [{
     order: 0,name: "Rhombus of Chocolatance",clue: "how did you managed to see this",
     cost: BF("1e250"),unlockCondition: () => {return true;}, desc: "Very shiny chocolate that somehow brings in attention of even more gods"
 },{
     order: 1,name: "Occam\'s Lazer",clue: "One is One, Five is Two",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "A hilariously big beam of light that makes prisms go head over toes for them(aka you)"
+    cost: BF("1e253"),unlockCondition: () => {return archaeology.level >= 532 - (532 & 512 | 1 | 2 | 4 | 8);}, desc: "A hilariously big beam of light that makes prisms go head over toes for them(aka you)"
 },{
     order: 2,name: "All-Natural ouo sugar",clue: "Achieved Enough?",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Makes the cat go ouo and [DATA EXPUNGED]"
+    cost: BF("1e255"),unlockCondition: () => {return achCount >= ((1 << 2) + 1) << 4;}, desc: "Makes the cat go ouo and [DATA EXPUNGED]"
 },{
     order: 3,name: "Doctor T\'s Thesis",clue: "YEAH SCIENCE!!!!!!!!",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "The panacea to all those hand diseases"
+    cost: BF("1e260"),unlockCondition: () => {return building[9].level + investHelp[9].level >= ((((((4095 & (4095 - 1)) & (4095 - 4)) & (4095 - 8)) & (4095 - 64) & (4095 - 256)) & (4095 - 512)));}, desc: "The panacea to all those hand diseases"
 },{
     order: 4,name: "Bountiful box of Gilles-Philippe",clue: "There\'s kings in cookies",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Replaces grandma with something else....  better?"
+    cost: BF("1e265"),unlockCondition: () => {return cookieTin[7].level >= 1 << 2 >> 2 << 2 >> 2 << 2 >> 2 << 2 >> 2 << 2 >> 2 << 2 >> 2;}, desc: "Replaces grandma with something else....  better?"
 },{
     order: 5,name: "Key to the Conservatorium",clue: "Explore more, duh",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "An overly ornate yet small key to a glass house you never knew existed. Take a walk inside, experience the exotic fauna and dreamy space, but please DO NOT eat or drink anything labelled with \"Eat me\" or \"Drink Me\"."
+    cost: BF("1e270"),unlockCondition: () => {return art.level >= (((1 << 5) | 1) & 31 & 62 | 2 | 4 | 8 | 16);}, desc: "An overly ornate yet small key to a glass house you never knew existed. Take a walk inside, experience the exotic fauna and dreamy space, but please DO NOT eat or drink anything labelled with \"Eat me\" or \"Drink Me\"."
 },{
     order: 6,name: "Coreforge Bar",clue: "A bit deeper",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "An legendary alloy rumored to be forged within the very halls of Sauron. Their sheer radiance already bests even the most sophisticated of your alloys, not to mention the heat."
+    cost: BF("1e275"),unlockCondition: () => {return art.level >= (((((((1 << 1) + 1) << 1) + 1) << 1) + 1) << 1) + ((1 << 3) + 10);}, desc: "An legendary alloy rumored to be forged within the very halls of Sauron. Their sheer radiance already bests even the most sophisticated of your alloys, not to mention the heat."
 },{
     order: 7,name: "Da Vinci Manuscript",clue: "Get those patents out, ya stingy",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Contains all you would ever dream when you have to deal with the nightmare of citations, absolutely useless otherwise."
+    cost: BF("1e280"),unlockCondition: () => {return ((32 >> 4) | (32 >> 1) | 32 ) << 2;}, desc: "Contains all you would ever dream when you have to deal with the nightmare of citations, absolutely useless otherwise."
 },{
     order: 8,name: "A very curious tulip bulb",clue: "Hoard, Hoard, Hoard more",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Supposedly dating back to the 1600s and being involved in \"Tulip Mania\". This bulb of tulip surprisingly has numerous bubbles formed around its petals, a reminder of something?"
+    cost: BF("1e295"),unlockCondition: () => {return cookie.value >= BF("1e290");}, desc: "Supposedly dating back to the 1600s and being involved in \"Tulip Mania\". This bulb of tulip surprisingly has numerous bubbles formed around its petals, a reminder of something?"
 },{
-    order: 9,name: "Book of Symbolisms",clue: "Am I lucky? enough?",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "You don\'t know why, but you felt a compulsion to keep this book close to you"
+    order: 9,name: "Book of Symbolisms",clue: "Show me the Artifacts, hope you\'re lucky",
+    cost: BF("1e300"),unlockCondition: () => {return (artifactUpgrade[0].level + artifactUpgrade[1].level + artifactUpgrade[2].level + artifactUpgrade[3].level + artifactUpgrade[4].level + artifactUpgrade[5].level + artifactUpgrade[6].level + artifactUpgrade[7].level + artifactUpgrade[8].level >= 9) && (Math.random() < 0.05);}, desc: "You don\'t know why, but you felt a compulsion to keep this book close to you"
 },{
     order: 10,name: "Grimoire of Basic Cookie Magic",clue: "haha mana goes brrrrrr",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 8 spells"
+    cost: BF("1e300"),unlockCondition: () => {return building[7].level >= (parseInt([+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[]]) ^ parseInt([+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[]])) + 50;}, desc: "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 8 spells"
 },{
     order: 11,name: "Antediluvian Engine",clue: "Time-Stopping Performance",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "A peculiar machine somehow capable of locally accelerating spacetime using something about time crystals. Engravings of menacing nature can be found tucked away at the bottom, though we don\'t know why."
+    cost: BF("1e300"),unlockCondition: () => {return false;}, desc: "A peculiar machine somehow capable of locally accelerating spacetime using something about time crystals. Engravings of menacing nature can be found tucked away at the bottom, though we don\'t know why."
 },{
     order: 12,name: "Elementium Infused Chocolate Chunk",clue: "Cavitilicious",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?"
+    cost: BF("1e300"),unlockCondition: () => {return SUGAR_LUMP.value >= 0b10011100010000000000;}, desc: "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?"
 },{
     order: 13,name: "Scent of Vanilla Nebula",clue: "5 Cosmic Mappings ah ah ah",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Some astronomers go crazy over these"
+    cost: BF("1e300"),unlockCondition: () => {return building[8].level >= 0b10011100010000 / 2;}, desc: "Some astronomers go crazy over these"
 },{
     order: 14,name: "Cherrysilverium Meld",clue: "15$(^=)$1.268e30, 16=117.39, 8E=500,000, Cs",
-    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "A curious blob of metal, one of the inscriptions inside the temple\'s numerous halls details a picture of it literally melding buildings together, with humans"
+    cost: BF("1e300"),unlockCondition: () => {return false;}, desc: "A curious blob of metal, one of the inscriptions inside the temple\'s numerous halls details a picture of it literally melding buildings together, with humans"
 },];
+//loot
+const maxRoll = 10000, templeLuck = 0;
+let lootWeight = [10000, 9995, 9945, 9845, 9735, 9615, 9565, 9555, 9530, 9430, 9320, 9200, 9100, 9000];
+let minCookie = (i) => {
+    COOKIE.value += BF(2*60) * generateCookie(0,5,terraBoost) * BF(i);
+};
+let pubH = (i) => {
+    if (COOKIE.value <= 0) return;
+    HEAVENLY_CHIP.value += BF(i) * hfc(COOKIE.value);
+};
+var rollLoot = () => {
+    let r = RandI(maxRoll); + templeLuck;
+    let prize = bsearch(lootWeight, r);
+    switch (prize) {
+        case 0:
+            minCookie(60);
+            pubH(1);
+            tickLump(2000);
+            templeJ = true;
+            break;
+        case 1:
+            generateLump(1500);
+            break;
+        case 2:
+            generateLump(1000);
+            break;
+        case 3:
+            generateLump(750);
+            break;
+        case 4:
+            generateLump(500);
+            break;
+        case 5:
+            generateLump(250);
+            break;
+        case 6:
+            pubH(0.5);
+            break;
+        case 7:
+            minCookie(60);
+            break;
+        case 8:
+            minCookie(30);
+            break;
+        case 9:
+            minCookie(15);
+            break;
+        case 10:
+            minCookie(10);
+            break;
+        case 11:
+            minCookie(5);
+            break;
+        case 12:
+            minCookie(3);
+            break;
+        case 13:
+            minCookie(1);
+            break;
+        default:
+            break;
+    }
+}
+//artifact unlock
+var checkArtifactUnlock = () =>{
+    for(let i=0;i<artifactCount;i++){
+        if(artifactData[i].unlockCondition()){
+            artifactUnlock[i].level = 1;
+        }
+    }
+}
 
 //! Spells
 
@@ -1694,7 +1798,7 @@ var init = () => {
     {
         artArt = throwawayUpgrade(1e9 + 3,"Artifacts","how did you managed to see this");
         moreExcavator = throwawayUpgrade(1e9 + 4,"Artifacts","how did you managed to see this");
-        art = throwawayUpgrade(1e9 + 5,"Artifacts","how did you managed to see this");
+        //art = throwawayUpgrade(1e9 + 5,"Artifacts","how did you managed to see this");
         cookiearium = throwawayUpgrade(1e9 + 6,"Artifacts","how did you managed to see this");
         aquaCrust = throwawayUpgrade(1e9 + 7,"Artifacts","how did you managed to see this");
         timeDilate = throwawayUpgrade(1e9 + 8,"Artifacts","how did you managed to see this");
@@ -1770,7 +1874,7 @@ var init = () => {
     // All 19 Buildings
     for (let i = 0; i < 19; i++) {
         //main upgrade
-        //log(`B${i}`);
+        log(`B${i}`);
         //power
         buildingPower[i] = shortPermaUpgrade(4 + i, COOKIE, buildingPowerCost(i),"getBuildingPowerDesc(i)", "(amount) => getBuildingPowerInfo(i,amount)");
         buildingPower[i].getDescription = () => getBuildingPowerDesc(i);
@@ -1795,6 +1899,23 @@ var init = () => {
             case 3:terra = gimmickUpgrade(buildingData[i].gimmicks[0]);break;
             case 4:recom = gimmickUpgrade(buildingData[i].gimmicks[0]);break;
             case 5:{invest = gimmickUpgrade(buildingData[i].gimmicks[0]);investRespec = gimmickUpgrade(buildingData[i].gimmicks[1]);break;}
+            case 6:{
+                archaeology = gimmickUpgrade(buildingData[i].gimmicks[0]);
+                templeReset = gimmickUpgrade(buildingData[i].gimmicks[1]);
+                artifactPouch = gimmickUpgrade(buildingData[i].gimmicks[2]);
+                artifactPouch.getDescription = () => `${(artifactPouch.level == 0)?"Open":"Close"} Artifact Pouch`;
+                artifactCount = artifactData.length;
+                for(let i=0;i<artifactCount;i++){
+                    log(`A${i} - ${artifactData[i].name}`);
+                    artifactUnlock[i] = shortPermaUpgrade(60000+i,COOKIE,new ConstantCost(BF("1e1000")),`hast ${artifactData[i]} been discovered`,`how do you managed to see it`);artifactUnlock[i].maxLevel = 1;artifactUnlock[i].isAvailable = false;
+
+                    artifactUpgrade[i] = shortUpgrade(60000+i,COOKIE,new ConstantCost(artifactData[i].cost),artifactData[i].name,artifactData[i].desc);
+                    artifactUpgrade[i].maxLevel = 1;
+                    artifactUpgrade[i].getDescription = () => (artifactUnlock[i].level > 0)?artifactData[i].name : artifactLockText;
+                    artifactUpgrade[i].getInfo = (amount) => (artifactUnlock[i].level > 0)?artifactData[i].desc : artifactData[i].clue;
+                }
+                break;
+            }
         }
     }
 
@@ -1929,6 +2050,12 @@ var updateAvailability = () => {
     recom.isAvailable = COOKIE.value >= BF(1e155) && (normalUpgradeMenu.level % 2) == 0;
     invest.isAvailable = COOKIE.value >= BF(1e180) && (normalUpgradeMenu.level % 2) == 0;
     investRespec.isAvailable = invest.level >= 100 && (normalUpgradeMenu.level % 2) == 0;
+    archaeology.isAvailable = COOKIE.value >= BF(1e245);
+    artifactPouch.isAvailable = archaeology.isAvailable;
+    templeReset.isAvailable = archaeology.isAvailable;
+    for(let i=0;i<artifactCount;i++){
+        artifactUpgrade[i].isAvailable = archaeology.isAvailable && (artifactPouch.level == 1);
+    }
 };
 
 //!Tick
@@ -1968,6 +2095,20 @@ var generateCookie = (id, ticks, mult) => {
     //log(`get ${ret}`);
     return ret;
 }
+var generateLump = (ticks) => {
+    let lumpChance = ticks / (lumpTickChance / Math.log10(COOKIE.value + 10));//it's normally 1/x
+    let dLump = BF(Math.floor(lumpChance)) + (sugarCoat.level * 2.5) + ((recom.level + ((artArt.level > 7) ? 10 : 0)) * 0.01);
+    lumpChance -= Math.floor(lumpChance);
+    if (ticks == 1 && Math.random() <= lumpChance) {
+        dLump += BF(1);
+    }else{
+        dLump += lumpChance*ticks;
+    }
+    if(dLump > BF(0)){
+        SUGAR_LUMP.value += dLump;
+        lumpTotal.setValue(lumpTotal.value + dLump);
+    }
+};
 var refreshLocalMult = () => {
     for(let i=0;i<19;i++){
         updateLocalMult(i);
@@ -2054,16 +2195,7 @@ var tick = (elapsedTime,multiplier) => {
         }
     }
     //lumps
-    let lumpChance = ((dt*10)) / (lumpTickChance / Math.log10(COOKIE.value + 10));//it's normally 1/x
-    let dLump = BF(Math.floor(lumpChance)) + (sugarCoat.level * 2.5) + ((recom.level + ((artArt.level > 7) ? 10 : 0)) * 0.01);
-    lumpChance -= Math.floor(lumpChance);
-    if (Math.random() <= lumpChance) {
-        dLump += BF(1);
-    }
-    if(dLump > BF(0)){
-        SUGAR_LUMP.value += dLump;
-        lumpTotal.setValue(lumpTotal.value + dLump);
-    }
+    generateLump(dt);
     //heavenly chips
     theory.invalidateQuaternaryValues();
     theory.invalidateTertiaryEquation();
