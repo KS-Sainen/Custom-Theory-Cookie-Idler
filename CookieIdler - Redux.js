@@ -36,6 +36,7 @@ var authors = "Sainen Lv.420 #2684";
  Lava#3374
  Frozen Moon#7244 (alex)
  elkshadow5#7952
+ a_spiralist
 
  feel free to add more into the list.
  */
@@ -1665,7 +1666,8 @@ var init = () => {
                 return `${clickPowerMaterialTier[Math.floor((clickPower.level % (clickPowerMaterialTier.length * clickPowerMaterialTierLevel))/clickPowerMaterialTierLevel)]} ${clickPowerMaterials[Math.floor(clickPower.level / (clickPowerMaterialTier.length * clickPowerMaterialTierLevel))]} Mouse Tier ${(clickPower.level % clickPowerMaterialTierLevel) + 1}`;
             }
         };
-        clickPower.getInfo = () => "Cursors gain 1 percent more of your highest cookie collected from a building, compounds with L[0] $(P_{cp})$";
+        //contributed by a_spiralist (Broom Meets World)
+        clickPower.getInfo = () => "Cursors gain 1\\%\\ more of your highest cookie collected from a building, compounds with L[0] $(P_{cp})$";
     }
     //Heavenly Upgrades
     {
