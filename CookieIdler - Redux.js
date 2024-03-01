@@ -398,7 +398,7 @@ var buildingData = [
         info: "Unlocks/Improves a buff that temporarily boosts your CPS by a lot",
         costModel: new ExponentialCost(1e130, ML2(1e10)),
         maxLevel: 20,
-        onBought: (amount) => {getEquationOverlay();}
+        onBought: (amount) => {updateMaxL();getEquationOverlay();}
      }]},
     {id: 4,
      names: ["Factory","Fcotyr"], desc: "mass producing ", lumpBName: "Patent Publishing",
@@ -451,7 +451,7 @@ var buildingData = [
     },
     {id: 11,
      names: ["Time Machine","Tie Macine"], desc: "preventing cookies from being eaten by ", lumpBName: "Paradox Resolve",
-     baseCPS: BF("6.5e57"), baseCost: BF("9e150"), powerUpgradeMult: 20, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 225, sweetMax: 400,
+     baseCPS: BF("2.045e58"), baseCost: BF("7.5e150"), powerUpgradeMult: 20, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 225, sweetMax: 400,
      achName: ["Thyme Wrap","Thyme Pararegano","Thyme Sagaporal Nutmegstant","Out of past, Out of future","No more Thyme Pararegano"],
     },
     {id: 12,
@@ -496,7 +496,7 @@ var covenant, ygg, terra, excavate, moreExcavator, recom, invest, art, artArt, c
 var jetDrive, sugarCoat, crystalHoney;
 const covExp = 5;
 const covDelta = 0.3;
-const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.3), yggPowBase = BF(1.175), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.15), yggBPowBase = BF(1.9), yggThymePow = BF(0.65), yggBoost = BF(2.5), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005), terraFunNerfMod = BF(5);
+const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.3), yggPowBase = BF(1.175), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.15), yggBPowBase = BF(1.7), yggThymePow = BF(0.65), yggBoost = BF(2.5), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005), terraFunNerfMod = BF(5);
 var buildingCount = 0;
 
 // gimmick upgrades
@@ -775,7 +775,7 @@ var cookieTinInfo = [
         name: "The creator's inside jokes Box",
         baseCost: BF("1.5e155"),//base cost
         costMult: 100000,//multiplier for cost, will be put through ML2() later on
-        mult: 2.25,//mult from 1 level
+        mult: 2,//mult from 1 level
         cookieOrder: ["Gigaloopite", "Tetraloopite", "Enium Cookie", "Orate Cookie", "Dxygen Cookie", "IUSpawn Cookie", "egg", "Euler Serion Cookies", "Spasmic Cookieron", "S25+ Cosmos Grade Cookie"]
     },{
         order: 10, //unused, just for reference
@@ -911,7 +911,7 @@ var updateLocalMult = (indx) => {
             break;
         case 4:
             if (recom.level > 0) {
-                buildingData[indx].mult *= (recom.level > 1) ? (BF(1e54) * BigP(recomPowBase, recom.level - 1)) : (BF(1e54));
+                buildingData[indx].mult *= (recom.level > 1) ? (BF(1e27) * BigP(recomPowBase, recom.level - 1)) : (BF(1e28));
             }
             if (artArt.level > 7) {
                 buildingData[indx].mult *= BF(1.08e18);
@@ -1367,11 +1367,11 @@ function getAllUpgradeMultiplierFromCookie(cookie){
     lv = getUpgradeLvFromCookie(terra,cookie);lv = Math.min(lv,terra.maxLevel);
     var lv2 = getUpgradeLvFromCookie(TerraInf,hc), lv3 = getUpgradeLvFromCookie(building[3],cookie);lv2 = Math.min(lv2,TerraInf.maxLevel);
     if(lv > 0){
-        var maxL = (BF(lv).pow(maxLPowBase + maxLPowMod * (lv2 )) * 1500);
-        maxL += BF(lv3).pow(maxLBPowBase + maxLBPowMod * lv2);
-        maxL = maxL.pow(1 + terraInfPow * lv2);
-        log(`6) Terra Lv.${lv}, B3=${lv3}, Tf Lv.${lv2} = ${maxL}x`);
-        ret *= maxL;
+        var mL = (BF(lv).pow(maxLPowBase + maxLPowMod * (lv2 )) * 1500);
+        mL += BF(lv3).pow(maxLBPowBase + maxLBPowMod * lv2) / terraFunNerfMod;
+        mL = mL.pow(1 + terraInfPow * lv2);
+        log(`6) Terra Lv.${lv}, B3=${lv3}, Tf Lv.${lv2} = ${mL}x`);
+        ret *= mL;
     }
     log(`For a total of ${ret}x`);
     return ret;
@@ -1867,7 +1867,7 @@ var tick = (elapsedTime,multiplier) => {
     //let theoryBonus = theory.publicationMultiplier;
     //idle
     if(game.isCalculatingOfflineProgress){
-        if(terra.level > 0)xBegin = thyme.level - ((terraDurMod * 0.51) * (terra.level));
+        if(terra.level > 0)xBegin = thyme.level - ((terraDurMod * 0.75) * (terra.level));
         terraBoost = Logistic();
         if(IdleCPS == BF(0)){
             updateGlobalMult();
