@@ -378,7 +378,7 @@ var buildingData = [
      }]},
     {id: 2,
      names: ["Farm","Famr"], desc: "growing ", lumpBName: "Electrolytes and Acres",
-     baseCPS: 5.3e4, baseCost: 1.1e5, powerUpgradeMult: 60, mult: 1, collectionTime : 15,maxExpLevel: 5, sweetLimit: 15, sweetMax: 250,
+     baseCPS: 5.3e4, baseCost: 1.1e5, powerUpgradeMult: 40, mult: 1, collectionTime : 15,maxExpLevel: 5, sweetLimit: 15, sweetMax: 250,
      achName: ["Home Organic","100% Sustainable","Green Pasture lays live","Babylonian Conservatorium sits on the hill","Farmer\'s Heaven"],
      gimmicks: [{
         uid: 10002,
@@ -496,7 +496,7 @@ var covenant, ygg, terra, excavate, moreExcavator, recom, invest, art, artArt, c
 var jetDrive, sugarCoat, crystalHoney;
 const covExp = 5;
 const covDelta = 0.3;
-const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.3), yggPowBase = BF(1.175), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.15), yggBPowBase = BF(1.7), yggThymePow = BF(0.65), yggBoost = BF(2.5), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005), terraFunNerfMod = BF(5);
+const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.3), yggPowBase = BF(1.1), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.15), yggBPowBase = BF(1.7), yggThymePow = BF(0.65), yggBoost = BF(2.5), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005), terraFunNerfMod = BF(5);
 var buildingCount = 0;
 
 // gimmick upgrades
@@ -898,7 +898,7 @@ var updateLocalMult = (indx) => {
             break;
         case 2:
             if (ygg.level > 0 && thyme.level > 0) {
-                buildingData[indx].mult *= BF(getPower(2)).pow(yggPowBase + yggPowLv * ygg.level) * BF(building[6].level + building[2].level).pow(BigP(ygg.level, yggBPowLv) * yggBPowMod + yggBPowBase) * (BigNumber.ONE + BF(thyme.level).pow(yggThymePow)) * yggBoost;
+                buildingData[indx].mult *= BF(getPower(2)).pow(yggPowBase + (yggPowLv * ygg.level)) * BF(building[6].level + building[2].level).pow(BigP(ygg.level, yggBPowLv) * yggBPowMod + yggBPowBase) * (BigNumber.ONE + BF(thyme.level).pow(yggThymePow)) * yggBoost;
             }
             if (artArt.level > 5) {
                 buildingData[indx].mult *= BF(200);
