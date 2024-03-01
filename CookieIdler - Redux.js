@@ -437,6 +437,8 @@ var buildingData = [
                 if(res < 19){
                     if(building[res].level != 0){
                         investHelp[res].level += 5+ConjureBuild.level;
+                        stonkFlag |= investHelp[res].level >= 200;
+                        megaStonkFlag |= investHelp[res].level >= 1000;
                     }
                 }
             }
@@ -446,6 +448,7 @@ var buildingData = [
         name: "Investment Openings Reset",
         info: "Allows you to reset the buildings gained from Investment Openings, however there\'ll be no refunds to cookies spent",
         costModel: new ConstantCost(1000), currency: 2,
+        maxLevel: 1,
         onBought: (amount) =>{
             invest.level = 0;
             for(let i=0;i<19;i++){
@@ -1111,7 +1114,7 @@ var heavenlyUpgradeData = [
         uid: 9,
         name: "Blessing of the Capital",
         info: "Your investment returns increase, stonks",
-        costModel: new ExponentialCost(1e60, ML2(8)),
+        costModel: new ExponentialCost(4.57e62, ML2(8)),
         maxLevel: 3,
         onBought: (amount) => {updateGlobalMult();}
     },{
@@ -1330,6 +1333,10 @@ var superP, superL, superC;
          unlock: () => (indecide >= 100),},
         {order: 24, name: "Happy 2024!", desc: "Play this theory during the new years\n\nWishing you the best of 2024!", weight: 2, secretClue : "",
          unlock: () => {return true;},},
+        {order: 25, name: "stonks", desc: "Get +200 from Investments\n\nit\'s green all the way", weight: 2, secretClue : "",
+         unlock: () => {return stonkFlag;},},
+        {order: 26, name: "mega stonks", desc: "Get +1000 from Investments\n\nhopefully not a bubble :)", weight: 5, secretClue : "",
+         unlock: () => {return megaStonkFlag;},},
     ];
 }
 function buildFeatAch(featAchObj){
@@ -1339,6 +1346,8 @@ function buildFeatAch(featAchObj){
         return theory.createAchievement(800 + featAchObj.order,featAchievement1,featAchObj.name,`[${featAchObj.weight}] - ${featAchObj.desc}`,() => checkAchBase(featAchObj.unlock,featAchObj.weight));
     }
 }
+//for flag-based feats
+var stonkFlag = false, megaStonkFlag = false;
 
 //!==LORE==
 var chapter = new Array(16);
@@ -1870,7 +1879,7 @@ var updateAvailability = () => {
     terra.isAvailable = COOKIE.value >= BF(1e125) && (normalUpgradeMenu.level % 2) == 0;
     recom.isAvailable = COOKIE.value >= BF(1e155) && (normalUpgradeMenu.level % 2) == 0;
     invest.isAvailable = COOKIE.value >= BF(1e180) && (normalUpgradeMenu.level % 2) == 0;
-    investRespec.isAvailable = invest.level > 100 && (normalUpgradeMenu.level % 2) == 0;
+    investRespec.isAvailable = invest.level >= 100 && (normalUpgradeMenu.level % 2) == 0;
 };
 
 //!Tick
@@ -1902,11 +1911,8 @@ var generateCookie = (id, ticks, mult) => {
     if(id == 0 && clickPower.level > 0){
         ret += Math.max(CPS * mult,BF(1)) * (((BF(clickPower.level) * BigP(buildingLumpMult, buildingLump[0].level)) * BF(baseClickPower)));
         //failsafe, only really triggers if values get ABSURDLY BIG
-        if(ret > (COOKIE.value*BF(1e100)) && COOKIE.value > BF(1e25)){
+        if(ret > (COOKIE.value*BF(1e100))){
             ret -= Math.max(CPS,BF(1)) * (((BF(clickPower.level) * BigP(buildingLumpMult, buildingLump[0].level)) * BF(baseClickPower)));
-            ret += COOKIE.value/BF(500);
-        }else if(ret > (COOKIE.value*BF(1e100)) && COOKIE.value <= BF(1e25)){
-            ret = 1000;//get a grandma and GO
         }
         //log(`${id} generated ${ret} with ${mult}`);
     }
