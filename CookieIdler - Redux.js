@@ -210,7 +210,10 @@ function shortUpgradeML(id, cur, costModel, desc, info, maxLevel) {
     return up;
 }
 function gimmickUpgrade(gimmickUpgradeObject){
-    var ret = shortUpgradeML(gimmickUpgradeObject.uid,COOKIE,gimmickUpgradeObject.costModel,gimmickUpgradeObject.name,gimmickUpgradeObject.info,gimmickUpgradeObject.maxLevel);
+    var cur = COOKIE;
+    if(gimmickUpgradeObject.currency == 1){cur = HEAVENLY_CHIP;}
+    if(gimmickUpgradeObject.currency == 2){cur = SUGAR_LUMP;}
+    var ret = shortUpgradeML(gimmickUpgradeObject.uid,cur,gimmickUpgradeObject.costModel,gimmickUpgradeObject.name,gimmickUpgradeObject.info,gimmickUpgradeObject.maxLevel);
     ret.bought = gimmickUpgradeObject.onBought;
     return ret;
 }
@@ -289,7 +292,7 @@ class ISV {
     var achCountStore = new ISV(0, 0, 2);
     var lumpTotal = new ISV(0, 0, 3);
     var artUnlock = new ISV(0, 0, 4);
-    var reactorMode = new ISV(0, 0, 5),
+    var reactorModeStore = new ISV(0, 0, 5),
         reactorInterim;
     var perkPoint = new ISV(0, 0, 6);
     var heavVis = new ISV(0, 0, 7);
@@ -311,7 +314,7 @@ class ISV {
     var perkHas;
     //let time = ISV(0,0,0); // degrees
 }
-var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxBuild = 0;
+var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxBuild = 0, reactorMode = 0;
 
 //internal state work
 {
@@ -327,7 +330,7 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxB
         stateTable.buildTable(res);
         //assign!
         CPSstore.readValue();HPSstore.readValue();
-        achCountStore.readValue();lumpTotal.readValue();artUnlock.readValue();reactorMode.readValue();perkPoint.readValue();heavVis.readValue();
+        achCountStore.readValue();lumpTotal.readValue();artUnlock.readValue();reactorModeStore.readValue();perkPoint.readValue();heavVis.readValue();
         bInfoStore.readValue();dominatestore.readValue();eqTypeStore.readValue();quTypeStore.readValue();vizType.readValue();eqCStore.readValue();maxBuildStore.readValue();
         for(let i=0;i<19;i++){
             buildingExponentLvStore[i].readValue();
@@ -347,6 +350,7 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxB
         quType = Math.floor(quTypeStore.value);if(Number.isNaN(quType)){quType = 0;}
         bInfo = Math.floor(bInfoStore.value);if(Number.isNaN(bInfo)){bInfo = 0;}
         maxBuild = Math.floor(maxBuildStore.value);if(Number.isNaN(maxBuild)){maxBuild = 0;}
+        reactorMode = Math.floor(reactorModeStore.value);if(Number.isNaN(reactorMode)){reactorMode = 0;}
         log("Read the data!");
     }
 }
@@ -355,6 +359,9 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxB
 var buildingPriceMult = ML2(1.15);
 var building50 = BigP(BigP(2,buildingPriceMult),50);
 var buildingExponent = 0.05, defaultSweetLim = 1;
+//upgrade variables
+var covenant, ygg, terra, excavate, moreExcavator, recom, invest, investRespec, investHelp = new Array(19), art, artArt, cookiearium, aquaCrust, timeDilate, accelerator, acceleratorMenu,synergy;
+var jetDrive, sugarCoat, crystalHoney;
 
 //the funni
 //achName : 100, 1000, 5000, 10000, lump 100
@@ -420,9 +427,32 @@ var buildingData = [
         uid: 10005,
         name: "Investment Openings $(I_{o})$",
         info: "Open your very own investments forms. Grants 5 buildings of random type and a flat 1.01 CPS boost!(chance of failure included)",
-        costModel: new ExponentialCost(1e190, ML2(1.05)),
+        costModel: new ExponentialCost(1e200, ML2(1.05)),
         maxLevel: 1000,
-        onBought: (amount) => {updateGlobalMult();updateLocalMult(5);}
+        onBought: (amount) => {
+            for(let i=0;i<amount;i++){
+                let res = Math.random() * (25 + (invest.level/250));
+                res = Math.floor(res);
+                log(`You win ${res}`);
+                if(res < 19){
+                    if(building[res].level != 0){
+                        investHelp[res].level += 5+ConjureBuild.level;
+                    }
+                }
+            }
+        }},
+        {
+        uid: 10006,
+        name: "Investment Openings Reset",
+        info: "Allows you to reset the buildings gained from Investment Openings, however there\'ll be no refunds to cookies spent",
+        costModel: new ConstantCost(1000), currency: 2,
+        onBought: (amount) =>{
+            invest.level = 0;
+            for(let i=0;i<19;i++){
+                investHelp[i].level = 0;
+            }
+            investRespec.level = 0;
+        }
      }]},
     {id: 6,
      names: ["Temple","Tmelpe"], desc: "directing in ", lumpBName: "Sacred Chocolate Artifact",
@@ -456,12 +486,12 @@ var buildingData = [
     },
     {id: 12,
      names: ["Antimatter Condenser","Antimatter Condenstor"], desc: "synthesizing ", lumpBName: "Derived Elementary Flavor",
-     baseCPS: BF("9.15e79"), baseCost: BF("1.7e180"), powerUpgradeMult: 15, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 250, sweetMax: 350,
+     baseCPS: BF("9.15e71"), baseCost: BF("1.7e185"), powerUpgradeMult: 15, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 250, sweetMax: 350,
      achName: ["When does it matter?","New Standard Model of Cookie and Flour","Unified Complete Theory of the Cookieverse","Hypersize my String and Gluten","Flavor Mathematics"],
     },
     {id: 13,
      names: ["Prism","Prius"], desc: "matterifying from light ", lumpBName: "Extended Spectrum",
-     baseCPS: BF("4.9e96"), baseCost: BF("2.1e215"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 350,
+     baseCPS: BF("4.9e96"), baseCost: BF("2.1e225"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 350,
      achName: ["Some rays of dough and batter","Total Enlightenment","O thy energy of sky, bring fourth the light rays","Neverending rays of bright brilliance shine on you all","4th Cone"],
     },
     {id: 14,
@@ -492,18 +522,16 @@ var buildingData = [
 ];
 
 // gimmick upgrade constants
-var covenant, ygg, terra, excavate, moreExcavator, recom, invest, art, artArt, cookiearium, aquaCrust, timeDilate, accelerator, acceleratorMenu,synergy;
-var jetDrive, sugarCoat, crystalHoney;
 const covExp = 5;
 const covDelta = 0.3;
-const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.3), yggPowBase = BF(1.1), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.15), yggBPowBase = BF(1.7), yggThymePow = BF(0.65), yggBoost = BF(2.5), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005), terraFunNerfMod = BF(5);
+const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.3), yggPowBase = BF(1.1), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.15), yggBPowBase = BF(1.7), yggThymePow = BF(0.65), yggBoost = BF(2.5), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005), terraFunNerfMod = BF(6);
 var buildingCount = 0;
 
 // gimmick upgrades
 // Logistic funtion for Mine+
 // Param -> midpoint=30*L, max=500*L - 1, min=0
 // Display T, returns bignumber
-const terraDurMod = BF(300), terraInfPow = BF(0.005), maxLPowBase = BF(2.4), maxLPowMod = BF(0.05), maxLBPowBase = BF(1.2), maxLBPowMod = BF(0.03), dilateFactorDivBase = BF(2.125), dilateFactorDivMod = BF(0.125), dilateFactorBase = BF(1000), dilatePowBase = BF(1), dilatePowMod = BF(0.025);
+const terraDurMod = BF(300), terraInfPow = BF(0.005), maxLPowBase = BF(2.4), maxLPowMod = BF(0.1), maxLBPowBase = BF(1.2), maxLBPowMod = BF(0.03), dilateFactorDivBase = BF(2.125), dilateFactorDivMod = BF(0.125), dilateFactorBase = BF(1000), dilatePowBase = BF(1), dilatePowMod = BF(0.025);
 var xBegin = 0, maxL = 1;
 var updateMaxL = () => {
     maxL = (BF(terra.level).pow(maxLPowBase + maxLPowMod * (TerraInf.level + ((artArt.level > 6) ? 1 : 0))) * 1500);
@@ -512,7 +540,7 @@ var updateMaxL = () => {
 }
 var Logistic = () => {
     if(terra.level == 0){return 1;}
-    return ((maxL.pow(1 + terraInfPow * TerraInf.level)) / (BigNumber.ONE + (BigNumber.E.pow((thyme.level - (xBegin + terra.level * terraDurMod)))))) + 1;
+    return ((maxL.pow(1 + terraInfPow * TerraInf.level)) / (BigNumber.ONE + (BigNumber.E.pow((thyme.level - (xBegin + terra.level * terraDurMod)))))) + BigP(maxL,TerraInf.level*0.1);
 }
 var Dilate = () => {
     if (timeDilate.level == 0) {return 1;}
@@ -551,12 +579,12 @@ var getBuildingExp = (index) => {
 
 //building description + info
 var getBuildingDesc = (indx) => {
-    var bi = `\$B[${BigTS(indx)}]^{${(getBuildingExp(indx) > 1) ? getBuildingExp(indx).toString(10) : ""}}\$`;
+    var bi = `\$B[${BigTS(indx)}]^{${(getBuildingExp(indx) > 1) ? getBuildingExp(indx).toString(10) : ""}}\$${(investHelp[indx].level>0)?`+${investHelp[indx].level}`:""}`;
     switch(bInfo){
         case 0:
             return `${bi} - ${buildingData[indx].names[0]} ` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
         case 1:
-            return `${bi} = ${calcBuilding(indx, 0)} ` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
+            return `${bi} = ${calcBuilding(indx, investHelp[indx].level)} ` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
         case 2:
             return `${bi} - ${buildingData[indx].names[1]} ` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
         default:
@@ -566,7 +594,7 @@ var getBuildingDesc = (indx) => {
 var getBuildingInfo = (indx,amount) => `${getBuildingInfo2(indx, amount)}, ${((bInfo == 1) ? `\$B(${indx}) = ${generateCookie(indx,buildingData[indx].collectionTime,terraBoost)}\$` : "")}`;
 var getBuildingInfo2 = (index, am) => {
     if (bInfo == 1) {
-        return `\$B[${index}]^{${(getBuildingExp(index) > 1) ? getBuildingExp(index) : ""}}\$ = ${Utils.getMathTo(calcBuilding(index, 0), calcBuilding(index, am))}`;
+        return `\$B[${index}]^{${(getBuildingExp(index) > 1) ? getBuildingExp(index) : ""}}\$ = ${Utils.getMathTo(calcBuilding(index, investHelp[index].level), calcBuilding(index, am+investHelp[index].level))}`;
     }
     var result = buildingData[index].names[0 + Math.floor(bInfo / 2)];
     if (building[index].level == 1) {
@@ -963,6 +991,53 @@ var artArt, templeJ = false;
 
 //! Spells
 
+//! Elements
+//prevUnlock : previous element required to unlock the next excavator
+var elements = new Array(9), elemPrev = new Array(9);
+const usedElements = 8;
+var elementData = [
+    {
+        order: 0, weight: 1, prevUnlock: 0,
+        symbol:"Be", fullName: "Berrylium",
+    },{
+        order: 1, weight: 2, prevUnlock: 1.2e13,
+        symbol:"Ch", fullName: "Chalcedhoney",
+    },{
+        order: 2, weight: 3, prevUnlock: 9.5e11,
+        symbol:"Bg", fullName: "Buttergold",
+    },{
+        order: 3, weight: 5, prevUnlock: 1.25e11,
+        symbol:"Su", fullName: "Sugarmuck",
+    },{
+        order: 4, weight: 8, prevUnlock: 4e8,
+        symbol:"Jm", fullName: "Jetmint",
+    },{
+        order: 5, weight: 13, prevUnlock: 5e7,
+        symbol:"Cs", fullName: "Cherrysilver",
+    },{
+        order: 6, weight: 21, prevUnlock: 7.5e8,
+        symbol:"Hz", fullName: "Hazelrald",
+    },{
+        order: 7, weight: 34, prevUnlock: 1e9,
+        symbol:"Mn", fullName: "Mooncandy",
+    },{
+        order: 8, weight: 55, prevUnlock: 1e10,
+        symbol:"As", fullName: "Astrofudge",
+    },{
+        order: 9, weight: 89, prevUnlock: 1e15,
+        symbol:"Aa", fullName: "Alabascream",
+    },{
+        order: 10, weight: 144, prevUnlock: 1e25,
+        symbol:"Ii", fullName: "Iridyum",
+    },{
+        order: 11, weight: 232, prevUnlock: 1e35,
+        symbol:"Gc", fullName: "Glucosmium",
+    },{
+        order: 12, weight: 376, prevUnlock: 1e50,
+        symbol:"Gm", fullName: "Glimmeringue",
+    }
+];
+
 //! Lumps
 const lumpTickChance = 5000;
 const buip = 1.02;
@@ -970,6 +1045,7 @@ const buiexp = 0.05;
 
 //! Primary Vairables
 var COOKIE, HEAVENLY_CHIP, SUGAR_LUMP;
+var isCurrencyVisible = (indx) => indx <= 2;
 var thyme, normalUpgradeMenu, permUpgradeMenu;
 
 //! Heavenly Upgrades
@@ -1336,6 +1412,7 @@ function getAllUpgradeMultiplierFromCookie(cookie){
     log(`1) Normal Cookie Lv.${lv} = ${getCookieTP(lv)}x`);ret *= getCookieTP(lv);
     for (let i = 0; i < cookieTinInfo.length; i++) {
         lv = getUpgradeLvFromCookie(cookieTin[i],cookie);
+        lv = Math.min(cookieTin[i].maxLevel,lv);
         if(lv > 0){
             log(`Special Cookie ${i} Lv.${lv} = ${BigP(cookieTinInfo[i].mult, lv)}`);ret *= BigP(cookieTinInfo[i].mult, lv);
         }
@@ -1368,7 +1445,8 @@ function getAllUpgradeMultiplierFromCookie(cookie){
     var lv2 = getUpgradeLvFromCookie(TerraInf,hc), lv3 = getUpgradeLvFromCookie(building[3],cookie);lv2 = Math.min(lv2,TerraInf.maxLevel);
     if(lv > 0){
         var mL = (BF(lv).pow(maxLPowBase + maxLPowMod * (lv2 )) * 1500);
-        mL += BF(lv3).pow(maxLBPowBase + maxLBPowMod * lv2) / terraFunNerfMod;
+        mL += BF(lv3).pow(maxLBPowBase + maxLBPowMod * lv2);
+        mL /= terraFunNerfMod;
         mL = mL.pow(1 + terraInfPow * lv2);
         log(`6) Terra Lv.${lv}, B3=${lv3}, Tf Lv.${lv2} = ${mL}x`);
         ret *= mL;
@@ -1446,11 +1524,24 @@ function CPSrefresh(){
     CPSstore.setValue(CPS);
 }
 
+//? 8. Gets all invest opening prizes
+function getInvestHelp(){
+    let res = "";
+    for(let i=0;i<19;i++){
+        res += `B[${i}] +${investHelp[i].level}\n`;
+    }
+    log(res);
+}
+
 //!==INIT==
 var init = () => {
     COOKIE = theory.createCurrency("C", "C");
     HEAVENLY_CHIP = theory.createCurrency("H", "H");
     SUGAR_LUMP = theory.createCurrency("L", "L");
+    for(let i=0;i<=usedElements;i++){
+        elements[i] = theory.createCurrency(elementData[i].symbol,elementData[i].symbol);
+        elements[i].isAvailable = false;
+    }
     // Shush
     {
         thyme = theory.createUpgrade(1e9, COOKIE, new ConstantCost(BF("1e1000")));
@@ -1555,6 +1646,16 @@ var init = () => {
         jetDrive = throwawayUpgrade(1e9 + 12,"Artifacts","how did you managed to see this");
         sugarCoat = throwawayUpgrade(1e9 + 13,"Artifacts","how did you managed to see this");
         crystalHoney = throwawayUpgrade(1e9 + 14,"Artifacts","how did you managed to see this");
+        excavate = throwawayUpgrade(1e9 + 15,"Artifacts","how did you managed to see this");
+    }
+    // Invest
+    {
+        for(let i=0;i<19;i++){
+            investHelp[i] = theory.createUpgrade(1e9 + 10000 + i,COOKIE, new ConstantCost(BF("1e1000")));
+            investHelp[i].description = `B${i} Boost`;
+            investHelp[i].info = `F${i} how did you managed to see this`;
+            investHelp[i].isAvailable = false;
+        }
     }
     // Tasty Cookies
     {
@@ -1635,7 +1736,7 @@ var init = () => {
             case 2:ygg = gimmickUpgrade(buildingData[i].gimmicks[0]);break;
             case 3:terra = gimmickUpgrade(buildingData[i].gimmicks[0]);break;
             case 4:recom = gimmickUpgrade(buildingData[i].gimmicks[0]);break;
-            case 5:invest = gimmickUpgrade(buildingData[i].gimmicks[0]);break;
+            case 5:{invest = gimmickUpgrade(buildingData[i].gimmicks[0]);investRespec = gimmickUpgrade(buildingData[i].gimmicks[1]);break;}
         }
     }
 
@@ -1720,6 +1821,9 @@ var init = () => {
     for (let i = 0; i < 16; i++) {
         chapter[i] = theory.createStoryChapter(i, chapterName[i], chapterLore[i], () => checkChapter(i));
     }
+    for (let i = 0; i < 9; i++) {
+        quartList[i] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{_{${elementData[i].symbol}}}`, elements[i].value));
+    }
     quartList2[0] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{C_m}`, null));
     quartList2[1] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{t}`, null));
     quartList2[2] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T}`, null));
@@ -1766,6 +1870,7 @@ var updateAvailability = () => {
     terra.isAvailable = COOKIE.value >= BF(1e125) && (normalUpgradeMenu.level % 2) == 0;
     recom.isAvailable = COOKIE.value >= BF(1e155) && (normalUpgradeMenu.level % 2) == 0;
     invest.isAvailable = COOKIE.value >= BF(1e180) && (normalUpgradeMenu.level % 2) == 0;
+    investRespec.isAvailable = invest.level > 100 && (normalUpgradeMenu.level % 2) == 0;
 };
 
 //!Tick
@@ -1779,7 +1884,7 @@ var thymeInc = (ticks) => {
     thyme.level += (thyme.level < thyme.maxLevel) ? ticks : 0;
 }
 var generateCookie = (id, ticks, mult) => {
-    let ret = calcBuilding(id,0) * globalMult * buildingData[id].mult * buildingData[id].baseCPS * (ticks / 10);
+    let ret = calcBuilding(id,investHelp[id].level) * globalMult * buildingData[id].mult * buildingData[id].baseCPS * (ticks / 10);
     let pow = getBuildingExp(id);
     if(Number.isNaN(pow)){
         pow = 1;
@@ -2032,19 +2137,19 @@ var getTertiaryEquation = () => {
     return TertiaryEquation(eqC);
 };
 var getQuaternaryEntries = () => {
-    // for (let i = 0; i < 9; i++) {
-    //     quartList[i].value = (excavate.level >= (i + 1) || ((i == 8) && (artArt.level > 13)) || elements[i].value > 0) ? elements[i].value : null;
-    // }
+    for (let i = 0; i < 9; i++) {
+        quartList[i].value = (excavate.level >= (i + 1) || ((i == 8) && (artArt.level > 13)) || elements[i].value > 0) ? elements[i].value : null;
+    }
     quartList2[0].value = CPS;
     quartList2[1].value = thyme.level / 10;
     quartList2[2].value = (terra.level > 0) ? Logistic() : null;
     quartList2[3].value = (terra.level > 0) ? maxL : null;
     quartList2[4].value = (timeDilate.level > 0) ? Dilate() : null;
-    // if (quType.value == 0) {
-    //     return quartList2;
-    // } else {
-    //     return quartList;
-    // }
+    if (quType == 0) {
+        return quartList2;
+    } else {
+        return quartList;
+    }
     return quartList2;
 };
 
@@ -2063,8 +2168,8 @@ var get2DGraphValue = () => {
             (BigNumber.ONE + COOKIE.value.abs()).log10().toNumber()
         );
 };
-var getPublicationMultiplier = (tau) => tau.pow(1.078);
-var getPublicationMultiplierFormula = (symbol) => symbol + "^{1.078}";
+var getPublicationMultiplier = (tau) => tau.pow(1.07);
+var getPublicationMultiplierFormula = (symbol) => symbol + "^{1.07}";
 var postPublish = () => {
     SUGAR_LUMP.value = lumpbf;
     HEAVENLY_CHIP.value = hbf;
@@ -2076,9 +2181,9 @@ var postPublish = () => {
     for(let i=0;i<19;i++){
         updateLocalMult(i);
     }
-    // for (let i = 0; i < elements.length; i++) {
-    //     elements[i].value = elemBefore[i];
-    // }
+    for (let i = 0; i < elements.length; i++) {
+        elements[i].value = elemBefore[i];
+    }
 };
 var prePublish = () => {
     lumpbf = SUGAR_LUMP.value;
@@ -2086,9 +2191,9 @@ var prePublish = () => {
     hbf += (COOKIE.value / BF("1e12")).pow(1 / 3);
     //isSpellShown = 0;
     CPS = BF(0);CPSstore.setValue(CPS);
-    // for (let i = 0; i < elements.length; i++) {
-    //     elemBefore[i] = elements[i].value;
-    // }
+    for (let i = 0; i < elements.length; i++) {
+        elemBefore[i] = elements[i].value;
+    }
 };
 var getTau = () => (COOKIE.value.abs()).pow(0.2);
 var getCurrencyFromTau = (tau) => [tau.max(BigNumber.ONE).pow(5), COOKIE.symbol];
@@ -2697,7 +2802,7 @@ let subPopup = ui.createPopup({
 function reactorChk(indx) {
     if (accelerator.level > indx) {
         reactorInterim = indx;
-        reactorMenu.content.children[2].text = `Current Element : ${(reactorInterim > -1) ? elemFormalName[reactorInterim + 2] : "OFF"}`;
+        reactorMenu.content.children[2].text = `Current Element : ${(reactorInterim > -1) ? elementData[reactorInterim + 2].fullName : "OFF"}`;
     } else {
         reactorInterim = reactorMode;
     }
@@ -2763,6 +2868,7 @@ let reactorMenu = ui.createPopup({
                 text: "Confirm",
                 onClicked: () => {
                     reactorMode = reactorInterim;
+                    reactorModeStore.setValue(reactorMode);
                     theory.invalidateSecondaryEquation();
                     reactorMenu.hide();
                 }
