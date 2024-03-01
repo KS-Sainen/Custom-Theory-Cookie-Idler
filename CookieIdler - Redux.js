@@ -258,7 +258,7 @@ class internalState {
 }
 var stateTable = new internalState(16,16);
 var updateTable = (r, c, v) =>{
-    log(`Update [${r}][${c}] = ${v}`);
+    //log(`Update [${r}][${c}] = ${v}`);
     stateTable.setVal(r,c,v);
 }
 var getValueFromTable = (r,c) => stateTable.getVal(r,c);
@@ -589,6 +589,9 @@ var onBuildingBought = (indx,amount) => {
         updateMaxL();
     }
     buildingCount += amount;
+    if(covenant.level > 0){
+        updateLocalMult(1);
+    }
 }
 
 // building power data
@@ -1240,7 +1243,7 @@ var superP, superL, superC;
         {order: 18, name: "you won the internet", desc: "Have Temple+Alchemy Lab = 1337", weight: 2, secretClue : "[ni] + [ce] = leet",
          unlock: () => ((building[6].level > 0) && (building[9].level > 0) && (building[6].level + building[9].level) == 0x539),},
         {order: 19, name: "Sigma Fingers", desc: "Collect 1e100 Cookies from Cursors with only a single cursor\nThis feat also unlocks a special building display mode, find it out :)", weight: 2, secretClue : "Doing a 100 with only a single 0",
-         unlock: () => (generateCookie(0,5,kittyPowerFull(kitty.level)) >= BF(1e100)) && (building[0].level == 1),},
+         unlock: () => (generateCookie(0,5,terraBoost) >= BF(1e100)) && (building[0].level == 1),},
         {order: 20, name: "Time is speed", desc: "Dilate 15 whole seconds in a single tick", weight: 2, secretClue : "Got any quarters to spare?",
          unlock: () => (Dilate() >= 150),},
         {order: 21, name: "Time is rickroll", desc: "Dilate an entire video of Rick Astley - Never Gonna Give You Up (Official Music Video) into a SINGLE tick (which is 312 seconds in a SINGLE tick)\n\nAlso check out https://www.youtube.com/watch?v=oHg5SJYRHA0, very cool video", weight: 6, secretClue : "This achievement won\'t let you down",
@@ -1776,7 +1779,7 @@ var thymeInc = (ticks) => {
     thyme.level += (thyme.level < thyme.maxLevel) ? ticks : 0;
 }
 var generateCookie = (id, ticks, mult) => {
-    let ret = calcBuilding(id,0) * globalMult * buildingData[id].mult * buildingData[id].baseCPS * (ticks / 10) * mult;
+    let ret = calcBuilding(id,0) * globalMult * buildingData[id].mult * buildingData[id].baseCPS * (ticks / 10);
     let pow = getBuildingExp(id);
     if(Number.isNaN(pow)){
         pow = 1;
@@ -1790,8 +1793,9 @@ var generateCookie = (id, ticks, mult) => {
         dominate = id;dominatestore.setValue(dominate);
         CPSstore.setValue(ret);
     }
+    ret *= mult;
     if(id == 0 && clickPower.level > 0){
-        ret += Math.max(CPS,BF(1)) * (((BF(clickPower.level) * BigP(buildingLumpMult, buildingLump[0].level)) * BF(baseClickPower)));
+        ret += Math.max(CPS * mult,BF(1)) * (((BF(clickPower.level) * BigP(buildingLumpMult, buildingLump[0].level)) * BF(baseClickPower)));
         //failsafe, only really triggers if values get ABSURDLY BIG
         if(ret > (COOKIE.value*BF(1e100)) && COOKIE.value > BF(1e25)){
             ret -= Math.max(CPS,BF(1)) * (((BF(clickPower.level) * BigP(buildingLumpMult, buildingLump[0].level)) * BF(baseClickPower)));
@@ -1799,8 +1803,8 @@ var generateCookie = (id, ticks, mult) => {
         }else if(ret > (COOKIE.value*BF(1e100)) && COOKIE.value <= BF(1e25)){
             ret = 1000;//get a grandma and GO
         }
+        //log(`${id} generated ${ret} with ${mult}`);
     }
-    //log(`${id} generated ${ret}`);
     //log(`get ${ret}`);
     return ret;
 }
@@ -1820,6 +1824,20 @@ var calcIdleCPS = () => {
         IdleCPS += generateCookie(i,10,1);
     }
 }
+var performanceTester = () => {
+    // updateAvailability();
+    // for(let i=0;i<19;i++){
+    //     if(dilateBoost >= buildingData[i].collectionTime){
+    //         generateCookie(i,dilateBoost,terraBoost);
+    //     }else if(building[i].level > 0 && thyme.level % buildingData[i].collectionTime == 0){
+    //         //log(`${i} due!`);
+    //         generateCookie(i,buildingData[i].collectionTime,terraBoost);
+    //     }
+    // }
+}
+var profilingConst = false;
+//var profiler1 = profilers.get("profiler1");
+var profiler1 = profilers.get("profiler1");
 var tick = (elapsedTime,multiplier) => {
     //log(`ET : ${elapsedTime}, M : ${multiplier}`);
     //log(`B : ${buildingLumpMult}`);
@@ -1836,10 +1854,15 @@ var tick = (elapsedTime,multiplier) => {
         CPSrefresh();
         setupTick = false;
     }
+    if(profilingConst){
+        profiler1.exec(performanceTester);
+        log(profiler1.mean);
+    }
     terraBoost = Logistic();
     dilateBoost = Dilate();
-    let dt =elapsedTime * multiplier * 10 * dilateBoost;//we'll see about this later
+    let dt =elapsedTime * multiplier * 10 * dilateBoost;//1 tick = 0.1 second
     thymeInc(Math.round(dt * dilateBoost));
+    //log(dt);
     theory.invalidateSecondaryEquation();
     //let theoryBonus = theory.publicationMultiplier;
     //idle
@@ -1866,7 +1889,8 @@ var tick = (elapsedTime,multiplier) => {
             }
         }
         if(thyme.level % 10 == 0){
-            refreshLocalMult();
+            updateLocalMult(2);//yggdrasil, leave covenant to onBuildingBought
+            //CPSrefresh();
         }
     }
     //lumps
