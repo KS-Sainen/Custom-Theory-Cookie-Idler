@@ -990,7 +990,54 @@ var getCollectionBar = (indx, cur) => {
 }
 
 //! Artifacts
-var artArt, templeJ = false;
+var artArt, templeJ = false, artifactUpgrade = new Array(99), artifactUnlock = new Array(99), artifactCount = 0;
+const artifactLockText = "Not Discovered";
+var artifactInfo = [{
+    order: 0,name: "Rhombus of Chocolatance",clue: "how did you managed to see this",
+    cost: BF("1e250"),unlockCondition: () => {return true;}, desc: "Very shiny chocolate that somehow brings in attention of even more gods"
+},{
+    order: 1,name: "Occam\'s Lazer",clue: "One is One, Five is Two",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "A hilariously big beam of light that makes prisms go head over toes for them(aka you)"
+},{
+    order: 2,name: "All-Natural ouo sugar",clue: "Achieved Enough?",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Makes the cat go ouo and [DATA EXPUNGED]"
+},{
+    order: 3,name: "Doctor T\'s Thesis",clue: "YEAH SCIENCE!!!!!!!!",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "The panacea to all those hand diseases"
+},{
+    order: 4,name: "Bountiful box of Gilles-Philippe",clue: "There\'s kings in cookies",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Replaces grandma with something else....  better?"
+},{
+    order: 5,name: "Key to the Conservatorium",clue: "Explore more, duh",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "An overly ornate yet small key to a glass house you never knew existed. Take a walk inside, experience the exotic fauna and dreamy space, but please DO NOT eat or drink anything labelled with \"Eat me\" or \"Drink Me\"."
+},{
+    order: 6,name: "Coreforge Bar",clue: "A bit deeper",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "An legendary alloy rumored to be forged within the very halls of Sauron. Their sheer radiance already bests even the most sophisticated of your alloys, not to mention the heat."
+},{
+    order: 7,name: "Da Vinci Manuscript",clue: "Get those patents out, ya stingy",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Contains all you would ever dream when you have to deal with the nightmare of citations, absolutely useless otherwise."
+},{
+    order: 8,name: "A very curious tulip bulb",clue: "Hoard, Hoard, Hoard more",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Supposedly dating back to the 1600s and being involved in \"Tulip Mania\". This bulb of tulip surprisingly has numerous bubbles formed around its petals, a reminder of something?"
+},{
+    order: 9,name: "Book of Symbolisms",clue: "Am I lucky? enough?",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "You don\'t know why, but you felt a compulsion to keep this book close to you"
+},{
+    order: 10,name: "Grimoire of Basic Cookie Magic",clue: "haha mana goes brrrrrr",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 8 spells"
+},{
+    order: 11,name: "Antediluvian Engine",clue: "Time-Stopping Performance",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "A peculiar machine somehow capable of locally accelerating spacetime using something about time crystals. Engravings of menacing nature can be found tucked away at the bottom, though we don\'t know why."
+},{
+    order: 12,name: "Elementium Infused Chocolate Chunk",clue: "Cavitilicious",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?"
+},{
+    order: 13,name: "Scent of Vanilla Nebula",clue: "5 Cosmic Mappings ah ah ah",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "Some astronomers go crazy over these"
+},{
+    order: 14,name: "Cherrysilverium Meld",clue: "15$(^=)$1.268e30, 16=117.39, 8E=500,000, Cs",
+    cost: BF("1e250"),unlockCondition: () => {return false;}, desc: "A curious blob of metal, one of the inscriptions inside the temple\'s numerous halls details a picture of it literally melding buildings together, with humans"
+},];
 
 //! Spells
 
