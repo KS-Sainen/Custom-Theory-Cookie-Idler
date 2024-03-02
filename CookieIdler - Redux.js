@@ -113,6 +113,22 @@ var version = 1.0;
     var BigTS = (i) => BF(i).toString(0);
 
     /**
+     * Returns the higher value of the BigNumber given
+     * @param {number|string|BigNumber} i The BigNumber used
+     * @param {number|string|BigNumber} j The BigNumber used
+     * @return {BigNumber} The higher BigNumber
+     */
+    var BigMax = (i, j) => BF(i).max(j);
+
+    /**
+     * Returns the higher value of the BigNumber given
+     * @param {number|string|BigNumber} i, The BigNumber used
+     * @param {number|string|BigNumber} j The BigNumber used
+     * @return {BigNumber} The lower BigNumber
+     */
+    var BigMin = (i, j) => BF(i).min(j);
+
+    /**
      * Converts a given number to a string
      * @param {number} i The number used
      * @return {string} The string representation of the number
@@ -746,6 +762,7 @@ function constructFen(arr, n) {
 //global mult - applies to C gained overall
 var globalMult = BF(1), clickPower;
 var clickPowerMaterials = ["Plastic","Iron","Titanium","Adamantium","Unobtainium","Eludium","Wishalloy","Fantasteel","Nevercrack","Armythril","Technobsidian","Plasmarble","Miraculite","Aetherice","Omniplast"], clickPowerDefault = "Selveradium", baseClickPower = 0.01, clickPowerMaterialTier = ["Weak","","Strong","Enchanted"], clickPowerMaterialTierLevel = 10;
+var getCursorPower = (level) => (((BF(level) * BigP(buildingLumpMult, buildingLump[0].level)) * BF(baseClickPower)));
 var updateGlobalMult = () => {
     globalMult = BF(1);
     globalMult *= (getCookieP(cookieTasty.level) * (BF(1) + (CookieTau.level * game.tau.log10().log10().pow(2))));
@@ -880,6 +897,7 @@ var getCookieTP = (level) => {
  * @param {BigNumber} level, The amount of cookie upgrade level you have from the cookieTasty.level
  * @returns {BigNumber} The total amount of cookie boost you have
  */
+var superCookieExponent = 1.025;
 var getCookieP = (level) => {
     // let bn = (num) => BF(num);
     let res = getCookieTP(level);
@@ -892,7 +910,7 @@ var getCookieP = (level) => {
     if (DivineD.level != 0) res *= BigNumber.TWO.pow(DivineD.level);
     res *= BigP(1.01, invest.level);
     if (superC.level > 0) {
-        res = BigP(res, 1.05);
+        res = BigP(res, superCookieExponent);
     }
     return res;
 };
@@ -1057,10 +1075,10 @@ var artifactData = [{
     cost: BF("1e295"),unlockCondition: () => {return COOKIE.value >= BF("1e295");}, desc: "Supposedly dating back to the 1600s and being involved in \"Tulip Mania\". This bulb of tulip surprisingly has numerous bubbles formed around its petals, a reminder of something?"
 },{
     order: 9,name: "Book of Symbolisms",clue: "Show me the Artifacts, hope you\'re lucky",
-    cost: BF("1e300"),unlockCondition: () => {return (artifactUpgrade[0].level + artifactUpgrade[1].level + artifactUpgrade[2].level + artifactUpgrade[3].level + artifactUpgrade[4].level + artifactUpgrade[5].level + artifactUpgrade[6].level + artifactUpgrade[7].level + artifactUpgrade[8].level >= 9) && (Math.random() < 0.05);}, desc: "You don\'t know why, but you felt a compulsion to keep this book close to you"
+    cost: BF("1e300"),unlockCondition: () => {return (artifactUpgrade[0].level + artifactUpgrade[1].level + artifactUpgrade[2].level + artifactUpgrade[3].level + artifactUpgrade[4].level + artifactUpgrade[5].level + artifactUpgrade[6].level + artifactUpgrade[7].level + artifactUpgrade[8].level >= 9) && (Math.random() < 0.01);}, desc: "You don\'t know why, but you felt a compulsion to keep this book close to you"
 },{
     order: 10,name: "Grimoire of Basic Cookie Magic",clue: "haha mana goes brrrrrr",
-    cost: BF("1e300"),unlockCondition: () => {return building[7].level >= (parseInt([+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[]]) ^ parseInt([+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[]])) + 50;}, desc: "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 8 spells"
+    cost: BF("1e300"),unlockCondition: () => {return building[7].level >= (parseInt([+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[]]) ^ parseInt([+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[]])) + 100;}, desc: "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 8 spells"
 },{
     order: 11,name: "Antediluvian Engine",clue: "Time-Stopping Performance",
     cost: BF("1e300"),unlockCondition: () => {return false;}, desc: "A peculiar machine somehow capable of locally accelerating spacetime using something about time crystals. Engravings of menacing nature can be found tucked away at the bottom, though we don\'t know why."
@@ -1776,14 +1794,24 @@ var init = () => {
     {
         clickPower = theory.createPermanentUpgrade(3, COOKIE, new ExponentialCost(1000, ML2(10)));
         clickPower.getDescription = () => {
-            if(clickPower.level > (clickPowerMaterials.length * clickPowerMaterialTier.length * clickPowerMaterialTierLevel)){
-                return `${clickPowerDefault} Mouse Tier ${clickPower.level - (clickPowerMaterials.length * clickPowerMaterialTier.length * clickPowerMaterialTierLevel)}`
+            if(bInfo == 0 || bInfo == 2){
+                if(clickPower.level > (clickPowerMaterials.length * clickPowerMaterialTier.length * clickPowerMaterialTierLevel)){
+                    return `${clickPowerDefault} Mouse Tier ${clickPower.level - (clickPowerMaterials.length * clickPowerMaterialTier.length * clickPowerMaterialTierLevel)}`
+                }else{
+                    return `${clickPowerMaterialTier[Math.floor((clickPower.level % (clickPowerMaterialTier.length * clickPowerMaterialTierLevel))/clickPowerMaterialTierLevel)]} ${clickPowerMaterials[Math.floor(clickPower.level / (clickPowerMaterialTier.length * clickPowerMaterialTierLevel))]} Mouse Tier ${(clickPower.level % clickPowerMaterialTierLevel) + 1}`;
+                }
             }else{
-                return `${clickPowerMaterialTier[Math.floor((clickPower.level % (clickPowerMaterialTier.length * clickPowerMaterialTierLevel))/clickPowerMaterialTierLevel)]} ${clickPowerMaterials[Math.floor(clickPower.level / (clickPowerMaterialTier.length * clickPowerMaterialTierLevel))]} Mouse Tier ${(clickPower.level % clickPowerMaterialTierLevel) + 1}`;
+                return `$P_{cp} = ${getCursorPower(clickPower.level)}$`;
             }
         };
         //contributed by a_spiralist (Broom Meets World)
-        clickPower.getInfo = () => "Cursors gain 1\\%\\ more of your highest cookie collected from a building, compounds with L[0] $(P_{cp})$";
+        clickPower.getInfo = (amount) => {
+            if(bInfo == 0 || bInfo == 2){
+            return `Cursors gain 1\\%\\ more of your highest cookie collected from a building, compounds with L[0] $(P_{cp})$`;
+            }else{
+                return `\$P_{cp} = \$${Utils.getMathTo(getCursorPower(clickPower.level),getCursorPower(clickPower.level+amount))}`;
+            }
+        };
     }
     //Heavenly Upgrades
     {
@@ -1836,7 +1864,7 @@ var init = () => {
         cookieTasty = theory.createUpgrade(0, COOKIE, new ExponentialCost(cookieTastyCostBase, cookieTastyCostMod));
         cookieTasty.getDescription = (_) => {
             if (bInfo == 1) {
-                return `\$ C_{1}(${cookieTasty.level + (crystalHoney.level * 10)}) = ${getCookieTP(cookieTasty.level)}, \\: CP(${cookieTasty.level})${superC.level > 0 ? "^{1.05}" : ""}=${getCookieP(cookieTasty.level)}\$`;
+                return `\$ C_{1}(${cookieTasty.level + (crystalHoney.level * 10)}) = ${getCookieTP(cookieTasty.level)}, \\: CP(${cookieTasty.level})${superC.level > 0 ? `^{${superCookieExponent}}` : ""}=${getCookieP(cookieTasty.level)}\$`;
             }
             if (cookieTasty.level + 1 > cookieNames.length) {
                 return cookieTastyDName;
@@ -2039,6 +2067,7 @@ var updateAvailability = () => {
         buildingPower[i].isAvailable = building[i].level > 0 && (permUpgradeMenu.level % 2) == 0;
         buildingLump[i].isAvailable = building[i].level > 10 && (permUpgradeMenu.level % 2) == 0;
     }
+    building[14].isAvailable &= (artifactUpgrade[9].level > 0);
     // Cookieh
     cookieTasty.isAvailable = COOKIE.value > BF(1e5) && normalUpgradeMenu.level == 1;
     kitty.isAvailable = achCount > 1 && (normalUpgradeMenu.level % 2) == 1;
@@ -2074,6 +2103,7 @@ var updateAvailability = () => {
     for(let i=0;i<artifactCount;i++){
         artifactUpgrade[i].isAvailable = archaeology.isAvailable && (artifactPouch.level == 1) && (normalUpgradeMenu.level % 2) == 0;
     }
+    superL.isAvailable = (superP.level > 0) && (superC.level > 0);
 };
 
 //!Tick
@@ -2091,7 +2121,8 @@ var thymeInc = (ticks) => {
     thyme.level += (thyme.level < thyme.maxLevel) ? ticks : 0;
 }
 var generateCookie = (id, ticks, mult) => {
-    let ret = calcBuilding(id,investHelp[id].level) * globalMult * buildingData[id].mult * buildingData[id].baseCPS * (ticks / 10);
+    let ret = BF(1);
+    ret = BF(calcBuilding(id,investHelp[id].level) * globalMult * buildingData[id].mult * buildingData[id].baseCPS * (ticks / 10));
     let pow = getBuildingExp(id);
     if(Number.isNaN(pow)){
         pow = 1;
@@ -2108,10 +2139,10 @@ var generateCookie = (id, ticks, mult) => {
     }
     ret *= mult;
     if(id == 0 && clickPower.level > 0){
-        ret += Math.max(CPS * mult,BF(1)) * (((BF(clickPower.level) * BigP(buildingLumpMult, buildingLump[0].level)) * BF(baseClickPower)));
+        ret += BigMax(CPS * mult,BF(1)) * getCursorPower(clickPower.level);
         //failsafe, only really triggers if values get ABSURDLY BIG
         if(ret > (COOKIE.value*BF(1e100))){
-            ret -= Math.max(CPS,BF(1)) * (((BF(clickPower.level) * BigP(buildingLumpMult, buildingLump[0].level)) * BF(baseClickPower)));
+            ret -= Math.max(CPS,BF(1)) * getCursorPower(clickPower.level);
         }
         //log(`${id} generated ${ret} with ${mult}`);
     }
@@ -2119,10 +2150,10 @@ var generateCookie = (id, ticks, mult) => {
     return ret;
 }
 var generateLump = (ticks) => {
-    let lumpChance = ticks / (lumpTickChance / Math.log10(COOKIE.value + 10));//it's normally 1/x
-    let dLump = BF(Math.floor(lumpChance)) + (sugarCoat.level * 2.5) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01);
-    lumpChance -= Math.floor(lumpChance);
-    if (ticks == 1 && Math.random() <= lumpChance) {
+    let lumpChance = BF(1) / (BF(lumpTickChance) / BigL10(COOKIE.value + BF(10)));//it's normally 1/x
+    let dLump = BF(lumpChance.floor() + (sugarCoat.level * 2.5) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01));
+    lumpChance -= lumpChance.floor();
+    if (ticks == 1 && BF(Math.random()) <= lumpChance) {
         dLump += BF(1);
     }else{
         dLump += lumpChance*ticks;
