@@ -466,7 +466,7 @@ var buildingData = [
         uid: 10007,
         name: "Archaeology $(A_{r})$",
         info: "Go into your own temples to discover secrets lost to mankind",
-        costModel: new ExponentialCost(1e255, ML2(2)),
+        costModel: new ExponentialCost(1e252, ML2(2)),
         maxLevel: 1000,
         onBought: (amount) => {
             for(let i=0;i<amount;i++){
@@ -761,7 +761,7 @@ var updateGlobalMult = () => {
     //6 "art9 : " + ((artArt.level > 9)?symbolBookMult:BF(1)));
     globalMult *= ((ChronosAge.level > 0) ? (BF(1) + BF(thyme.level).pow(chronosPow)) : BF(1));
     //7 "chrono : " + ((ChronosAge.level > 0)?(BF(1) + BF(thyme.level).pow(chronosPow)):BF(1)));
-    globalMult *= ((artArt.level > 4) ? BigP(building[1].level, gillesBoxPower) : BF(1));
+    globalMult *= ((artifactUpgrade[4].level > 0) ? BigP(building[1].level, gillesBoxPower) : BF(1));
     //8 "art4 : " + ((artArt.level > 4)?BigP(building[1].level,gillesBoxPower):BF(1)));
     //globalMult *= (((BF(BF(spellCast[1]) + (BF(10) * effectCPSBDur)) >= BF(thyme.level))) ? effectCPSB : BF(1));
     //9 "spellsus : " + ((((spellCast[1]+(10*effectCPSBDur)) >= thyme.level))?effectCPSB:BF(1)));
@@ -949,10 +949,11 @@ var kittyPowerFull = (level) => {
 
 //local mult - applies to C gained per building
 var updateLocalMult = (indx) => {
+    //log(`update ${indx}`);
     buildingData[indx].mult = BF(getPower(indx) * BigP(1.1,buildingLump[indx].level));
     switch (indx) {
         case 0:
-            if (artArt.level > 3) {
+            if (artifactUpgrade[3].level > 0) {
                 buildingData[indx].mult *= BF(3.24e65);
             }
             break;
@@ -965,12 +966,12 @@ var updateLocalMult = (indx) => {
             if (ygg.level > 0 && thyme.level > 0) {
                 buildingData[indx].mult *= BF(getPower(2)).pow(yggPowBase + (yggPowLv * ygg.level)) * BF(building[6].level + building[2].level).pow(BigP(ygg.level, yggBPowLv) * yggBPowMod + yggBPowBase) * (BigNumber.ONE + BF(thyme.level).pow(yggThymePow)) * yggBoost;
             }
-            if (artArt.level > 5) {
+            if (artifactUpgrade[5].level > 0) {
                 buildingData[indx].mult *= BF(200);
             }
             break;
         case 3:
-            if (artArt.level > 6) {
+            if (artifactUpgrade[6].level > 0) {
                 buildingData[indx].mult *= BF(3.5e63);
             }
             break;
@@ -978,27 +979,27 @@ var updateLocalMult = (indx) => {
             if (recom.level > 0) {
                 buildingData[indx].mult *= (recom.level > 1) ? (BF(1e27) * BigP(recomPowBase, recom.level - 1)) : (BF(1e28));
             }
-            if (artArt.level > 7) {
+            if (artifactUpgrade[7].level > 0) {
                 buildingData[indx].mult *= BF(1.08e18);
             }
             break;
         case 5:
-            if (artArt.level > 8) {
+            if (artifactUpgrade[8].level > 0) {
                 buildingData[indx].mult *= BF(4.08e68);
             }
             break;
         case 6:
-            if (artArt.level > 0) {
-                buildingData[indx].mult *= BF(8e57);
-                if (artArt.level > 1) {
-                    buildingData[indx].mult *= (building[13].level) + BF(1);
+            if (artifactUpgrade[0].level > 0) {
+                buildingData[indx].mult *= BF(8e43);
+                if (artifactUpgrade[1].level > 0) {
+                    buildingData[indx].mult *= (building[13].level + investHelp[13].level) + BF(1);
                 }
             }
             break;
         case 13:
-            if (artArt.level > 1) {
-                buildingData[indx].mult *= BF(1) + (BF(55) * building[6].level);
-                if (artArt.level > 5) {
+            if (artifactUpgrade[1].level > 0) {
+                buildingData[indx].mult *= BF(1) + (BF(150) * (building[6].level + investHelp[6].level));
+                if (artifactUpgrade[5].level > 0) {
                     buildingData[indx].mult *= BF(750);
                 }
             }
@@ -1027,32 +1028,32 @@ var getCollectionBar = (indx, cur) => {
 var artArt, templeJ = false, artifactUpgrade = new Array(99), artifactUnlock = new Array(99), artifactCount = 0;
 const artifactLockText = "Not Discovered";
 var artifactData = [{
-    order: 0,name: "Rhombus of Chocolatance",clue: "how did you managed to see this",
+    order: 0,name: "Rhombus of Chocolatance",clue: "it\'s at the foyer, you can\'t miss it",
     cost: BF("1e250"),unlockCondition: () => {return true;}, desc: "Very shiny chocolate that somehow brings in attention of even more gods"
 },{
     order: 1,name: "Occam\'s Lazer",clue: "One is One, Five is Two",
-    cost: BF("1e253"),unlockCondition: () => {return archaeology.level >= (255 - (255 & 256 | 4 | 8 | 16 | 64 | 128));}, desc: "A hilariously big beam of light that makes prisms go head over toes for them(aka you)"
+    cost: BF("1e265"),unlockCondition: () => {return archaeology.level >= (255 - (255 & 256 | 4 | 8 | 16 | 64 | 128));}, desc: "A hilariously big beam of light that makes prisms go head over toes for them(aka you)"
 },{
     order: 2,name: "All-Natural ouo sugar",clue: "Achieved Enough?",
-    cost: BF("1e255"),unlockCondition: () => {return achCount >= (((((((((1 << 1) + 1) << 2) + 1) << 1) + 1) << 1) + 1) << 1);}, desc: "Makes the cat go ouo and [DATA EXPUNGED]"
+    cost: BF("1e270"),unlockCondition: () => {return achCount >= (((((((((1 << 1) + 1) << 2) + 1) << 1) + 1) << 1) + 1) << 1);}, desc: "Makes the cat go ouo and [DATA EXPUNGED]"
 },{
     order: 3,name: "Doctor T\'s Thesis",clue: "YEAH SCIENCE!!!!!!!!",
     cost: BF("1e260"),unlockCondition: () => {return building[9].level + investHelp[9].level >= ((((((4095 & (4095 - 1)) & (4095 - 4)) & (4095 - 8)) & (4095 - 64) & (4095 - 256)) & (4095 - 512)));}, desc: "The panacea to all those hand diseases"
 },{
     order: 4,name: "Bountiful box of Gilles-Philippe",clue: "There\'s kings in cookies",
-    cost: BF("1e265"),unlockCondition: () => {return cookieTin[7].level >= 1 << 2 >> 2 << 2 >> 2 << 2 >> 2 << 2 >> 2 << 2 >> 2 << 2 >> 2;}, desc: "Replaces grandma with something else....  better?"
+    cost: BF("1e254"),unlockCondition: () => {return cookieTin[7].level >= 1 << 2 >> 2 << 2 >> 2 << 2 >> 2 << 2 >> 2 << 2 >> 2 << 2 >> 2;}, desc: "Replaces grandma with something else....  better?"
 },{
     order: 5,name: "Key to the Conservatorium",clue: "Explore more, duh",
-    cost: BF("1e270"),unlockCondition: () => {return art.level >= (((1 << 5) | 1) & 31 & 62 | 2 | 4 | 8 | 16);}, desc: "An overly ornate yet small key to a glass house you never knew existed. Take a walk inside, experience the exotic fauna and dreamy space, but please DO NOT eat or drink anything labelled with \"Eat me\" or \"Drink Me\"."
+    cost: BF("1e275"),unlockCondition: () => {return archaeology.level >= (((1 << 5) | 1) & 31 & 62 | 2 | 4 | 8 | 16) + 40;}, desc: "An overly ornate yet small key to a glass house you never knew existed. Take a walk inside, experience the exotic fauna and dreamy space, but please DO NOT eat or drink anything labelled with \"Eat me\" or \"Drink Me\"."
 },{
     order: 6,name: "Coreforge Bar",clue: "A bit deeper",
-    cost: BF("1e275"),unlockCondition: () => {return art.level >= (((((((1 << 1) + 1) << 1) + 1) << 1) + 1) << 1) + ((1 << 3) + 10);}, desc: "An legendary alloy rumored to be forged within the very halls of Sauron. Their sheer radiance already bests even the most sophisticated of your alloys, not to mention the heat."
+    cost: BF("1e280"),unlockCondition: () => {return archaeology.level >= (((((((((1 << 1) + 1) << 2) + 1) << 1) + 1) << 1) + 1) << 1);}, desc: "An legendary alloy rumored to be forged within the very halls of Sauron. Their sheer radiance already bests even the most sophisticated of your alloys, not to mention the heat."
 },{
     order: 7,name: "Da Vinci Manuscript",clue: "Get those patents out, ya stingy",
-    cost: BF("1e280"),unlockCondition: () => {return ((32 >> 4) | (32 >> 1) | 32 ) << 2;}, desc: "Contains all you would ever dream when you have to deal with the nightmare of citations, absolutely useless otherwise."
+    cost: BF("1e285"),unlockCondition: () => {return ((32 >> 4) | (32 >> 1) | 32 ) << 2;}, desc: "Contains all you would ever dream when you have to deal with the nightmare of citations, absolutely useless otherwise."
 },{
     order: 8,name: "A very curious tulip bulb",clue: "Hoard, Hoard, Hoard more",
-    cost: BF("1e295"),unlockCondition: () => {return cookie.value >= BF("1e290");}, desc: "Supposedly dating back to the 1600s and being involved in \"Tulip Mania\". This bulb of tulip surprisingly has numerous bubbles formed around its petals, a reminder of something?"
+    cost: BF("1e295"),unlockCondition: () => {return COOKIE.value >= BF("1e295");}, desc: "Supposedly dating back to the 1600s and being involved in \"Tulip Mania\". This bulb of tulip surprisingly has numerous bubbles formed around its petals, a reminder of something?"
 },{
     order: 9,name: "Book of Symbolisms",clue: "Show me the Artifacts, hope you\'re lucky",
     cost: BF("1e300"),unlockCondition: () => {return (artifactUpgrade[0].level + artifactUpgrade[1].level + artifactUpgrade[2].level + artifactUpgrade[3].level + artifactUpgrade[4].level + artifactUpgrade[5].level + artifactUpgrade[6].level + artifactUpgrade[7].level + artifactUpgrade[8].level >= 9) && (Math.random() < 0.05);}, desc: "You don\'t know why, but you felt a compulsion to keep this book close to you"
@@ -1281,7 +1282,7 @@ var heavenlyUpgradeData = [
         uid: 11,
         name: "Box of R9 $(R_{9})$",
         info: `A very stange and mathematical box seemingly full of ${game.sigmaTotal} students`,
-        costModel: new ExponentialCost(1e80, ML2(10)),
+        costModel: new ExponentialCost(1e80, ML2(1000)),
         maxLevel: 3,
         onBought: (amount) => {updateGlobalMult();}
     },{
@@ -1613,6 +1614,9 @@ function getAllUpgradeMultiplierFromCookie(cookie){
         log(`6) Terra Lv.${lv}, B3=${lv3}, Tf Lv.${lv2} = ${mL}x`);
         ret *= mL;
     }
+    //part 7 : artifacts
+    lv = getUpgradeLvFromCookie(artifactUpgrade[4],cookie);lv = Math.min(lv,artifactUpgrade[4].maxLevel);lv2 = getUpgradeLvFromCookie(building[0],hc);
+    log(`6) Gilles Box with B1=${lv2} = ${BigP(lv2, gillesBoxPower)}x`);ret *= BigP(lv2, gillesBoxPower);
     log(`For a total of ${ret}x`);
     return ret;
 }
@@ -1914,6 +1918,11 @@ var init = () => {
                     artifactUpgrade[i].maxLevel = 1;
                     artifactUpgrade[i].getDescription = () => (artifactUnlock[i].level > 0)?artifactData[i].name : artifactLockText;
                     artifactUpgrade[i].getInfo = (amount) => (artifactUnlock[i].level > 0)?artifactData[i].desc : artifactData[i].clue;
+                    artifactUpgrade[i].bought = (amount) => {
+                        updateGlobalMult();
+                        refreshLocalMult();
+                        CPSrefresh();
+                    }
                 }
                 break;
             }
@@ -2051,11 +2060,11 @@ var updateAvailability = () => {
     recom.isAvailable = COOKIE.value >= BF(1e155) && (normalUpgradeMenu.level % 2) == 0;
     invest.isAvailable = COOKIE.value >= BF(1e180) && (normalUpgradeMenu.level % 2) == 0;
     investRespec.isAvailable = invest.level >= 100 && (normalUpgradeMenu.level % 2) == 0;
-    archaeology.isAvailable = COOKIE.value >= BF(1e245);
-    artifactPouch.isAvailable = archaeology.isAvailable;
-    templeReset.isAvailable = archaeology.isAvailable;
+    archaeology.isAvailable = COOKIE.value >= BF(1e245) && (normalUpgradeMenu.level % 2) == 0;
+    artifactPouch.isAvailable = archaeology.isAvailable && (normalUpgradeMenu.level % 2) == 0;
+    templeReset.isAvailable = archaeology.isAvailable && archaeology.level >= 10 && (normalUpgradeMenu.level % 2) == 0;
     for(let i=0;i<artifactCount;i++){
-        artifactUpgrade[i].isAvailable = archaeology.isAvailable && (artifactPouch.level == 1);
+        artifactUpgrade[i].isAvailable = archaeology.isAvailable && (artifactPouch.level == 1) && (normalUpgradeMenu.level % 2) == 0;
     }
 };
 
