@@ -434,7 +434,7 @@ var buildingData = [
             for(let i=0;i<amount;i++){
                 let res = Math.random() * (25 + (invest.level/250));
                 res = Math.floor(res);
-                log(`You win ${res}`);
+                //log(`You win ${res}`);
                 if(res < 19){
                     if(building[res].level != 0){
                         investHelp[res].level += 5+ConjureBuild.level;
@@ -707,10 +707,11 @@ var updateBuildingLumpMaxLv = () => {
     log(`Max = ${maxBuild}, lim = ${maxLv}`);
     for(let i=0;i<19;i++){
         //log(`L${i} = Lv.${buildingLump[i].level}`);
-        if(buildingLump[i].level < maxLv){
+        if(buildingLump[i].level <= maxLv){
             buildingLump[i].maxLevel = Math.min(maxLv,buildingData[i].sweetMax);
         }else{
-            buildingLump[i].maxLevel = buildingLump[i].level + 1;
+            buildingLump[i].level = buildingLump[i].maxLevel;
+            //buildingLump[i].maxLevel = buildingLump[i].level + 1;
         }
     }
 }
@@ -954,7 +955,7 @@ var updateLocalMult = (indx) => {
     switch (indx) {
         case 0:
             if (artifactUpgrade[3].level > 0) {
-                buildingData[indx].mult *= BF(3.24e65);
+                buildingData[indx].mult *= BF(3.24e44);
             }
             break;
         case 1:
@@ -972,7 +973,7 @@ var updateLocalMult = (indx) => {
             break;
         case 3:
             if (artifactUpgrade[6].level > 0) {
-                buildingData[indx].mult *= BF(3.5e63);
+                buildingData[indx].mult *= BF(3.5e40);
             }
             break;
         case 4:
@@ -990,7 +991,7 @@ var updateLocalMult = (indx) => {
             break;
         case 6:
             if (artifactUpgrade[0].level > 0) {
-                buildingData[indx].mult *= BF(8e43);
+                buildingData[indx].mult *= BF(1.6e43);
                 if (artifactUpgrade[1].level > 0) {
                     buildingData[indx].mult *= (building[13].level + investHelp[13].level) + BF(1);
                 }
@@ -998,7 +999,7 @@ var updateLocalMult = (indx) => {
             break;
         case 13:
             if (artifactUpgrade[1].level > 0) {
-                buildingData[indx].mult *= BF(1) + (BF(150) * (building[6].level + investHelp[6].level));
+                buildingData[indx].mult *= BF(1) + (BF(5) * (building[6].level + investHelp[6].level));
                 if (artifactUpgrade[5].level > 0) {
                     buildingData[indx].mult *= BF(750);
                 }
@@ -1012,14 +1013,14 @@ var updateLocalMult = (indx) => {
 };
 
 //building bar indicator : - = empty, | = 1 tick, O = 5 tick (over 25 tick)
-var collectBar0 = "-", collectBar1 = "|", collectBar2 = "O";
+var collectBar0 = "\-", collectBar1 = "I", collectBar2 = "O";
 var getCollectionBar = (indx, cur) => {
     if(buildingData[indx].collectionTime >= 25){
         cur = Math.floor(cur/5);
         let mx = buildingData[indx].collectionTime / 5;
-        return "[" + collectBar2.repeat(cur) + collectBar0.repeat(mx-cur) + "]";
+        return "\[" + collectBar2.repeat(cur) + collectBar0.repeat(mx-cur) + "\]";
     }else{
-        return "[" + collectBar1.repeat(cur) + collectBar0.repeat(buildingData[indx].collectionTime-cur) + "]";
+        return "\[" + collectBar1.repeat(cur) + collectBar0.repeat(buildingData[indx].collectionTime-cur) + "\]";
     }
     // return ` ${thyme.level}`;
 }
@@ -1031,23 +1032,23 @@ var artifactData = [{
     order: 0,name: "Rhombus of Chocolatance",clue: "it\'s at the foyer, you can\'t miss it",
     cost: BF("1e250"),unlockCondition: () => {return true;}, desc: "Very shiny chocolate that somehow brings in attention of even more gods"
 },{
-    order: 1,name: "Occam\'s Lazer",clue: "One is One, Five is Two",
+    order: 1,name: "Occam\'s Lazer",clue: "One is One, Seven Fives is Two",
     cost: BF("1e265"),unlockCondition: () => {return archaeology.level >= (255 - (255 & 256 | 4 | 8 | 16 | 64 | 128));}, desc: "A hilariously big beam of light that makes prisms go head over toes for them(aka you)"
 },{
     order: 2,name: "All-Natural ouo sugar",clue: "Achieved Enough?",
     cost: BF("1e270"),unlockCondition: () => {return achCount >= (((((((((1 << 1) + 1) << 2) + 1) << 1) + 1) << 1) + 1) << 1);}, desc: "Makes the cat go ouo and [DATA EXPUNGED]"
 },{
     order: 3,name: "Doctor T\'s Thesis",clue: "YEAH SCIENCE!!!!!!!!",
-    cost: BF("1e260"),unlockCondition: () => {return building[9].level + investHelp[9].level >= ((((((4095 & (4095 - 1)) & (4095 - 4)) & (4095 - 8)) & (4095 - 64) & (4095 - 256)) & (4095 - 512)));}, desc: "The panacea to all those hand diseases"
+    cost: BF("1e290"),unlockCondition: () => {return building[9].level + investHelp[9].level >= ((((((4095 & (4095 - 1)) & (4095 - 4)) & (4095 - 8)) & (4095 - 64) & (4095 - 256)) & (4095 - 512)));}, desc: "The panacea to all those hand diseases"
 },{
     order: 4,name: "Bountiful box of Gilles-Philippe",clue: "There\'s kings in cookies",
     cost: BF("1e254"),unlockCondition: () => {return cookieTin[7].level >= 1 << 2 >> 2 << 2 >> 2 << 2 >> 2 << 2 >> 2 << 2 >> 2 << 2 >> 2;}, desc: "Replaces grandma with something else....  better?"
 },{
     order: 5,name: "Key to the Conservatorium",clue: "Explore more, duh",
-    cost: BF("1e275"),unlockCondition: () => {return archaeology.level >= (((1 << 5) | 1) & 31 & 62 | 2 | 4 | 8 | 16) + 40;}, desc: "An overly ornate yet small key to a glass house you never knew existed. Take a walk inside, experience the exotic fauna and dreamy space, but please DO NOT eat or drink anything labelled with \"Eat me\" or \"Drink Me\"."
+    cost: BF("1e280"),unlockCondition: () => {return archaeology.level >= (((1 << 5) | 1) & 31 & 62 | 2 | 4 | 8 | 16) + 40;}, desc: "An overly ornate yet small key to a glass house you never knew existed. Take a walk inside, experience the exotic fauna and dreamy space, but please DO NOT eat or drink anything labelled with \"Eat me\" or \"Drink Me\"."
 },{
     order: 6,name: "Coreforge Bar",clue: "A bit deeper",
-    cost: BF("1e280"),unlockCondition: () => {return archaeology.level >= (((((((((1 << 1) + 1) << 2) + 1) << 1) + 1) << 1) + 1) << 1);}, desc: "An legendary alloy rumored to be forged within the very halls of Sauron. Their sheer radiance already bests even the most sophisticated of your alloys, not to mention the heat."
+    cost: BF("1e285"),unlockCondition: () => {return archaeology.level >= (((((((((1 << 1) + 1) << 2) + 1) << 1) + 1) << 1) + 1) << 1);}, desc: "An legendary alloy rumored to be forged within the very halls of Sauron. Their sheer radiance already bests even the most sophisticated of your alloys, not to mention the heat."
 },{
     order: 7,name: "Da Vinci Manuscript",clue: "Get those patents out, ya stingy",
     cost: BF("1e285"),unlockCondition: () => {return ((32 >> 4) | (32 >> 1) | 32 ) << 2;}, desc: "Contains all you would ever dream when you have to deal with the nightmare of citations, absolutely useless otherwise."
@@ -1467,7 +1468,7 @@ var superP, superL, superC;
         {order: 15, name: "Pure Chocolate Taste", desc: "Get e200 cookies without buying a single level of milk and cookie flavor", weight: 2, secretClue : "Forget something?",
          unlock: () => ((COOKIE.value).abs() >= BF(1e200)) && (kitty.level == 0) && (cookieTasty.level == 0),},
         {order: 16, name: "Pure Vanilla Taste", desc: "Get e250 cookies without a single level of milk, cookie flavors, and a LOT more....\n\nThis is NOT a CRK reference", weight: 3, secretClue : "forgor something??? 💀",
-         unlock: () => (((COOKIE.value).abs() >= BF(1e250)) && (kitty.level == 0) && (cookieTasty.level == 0) && (terra.level == 0) && (ygg.level == 0) && (art.level == 0) && (artArt.level == 0) && (invest.level == 0) && (recom.level == 0) && (covenant.level == 0)),},
+         unlock: () => (((COOKIE.value).abs() >= BF(1e250)) && (kitty.level == 0) && (cookieTasty.level == 0) && (terra.level == 0) && (ygg.level == 0) && (archaeology.level == 0) && (artArt.level == 0) && (invest.level == 0) && (recom.level == 0) && (covenant.level == 0)),},
         {order: 17, name: "nice", desc: "Get 6.9 heavenly chips in any order of magnitude (decimals accepted)", weight: 2, secretClue : "nice",
          unlock: () => {
             let temp = TS10(HEAVENLY_CHIP.value);
@@ -1720,7 +1721,7 @@ var init = () => {
         normalUpgradeMenu = shortUpgrade(1e9 + 1,COOKIE,new FreeCost(),`Current Menu : `,"Changes between pages of normal upgrades");
         normalUpgradeMenu.getDescription = () => `Current Menu : ${((normalUpgradeMenu.level % 2) == 0)?"Buildings":"Cookies and Milk"}`;
         normalUpgradeMenu.bought = (amount) => {
-            log("b");
+            //log("b");
             if (normalUpgradeMenu.level > 1){
                 normalUpgradeMenu.level = 0;
             }
@@ -1879,7 +1880,7 @@ var init = () => {
     // All 19 Buildings
     for (let i = 0; i < 19; i++) {
         //main upgrade
-        log(`B${i}`);
+        //log(`B${i}`);
         //power
         buildingPower[i] = shortPermaUpgrade(4 + i, COOKIE, buildingPowerCost(i),"getBuildingPowerDesc(i)", "(amount) => getBuildingPowerInfo(i,amount)");
         buildingPower[i].getDescription = () => getBuildingPowerDesc(i);
@@ -1911,7 +1912,7 @@ var init = () => {
                 artifactPouch.getDescription = () => `${(artifactPouch.level == 0)?"Open":"Close"} Artifact Pouch`;
                 artifactCount = artifactData.length;
                 for(let i=0;i<artifactCount;i++){
-                    log(`A${i} - ${artifactData[i].name}`);
+                    //log(`A${i} - ${artifactData[i].name}`);
                     artifactUnlock[i] = shortPermaUpgrade(60000+i,COOKIE,new ConstantCost(BF("1e1000")),`hast ${artifactData[i]} been discovered`,`how do you managed to see it`);artifactUnlock[i].maxLevel = 1;artifactUnlock[i].isAvailable = false;
 
                     artifactUpgrade[i] = shortUpgrade(60000+i,COOKIE,new ConstantCost(artifactData[i].cost),artifactData[i].name,artifactData[i].desc);
@@ -2070,6 +2071,10 @@ var updateAvailability = () => {
 
 //!Tick
 var terraBoost = BF(1), dilateBoost = BF(1), setupTick = true, IdleCPS = BF(0);
+var cookieProductionNerfFunConsoleValue = 1;//DO NOT CHANGE
+function updateNerfConsoleValue(val){
+    cookieProductionNerfFunConsoleValue = val;
+}
 var thymeInc = () => {
     //thyme = ticks elapsed
     thyme.level += (thyme.level < thyme.maxLevel) ? 1 : 0;
@@ -2088,6 +2093,7 @@ var generateCookie = (id, ticks, mult) => {
     //log(`generating for ${id}, base = ${ret}, pow = ${pow}`);
     //cursor power
     if(!setupTick && buildingExponentLv[id] != 0){ret = BigP(ret,pow);}
+    ret /= cookieProductionNerfFunConsoleValue;
     if(ret > CPS){
         CPS = ret;
         dominate = id;dominatestore.setValue(dominate);
@@ -2107,7 +2113,7 @@ var generateCookie = (id, ticks, mult) => {
 }
 var generateLump = (ticks) => {
     let lumpChance = ticks / (lumpTickChance / Math.log10(COOKIE.value + 10));//it's normally 1/x
-    let dLump = BF(Math.floor(lumpChance)) + (sugarCoat.level * 2.5) + ((recom.level + ((artArt.level > 7) ? 10 : 0)) * 0.01);
+    let dLump = BF(Math.floor(lumpChance)) + (sugarCoat.level * 2.5) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01);
     lumpChance -= Math.floor(lumpChance);
     if (ticks == 1 && Math.random() <= lumpChance) {
         dLump += BF(1);
@@ -2238,7 +2244,7 @@ var secondaryCheck = (mode) => {
             return recom.level > 0;
             break;
         case 8:
-            return artArt.level > 11;
+            return artifactUpgrade[11].level > 0;
             break;
         case 9:
             return excavate.level > 0;
@@ -2271,7 +2277,7 @@ var secondaryEq = (mode, col) => {
                 (CookieC.level > 0 ? "\\\\(log_{10}(C + 10))^{0.9}" : "") + "}"
             );
         case 2:
-            return `\\color{#${eqColor[col]}}{M = M_{i}K(0.2)+(K-10)(0.3)\\\\+(K-25)(0.4)+(K-50)(0.5)${(artArt.level > 2) ? "\\\\M \\leftarrow M^{1.5+0.01A_{c}}" : ""}}`;
+            return `\\color{#${eqColor[col]}}{M = M_{i}K(0.2)+(K-10)(0.3)\\\\+(K-25)(0.4)+(K-50)(0.5)${(artifactUpgrade[2].level > 0) ? "\\\\M \\leftarrow M^{1.5+0.01A_{c}}" : ""}}`;
         case 3:
             theory.secondaryEquationScale = 0.9;
             return (
@@ -2301,7 +2307,7 @@ var secondaryEq = (mode, col) => {
             return `\\color{#${eqColor[col]}}{T_d = \\frac{B[11]^{1+0.025T_D}}{1000^{T_f}}\\\\T_f = 1-\\frac{min(B[11],B[10]+B[12])}{(2.125-0.125T_{D}))(B[10]+B[12])}}`;
         case 9:// Elements
             theory.secondaryEquationScale = 0.85;
-            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{f}B[3]L[3]P_{3}^{0.05}log_2(T)}{150^{n+1}},\\: n \\neq 8${(artArt.level > 13) ? `\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}` : ``}}`;
+            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{f}B[3]L[3]P_{3}^{0.05}log_2(T)}{150^{n+1}},\\: n \\neq 8${(artifactUpgrade[13].level > 0) ? `\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}` : ``}}`;
         case 10:// Decay
             let ingre = (reactorMode == -1) ? "E_{n}" : `${elemName[reactorMode + 2]}`;
             let r1 = (reactorMode == -1) ? "E_{n-1}" : `${elemName[reactorMode + 1]}`;
@@ -2339,7 +2345,7 @@ var getTertiaryEquation = () => {
 };
 var getQuaternaryEntries = () => {
     for (let i = 0; i < 9; i++) {
-        quartList[i].value = (excavate.level >= (i + 1) || ((i == 8) && (artArt.level > 13)) || elements[i].value > 0) ? elements[i].value : null;
+        quartList[i].value = (excavate.level >= (i + 1) || ((i == 8) && (artifactUpgrade[13].level > 0)) || elements[i].value > 0) ? elements[i].value : null;
     }
     quartList2[0].value = CPS;
     quartList2[1].value = thyme.level / 10;
@@ -2618,7 +2624,7 @@ let quartButton = ui.createButton({
     text: `Quaternary Values\n${quName[quType]}`, row: 1, column: 1,
     fontFamily: FontFamily.CMU_REGULAR,
     onClicked: () => {
-        if ((artArt.level > 12) || (elements[0].value > 0)) {
+        if ((artifactUpgrade[12].level > 0) || (elements[0].value > 0)) {
             quType = quType^1;
             quTypeStore.setValue(quType);
             quartButton.text = `Quaternary Values\n${quName[quType]}`;
