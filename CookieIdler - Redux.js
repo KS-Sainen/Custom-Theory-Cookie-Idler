@@ -337,7 +337,7 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxB
             buildingExponentLvStore[i].readValue();
         }
         CPS = BF(CPSstore.value);
-        dominate = Math.floor(dominatestore.value);
+        dominate = Math.floor(dominatestore.value);if(Number.isNaN(dominate)){dominate = 0;}
         perkHas = perkPoint.value;
         for (let i = 0; i < 19; i++) {
             buildingExponentLv[i] = Math.floor(buildingExponentLvStore[i].value);
@@ -528,7 +528,7 @@ var buildingData = [
     },
     {id: 13,
      names: ["Prism","Prius"], desc: "matterifying from light ", lumpBName: "Extended Spectrum",
-     baseCPS: BF("4.9e90"), baseCost: BF("2.1e228"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 350,
+     baseCPS: BF("4.9e82"), baseCost: BF("2.1e228"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 350,
      achName: ["Some rays of dough and batter","Total Enlightenment","O thy energy of sky, bring fourth the light rays","Neverending rays of bright brilliance shine on you all","4th Cone"],
     },
     {id: 14,
@@ -561,7 +561,7 @@ var buildingData = [
 // gimmick upgrade constants
 const covExp = 5;
 const covDelta = 0.3;
-const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.5), gillesBoxPower = BF(0.61), covLvMod = BF(0.3), yggPowBase = BF(1.1), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.15), yggBPowBase = BF(1.7), yggThymePow = BF(0.65), yggBoost = BF(2.5), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005), terraFunNerfMod = BF(6);
+const twinGateExp = BF(0.03), R9BoxMult = BF(0.7), symbolBookMult = BF(100), chronosPow = BF(0.25), gillesBoxPower = BF(0.61), covLvMod = BF(0.3), yggPowBase = BF(1.1), yggPowLv = BF(0.05), yggBPowLv = BF(0.9), yggBPowMod = BF(0.15), yggBPowBase = BF(1.7), yggThymePow = BF(0.5), yggBoost = BF(2.5), recomPowBase = BF(1.9), chanceBaseMin = BF(0.99), chanceBaseMax = BF(1.01), chanceBiasMod = BF(0.00005), terraFunNerfMod = BF(6);
 var buildingCount = 0;
 
 // gimmick upgrades
@@ -1031,10 +1031,10 @@ var artifactData = [{
     cost: BF("1e250"),unlockCondition: () => {return true;}, desc: "Very shiny chocolate that somehow brings in attention of even more gods"
 },{
     order: 1,name: "Occam\'s Lazer",clue: "One is One, Five is Two",
-    cost: BF("1e253"),unlockCondition: () => {return archaeology.level >= 532 - (532 & 512 | 1 | 2 | 4 | 8);}, desc: "A hilariously big beam of light that makes prisms go head over toes for them(aka you)"
+    cost: BF("1e253"),unlockCondition: () => {return archaeology.level >= (255 - (255 & 256 | 4 | 8 | 16 | 64 | 128));}, desc: "A hilariously big beam of light that makes prisms go head over toes for them(aka you)"
 },{
     order: 2,name: "All-Natural ouo sugar",clue: "Achieved Enough?",
-    cost: BF("1e255"),unlockCondition: () => {return achCount >= ((1 << 2) + 1) << 4;}, desc: "Makes the cat go ouo and [DATA EXPUNGED]"
+    cost: BF("1e255"),unlockCondition: () => {return achCount >= (((((((((1 << 1) + 1) << 2) + 1) << 1) + 1) << 1) + 1) << 1);}, desc: "Makes the cat go ouo and [DATA EXPUNGED]"
 },{
     order: 3,name: "Doctor T\'s Thesis",clue: "YEAH SCIENCE!!!!!!!!",
     cost: BF("1e260"),unlockCondition: () => {return building[9].level + investHelp[9].level >= ((((((4095 & (4095 - 1)) & (4095 - 4)) & (4095 - 8)) & (4095 - 64) & (4095 - 256)) & (4095 - 512)));}, desc: "The panacea to all those hand diseases"
@@ -2123,7 +2123,7 @@ var calcIdleCPS = () => {
     IdleCPS = BF(0);
     for(let i=0;i<19;i++){
         updateLocalMult(i);
-        IdleCPS += generateCookie(i,10,1);
+        IdleCPS += generateCookie(i,1,1);
     }
 }
 var performanceTester = () => {
@@ -2172,13 +2172,14 @@ var tick = (elapsedTime,multiplier) => {
     //let theoryBonus = theory.publicationMultiplier;
     //idle
     if(game.isCalculatingOfflineProgress){
-        if(terra.level > 0)xBegin = thyme.level - ((terraDurMod * 0.75) * (terra.level));
+        if(terra.level > 0)xBegin = thyme.level - ((terraDurMod * 1.01) * (terra.level));
         terraBoost = Logistic();
         if(IdleCPS == BF(0)){
             updateGlobalMult();
             refreshLocalMult();
             calcIdleCPS();
         }
+        dt *= 0.9;
         COOKIE.value += IdleCPS * dt * terraBoost;
     }else{
             //cookie
