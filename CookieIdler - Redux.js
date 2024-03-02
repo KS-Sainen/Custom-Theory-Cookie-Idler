@@ -175,8 +175,8 @@ var version = 1.0;
  */
 function shortPermaUpgrade(id, cur, costModel, desc, info) {
     var up = theory.createPermanentUpgrade(id, cur, costModel);
-    up.getDescription = () => desc;
-    up.getInfo = () => info;
+    up.getDescription = (_) => desc;
+    up.getInfo = (amount) => info;
     return up;
 }
 var baseHeavenlyUpgradeID = 1000000;
@@ -191,8 +191,8 @@ function shortPermaUpgradeObj(permanentUpgradeObject,cur){
 }
 function shortUpgrade(id, cur, costModel, desc, info) {
     var up = theory.createUpgrade(id, cur, costModel);
-    up.getDescription = () => desc;
-    up.getInfo = () => info;
+    up.getDescription = (_) => desc;
+    up.getInfo = (amount) => info;
     return up;
 }
 
@@ -571,13 +571,13 @@ var buildingCount = 0;
 const terraDurMod = BF(300), terraInfPow = BF(0.005), maxLPowBase = BF(2.4), maxLPowMod = BF(0.1), maxLBPowBase = BF(1.2), maxLBPowMod = BF(0.03), dilateFactorDivBase = BF(2.125), dilateFactorDivMod = BF(0.125), dilateFactorBase = BF(1000), dilatePowBase = BF(1), dilatePowMod = BF(0.025);
 var xBegin = 0, maxL = 1;
 var updateMaxL = () => {
-    maxL = (BF(terra.level).pow(maxLPowBase + maxLPowMod * (TerraInf.level + ((artArt.level > 6) ? 1 : 0))) * 1500);
-    maxL += BF(building[3].level).pow(maxLBPowBase + maxLBPowMod * TerraInf.level);
+    maxL = (BigP(terra.level,maxLPowBase + maxLPowMod * (TerraInf.level + ((artArt.level > 6) ? 1 : 0))) * 1500);
+    maxL += BigP(building[3].level,maxLBPowBase + maxLBPowMod * TerraInf.level);
     maxL /= terraFunNerfMod;
 }
 var Logistic = () => {
     if(terra.level == 0){return 1;}
-    return ((maxL.pow(1 + terraInfPow * TerraInf.level)) / (BigNumber.ONE + (BigNumber.E.pow((thyme.level - (xBegin + terra.level * terraDurMod)))))) + BigP(maxL,TerraInf.level*0.1);
+    return BigP(maxL,1 + terraInfPow * TerraInf.level) / (BigNumber.ONE + BigP(BigNumber.E,thyme.level - (xBegin + terra.level * terraDurMod))) + BigP(maxL,TerraInf.level*0.1);
 }
 var Dilate = () => {
     if (timeDilate.level == 0) {return 1;}
@@ -616,7 +616,7 @@ var getBuildingExp = (index) => {
 
 //building description + info
 var getBuildingDesc = (indx) => {
-    var bi = `\$B[${BigTS(indx)}]^{${(getBuildingExp(indx) > 1) ? getBuildingExp(indx).toString(10) : ""}}\$${(investHelp[indx].level>0)?`+${investHelp[indx].level}`:""}`;
+    var bi = `\$B[${indx}]^{${(getBuildingExp(indx) > 1) ? TS10(getBuildingExp(indx)) : ""}}\$${(investHelp[indx].level>0)?`+${investHelp[indx].level}`:""}`;
     switch(bInfo){
         case 0:
             return `${bi} - ${buildingData[indx].names[0]} ` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
@@ -760,7 +760,7 @@ var updateGlobalMult = () => {
     //5 "r9 : " + (BigP(game.sigmaTotal,R9Box.level * R9BoxMult)));
     globalMult *= ((artArt.level > 9) ? symbolBookMult : BF(1));
     //6 "art9 : " + ((artArt.level > 9)?symbolBookMult:BF(1)));
-    globalMult *= ((ChronosAge.level > 0) ? (BF(1) + BF(thyme.level).pow(chronosPow)) : BF(1));
+    globalMult *= ((ChronosAge.level > 0) ? (BF(1) + BigP(thyme.level,chronosPow)) : BF(1));
     //7 "chrono : " + ((ChronosAge.level > 0)?(BF(1) + BF(thyme.level).pow(chronosPow)):BF(1)));
     globalMult *= ((artifactUpgrade[4].level > 0) ? BigP(building[1].level, gillesBoxPower) : BF(1));
     //8 "art4 : " + ((artArt.level > 4)?BigP(building[1].level,gillesBoxPower):BF(1)));
@@ -861,17 +861,17 @@ var getCookieTP = (level) => {
     let res = BF(1);
     //level += crystalHoney.level * 10;
     if (level >= 150) {
-        res = BF(1.13).pow(level);
+        res = BigP(1.13,level);
     } else if (level >= 100) {
-        res = BF(1.11).pow(level);
+        res = BigP(1.11,level);
     } else if (level >= 75) {
-        res = BF(1.09).pow(level);
+        res = BigP(1.09,level);
     } else if (level >= 50) {
-        res = BF(1.07).pow(level);
+        res = BigP(1.07,level);
     } else if (level >= 25) {
-        res = BF(1.05).pow(level);
+        res = BigP(1.05,level);
     } else {
-        res = BF(1.03).pow(level);
+        res = BigP(1.03,level);
     }
     return res;
 };
@@ -960,12 +960,12 @@ var updateLocalMult = (indx) => {
             break;
         case 1:
             if (covenant.level > 0) {
-                buildingData[indx].mult *= BigP(buildingCount,(BF(covenant.level).pow(covLvMod) * covDelta + covExp) * (1 + ((covenant.level-1)*0.5)));
+                buildingData[indx].mult *= BigP(buildingCount,(BigP(covenant.level,covLvMod) * covDelta + covExp) * (1 + ((covenant.level-1)*0.5)));
             }
             break;
         case 2:
             if (ygg.level > 0 && thyme.level > 0) {
-                buildingData[indx].mult *= BF(getPower(2)).pow(yggPowBase + (yggPowLv * ygg.level)) * BF(building[6].level + building[2].level).pow(BigP(ygg.level, yggBPowLv) * yggBPowMod + yggBPowBase) * (BigNumber.ONE + BF(thyme.level).pow(yggThymePow)) * yggBoost;
+                buildingData[indx].mult *= BigP(getPower(2),yggPowBase + (yggPowLv * ygg.level)) * BigP(building[6].level + building[2].level,BigP(ygg.level, yggBPowLv) * yggBPowMod + yggBPowBase) * (BigNumber.ONE + BigP(thyme.level,yggThymePow)) * yggBoost;
             }
             if (artifactUpgrade[5].level > 0) {
                 buildingData[indx].mult *= BF(200);
@@ -1022,7 +1022,7 @@ var getCollectionBar = (indx, cur) => {
     }else{
         return "\[" + collectBar1.repeat(cur) + collectBar0.repeat(buildingData[indx].collectionTime-cur) + "\]";
     }
-    // return ` ${thyme.level}`;
+    //return ` ${thyme.level}`;
 }
 
 //! Artifacts
@@ -1597,21 +1597,21 @@ function getAllUpgradeMultiplierFromCookie(cookie){
     log(`4) Publication, Rho = ${BigP(cookie,0.2)} = ${getPublicationMultiplier(BigP(cookie,0.2))}`);ret*=getPublicationMultiplier(BigP(cookie,0.2));
     //part 5 : heavenly non-cookie
     lv = getUpgradeLvFromCookie(DivineD,hc);
-    if(lv>0){log(`5) Divine Doulbing Lv.${lv} = ${BigNumber.TWO.pow(lv)}x`);ret*=BigNumber.TWO.pow(lv);}
+    if(lv>0){log(`5) Divine Doulbing Lv.${lv} = ${BigP(2,lv)}x`);ret*=BigP(2,lv);}
     lv = getUpgradeLvFromCookie(R9Box,hc);lv = Math.min(lv,R9Box.maxLevel);
     if(lv>0){log(`R9 Box Lv.${lv} = ${(BigP(game.sigmaTotal, lv * R9BoxMult))}x`);ret*=(BigP(game.sigmaTotal, lv * R9BoxMult));}
     lv = getUpgradeLvFromCookie(ChronosAge,hc);lv = Math.min(lv,ChronosAge.maxLevel);
-    if(lv>0){log(`Chronos Lv.${lv} = ${(BF(1) + BF(thyme.level).pow(chronosPow))}x`);ret*=(BF(1) + BF(thyme.level).pow(chronosPow));}
+    if(lv>0){log(`Chronos Lv.${lv} = ${(BF(1) + BigP(thyme.level,chronosPow))}x`);ret*=(BF(1) + BigP(thyme.level,chronosPow));}
     lv = getUpgradeLvFromCookie(TwinGates,hc);lv = Math.min(lv,TwinGates.maxLevel);
-    if(lv>0){log(`Twin Gates Lv.${lv} = ${hc.pow(twinGateExp * lv)}x`);ret*=hc.pow(twinGateExp * TwinGates.level);}
+    if(lv>0){log(`Twin Gates Lv.${lv} = ${BigP(hc,twinGateExp * lv)}x`);ret*=BigP(hc,twinGateExp * lv);}
     //part 6 : logistic
     lv = getUpgradeLvFromCookie(terra,cookie);lv = Math.min(lv,terra.maxLevel);
     var lv2 = getUpgradeLvFromCookie(TerraInf,hc), lv3 = getUpgradeLvFromCookie(building[3],cookie);lv2 = Math.min(lv2,TerraInf.maxLevel);
     if(lv > 0){
-        var mL = (BF(lv).pow(maxLPowBase + maxLPowMod * (lv2 )) * 1500);
-        mL += BF(lv3).pow(maxLBPowBase + maxLBPowMod * lv2);
+        var mL = (BigP(lv,maxLPowBase + maxLPowMod * (lv2)) * 1500);
+        mL += BigP(lv3,maxLBPowBase + maxLBPowMod * lv2);
         mL /= terraFunNerfMod;
-        mL = mL.pow(1 + terraInfPow * lv2);
+        mL = BigP(mL,1 + terraInfPow * lv2);
         log(`6) Terra Lv.${lv}, B3=${lv3}, Tf Lv.${lv2} = ${mL}x`);
         ret *= mL;
     }
@@ -1902,6 +1902,7 @@ var init = () => {
         } else {
             building[i] = shortUpgrade(1+i,COOKIE,new ExponentialCost(buildingData[i].baseCost, buildingPriceMult),getBuildingDesc(i), "(amount) => getBuildingInfo(i,amount)");
         }
+        building[i].getDescription = (_) => getBuildingDesc(i);
         building[i].getInfo = (amount) => getBuildingInfo(i,amount);
         building[i].bought = (amount) => onBuildingBought(i,amount);
         //gimmick
@@ -2148,15 +2149,9 @@ var calcIdleCPS = () => {
     }
 }
 var performanceTester = () => {
-    // updateAvailability();
-    // for(let i=0;i<19;i++){
-    //     if(dilateBoost >= buildingData[i].collectionTime){
-    //         generateCookie(i,dilateBoost,terraBoost);
-    //     }else if(building[i].level > 0 && thyme.level % buildingData[i].collectionTime == 0){
-    //         //log(`${i} due!`);
-    //         generateCookie(i,buildingData[i].collectionTime,terraBoost);
-    //     }
-    // }
+    for(let i=0;i<19;i++){
+        getBuildingDesc(i);
+    }
 }
 var profilingConst = false;
 //var profiler1 = profilers.get("profiler1");
