@@ -532,8 +532,8 @@ var buildingData = [
      achName: ["Some rays of dough and batter","Total Enlightenment","O thy energy of sky, bring fourth the light rays","Neverending rays of bright brilliance shine on you all","4th Cone"],
     },
     {id: 14,
-     names: ["Chamceamekr","Cursof"], desc: "lucking in ", lumpBName: "Serendipity",
-     baseCPS: BF("2.1e123"), baseCost: BF("2.6e300"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 300, sweetMax: 350,
+     names: ["Chancemaker","Chamceamekr"], desc: "lucking in ", lumpBName: "Serendipity",
+     baseCPS: BF("2.1e115"), baseCost: BF("2.6e300"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 300, sweetMax: 350,
      achName: ["Lucked up","Devil\'s Gambit","Gambler\'s Last Bet","Remember, the house always wins","Black Cat\'s Paw"],
     },
     {id: 15,
@@ -986,7 +986,7 @@ var updateLocalMult = (indx) => {
             break;
         case 5:
             if (artifactUpgrade[8].level > 0) {
-                buildingData[indx].mult *= BF(4.08e68);
+                buildingData[indx].mult *= BF(4.08e48);
             }
             break;
         case 6:
@@ -1616,8 +1616,14 @@ function getAllUpgradeMultiplierFromCookie(cookie){
         ret *= mL;
     }
     //part 7 : artifacts
-    lv = getUpgradeLvFromCookie(artifactUpgrade[4],cookie);lv = Math.min(lv,artifactUpgrade[4].maxLevel);lv2 = getUpgradeLvFromCookie(building[0],hc);
-    log(`6) Gilles Box with B1=${lv2} = ${BigP(lv2, gillesBoxPower)}x`);ret *= BigP(lv2, gillesBoxPower);
+    lv = getUpgradeLvFromCookie(artifactUpgrade[4],cookie);lv = Math.min(lv,1);lv2 = getUpgradeLvFromCookie(building[0],hc);
+    if(lv > 0){
+        log(`6) Gilles Box with B1=${lv2} = ${BigP(lv2, gillesBoxPower)}x`);ret *= BigP(lv2, gillesBoxPower);
+    }
+    lv = getUpgradeLvFromCookie(artifactUpgrade[9],cookie);lv = Math.min(lv,1);
+    if(lv > 0){
+        log(`6) Book of Symbolisms = ${((lv > 0) ? symbolBookMult : BF(1))}x`);ret *= ((lv > 0) ? symbolBookMult : BF(1));
+    }
     log(`For a total of ${ret}x`);
     return ret;
 }
