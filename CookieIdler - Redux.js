@@ -386,7 +386,7 @@ var buildingData = [
      }]},
     {id: 2,
      names: ["Farm","Famr"], desc: "growing ", lumpBName: "Electrolytes and Acres",
-     baseCPS: 5.3e4, baseCost: 1.1e5, powerUpgradeMult: 40, mult: 1, collectionTime : 15,maxExpLevel: 5, sweetLimit: 15, sweetMax: 250,
+     baseCPS: 5.3e4, baseCost: 1.1e5, powerUpgradeMult: 40, mult: 1, collectionTime : 15,maxExpLevel: 5, sweetLimit: 15, sweetMax: 125,
      achName: ["Home Organic","100% Sustainable","Green Pasture lays live","Babylonian Conservatorium sits on the hill","Farmer\'s Heaven"],
      gimmicks: [{
         uid: 10002,
@@ -410,7 +410,7 @@ var buildingData = [
      }]},
     {id: 4,
      names: ["Factory","Fcotyr"], desc: "mass producing ", lumpBName: "Patent Publishing",
-     baseCPS: 4.05e10, baseCost: 1.3e12, powerUpgradeMult: 59, mult: 1, collectionTime : 20,maxExpLevel: 5, sweetLimit: 25, sweetMax: 500,
+     baseCPS: 4.05e10, baseCost: 1.3e12, powerUpgradeMult: 59, mult: 1, collectionTime : 20,maxExpLevel: 5, sweetLimit: 25, sweetMax: 200,
      achName: ["Industrial Act","Age of Internet","Automatal Hysteria","The perfect game of Factorio","Overengineering Achieved"],
      gimmicks: [{
         uid: 10004,
@@ -528,7 +528,7 @@ var buildingData = [
     },
     {id: 13,
      names: ["Prism","Prius"], desc: "matterifying from light ", lumpBName: "Extended Spectrum",
-     baseCPS: BF("4.9e90"), baseCost: BF("2.1e225"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 350,
+     baseCPS: BF("4.9e90"), baseCost: BF("2.1e228"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 350,
      achName: ["Some rays of dough and batter","Total Enlightenment","O thy energy of sky, bring fourth the light rays","Neverending rays of bright brilliance shine on you all","4th Cone"],
     },
     {id: 14,
@@ -667,7 +667,7 @@ var getBuildingPowerInfo = (indx,amount) => `\$P_{${TS10(indx)}}${(superP.level 
 
 // building lump data
 var buildingLumpMult = 1.1
-var buildingLumpCost = (i) => new LinearCost(i + 1, (i + 1) * ((i >= 13) ? (i - 1) * (i - 5) * 0.06 : 0.9));
+var buildingLumpCost = (i) => new LinearCost(i + 1, (i + 1) * ((i >= 11) ? (i - 1) * (i - 5) * 0.06 : 1.1));
 var getBuildingLumpDesc = (i) => {
     if(bInfo == 1){
         return `\$ ${buildingLumpMult}^{L[${i}]} = ${buildingLumpMult}^{${buildingLump[i].level}} = ${BigP(buildingLumpMult, buildingLump[i].level)}\$`;
@@ -846,8 +846,8 @@ var cookieTinInfo = [
         order: 10, //unused, just for reference
         name: "Pack of Exotic Cookies",
         baseCost: BF("6e175"),//base cost
-        costMult: 100000,//multiplier for cost, will be put through ML2() later on
-        mult: 2.5,//mult from 1 level
+        costMult: 1000000,//multiplier for cost, will be put through ML2() later on
+        mult: 2.25,//mult from 1 level
         cookieOrder: ["Mutated Cookie", "Magic Marbled Cookie", "Shortcake-like Cookie", "Truffle Cookie", "Salt Pretzels", "Seaweed Sesame Cookie", "Dulce De Leche", "Keylime Pie", "S\'Mores", "Chocolate Drizzle Cookie", "Peppermint Kiss Cookie", "Sprinkled Jelly Cookie", "Galaxial Drop", "Reflective Frosted Cookie", "Pecan Walnut Cookie", "White Mine Cookie", "Jelly Triangle", "Gold Leafed Cookie", "Grand Chocolate Wafer Sprinkles"]
     },
 ];
@@ -1140,6 +1140,7 @@ var checkArtifactUnlock = () =>{
     for(let i=0;i<artifactCount;i++){
         if(artifactData[i].unlockCondition()){
             artifactUnlock[i].level = 1;
+            artifactUpgrade[i].maxLevel = 1;
         }
     }
 }
@@ -1259,7 +1260,7 @@ var heavenlyUpgradeData = [
         uid: 8,
         name: "Chronos Aging",
         info: "Transmute the power of Yggdrasil to all your buildings",
-        costModel: new ConstantCost(2.5e57),
+        costModel: new ConstantCost(5e70),
         maxLevel: 1,
         onBought: (amount) => {updateGlobalMult();}
     },{
@@ -1600,7 +1601,7 @@ function getAllUpgradeMultiplierFromCookie(cookie){
     lv = getUpgradeLvFromCookie(ChronosAge,hc);lv = Math.min(lv,ChronosAge.maxLevel);
     if(lv>0){log(`Chronos Lv.${lv} = ${(BF(1) + BF(thyme.level).pow(chronosPow))}x`);ret*=(BF(1) + BF(thyme.level).pow(chronosPow));}
     lv = getUpgradeLvFromCookie(TwinGates,hc);lv = Math.min(lv,TwinGates.maxLevel);
-    if(lv>0){log(`Twin Gates Lv.${lv} = ${hc.pow(twinGateExp * TwinGates.level)}x`);ret*=hc.pow(twinGateExp * TwinGates.level);}
+    if(lv>0){log(`Twin Gates Lv.${lv} = ${hc.pow(twinGateExp * lv)}x`);ret*=hc.pow(twinGateExp * TwinGates.level);}
     //part 6 : logistic
     lv = getUpgradeLvFromCookie(terra,cookie);lv = Math.min(lv,terra.maxLevel);
     var lv2 = getUpgradeLvFromCookie(TerraInf,hc), lv3 = getUpgradeLvFromCookie(building[3],cookie);lv2 = Math.min(lv2,TerraInf.maxLevel);
@@ -2148,6 +2149,9 @@ var tick = (elapsedTime,multiplier) => {
         for(let i=0;i<19;i++){
             updateLocalMult(i);
             buildingCount += building[i].level;
+        }
+        for(let i=0;i<artifactCount;i++){
+            artifactUpgrade[i].maxLevel = Math.max(artifactUpgrade[i].level,artifactUnlock[i].level);
         }
         updateBuildingLumpMaxLv();
         updateGlobalMult();
