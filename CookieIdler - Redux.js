@@ -25,7 +25,7 @@ import { QuaternaryEntry } from "../api/Theory";
 var id = "CookieIdler2";
 var name = "Cookie Idler";
 var description =
-    "🍪👵🍪\nA game within a theory involving baking a copius amounts of cookies in exchange for something far greater...\n🍪👵🍪\n\n🍪==FEATURES==🍪\n🍪 Click, Bake, Farm, Produce your way into the big leagues. With 19 buildings to buy, empower, and upgrade.\n🍪 Experience a whole new level of text richness in theories like never before. Boatloads of text waiting to be read in all aspects, from the buildings, achievements, all the way to upgrades(nerdy mode included).\n🍪 Unique upgrades and intresting game mechanics will involve you to no end! Tasty Cookies, even tastier cookies, breaking the fourth wall, and changing the game itself.\n🍪Absolute lack of big and scary mathematics, rated E for Everyone\n\n🍪==CREDITS==🍪\n🍪 Orteil for bringing such a legendary game idea to life\n🍪 ellipsis for suggesting ideas for the UI\n🍪 skyhigh173 for reformatting the code so it looks better\nspqcey(randomname#9373) for proofreading and fixing a majority of the text\n🍪 Lava for fixing the legendary bug";
+    "🍪👵🍪\nA game within a theory involving baking a copius amounts of cookies in exchange for something far greater...\n🍪👵🍪\n\n🍪==FEATURES==🍪\n🍪 Click, Bake, Farm, Produce your way into the big leagues. With 19 buildings to buy, empower, and upgrade.\n🍪 Experience a whole new level of text richness in theories like never before. Boatloads of text waiting to be read in all aspects, from the buildings, achievements, all the way to upgrades(nerdy mode included).\n🍪 Unique upgrades and intresting game mechanics will involve you to no end! Tasty Cookies, even tastier cookies, breaking the fourth wall, and changing the game itself.\n🍪Absolute lack of big and scary mathematics, rated E for Everyone\n\n🍪==CREDITS==🍪\n🍪 Orteil for bringing such a legendary game idea to life\n🍪 ellipsis for suggesting ideas for the UI\n🍪 skyhigh173 for reformatting the code so it looks better\nspqcey(randomname#9373) for proofreading and fixing a majority of the text\n🍪 Lava for fixing the legendary bug\n🍪 a_spiralist for contributions to the redux version";
 var authors = "Sainen Lv.420 #2684";
 
 /*
@@ -2606,6 +2606,9 @@ var postPublish = () => {
     getEquationOverlay();
     updateAvailability();
     updateGlobalMult();
+    terraBoost = BF(1);
+    dilateBoost = BF(1);
+    updateMaxL();
     for(let i=0;i<19;i++){
         updateLocalMult(i);
     }
@@ -3379,6 +3382,16 @@ let popup = ui.createPopup({
     })
 });
 //!1.10 : OVERLAY
+// credits to a_spiralist for making the button scale to the same size to the publication button + the source code of getImageSize(width)
+let getImageSize = (width) => {
+    if (width >= 1080)
+        return 48;
+    if (width >= 720)
+        return 36;
+    if (width >= 360)
+        return 24;
+    return 20;
+};
 // ellipsis you're so epic for contributing to getEquationOverlay() function
 var getEquationOverlay = () =>
     ui.createStackLayout({
@@ -3387,7 +3400,9 @@ var getEquationOverlay = () =>
                 source: ImageSource.INFO,
                 horizontalOptions: LayoutOptions.START,
                 verticalOptions: LayoutOptions.END,
-                heightRequest: 25,
+                aspect: Aspect.ASPECT_FIT,
+                heightRequest: getImageSize(ui.screenWidth),
+                widthRequest: getImageSize(ui.screenWidth),
                 margin: new Thickness(9, 9, 0, 0),
                 onTouched: (e) => {
                     if (e.type == TouchType.SHORTPRESS_RELEASED) {
@@ -3396,7 +3411,7 @@ var getEquationOverlay = () =>
                 },
             }),
             ui.createLatexLabel({
-                text: "Menu",
+                text: `Menu`,
                 fontSize: 10,
                 padding: new Thickness(9, 4, 0, 0),
             }),
@@ -3406,7 +3421,8 @@ var getEquationOverlay = () =>
                     horizontalOptions: LayoutOptions.START,
                     verticalOptions: LayoutOptions.END,
                     aspect: Aspect.ASPECT_FIT,
-                    heightRequest: 30,
+                    heightRequest: getImageSize(ui.screenWidth),
+                    widthRequest: getImageSize(ui.screenWidth),
                     useTint: false,
                     margin: new Thickness(9, 0, 0, 0),
                     onTouched: (e) => {
@@ -3421,7 +3437,9 @@ var getEquationOverlay = () =>
                     source: ImageSource.LOCK,
                     horizontalOptions: LayoutOptions.START,
                     verticalOptions: LayoutOptions.END,
-                    heightRequest: 25,
+                    aspect: Aspect.ASPECT_FIT,
+                    heightRequest: getImageSize(ui.screenWidth),
+                    widthRequest: getImageSize(ui.screenWidth),
                     margin: new Thickness(9, 9, 0, 0),
                     onTouched: (e) => {
                         if (e.type == TouchType.SHORTPRESS_RELEASED && terra.level > 0) {
