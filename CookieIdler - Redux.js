@@ -516,6 +516,18 @@ var buildingData = [
      names: ["Wizard Tower","Wixaradf Trower"], desc: "spawning in ", lumpBName: "Syllables",
      baseCPS: 9.16e22, baseCost: 3.3e50, powerUpgradeMult: 17, mult: 1, collectionTime : 25,maxExpLevel: 5, sweetLimit: 100, sweetMax: 500,
      achName: ["Bewitched","Alakazamd","Shaspie Colupis","Cookiera Avadra Creamdera","Hours to pronounce, effects very pronounced"],
+     gimmicks: [{
+        uid: 10010,
+        name: "Toggle Grimoire",
+        info: "View the list of unlocked spells",
+        costModel: new FreeCost(),
+        maxLevel: 2,
+        onBought: (amount) => {
+            if(SpellView.level > 1){
+                SpellView.level = 0;
+            }
+        }
+     }]
     },
     {id: 8,
      names: ["Shipment","Shipemtn"], desc: "bringing in ", lumpBName: "Cosmic Exploration",
@@ -589,6 +601,7 @@ var xBegin = 0, maxL = 1;
 var updateMaxL = () => {
     maxL = (BigP(terra.level,maxLPowBase + maxLPowMod * (TerraInf.level + ((artArt.level > 6) ? 1 : 0))) * 1500);
     maxL += BigP(building[3].level,maxLBPowBase + maxLBPowMod * TerraInf.level);
+    maxL *= (isSpellActive(2)?BF(logBoost):BF(1));
     maxL /= terraFunNerfMod;
 }
 var Logistic = () => {
@@ -635,11 +648,11 @@ var getBuildingDesc = (indx) => {
     var bi = `\$B[${indx}]^{${(getBuildingExp(indx) > 1) ? TS10(getBuildingExp(indx)) : ""}}\$${(investHelp[indx].level>0)?`+${investHelp[indx].level}`:""}`;
     switch(bInfo){
         case 0:
-            return `${bi} - ${buildingData[indx].names[0]} ` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
+            return `${bi} - ${buildingData[indx].names[0]} ` + getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
         case 1:
-            return `${bi} = ${calcBuilding(indx, investHelp[indx].level)} ` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
+            return `${bi} = ${calcBuilding(indx, investHelp[indx].level)} ` + getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
         case 2:
-            return `${bi} - ${buildingData[indx].names[1]} ` + getCollectionBar(indx,thyme.level % buildingData[indx].collectionTime);
+            return `${bi} - ${buildingData[indx].names[1]} ` + getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
         default:
             return "Building Desc. Error!";
     }
@@ -674,6 +687,20 @@ var onBuildingBought = (indx,amount) => {
         updateLocalMult(1);
     }
 }
+
+//building bar indicator : - = empty, | = 1 tick, O = 5 tick (over 25 tick)
+var collectBar0 = "\-", collectBar1 = "I", collectBar2 = "O";
+var getCollectionBar = (cur, mx) => {
+    if(mx >= 25){
+        cur = Math.floor(cur/5);
+        mx = mx / 5;
+        return "\[" + collectBar2.repeat(cur) + collectBar0.repeat(mx-cur) + "\]";
+    }else{
+        return "\[" + collectBar1.repeat(cur) + collectBar0.repeat(mx-cur) + "\]";
+    }
+    //return ` ${thyme.level}`;
+}
+
 
 // building power data
 log(building50);
@@ -1030,19 +1057,6 @@ var updateLocalMult = (indx) => {
     if(buildingData[indx].mult == BF(0)){buildingData[indx].mult = BF(1)};
 };
 
-//building bar indicator : - = empty, | = 1 tick, O = 5 tick (over 25 tick)
-var collectBar0 = "\-", collectBar1 = "I", collectBar2 = "O";
-var getCollectionBar = (indx, cur) => {
-    if(buildingData[indx].collectionTime >= 25){
-        cur = Math.floor(cur/5);
-        let mx = buildingData[indx].collectionTime / 5;
-        return "\[" + collectBar2.repeat(cur) + collectBar0.repeat(mx-cur) + "\]";
-    }else{
-        return "\[" + collectBar1.repeat(cur) + collectBar0.repeat(buildingData[indx].collectionTime-cur) + "\]";
-    }
-    //return ` ${thyme.level}`;
-}
-
 //! Artifacts
 var artArt, templeJ = false, artifactUpgrade = new Array(99), artifactUnlock = new Array(99), artifactCount = 0;
 const artifactLockText = "Not Discovered";
@@ -1078,22 +1092,23 @@ var artifactData = [{
     cost: BF("1e300"),unlockCondition: () => {return (artifactUpgrade[0].level + artifactUpgrade[1].level + artifactUpgrade[2].level + artifactUpgrade[3].level + artifactUpgrade[4].level + artifactUpgrade[5].level + artifactUpgrade[6].level + artifactUpgrade[7].level + artifactUpgrade[8].level >= 9) && (Math.random() < 0.01);}, desc: "You don\'t know why, but you felt a compulsion to keep this book close to you"
 },{
     order: 10,name: "Grimoire of Basic Cookie Magic",clue: "haha mana goes brrrrrr",
-    cost: BF("1e300"),unlockCondition: () => {return building[7].level >= (parseInt([+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[]]) ^ parseInt([+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[]])) + 100;}, desc: "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 8 spells"
+    cost: BF("1e330"),unlockCondition: () => {return (building[7].level >= (parseInt([+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[]]) ^ parseInt([+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[]])) + 100) && (Math.random() < 0.01);}, desc: "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 8 spells"
 },{
     order: 11,name: "Antediluvian Engine",clue: "Time-Stopping Performance",
     cost: BF("1e300"),unlockCondition: () => {return false;}, desc: "A peculiar machine somehow capable of locally accelerating spacetime using something about time crystals. Engravings of menacing nature can be found tucked away at the bottom, though we don\'t know why."
 },{
     order: 12,name: "Elementium Infused Chocolate Chunk",clue: "Cavitilicious",
-    cost: BF("1e300"),unlockCondition: () => {return SUGAR_LUMP.value >= 0b10011100010000000000;}, desc: "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?"
+    cost: BF("1e300"),unlockCondition: () => {return (SUGAR_LUMP.value >= 0b10011100010000000000) && (Math.random() < 0.005);}, desc: "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?"
 },{
     order: 13,name: "Scent of Vanilla Nebula",clue: "5 Cosmic Mappings ah ah ah",
-    cost: BF("1e300"),unlockCondition: () => {return building[8].level >= 0b10011100010000 / 2;}, desc: "Some astronomers go crazy over these"
+    cost: BF("1e300"),unlockCondition: () => {return (building[8].level >= 0b10011100010000 / 2) && (Math.random() < 0.005);}, desc: "Some astronomers go crazy over these"
 },{
     order: 14,name: "Cherrysilverium Meld",clue: "15$(^=)$1.268e30, 16=117.39, 8E=500,000, Cs",
     cost: BF("1e300"),unlockCondition: () => {return false;}, desc: "A curious blob of metal, one of the inscriptions inside the temple\'s numerous halls details a picture of it literally melding buildings together, with humans"
 },];
 //loot
-const maxRoll = 10000, templeLuck = 0;
+const maxRoll = 10000;
+var templeLuck = 0;
 let lootWeight = [10000, 9995, 9945, 9845, 9735, 9615, 9565, 9555, 9530, 9430, 9320, 9200, 9100, 9000];
 let minCookie = (i) => {
     COOKIE.value += BF(2*60) * generateCookie(0,5,terraBoost) * BF(i);
@@ -1103,7 +1118,7 @@ let pubH = (i) => {
     HEAVENLY_CHIP.value += BF(i) * hfc(COOKIE.value);
 };
 var rollLoot = () => {
-    let r = RandI(maxRoll); + templeLuck;
+    let r = RandI(maxRoll); + (isSpellActive(3))?templeLuck:0;
     let prize = bsearch(lootWeight, r);
     switch (prize) {
         case 0:
@@ -1166,6 +1181,119 @@ var checkArtifactUnlock = () =>{
 }
 
 //! Spells
+var spellCast = new Array(99), spellCount = new Array(99), spellCooldown = new Array(99), spellView;
+var spellData = [{
+    order: 0,name: "Conjure Idled Goods", desc: "You get more cookies, simple",
+    castCost: 1500, castCooldown: 7200,
+    effect: (boost) => {
+        var rand = RandI(100);
+        if (rand <= 85) {
+            log("Cookies for you");
+            rand = RandI(10 + (2 * SpellStack.level)) + boost;
+            minCookie(rand * 30);
+        } else {
+            log("No Cookies for you");
+        }
+    },
+    unlockCondition: () => {return true;},//unlock condition
+    achievementNames: ["Lazy Wizard","With those basics drilled in","Safe Safe Cookie Spellcaster"],//25, 250, 2500
+},{
+    order: 1,name: "Prestidigus", desc: "Gives you HC equivalent to publishing now",
+    castCost: 10000, castCooldown: 36000,
+    effect: (boost) => {pubH(1 + (0.05 * SpellStack.level) + (0.025 * boost));},
+    unlockCondition: () => {return true;},//unlock condition
+    achievementNames: ["Ascendant Wizard","Afraid of publications","How far would you push in a publication? Yes."],
+},{
+    order: 2,name: "Terrona Terra", desc: "Makes the terraforming business suddenly go to the cookie moon",
+    castCost: 2500, castCooldown: 12000, effectLength: 600,
+    effect: (boost) => {
+        xBegin = thyme.level - (150*(boost+2));
+        logBoost = 10 + (2.5 * SpellStack.level) + boost;
+        updateMaxL();
+    },
+    unlockCondition: () => {return true;},//unlock condition
+    achievementNames: ["Mass Miner Wizard","Superactive Lifestyle","Cool that you can mass terraform the earth, but can you touch grass though?"],
+},{
+    order: 3,name: "Replenish Extradionaire", desc: "Enriches your temple with a lot more loot",
+    castCost: 3000, castCooldown: 8400, effectLength: 600,
+    effect: (boost) => {
+        templeLuck = 50 * (boost+1);
+    },
+    unlockCondition: () => {return true;},//unlock condition
+    achievementNames: ["Explorer Wizard","Colonization but on a smaller scale","Pot of Artifacts, Cookies, Heavenly Chips, and Sugar Lumps"],
+},{
+    order: 4,name: "Asseto Accio", desc: "Spawn buildings into existence, only works for a certain amount",
+    castCost: 6000, castCooldown: 10800,
+    effect: (boost) => {
+        let rand = RandI(20);
+        if (rand < 19) {
+            if ((building[rand].level > 0) && (building[rand].cost.getCost(building[rand].level) <= (BF(1e10) * COOKIE.value * BigP(5,boost)))) {
+                //log(`You won ${buildingName[0][rand]}`);
+                building[rand].level += RandI(10 + boost) + 1 + SpellStack.level + boost;
+            }
+        }
+    },
+    unlockCondition: () => {return true;},//unlock condition
+    achievementNames: ["Mogul Wizard","This looks to be slightly unaffordable, considering your CPS","With those cookie frauds that you've committed. If you pay you'll be acquitted. And your buildings all permitted"],
+},{
+    order: 5,name: "Mimi Mami", desc: "Reduces the cooldown time of spells",
+    castCost: 1515, castCooldown: 7200,
+    effect: (boost) => {
+        updateSpellCooldown(900 + (150 * SpellStack.level) + (60 * boost));
+    },
+    unlockCondition: () => {return true;},//unlock condition
+    achievementNames: ["Impatient Wizard","The spells must go brrrrrrrrrr","Why must there be cooldowns? The spellcaster screams, for he does not know..."],
+},{
+    order: 6,name: "Simply Sweetdelicious", desc: "Spawn some sugar lumps in",
+    castCost: 0, castCooldown: 72000,
+    effect: (boost) => {
+        if (RandI(100 + boost) > 15) generateLump(600 + (50 * SpellStack.level) + (50 * boost));
+    },
+    unlockCondition: () => {return true;},//unlock condition
+    achievementNames: ["Very Sweet Wizard","Sugar Lump Magic Saga","Don\'t overdose on sugar, kids"],
+},{
+    order: 7,name: "The World", desc: "haha jojo reference goes brrrrrrrrrr",
+    castCost: 5555, castCooldown: 14400,
+    effect: (boost) => {
+        let warpthyme = ((100 + (10 * SpellStack.level)) * RandR(0.9, 1.1 + (0.05 * SpellStack.level)) + (15 * SpellStack.level)) + (10 * boost);
+        //log("Time goes brrrrrrrr " + warpthyme);
+        for (let i = 0; i < warpthyme; i++) {
+            tick(0.1, 1);
+        }
+    },
+    unlockCondition: () => {return artifactUpgrade[11].level > 0;},//unlock condition
+    achievementNames: ["ゴゴゴゴゴゴゴゴ","やれやれだぜ！","このディオだ！"],
+},];
+var spellUsed = spellData.length;
+let updateSpellLayer = () => {
+    for (let i = 0; i < spellUsed; i++) {
+        spellCast[i].maxLevel = 1 + SpellStack.level;
+    }
+};
+let updateSpellCooldown = (ticks) => {
+    for(let i=0;i<spellUsed;i++){
+        if(spellCooldown[i].level - ticks > 0){
+            spellCooldown[i].level -= ticks;
+        }else if(spellCooldown[i].level > 0){
+            spellCast[i].level = 0;
+            spellCooldown[i].level = 0;
+        }
+    }
+}
+let onSpellCast = (indx,amount) => {
+    spellCooldown[indx].level = spellData[indx].castCooldown;
+    spellCount[indx].level += 1;
+    let spellBoost = totalCastAchievement[4].isUnlocked + totalCastAchievement[5].isUnlocked + totalCastAchievement[6].isUnlocked + spellCastAchievement[indx][0].isUnlocked + spellCastAchievement[indx][1].isUnlocked + spellCastAchievement[indx][2].isUnlocked;
+    for(let i=0;i<amount;i++){
+        spellData[indx].effect(spellBoost);
+    }
+}
+let isSpellActive = (indx) => {
+    return spellData[indx].castCooldown - spellCooldown[indx].level <= spellData[indx].effectLength;
+}
+let getTotalSpellCasted = () => {
+    return 0;
+}
 
 //! Elements
 //prevUnlock : previous element required to unlock the next excavator
@@ -1308,22 +1436,22 @@ var heavenlyUpgradeData = [
         uid: 12,
         name: "Continuos Growth",
         info: "Certain high-tier buildings get more powerful the more of them you have",
-        costModel: new ExponentialCost(1e103, ML2(1e5)),
+        costModel: new ExponentialCost(1e106, ML2(1e10)),
         maxLevel: 5,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 13,
         name: "Spell Cast Layering",
         info: "Allows multiples of the same spell to be casted, and slightly empowers every spell",
-        costModel: new ExponentialCost(1e105, ML2(1e5)),
+        costModel: new ExponentialCost(1e109, ML2(1e6)),
         maxLevel: 3,
-        onBought: (amount) => {updateGlobalMult();}
+        onBought: (amount) => {updateSpellLayer();updateGlobalMult();}
     },{
         uid: 14,
         name: "Empowerments of Buildings",
         info: "Increases how fast $P$ grows",
-        costModel: new ExponentialCost(5e116, ML2(10 ^ 1.35)),
-        maxLevel: 9,
+        costModel: new ExponentialCost(5e116, ML2(10 ^ 5)),
+        maxLevel: 5,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 15,
@@ -1443,6 +1571,9 @@ var superP, superL, superC;
         "THAT\'S A LOTTA SUGARS",
     ];
     var lumpAchReq = [1, 10, 50, 100, 500, 1000, 10000, 100000, 1000000, 10000000];
+    var SpellAchievementCat;
+    var spellCastAchievement = new Array(99), totalCastAchievement = new Array(9);
+    var totalSpellAchReq = [10, 50, 100, 500, 1000, 5000, 10000], spellAchName = ["Neophyte", "Acolyte", "Adept", "I\'m a what?", "Master of Spells", "Grand Master of Spells", "Great Sage of Spells"];
     //const perkAchReq = [1, 5, 25, 50, 95];
     var BuildingAchievement;
     var buiAch1 = new Array(20);// 100
@@ -1724,6 +1855,19 @@ function getInvestHelp(){
     log(res);
 }
 
+//? 9. Get the list of named normal cookies
+function nameAllTheNormalCookies(){
+    let ret = "";
+    for(let i=0,j=cookieNames.length;i<j;i++){
+        ret += `${i+1}. ${cookieNames[i]} `;
+        if(i%5 == 0 && i>0){
+            log(ret);
+            ret = "";
+        }
+    }
+    log(ret);
+}
+
 //!==INIT==
 var init = () => {
     COOKIE = theory.createCurrency("C", "C");
@@ -1962,6 +2106,25 @@ var init = () => {
                 }
                 break;
             }
+            case 7:{
+                SpellView = gimmickUpgrade(buildingData[i].gimmicks[0]);
+                for(let i=0;i<spellUsed;i++){
+                    //count
+                    spellCount[i] = shortPermaUpgrade(70000+i,COOKIE,new ConstantCost(BF("1e1000")),`${spellData[i].name} caster count`,`me when`);
+                    spellCount[i].isAvailable = false;
+                    //cooldown
+                    spellCooldown[i] = shortPermaUpgrade(71000+i,COOKIE,new ConstantCost(BF("1e1000")),`${spellData[i].name} cooldown`,`me when`);
+                    spellCooldown[i].isAvailable = false;
+                    //actual spell
+                    spellCast[i] = shortUpgrade(70000+i,SUGAR_LUMP,new ExponentialCost(spellData[i].castCost,ML2(1.5)),`${spellData[i].name}`,`${spellData[i].desc}`);
+                    spellCast[i].getDescription = (_) => `${spellData[i].name} ${(spellCooldown[i].level > 0)?`- ${getCollectionBar(Math.round(60 * (spellCooldown[i].level/spellData[i].castCooldown)),60)}`:""}`;
+                    spellCast[i].maxLevel = 99;
+                    spellCast[i].bought = (amount) => {
+                        onSpellCast(i,amount);
+                    };
+                }
+                break;
+            }
         }
     }
 
@@ -2017,6 +2180,20 @@ var init = () => {
         for (let i = 0; i < 10; i++) {
             lumpAch[i] = theory.createAchievement(200 + i, lumpAchCat, lumpAchName[i], lumpDesc(lumpAchReq[i]), () => checkAchL(lumpAchReq[i]));
             achCountTV += 1;
+        }
+        // 11XX = Count, 12XX 13XX 14XX = Per-Spell
+        SpellAchievementCat = theory.createAchievementCategory(5,"Magic");
+        for(let i=0,j=totalSpellAchReq.length;i<j;i++){
+            totalCastAchievement[i] = theory.createAchievement(1100+i,SpellAchievementCat,spellAchName[i],() => `Cast a total of ${totalSpellAchReq[i]} spells`, () => checkAchBase(() => getTotalSpellCasted() >= totalSpellAchReq[i],1));
+            achCountTV += 1;
+        }
+        for(let i=0;i<spellUsed;i++){
+            spellCastAchievement[i] = new Array(3);
+            const req = [25,250,2500];
+            for(let j=0;j<3;j++){
+                spellCastAchievement[i][j] = theory.createAchievement(1200 + (j*100) + i,SpellAchievementCat,spellData[i].achievementNames[j],() => `Cast ${spellData[i].name} ${req[j]} times`,() => checkAchBase(() => spellCount[i].level >= req[j],1));
+                achCountTV += 1;
+            }
         }
         // A lot of buildings, 3xx = 100, 4xx = 1000, 5xx = 5000, 6xx = 10000, 7xx = 100 lump
         BuildingAchievement = theory.createAchievementCategory(3, "Buildings");
@@ -2103,6 +2280,11 @@ var updateAvailability = () => {
     for(let i=0;i<artifactCount;i++){
         artifactUpgrade[i].isAvailable = archaeology.isAvailable && (artifactPouch.level == 1) && (normalUpgradeMenu.level % 2) == 0;
     }
+    SpellView.isAvailable = artifactUpgrade[10].level > 0;
+    for(let i=0;i<spellUsed;i++){
+        spellCast[i].isAvailable = SpellView.isAvailable && (SpellView.level > 0) && spellData[i].unlockCondition();
+    }
+    //Milestone
     superL.isAvailable = (superP.level > 0) && (superC.level > 0);
 };
 
@@ -2115,10 +2297,16 @@ function updateNerfConsoleValue(val){
 var thymeInc = () => {
     //thyme = ticks elapsed
     thyme.level += (thyme.level < thyme.maxLevel) ? 1 : 0;
+    if(artifactUpgrade[10].level > 0){
+        updateSpellCooldown(1);
+    }
 }
 var thymeInc = (ticks) => {
     //thyme = ticks elapsed
     thyme.level += (thyme.level < thyme.maxLevel) ? ticks : 0;
+    if(artifactUpgrade[10].level > 0){
+        updateSpellCooldown(ticks);
+    }
 }
 var generateCookie = (id, ticks, mult) => {
     let ret = BF(1);
@@ -2151,7 +2339,7 @@ var generateCookie = (id, ticks, mult) => {
 }
 var generateLump = (ticks) => {
     let lumpChance = BF(1) / (BF(lumpTickChance) / BigL10(COOKIE.value + BF(10)));//it's normally 1/x
-    let dLump = BF(lumpChance.floor() + (sugarCoat.level * 2.5) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01));
+    let dLump = BF(lumpChance.floor() + (sugarCoat.level * 0.25) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01)) * ticks;//yes, ticks ARE 0.1 seconds so 2.5LPS = 0.25LPT
     lumpChance -= lumpChance.floor();
     if (ticks == 1 && BF(Math.random()) <= lumpChance) {
         dLump += BF(1);
@@ -2204,6 +2392,7 @@ var tick = (elapsedTime,multiplier) => {
         updateGlobalMult();
         updateMaxL();
         CPSrefresh();
+        updateSpellLayer();
         setupTick = false;
     }
     if(profilingConst){
@@ -2514,7 +2703,7 @@ var getHelpText = () => {
             padding: Thickness(2, 10, 2, 10)
         }));
     }
-    if (art.isAvailable) {
+    if (archaeology.isAvailable) {
         ret.push(ui.createLabel({
             text: "Archaeology",
             fontSize: 18,
@@ -2530,7 +2719,7 @@ var getHelpText = () => {
             padding: Thickness(2, 10, 2, 10)
         }));
     }
-    if (false) {
+    if (SpellView.isAvailable) {
         ret.push(ui.createLabel({
             text: "Grimoire",
             fontSize: 18,
@@ -2614,6 +2803,20 @@ var InsPopup = ui.createPopup({
 var getUpdateNotes = () => {
     let ret = [];
     ret.push(ui.createLabel({
+        text: "(0.5).1.0 - with gimmicks come gimmicks",
+        fontSize: 18,
+        horizontalTextAlignment: TextAlignment.CENTER,
+        fontAttributes: FontAttributes.BOLD,
+        padding: Thickness(2, 10, 2, 5)
+    }));
+    ret.push(ui.createLabel({
+        text: "\t- brought back artifacts and the wonderous world of spell casting \n\t-a whole lot of balance changes to artifacts and spells, notably concerning with how ez it is to gain sugar lump nowadays \n\t-it should be possible to push to e350 \n\t-more nerd \n\t-spells should be more costly to cast and comes with a visible cooldown bar \n\t-locked some artifacts for now as they\'re being reworked \n\t-introduced some luck into unlocking later artifacts, those thing can\'t just spawn out of nowhere, you know? \n\t-added resetting investment and artifacts for unsatisfied players \n\t-more achievements for investment and spell-casting, which means colored named gets pushed back slightly \n\t-reintroduced first milestone upgrades for cookie and building power \n\t-bugfixes",
+        fontSize: 11,
+        horizontalTextAlignment: TextAlignment.START,
+        fontAttributes: FontAttributes.NONE,
+        padding: Thickness(2, 5, 2, 10)
+    }));
+    ret.push(ui.createLabel({
         text: "(0.5).0.0 - idler reborn",
         fontSize: 18,
         horizontalTextAlignment: TextAlignment.CENTER,
@@ -2684,7 +2887,7 @@ let biButton = ui.createButton({
 var indecide = 0;
 const eqColor = ["FFFFFF", "E6DFCF", "A06846", "FFD4D8", "FE3246", "ABED6A", "EA8B01", "C48AE2", "F4E4BA", "FBF2D5", "AC6329", "E5BD46", "E71334", "E2DBD2", "83F2BC", "8F9098", "FF6D98", "AB5DF8", "F1398D", "50AB21", "D08072", "B08F7A", "00FFFF", "8800FF"];
 const eqColorName = ["White", "Milk", "Chocolate", "Strawberry", "Raspberry", "Lime", "Orange", "Blueberry", "Banana", "Vanilla", "Caramel", "Honey", "Cherry", "Coconut", "Mint", "Licorice", "Rose", "Blackcurrant", "Dragonfruit", "Black Forest", "Peach", "Hazelnut", "Crystallized", "Pentallized"];
-const eqColorAch = [0, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 75, 80, 85, 90, 100, 110, 120, 130, 140, 150, 160, 170, 194];
+const eqColorAch = [0, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 225];
 let visButton = ui.createButton({
     text: `Modify Visuals`, row: 0, column: 1,
     onClicked: () => {
@@ -3170,7 +3373,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text: "Cookie Idler - bf00adb\nv0.5.0a"
+                text: "Cookie Idler - b226573\nv(0.5).1.0"
             })
         ]
     })
