@@ -316,6 +316,7 @@ class ISV {
     var bInfoStore = new ISV(0, 0, 8);
     var dominatestore = new ISV(0, 0, 9);
     var maxBuildStore = new ISV(0, 0, 10);//maximum building
+    var totalSpellStore = new ISV(0, 0, 11);
     // block 5 - VIZ
     var eqTypeStore = new ISV(0, 7, 0),
         quTypeStore = new ISV(0, 7, 1);
@@ -331,7 +332,7 @@ class ISV {
     var perkHas;
     //let time = ISV(0,0,0); // degrees
 }
-var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxBuild = 0, reactorMode = 0;
+var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxBuild = 0, reactorMode = 0, totalSpell = 0;
 
 //internal state work
 {
@@ -346,7 +347,7 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxB
         let res = state.split(" ");
         stateTable.buildTable(res);
         //assign!
-        CPSstore.readValue();HPSstore.readValue();
+        CPSstore.readValue();HPSstore.readValue();totalSpellStore.readValue();
         achCountStore.readValue();lumpTotal.readValue();artUnlock.readValue();reactorModeStore.readValue();perkPoint.readValue();heavVis.readValue();
         bInfoStore.readValue();dominatestore.readValue();eqTypeStore.readValue();quTypeStore.readValue();vizType.readValue();eqCStore.readValue();maxBuildStore.readValue();
         for(let i=0;i<19;i++){
@@ -368,6 +369,7 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxB
         bInfo = Math.floor(bInfoStore.value);if(Number.isNaN(bInfo)){bInfo = 0;}
         maxBuild = Math.floor(maxBuildStore.value);if(Number.isNaN(maxBuild)){maxBuild = 0;}
         reactorMode = Math.floor(reactorModeStore.value);if(Number.isNaN(reactorMode)){reactorMode = 0;}
+        totalSpell = Math.floor(totalSpellStore.value);if(Number.isNaN(totalSpell)){totalSpell = 0;}
         log("Read the data!");
     }
 }
@@ -561,12 +563,12 @@ var buildingData = [
     },
     {id: 14,
      names: ["Chancemaker","Chamceamekr"], desc: "lucking in ", lumpBName: "Serendipity",
-     baseCPS: BF("2.1e115"), baseCost: BF("2.6e300"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 300, sweetMax: 350,
+     baseCPS: BF(2.1e115/60.24), baseCost: BF("2.6e300"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 300, sweetMax: 350,
      achName: ["Lucked up","Devil\'s Gambit","Gambler\'s Last Bet","Remember, the house always wins","Black Cat\'s Paw"],
     },
     {id: 15,
      names: ["Fractal Engine","Framcael Engeen"], desc: "duplicating in ", lumpBName: "Gone Iterative",
-     baseCPS: BF("2.2e150"), baseCost: BF("3.1e351"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 350, sweetMax: 350,
+     baseCPS: BF("2.2e133"), baseCost: BF("3.1e351"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 350, sweetMax: 350,
      achName: ["Z_n+1 = (Z_n)^2 + c","Apollonian Gasket","C_n := (C_n-1 ∪ (2+C_n-1))/3, where C_0 := [0,1]","Divide by zero, now, I dare you","Quite nearly but not so full"],
     },
     {id: 16,
@@ -599,7 +601,7 @@ var buildingCount = 0;
 const terraDurMod = BF(300), terraInfPow = BF(0.005), maxLPowBase = BF(2.4), maxLPowMod = BF(0.1), maxLBPowBase = BF(1.2), maxLBPowMod = BF(0.03), dilateFactorDivBase = BF(2.125), dilateFactorDivMod = BF(0.125), dilateFactorBase = BF(1000), dilatePowBase = BF(1), dilatePowMod = BF(0.025);
 var xBegin = 0, maxL = 1;
 var updateMaxL = () => {
-    maxL = (BigP(terra.level,maxLPowBase + maxLPowMod * (TerraInf.level + ((artArt.level > 6) ? 1 : 0))) * 1500);
+    maxL = (BigP(terra.level,maxLPowBase + maxLPowMod * (TerraInf.level + ((artifactUpgrade[6].level > 0) ? 1 : 0))) * 1500);
     maxL += BigP(building[3].level,maxLBPowBase + maxLBPowMod * TerraInf.level);
     maxL *= (isSpellActive(2)?BF(logBoost):BF(1));
     maxL /= terraFunNerfMod;
@@ -622,7 +624,7 @@ var building = new Array(19), buildingPower = new Array(19), buildingLump = new 
 //calc building from level, use calcBuilding(id, 0) for current level
 var calcBuilding = (id, am) => {
     if (conGrow.level > 0 && id >= 11) {
-        return Utils.getStepwisePowerSum(building[id].level + am, 2.4 + (0.2 * conGrow.level) + (0.011 * (id - 11)), 50 - conGrow.level, 1) - 1;
+        return Utils.getStepwisePowerSum(building[id].level + am, 1.9 + (0.2 * conGrow.level) + (0.011 * (id - 11)), 50 - conGrow.level, 1) - 1;
     } else if (conGrow.level > 1 && id < 11) {
         return Utils.getStepwisePowerSum(building[id].level + am, 1.2 + (0.07 * conGrow.level) + (0.021 * (id + 1)), 50 - conGrow.level, 1) - 1;
     } else {
@@ -781,10 +783,10 @@ var updateBuildingLumpMaxLv = () => {
 // }
 
 // funni building
-function constructFen(arr, n) {
-    for (let i = 1; i <= n; i++) fenwick[i] = 0;
-    for (let i = 0; i < n; i++) updateFen(n, i, arr[i]);
-}
+// function constructFen(arr, n) {
+//     for (let i = 1; i <= n; i++) fenwick[i] = 0;
+//     for (let i = 0; i < n; i++) updateFen(n, i, arr[i]);
+// }
 
 //global mult - applies to C gained overall
 var globalMult = BF(1), clickPower;
@@ -795,6 +797,7 @@ var updateGlobalMult = () => {
     globalMult *= (getCookieP(cookieTasty.level) * (BF(1) + (CookieTau.level * game.tau.log10().log10().pow(2))));
     //1 "cookiep : " + (getCookieP(cookieTasty.level) * (1+(CookieTau.level * game.tau.log10().log10().pow(2)))));
     // globalMult *= (BF(1) + (BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp));
+    globalMult *= getCursorPower(clickPower.level);
     //2 "click : " + (1+(BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp)));
     globalMult *= ((TwinGates.level > 0) ? HEAVENLY_CHIP.value.pow(BF(twinGateExp) * TwinGates.level) : BF(1));
     //3 "twin : " + ((TwinGates.level > 0) ? hc.value.pow(twinGateExp * TwinGates.level) : 1));
@@ -802,7 +805,7 @@ var updateGlobalMult = () => {
     //4 "pub : " + theory.publicationMultiplier);
     globalMult *= (BigP(game.sigmaTotal, R9Box.level * R9BoxMult));
     //5 "r9 : " + (BigP(game.sigmaTotal,R9Box.level * R9BoxMult)));
-    globalMult *= ((artArt.level > 9) ? symbolBookMult : BF(1));
+    globalMult *= ((artifactUpgrade[9].level > 0) ? symbolBookMult : BF(1));
     //6 "art9 : " + ((artArt.level > 9)?symbolBookMult:BF(1)));
     globalMult *= ((ChronosAge.level > 0) ? (BF(1) + BigP(thyme.level,chronosPow)) : BF(1));
     //7 "chrono : " + ((ChronosAge.level > 0)?(BF(1) + BF(thyme.level).pow(chronosPow)):BF(1)));
@@ -1094,14 +1097,14 @@ var artifactData = [{
     order: 10,name: "Grimoire of Basic Cookie Magic",clue: "haha mana goes brrrrrr",
     cost: BF("1e330"),unlockCondition: () => {return (building[7].level >= (parseInt([+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[]]) ^ parseInt([+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[]])) + 100) && (Math.random() < 0.01);}, desc: "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 8 spells"
 },{
-    order: 11,name: "Antediluvian Engine",clue: "Time-Stopping Performance",
-    cost: BF("1e300"),unlockCondition: () => {return false;}, desc: "A peculiar machine somehow capable of locally accelerating spacetime using something about time crystals. Engravings of menacing nature can be found tucked away at the bottom, though we don\'t know why."
+    order: 11,name: "Antediluvian Engine",clue: "Long-Lived",
+    cost: BF("1e400"),unlockCondition: () => {return (thyme.level >= 6048000) && (Math.random() < 0.001);}, desc: "A peculiar machine somehow capable of locally accelerating spacetime using something about time crystals. Engravings of menacing nature can be found tucked away at the bottom, though we don\'t know why."
 },{
     order: 12,name: "Elementium Infused Chocolate Chunk",clue: "Cavitilicious",
-    cost: BF("1e300"),unlockCondition: () => {return (SUGAR_LUMP.value >= 0b10011100010000000000) && (Math.random() < 0.005);}, desc: "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?"
+    cost: BF("1e365"),unlockCondition: () => {return (SUGAR_LUMP.value >= 0b1001110001000000000) && (Math.random() < 0.005);}, desc: "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?"
 },{
     order: 13,name: "Scent of Vanilla Nebula",clue: "5 Cosmic Mappings ah ah ah",
-    cost: BF("1e300"),unlockCondition: () => {return (building[8].level >= 0b10011100010000 / 2) && (Math.random() < 0.005);}, desc: "Some astronomers go crazy over these"
+    cost: BF("1e400"),unlockCondition: () => {return (building[8].level >= 0b10011100010000 / 2) && (Math.random() < 0.005);}, desc: "Some astronomers go crazy over these"
 },{
     order: 14,name: "Cherrysilverium Meld",clue: "15$(^=)$1.268e30, 16=117.39, 8E=500,000, Cs",
     cost: BF("1e300"),unlockCondition: () => {return false;}, desc: "A curious blob of metal, one of the inscriptions inside the temple\'s numerous halls details a picture of it literally melding buildings together, with humans"
@@ -1111,7 +1114,7 @@ const maxRoll = 10000;
 var templeLuck = 0;
 let lootWeight = [10000, 9995, 9945, 9845, 9735, 9615, 9565, 9555, 9530, 9430, 9320, 9200, 9100, 9000];
 let minCookie = (i) => {
-    COOKIE.value += BF(2*60) * generateCookie(0,5,terraBoost) * BF(i);
+    COOKIE.value += BF(2*60) * CPS * terraBoost * BF(i);
 };
 let pubH = (i) => {
     if (COOKIE.value <= 0) return;
@@ -1247,7 +1250,7 @@ var spellData = [{
     order: 6,name: "Simply Sweetdelicious", desc: "Spawn some sugar lumps in",
     castCost: 0, castCooldown: 72000,
     effect: (boost) => {
-        if (RandI(100 + boost) > 15) generateLump(600 + (50 * SpellStack.level) + (50 * boost));
+        if (RandI(100 + boost) > 15) generateLump(1200 + (100 * SpellStack.level) + (100 * boost));
     },
     unlockCondition: () => {return true;},//unlock condition
     achievementNames: ["Very Sweet Wizard","Sugar Lump Magic Saga","Don\'t overdose on sugar, kids"],
@@ -1282,7 +1285,8 @@ let updateSpellCooldown = (ticks) => {
 }
 let onSpellCast = (indx,amount) => {
     spellCooldown[indx].level = spellData[indx].castCooldown;
-    spellCount[indx].level += 1;
+    spellCount[indx].level += amount;
+    totalSpell += amount;totalSpellStore.setValue(totalSpell);
     let spellBoost = totalCastAchievement[4].isUnlocked + totalCastAchievement[5].isUnlocked + totalCastAchievement[6].isUnlocked + spellCastAchievement[indx][0].isUnlocked + spellCastAchievement[indx][1].isUnlocked + spellCastAchievement[indx][2].isUnlocked;
     for(let i=0;i<amount;i++){
         spellData[indx].effect(spellBoost);
@@ -1291,56 +1295,113 @@ let onSpellCast = (indx,amount) => {
 let isSpellActive = (indx) => {
     return spellData[indx].castCooldown - spellCooldown[indx].level <= spellData[indx].effectLength;
 }
-let getTotalSpellCasted = () => {
-    return 0;
-}
 
 //! Elements
 //prevUnlock : previous element required to unlock the next excavator
-var elements = new Array(9), elemPrev = new Array(9);
-const usedElements = 8;
+var elements = new Array(19), elemPrev = new Array(19), arrEPS = new Array(19);
+var excavator, excavatorModule = new Array(19), excavatorDrill, excavatorSiteGrant;
+const usedElements = 9, excavatedElements = 8, lossFactorBase = 100;
 var elementData = [
     {
-        order: 0, weight: 1, prevUnlock: 0,
+        order: 0, weight: 1, prevUnlock: 0, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Be", fullName: "Berrylium",
     },{
-        order: 1, weight: 2, prevUnlock: 1.2e13,
+        order: 1, weight: 2, prevUnlock: 1.2e13, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Ch", fullName: "Chalcedhoney",
     },{
-        order: 2, weight: 3, prevUnlock: 9.5e11,
+        order: 2, weight: 3, prevUnlock: 1e15, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Bg", fullName: "Buttergold",
     },{
-        order: 3, weight: 5, prevUnlock: 1.25e11,
+        order: 3, weight: 5, prevUnlock: 1e18, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Su", fullName: "Sugarmuck",
     },{
-        order: 4, weight: 8, prevUnlock: 4e8,
+        order: 4, weight: 8, prevUnlock: 5e20, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Jm", fullName: "Jetmint",
     },{
-        order: 5, weight: 13, prevUnlock: 5e7,
+        order: 5, weight: 13, prevUnlock: 2.5e23, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Cs", fullName: "Cherrysilver",
     },{
-        order: 6, weight: 21, prevUnlock: 7.5e8,
+        order: 6, weight: 21, prevUnlock: 1.25e26, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Hz", fullName: "Hazelrald",
     },{
-        order: 7, weight: 34, prevUnlock: 1e9,
+        order: 7, weight: 34, prevUnlock: 6.25e28, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Mn", fullName: "Mooncandy",
     },{
-        order: 8, weight: 55, prevUnlock: 1e10,
+        order: 8, weight: 55, prevUnlock: 1e50, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"As", fullName: "Astrofudge",
     },{
-        order: 9, weight: 89, prevUnlock: 1e15,
+        order: 9, weight: 89, prevUnlock: 1e50,
         symbol:"Aa", fullName: "Alabascream",
     },{
-        order: 10, weight: 144, prevUnlock: 1e25,
+        order: 10, weight: 144, prevUnlock: 1e50,
         symbol:"Ii", fullName: "Iridyum",
     },{
-        order: 11, weight: 232, prevUnlock: 1e35,
+        order: 11, weight: 232, prevUnlock: 1e50,
         symbol:"Gc", fullName: "Glucosmium",
     },{
         order: 12, weight: 376, prevUnlock: 1e50,
         symbol:"Gm", fullName: "Glimmeringue",
     }
 ];
+var getElemBoost = (indx,level) => (1 + (elementData[indx].excavatorPowerFactor * BigP(level,elementData[indx].excavatorPowerPow)));
+arrEPS.fill(BF(0));
+var calcExcavator = (level) => Utils.getStepwisePowerSum(level, 2, 10, 0);
+var calcEPS = () => {
+    let excRate = calcExcavator(excavator.level);
+    for(let i = 0;i < excavatorDrill.level;i++){
+        excRate *= getElemBoost(i,excavatorModule[i].level);
+    }
+    for (let i = 0;i < excavatorDrill.level;i++) {
+        arrEPS[i] = (BigL10(COOKIE.value + BF(10))/BF(100)) * BigP(lossFactorBase, -1 * i) * excRate;
+        //log(arrEPS[i]);
+    }
+    // if (artArt.level > 13) {
+    //     arreps[8] += BigL10(BF(10) + building[8].level) * BigL10(BF(10) + arrcps[8]) * 0.001;
+    // }
+}
+var excavatorDescription = () => {
+    switch(bInfo){
+        case 0:
+            return `Excavators ($E_{x}$)`;
+        case 1:
+            return `$E_{x} = ${calcExcavator(excavator.level)}$`;
+        case 2:
+            return `Exacators ($E_{x}$)`;
+    }
+}
+var excModulueDescription = (indx) => {
+    switch(bInfo){
+        case 0:
+            return `${elementData[indx].fullName} Mining Module ($E_{f${indx}}$)`;
+        case 1:
+            return `$E_{f${indx}} =$ ${getElemBoost(indx,excavatorModule[indx].level)}`;
+        case 2:
+            return `${elementData[indx].fullName} MIngin MFodule ($E_{f${indx}}$)`;
+    }
+}
+var excavatorInfo = (amount) => {
+    switch(bInfo){
+        case 0:
+            return `Excavates elements for you`;
+        case 1:
+            return `$E_{x} =$ ${Utils.getMathTo(calcExcavator(excavator.level),calcExcavator(excavator.level+amount))}`;
+        case 2:
+            return `Exvcateds elemtns fro you`;
+    }
+}
+var excModulueInfo = (indx, amount) => {
+    switch(bInfo){
+        case 0:
+            return `Empowers your excavators with the essence of ${elementData[indx].fullName}`;
+        case 1:
+            return `$E_{f${indx}} =$ ${Utils.getMathTo(getElemBoost(indx,excavatorModule[indx].level),getElemBoost(indx,excavatorModule[indx].level+amount))}`;
+        case 2:
+            return `Expoeprws your excavatrors with the ssenwe of ${elementData[indx].fullName}`;
+    }
+}
+var refreshExcavatorMaxLv = () => {
+    excavatorDrill.maxLevel = excavatorSiteGrant.level;
+}
 
 //! Lumps
 const lumpTickChance = 5000;
@@ -1436,21 +1497,21 @@ var heavenlyUpgradeData = [
         uid: 12,
         name: "Continuos Growth",
         info: "Certain high-tier buildings get more powerful the more of them you have",
-        costModel: new ExponentialCost(1e106, ML2(1e10)),
+        costModel: new ExponentialCost(1e106, ML2(1e15)),
         maxLevel: 5,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 13,
         name: "Spell Cast Layering",
         info: "Allows multiples of the same spell to be casted, and slightly empowers every spell",
-        costModel: new ExponentialCost(1e109, ML2(1e6)),
+        costModel: new ExponentialCost(1e109, ML2(1e5)),
         maxLevel: 3,
         onBought: (amount) => {updateSpellLayer();updateGlobalMult();}
     },{
         uid: 14,
         name: "Empowerments of Buildings",
         info: "Increases how fast $P$ grows",
-        costModel: new ExponentialCost(5e116, ML2(10 ^ 5)),
+        costModel: new ExponentialCost(5e130, ML2(1e5)),
         maxLevel: 5,
         onBought: (amount) => {updateGlobalMult();}
     },{
@@ -1617,7 +1678,7 @@ var superP, superL, superC;
         {order: 15, name: "Pure Chocolate Taste", desc: "Get e200 cookies without buying a single level of milk and cookie flavor", weight: 2, secretClue : "Forget something?",
          unlock: () => ((COOKIE.value).abs() >= BF(1e200)) && (kitty.level == 0) && (cookieTasty.level == 0),},
         {order: 16, name: "Pure Vanilla Taste", desc: "Get e250 cookies without a single level of milk, cookie flavors, and a LOT more....\n\nThis is NOT a CRK reference", weight: 3, secretClue : "forgor something??? 💀",
-         unlock: () => (((COOKIE.value).abs() >= BF(1e250)) && (kitty.level == 0) && (cookieTasty.level == 0) && (terra.level == 0) && (ygg.level == 0) && (archaeology.level == 0) && (artArt.level == 0) && (invest.level == 0) && (recom.level == 0) && (covenant.level == 0)),},
+         unlock: () => (((COOKIE.value).abs() >= BF(1e250)) && (kitty.level == 0) && (cookieTasty.level == 0) && (terra.level == 0) && (ygg.level == 0) && (archaeology.level == 0) && (invest.level == 0) && (recom.level == 0) && (covenant.level == 0)),},
         {order: 17, name: "nice", desc: "Get 6.9 heavenly chips in any order of magnitude (decimals accepted)", weight: 2, secretClue : "nice",
          unlock: () => {
             let temp = TS10(HEAVENLY_CHIP.value);
@@ -1887,7 +1948,7 @@ var init = () => {
     }
     {
         normalUpgradeMenu = shortUpgrade(1e9 + 1,COOKIE,new FreeCost(),`Current Menu : `,"Changes between pages of normal upgrades");
-        normalUpgradeMenu.getDescription = () => `Current Menu : ${((normalUpgradeMenu.level % 2) == 0)?"Buildings":"Cookies and Milk"}`;
+        normalUpgradeMenu.getDescription = () => `Current Menu : [${normalUpgradeMenu.level + 1}] ${((normalUpgradeMenu.level % 2) == 0)?"Buildings":"Cookies and Milk"}`;
         normalUpgradeMenu.bought = (amount) => {
             //log("b");
             if (normalUpgradeMenu.level > 1){
@@ -1895,10 +1956,13 @@ var init = () => {
             }
             updateAvailability();
         }
+        var permUpgradeMenuNames = ["Building Power","Heavenly Upgrades","Elements"];
         permUpgradeMenu = shortPermaUpgrade(1e9 + 2,COOKIE,new FreeCost(),`Current Menu : `,"Changes between pages of permanent upgrades");
-        permUpgradeMenu.getDescription = () => `Current Menu : ${((permUpgradeMenu.level % 2) == 0)?"Building Power":"Heavenly Upgrades"}`;
+        permUpgradeMenu.getDescription = () => `Current Menu : [${permUpgradeMenu.level + 1}] ${permUpgradeMenuNames[permUpgradeMenu.level % 3]}`;
         permUpgradeMenu.bought = (amount) => {
-            if (permUpgradeMenu.level > 1){
+            if (permUpgradeMenu.level > 2){
+                permUpgradeMenu.level = 0;
+            }else if((permUpgradeMenu.level) == 2 && (artifactUpgrade[12].level == 0)){
                 permUpgradeMenu.level = 0;
             }
             updateAvailability();
@@ -1957,7 +2021,7 @@ var init = () => {
             }
         };
     }
-    //Heavenly Upgrades
+    //Page 2 : Heavenly Upgrades
     {
         cookieTinUnlock = shortPermaUpgradeObj(heavenlyUpgradeData[0],HEAVENLY_CHIP);
         CookieH = shortPermaUpgradeObj(heavenlyUpgradeData[1],HEAVENLY_CHIP);
@@ -1973,9 +2037,80 @@ var init = () => {
         conGrow = shortPermaUpgradeObj(heavenlyUpgradeData[11],HEAVENLY_CHIP);
         SpellStack = shortPermaUpgradeObj(heavenlyUpgradeData[12],HEAVENLY_CHIP);
         Empower = shortPermaUpgradeObj(heavenlyUpgradeData[13],HEAVENLY_CHIP);
-        milkOil = shortPermaUpgradeObj(heavenlyUpgradeData[15],HEAVENLY_CHIP);
+        //milkOil = shortPermaUpgradeObj(heavenlyUpgradeData[15],HEAVENLY_CHIP);
     }
-
+    //Page 3 : Element Drilling
+    {
+        //site grant
+        excavatorSiteGrant = shortPermaUpgradeML(30002,COOKIE,new ExponentialCost(BF("1e365"),ML2(1e10)),"Excavator Site","Allows for a place rich with elements to be excavated",excavatedElements);
+        excavatorSiteGrant.getDescription = () => {
+            if (excavatorSiteGrant.maxLevel == excavatorSiteGrant.level) {
+                return `All permits issued`;
+            } else {
+                return `${elementData[excavatorSiteGrant.level].fullName} Excavation Site Grant`;
+            }
+        };
+        excavatorSiteGrant.getInfo = () => {
+            if (excavatorSiteGrant.maxLevel == excavatorSiteGrant.level) {
+                return `You\'ve laid your hands on every sites of intrest you know`;
+            } else {
+                return `Allows excavation operations to happen in a site rich of ${elementData[excavatorSiteGrant.level].fullName}`;
+            }
+        };
+        excavatorSiteGrant.bought = (amount) => {
+            refreshExcavatorMaxLv();
+        }
+        //drill
+        excavatorDrill = shortPermaUpgradeML(30003,COOKIE,new FreeCost(),"drill","haha drilling go brrrrrrrr",9999);
+        excavatorDrill.getInfo = () => {
+            if (excavatorDrill.maxLevel == excavatorDrill.level) {
+                return `You can mine every element that you possibly can`;
+            } else {
+                return `Allows you to excavate ${elementData[excavatorDrill.level].fullName}`;
+            }
+        };
+        excavatorDrill.getDescription = () => {
+            if (excavatorDrill.maxLevel == excavatorDrill.level) {
+                return `All possible excavation sites owned`;
+            } else {
+                return `Establish ${elementData[excavatorDrill.level].fullName} excavation site ${(excavatorDrill.level > 0) ? `(${BigTS(elementData[excavatorDrill.level].prevUnlock)} ${(excavatorDrill.level > 0)?elementData[excavatorDrill.level - 1].symbol:elementData[0].symbol})` : ""}`;
+            }
+        };
+        excavatorDrill.bought = (amount) => {
+            //excavatorDrill.level -= amount;
+            let cost;
+            if(excavatorDrill.level == 1){
+                excavatorDrill.level = 1;
+                return;
+            }
+            for(let i=0;i<amount;i++){
+                cost = elementData[excavatorDrill.level].prevUnlock;
+                log(cost);
+                if (elements[excavatorDrill.level - (amount - i + 1)].value >= cost) {
+                    elements[excavatorDrill.level - (amount - i + 1)].value -= cost;
+                    //excavatorDrill.level += 1;
+                    log("unlocked");
+                } else {
+                    excavate.level -= amount - i;
+                    log("no afford");
+                    break;
+                }
+            }
+            log(excavatorDrill.getDescription());
+        }
+        //the building itself
+        excavator = shortPermaUpgrade(30004,elements[0],new FirstFreeCost(new ExponentialCost(15, Math.log2(2))),`Excavators ($E_{x}$)`,`Excavates elements for you`);
+        excavator.getDescription = (_) => excavatorDescription();
+        excavator.getInfo = (amount) => excavatorInfo(amount);
+        excavator.bought = (amount) => calcEPS();
+        //mining modules
+        for(let i=0;i<excavatedElements;i++){
+            excavatorModule[i] = shortPermaUpgrade(31000+i,elements[i],new ExponentialCost((i==0)?10000:1e6, ML2((i==0)?1.25:(1.9 + (i*0.1)))),`${elementData[i].fullName} Mining Module`,`Empowers your excavators with the essence of ${elementData[i].fullName}`);
+            excavatorModule[i].getDescription = (_) => excModulueDescription(i);
+            excavatorModule[i].getInfo = (amount) => excModulueInfo(i,amount);
+            excavatorModule[i].bought = (amount) => calcEPS();
+        }
+    }
     ///////////////////
     // Regular Upgrades
     // Throwaway
@@ -2184,14 +2319,14 @@ var init = () => {
         // 11XX = Count, 12XX 13XX 14XX = Per-Spell
         SpellAchievementCat = theory.createAchievementCategory(5,"Magic");
         for(let i=0,j=totalSpellAchReq.length;i<j;i++){
-            totalCastAchievement[i] = theory.createAchievement(1100+i,SpellAchievementCat,spellAchName[i],() => `Cast a total of ${totalSpellAchReq[i]} spells`, () => checkAchBase(() => getTotalSpellCasted() >= totalSpellAchReq[i],1));
+            totalCastAchievement[i] = theory.createAchievement(1100+i,SpellAchievementCat,spellAchName[i],`Cast a total of ${totalSpellAchReq[i]} spells`, () => checkAchBase(() => totalSpell >= totalSpellAchReq[i],1));
             achCountTV += 1;
         }
         for(let i=0;i<spellUsed;i++){
             spellCastAchievement[i] = new Array(3);
             const req = [25,250,2500];
             for(let j=0;j<3;j++){
-                spellCastAchievement[i][j] = theory.createAchievement(1200 + (j*100) + i,SpellAchievementCat,spellData[i].achievementNames[j],() => `Cast ${spellData[i].name} ${req[j]} times`,() => checkAchBase(() => spellCount[i].level >= req[j],1));
+                spellCastAchievement[i][j] = theory.createAchievement(1200 + (j*100) + i,SpellAchievementCat,spellData[i].achievementNames[j],`Cast ${spellData[i].name} ${req[j]} times`,() => checkAchBase(() => spellCount[i].level >= req[j],1));
                 achCountTV += 1;
             }
         }
@@ -2241,8 +2376,8 @@ var updateAvailability = () => {
         if (i >= 3) {building[i].isAvailable = (COOKIE.value >= buildingData[i - 1].baseCost) || (building[i].level > 0);}
         else {building[i].isAvailable = true;}
         building[i].isAvailable &= (normalUpgradeMenu.level % 2) == 0;
-        buildingPower[i].isAvailable = building[i].level > 0 && (permUpgradeMenu.level % 2) == 0;
-        buildingLump[i].isAvailable = building[i].level > 10 && (permUpgradeMenu.level % 2) == 0;
+        buildingPower[i].isAvailable = building[i].level > 0 && permUpgradeMenu.level == 0;
+        buildingLump[i].isAvailable = building[i].level > 10 && permUpgradeMenu.level == 0;
     }
     building[14].isAvailable &= (artifactUpgrade[9].level > 0);
     // Cookieh
@@ -2266,7 +2401,7 @@ var updateAvailability = () => {
     conGrow.isAvailable = HEAVENLY_CHIP.value > BF(1e100) && (permUpgradeMenu.level % 2) == 1;
     SpellStack.isAvailable = HEAVENLY_CHIP.value > BF(1e100) && (permUpgradeMenu.level % 2) == 1;
     Empower.isAvailable = HEAVENLY_CHIP.value > BF(1e115) && (permUpgradeMenu.level % 2) == 1;
-    milkOil.isAvailable = HEAVENLY_CHIP.value > BF(1e130) && (permUpgradeMenu.level % 2) == 1;
+    //milkOil.isAvailable = HEAVENLY_CHIP.value > BF(1e130) && (permUpgradeMenu.level % 2) == 1;
     // Gimmick
     covenant.isAvailable = COOKIE.value >= BF(1e60) && (normalUpgradeMenu.level % 2) == 0;
     ygg.isAvailable = COOKIE.value >= BF(1e100) && (normalUpgradeMenu.level % 2) == 0;
@@ -2280,9 +2415,15 @@ var updateAvailability = () => {
     for(let i=0;i<artifactCount;i++){
         artifactUpgrade[i].isAvailable = archaeology.isAvailable && (artifactPouch.level == 1) && (normalUpgradeMenu.level % 2) == 0;
     }
-    SpellView.isAvailable = artifactUpgrade[10].level > 0;
+    SpellView.isAvailable = artifactUpgrade[10].level > 0 && (normalUpgradeMenu.level == 0);
     for(let i=0;i<spellUsed;i++){
         spellCast[i].isAvailable = SpellView.isAvailable && (SpellView.level > 0) && spellData[i].unlockCondition();
+    }
+    excavatorSiteGrant.isAvailable = (permUpgradeMenu.level == 2);
+    excavatorDrill.isAvailable = (permUpgradeMenu.level == 2);
+    excavator.isAvailable = (permUpgradeMenu.level == 2) && (excavatorDrill.level > 0);
+    for(let i=0;i<excavatedElements;i++){
+        excavatorModule[i].isAvailable = (permUpgradeMenu.level == 2);
     }
     //Milestone
     superL.isAvailable = (superP.level > 0) && (superC.level > 0);
@@ -2326,14 +2467,6 @@ var generateCookie = (id, ticks, mult) => {
         CPSstore.setValue(ret);
     }
     ret *= mult;
-    if(id == 0 && clickPower.level > 0){
-        ret += BigMax(CPS * mult,BF(1)) * getCursorPower(clickPower.level);
-        //failsafe, only really triggers if values get ABSURDLY BIG
-        if(ret > (COOKIE.value*BF(1e100))){
-            ret -= Math.max(CPS,BF(1)) * getCursorPower(clickPower.level);
-        }
-        //log(`${id} generated ${ret} with ${mult}`);
-    }
     //log(`get ${ret}`);
     return ret;
 }
@@ -2364,12 +2497,14 @@ var calcIdleCPS = () => {
     IdleCPS = BF(0);
     for(let i=0;i<19;i++){
         updateLocalMult(i);
-        IdleCPS += generateCookie(i,1,1);
+        IdleCPS += generateCookie(i,0.5,1);
     }
 }
 var performanceTester = () => {
+    updateAvailability();
     for(let i=0;i<19;i++){
-        getBuildingDesc(i);
+        //generateCookie(i,5,terraBoost);
+        generateCookie(i,buildingData[i].collectionTime,terraBoost);
     }
 }
 var profilingConst = false;
@@ -2388,11 +2523,18 @@ var tick = (elapsedTime,multiplier) => {
         for(let i=0;i<artifactCount;i++){
             artifactUpgrade[i].maxLevel = Math.max(artifactUpgrade[i].level,artifactUnlock[i].level);
         }
+        totalSpell = 0;
+        for(let i=0;i<spellUsed;i++){
+            totalSpell += spellCount[i].level;
+        }
+        totalSpellStore.setValue(totalSpell);
         updateBuildingLumpMaxLv();
         updateGlobalMult();
         updateMaxL();
         CPSrefresh();
         updateSpellLayer();
+        calcEPS();
+        refreshExcavatorMaxLv();
         setupTick = false;
     }
     if(profilingConst){
@@ -2418,7 +2560,7 @@ var tick = (elapsedTime,multiplier) => {
         dt *= 0.9;
         COOKIE.value += IdleCPS * dt * terraBoost;
     }else{
-            //cookie
+        //cookie
         if(thyme.level % 5 == 0){
             updateAvailability();
             for(let i=0;i<19;i++){
@@ -2437,6 +2579,11 @@ var tick = (elapsedTime,multiplier) => {
     }
     //lumps
     generateLump(dt);
+    //elements
+    //log(dt);
+    for (let i = 0; i < usedElements && artifactUpgrade[12].level > 0; i++) {
+        elements[i].value += (dt/10) * arrEPS[i];
+    }
     //heavenly chips
     theory.invalidateQuaternaryValues();
     theory.invalidateTertiaryEquation();
@@ -2468,7 +2615,7 @@ var secondaryCheck = (mode) => {
             return artifactUpgrade[11].level > 0;
             break;
         case 9:
-            return excavate.level > 0;
+            return artifactUpgrade[12].level > 0;
             break;
         case 10:
             return accelerator.level > 0;
@@ -2515,12 +2662,12 @@ var secondaryEq = (mode, col) => {
         case 5:// Ygg + Chronos
             // theory.secondaryEquationScale = 0.925;
             let ys = " Y_{g}";
-            return `\\color{#${eqColor[col]}}{B(2) \\leftarrow 5(10^{10})B(2)P_{2}^{${yggPowBase} + ${yggPowLv}${ys}}\\\\(B[6]+B[2])^{${yggBPowBase} + ${yggBPowMod}${ys}^{${yggBPowLv}}}(1+t)^{${yggThymePow}}${(ChronosAge.level > 0) ? `\\\\ B(i) \\leftarrow B(i)(1+t^{${chronosPow}}), \\quad i \\neq 2` : ``}}`;
+            return `\\color{#${eqColor[col]}}{B(2) \\leftarrow ${yggBoost}B(2)P_{2}^{${yggPowBase} + ${yggPowLv}${ys}}\\\\(B[6]+B[2])^{${yggBPowBase} + ${yggBPowMod}${ys}^{${yggBPowLv}}}(1+t)^{${yggThymePow}}${(ChronosAge.level > 0) ? `\\\\ B(i) \\leftarrow B(i)(1+t^{${chronosPow}}), \\quad i \\neq 2` : ``}}`;
         case 6:// Terra
             let tr = " T_{r}";
             let tf = " T_{\\infty}";
             let tm = " T_{m}";
-            return `\\color{#${eqColor[col]}}{${tm} = 1500${(moreExcavator.level > 0) ? "E_{f}^{1.5}" : ""}${tr}^{2.5+0.05${tf}}\\\\T = 1+${tm}^{0.2+0.1${tf}} + \\frac{${tm}^{1+0.005${tf}}}{1+e^{t-(X_{b}+600${tr})}}}`;
+            return `\\color{#${eqColor[col]}}{${tm} = 1500${(moreExcavator.level > 0) ? "E_{f}^{1.5}" : ""}${tr}^{2.5+0.05${tf}}\\\\T = 1+${tm}^{0.2+0.1${tf}} + \\frac{${tm}^{1+0.005${tf}}}{1+e^{t-(X_{b}+300${tr})}}}`;
         case 7:// Recom
             let rc = " R_{c}";
             return `\\color{#${eqColor[col]}}{\\dot{H} = H^{0.9}(${rc})\\\\ \\dot{L} = 0.01${rc}\\\\ B(4) \\leftarrow B(4)10^{54}${recomPowBase}^{${rc}-1}}`;
@@ -2528,7 +2675,7 @@ var secondaryEq = (mode, col) => {
             return `\\color{#${eqColor[col]}}{T_d = \\frac{B[11]^{1+0.025T_D}}{1000^{T_f}}\\\\T_f = 1-\\frac{min(B[11],B[10]+B[12])}{(2.125-0.125T_{D}))(B[10]+B[12])}}`;
         case 9:// Elements
             theory.secondaryEquationScale = 0.85;
-            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{f}B[3]L[3]P_{3}^{0.05}log_2(T)}{150^{n+1}},\\: n \\neq 8${(artifactUpgrade[13].level > 0) ? `\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}` : ``}}`;
+            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{x}\\prod_{i=0}^{${excavatedElements}}{Ef_{i}}}{${lossFactorBase}^{n}},\\: n \\neq 8${(artifactUpgrade[13].level > 0) ? `\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}` : ``}}`;
         case 10:// Decay
             let ingre = (reactorMode == -1) ? "E_{n}" : `${elemName[reactorMode + 2]}`;
             let r1 = (reactorMode == -1) ? "E_{n-1}" : `${elemName[reactorMode + 1]}`;
@@ -2566,7 +2713,7 @@ var getTertiaryEquation = () => {
 };
 var getQuaternaryEntries = () => {
     for (let i = 0; i < 9; i++) {
-        quartList[i].value = (excavate.level >= (i + 1) || ((i == 8) && (artifactUpgrade[13].level > 0)) || elements[i].value > 0) ? elements[i].value : null;
+        quartList[i].value = (excavatorDrill.level >= (i + 1) || ((i == 8) && (artifactUpgrade[13].level > 0)) || elements[i].value > 0) ? elements[i].value : null;
     }
     quartList2[0].value = CPS;
     quartList2[1].value = thyme.level / 10;
@@ -2612,7 +2759,7 @@ var postPublish = () => {
     for(let i=0;i<19;i++){
         updateLocalMult(i);
     }
-    for (let i = 0; i < elements.length; i++) {
+    for (let i = 0; i < usedElements; i++) {
         elements[i].value = elemBefore[i];
     }
 };
@@ -2622,7 +2769,7 @@ var prePublish = () => {
     hbf += (COOKIE.value / BF("1e12")).pow(1 / 3);
     //isSpellShown = 0;
     CPS = BF(0);CPSstore.setValue(CPS);
-    for (let i = 0; i < elements.length; i++) {
+    for (let i = 0; i < usedElements; i++) {
         elemBefore[i] = elements[i].value;
     }
 };
