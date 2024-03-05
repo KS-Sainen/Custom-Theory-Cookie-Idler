@@ -234,6 +234,12 @@ function gimmickUpgrade(gimmickUpgradeObject){
     ret.bought = gimmickUpgradeObject.onBought;
     return ret;
 }
+function gimmickPermUpgrade(gimmickUpgradeObject,currency){
+    var cur = currency;
+    var ret = shortPermaUpgradeML(gimmickUpgradeObject.uid,cur,gimmickUpgradeObject.costModel,gimmickUpgradeObject.name,gimmickUpgradeObject.info,gimmickUpgradeObject.maxLevel);
+    ret.bought = gimmickUpgradeObject.onBought;
+    return ret;
+}
 //an upgrade that exists else everything crashes
 function throwawayUpgrade(id, desc, info){
     var ret = shortUpgrade(id, COOKIE, new ConstantCost(BF("1e1000")), desc, info);
@@ -380,7 +386,6 @@ var building50 = BigP(BigP(2,buildingPriceMult),50);
 var buildingExponent = 0.05, defaultSweetLim = 1;
 //upgrade variables
 var covenant, ygg, terra, excavate, moreExcavator, recom, invest, investRespec, investHelp = new Array(19), archaeology, artArt, templeReset, artifactPouch, cookiearium, aquaCrust, timeDilate, accelerator, acceleratorMenu,synergy;
-var jetDrive, sugarCoat, crystalHoney;
 
 //the funni
 //achName : 100, 1000, 5000, 10000, lump 100
@@ -455,7 +460,7 @@ var buildingData = [
                 //log(`You win ${res}`);
                 if(res < 19){
                     if(building[res].level != 0){
-                        investHelp[res].level += 5+ConjureBuild.level;
+                        investHelp[res].level += 5+ConjureBuild.level+Math.floor(butterBar.level/2);
                         stonkFlag |= investHelp[res].level >= 200;
                         megaStonkFlag |= investHelp[res].level >= 1000;
                     }
@@ -633,8 +638,8 @@ var calcBuilding = (id, am) => {
 }
 
 //building power
-var getPower = (index) => BigP(Utils.getStepwisePowerSum(buildingPower[index].level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * 1) + (jetDrive.level * 0.5), 5, 1), 1 + (superP.level * 0.02));
-var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * 1) + (jetDrive.level * 0.5), 5, 1), 1 + (superP.level * 0.02));
+var getPower = (index) => BigP(Utils.getStepwisePowerSum(buildingPower[index].level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * 1) + (jetEngine.level * 0.25), 5, 1), 1 + (superP.level * 0.02));
+var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * 1) + (jetEngine.level * 0.25), 5, 1), 1 + (superP.level * 0.02));
 
 //building exponents
 var getBuildingExp = (index) => {
@@ -906,7 +911,7 @@ var cookieTinInfo = [
  */
 var getCookieTP = (level) => {
     let res = BF(1);
-    //level += crystalHoney.level * 10;
+    level += chalcedIngredient.level * 10;
     if (level >= 150) {
         res = BigP(1.13,level);
     } else if (level >= 100) {
@@ -986,8 +991,8 @@ var kittyPower = (level) => {
         ret += BF((level - 9) * 0.3);
     }
     ret += level * 0.2;
-    if (artArt.level > 2) {
-        ret = BigP(ret, 1.5 + (achCount * 0.01));
+    if (artifactUnlock[2].level > 0) {
+        ret = BigP(ret, 1 + (achCount * 0.002));
     }
     return ret;
 };
@@ -1101,7 +1106,7 @@ var artifactData = [{
     cost: BF("1e400"),unlockCondition: () => {return (thyme.level >= 6048000) && (Math.random() < 0.001);}, desc: "A peculiar machine somehow capable of locally accelerating spacetime using something about time crystals. Engravings of menacing nature can be found tucked away at the bottom, though we don\'t know why."
 },{
     order: 12,name: "Elementium Infused Chocolate Chunk",clue: "Cavitilicious",
-    cost: BF("1e365"),unlockCondition: () => {return (SUGAR_LUMP.value >= 0b1001110001000000000) && (Math.random() < 0.005);}, desc: "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?"
+    cost: BF("1e365"),unlockCondition: () => {return (SUGAR_LUMP.value >= 0b10011100010000000000) && (Math.random() < 0.005);}, desc: "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?"
 },{
     order: 13,name: "Scent of Vanilla Nebula",clue: "5 Cosmic Mappings ah ah ah",
     cost: BF("1e400"),unlockCondition: () => {return (building[8].level >= 0b10011100010000 / 2) && (Math.random() < 0.005);}, desc: "Some astronomers go crazy over these"
@@ -1121,7 +1126,7 @@ let pubH = (i) => {
     HEAVENLY_CHIP.value += BF(i) * hfc(COOKIE.value);
 };
 var rollLoot = () => {
-    let r = RandI(maxRoll); + (isSpellActive(3))?templeLuck:0;
+    let r = RandI(maxRoll); + ((isSpellActive(3))?templeLuck:0) + (butterBar.level * 25);
     let prize = bsearch(lootWeight, r);
     switch (prize) {
         case 0:
@@ -1287,7 +1292,7 @@ let onSpellCast = (indx,amount) => {
     spellCooldown[indx].level = spellData[indx].castCooldown;
     spellCount[indx].level += amount;
     totalSpell += amount;totalSpellStore.setValue(totalSpell);
-    let spellBoost = totalCastAchievement[4].isUnlocked + totalCastAchievement[5].isUnlocked + totalCastAchievement[6].isUnlocked + spellCastAchievement[indx][0].isUnlocked + spellCastAchievement[indx][1].isUnlocked + spellCastAchievement[indx][2].isUnlocked;
+    let spellBoost = totalCastAchievement[4].isUnlocked + totalCastAchievement[5].isUnlocked + totalCastAchievement[6].isUnlocked + spellCastAchievement[indx][0].isUnlocked + spellCastAchievement[indx][1].isUnlocked + spellCastAchievement[indx][2].isUnlocked + (0.25 * butterBar.level);
     for(let i=0;i<amount;i++){
         spellData[indx].effect(spellBoost);
     }
@@ -1300,6 +1305,7 @@ let isSpellActive = (indx) => {
 //prevUnlock : previous element required to unlock the next excavator
 var elements = new Array(19), elemPrev = new Array(19), arrEPS = new Array(19);
 var excavator, excavatorModule = new Array(19), excavatorDrill, excavatorSiteGrant;
+var jetEngine, sugarTools, chalcedIngredient, butterBar;
 const usedElements = 9, excavatedElements = 8, lossFactorBase = 100;
 var elementData = [
     {
@@ -1308,15 +1314,47 @@ var elementData = [
     },{
         order: 1, weight: 2, prevUnlock: 1.2e13, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Ch", fullName: "Chalcedhoney",
+        gimmicks: [{
+            uid: 32001,
+            name: "Chalcedhoney Ingredients",
+            info: "Replacing normal honey with Chalcedhoney has been proven to boost the tastiness and yield of cookies. Adds 10 level to normal cookie upgrade",
+            costModel: new ExponentialCost(1e10, ML2(100)),
+            maxLevel: 7,
+            onBought: (amount) => {updateGlobalMult();}
+        }]
     },{
         order: 2, weight: 3, prevUnlock: 1e15, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Bg", fullName: "Buttergold",
+        gimmicks: [{
+            uid: 32002,
+            name: "Buttergolden Bars",
+            info: "According to the Book of Symbolisms, Buttergold is superior than all those funny charms made out of inferior platinum, or worse, gold",
+            costModel: new ExponentialCost(1e9, ML2(100)),
+            maxLevel: 7,
+            onBought: (amount) => {updateGlobalMult();}
+        }]
     },{
         order: 3, weight: 5, prevUnlock: 1e18, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Su", fullName: "Sugarmuck",
+        gimmicks: [{
+            uid: 32003,
+            name: "Sugarmuck-Powered Farming Tools",
+            info: "Produces a constant stream of sugar lumps through the peculiar powers of Sugarmuck\'s affinity to sugar lumps",
+            costModel: new ExponentialCost(1e9, ML2(100)),
+            maxLevel: 10,
+            onBought: (amount) => {updateGlobalMult();}
+        }]
     },{
         order: 4, weight: 8, prevUnlock: 5e20, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Jm", fullName: "Jetmint",
+        gimmicks: [{
+            uid: 32004,
+            name: "Jetmint Booster",
+            info: "Jetmint has been shown to improve the overall efficiency of just about every building we can get ours hands on. Increases the base growth of building powers",
+            costModel: new ExponentialCost(1e11, ML2(100)),
+            maxLevel: 3,
+            onBought: (amount) => {CPSrefresh();}
+        }]
     },{
         order: 5, weight: 13, prevUnlock: 2.5e23, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Cs", fullName: "Cherrysilver",
@@ -1345,7 +1383,7 @@ var elementData = [
 ];
 var getElemBoost = (indx,level) => (1 + (elementData[indx].excavatorPowerFactor * BigP(level,elementData[indx].excavatorPowerPow)));
 arrEPS.fill(BF(0));
-var calcExcavator = (level) => Utils.getStepwisePowerSum(level, 2, 10, 0);
+var calcExcavator = (level) => Utils.getStepwisePowerSum(level, 5, 5, 0);
 var calcEPS = () => {
     let excRate = calcExcavator(excavator.level);
     for(let i = 0;i < excavatorDrill.level;i++){
@@ -1372,11 +1410,11 @@ var excavatorDescription = () => {
 var excModulueDescription = (indx) => {
     switch(bInfo){
         case 0:
-            return `${elementData[indx].fullName} Mining Module ($E_{f${indx}}$)`;
+            return `${elementData[indx].fullName} Mining Module ($Ef_{${indx}}$)`;
         case 1:
-            return `$E_{f${indx}} =$ ${getElemBoost(indx,excavatorModule[indx].level)}`;
+            return `$Ef_{${indx}} =$ ${getElemBoost(indx,excavatorModule[indx].level)}`;
         case 2:
-            return `${elementData[indx].fullName} MIngin MFodule ($E_{f${indx}}$)`;
+            return `${elementData[indx].fullName} MIngin MFodule ($Ef_{${indx}}$)`;
     }
 }
 var excavatorInfo = (amount) => {
@@ -2098,6 +2136,11 @@ var init = () => {
             }
             log(excavatorDrill.getDescription());
         }
+        //element-specific upgrades
+        chalcedIngredient = gimmickPermUpgrade(elementData[1].gimmicks[0],elements[1]);
+        butterBar = gimmickPermUpgrade(elementData[2].gimmicks[0],elements[2]);
+        sugarTools = gimmickPermUpgrade(elementData[3].gimmicks[0],elements[3]);
+        jetEngine = gimmickPermUpgrade(elementData[4].gimmicks[0],elements[4]);
         //the building itself
         excavator = shortPermaUpgrade(30004,elements[0],new FirstFreeCost(new ExponentialCost(15, Math.log2(2))),`Excavators ($E_{x}$)`,`Excavates elements for you`);
         excavator.getDescription = (_) => excavatorDescription();
@@ -2124,9 +2167,6 @@ var init = () => {
         accelerator = throwawayUpgrade(1e9 + 9,"Artifacts","how did you managed to see this");
         acceleratorMenu = throwawayUpgrade(1e9 + 10,"Artifacts","how did you managed to see this");
         synergy = throwawayUpgrade(1e9 + 11,"Artifacts","how did you managed to see this");
-        jetDrive = throwawayUpgrade(1e9 + 12,"Artifacts","how did you managed to see this");
-        sugarCoat = throwawayUpgrade(1e9 + 13,"Artifacts","how did you managed to see this");
-        crystalHoney = throwawayUpgrade(1e9 + 14,"Artifacts","how did you managed to see this");
         excavate = throwawayUpgrade(1e9 + 15,"Artifacts","how did you managed to see this");
     }
     // Invest
@@ -2143,7 +2183,7 @@ var init = () => {
         cookieTasty = theory.createUpgrade(0, COOKIE, new ExponentialCost(cookieTastyCostBase, cookieTastyCostMod));
         cookieTasty.getDescription = (_) => {
             if (bInfo == 1) {
-                return `\$ C_{1}(${cookieTasty.level + (crystalHoney.level * 10)}) = ${getCookieTP(cookieTasty.level)}, \\: CP(${cookieTasty.level})${superC.level > 0 ? `^{${superCookieExponent}}` : ""}=${getCookieP(cookieTasty.level)}\$`;
+                return `\$ C_{1}(${cookieTasty.level + (chalcedIngredient.level * 10)}) = ${getCookieTP(cookieTasty.level)}, \\: CP(${cookieTasty.level})${superC.level > 0 ? `^{${superCookieExponent}}` : ""}=${getCookieP(cookieTasty.level)}\$`;
             }
             if (cookieTasty.level + 1 > cookieNames.length) {
                 return cookieTastyDName;
@@ -2425,6 +2465,10 @@ var updateAvailability = () => {
     for(let i=0;i<excavatedElements;i++){
         excavatorModule[i].isAvailable = (permUpgradeMenu.level == 2);
     }
+    chalcedIngredient.isAvailable = (permUpgradeMenu.level == 2);
+    butterBar.isAvailable = (permUpgradeMenu.level == 2);
+    sugarTools.isAvailable = (permUpgradeMenu.level == 2);
+    jetEngine.isAvailable = (permUpgradeMenu.level == 2);
     //Milestone
     superL.isAvailable = (superP.level > 0) && (superC.level > 0);
 };
@@ -2472,7 +2516,7 @@ var generateCookie = (id, ticks, mult) => {
 }
 var generateLump = (ticks) => {
     let lumpChance = BF(1) / (BF(lumpTickChance) / BigL10(COOKIE.value + BF(10)));//it's normally 1/x
-    let dLump = BF(lumpChance.floor() + (sugarCoat.level * 0.25) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01)) * ticks;//yes, ticks ARE 0.1 seconds so 2.5LPS = 0.25LPT
+    let dLump = BF(lumpChance.floor() + (sugarTools.level * 0.25) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01)) * ticks;//yes, ticks ARE 0.1 seconds so 2.5LPS = 0.25LPT
     lumpChance -= lumpChance.floor();
     if (ticks == 1 && BF(Math.random()) <= lumpChance) {
         dLump += BF(1);
