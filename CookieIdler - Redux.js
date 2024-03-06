@@ -826,6 +826,7 @@ var updateGlobalMult = () => {
         log("the what");
         globalMult = BF(1);
     }
+    //log(globalMult);
 };
 //sub global mult - mmmmmmmmm those cookies
 //cookie tins, remember, they're unlocked in order :)
@@ -1939,8 +1940,10 @@ function getBuildingCollect(){
 //? 7. Refreshes CPS
 function CPSrefresh(){
     CPS = BF(0);
+    log(`global = ${globalMult}`)
     for(let i=0;i<19;i++){
-        let res = generateCookie(i,10,terraBoost);
+        let res = generateCookie(i,buildingData[i].collectionTime,terraBoost);
+        log(`generating for ${i}, ${BF(calcBuilding(i,investHelp[i].level))} base = ${res}, pow = ${getBuildingExp(i)}, mult = ${buildingData[i].mult}`);
         if(res > CPS){res = CPS;}
     }
     log(`New CPS = ${CPS}`);
@@ -2511,9 +2514,8 @@ var generateCookie = (id, ticks, mult) => {
         pow = 1;
         buildingExponentLv[id] = 0;
     }
-    //log(`generating for ${id}, base = ${ret}, pow = ${pow}`);
     //cursor power
-    if(!setupTick && buildingExponentLv[id] != 0){ret = BigP(ret,pow);}
+    if(buildingExponentLv[id] != 0){ret = BigP(ret,pow);}
     ret /= cookieProductionNerfFunConsoleValue;
     if(ret > CPS){
         CPS = ret;
@@ -2522,6 +2524,7 @@ var generateCookie = (id, ticks, mult) => {
     }
     ret *= mult;
     //log(`get ${ret}`);
+    //log(`generating for ${id}, base = ${ret}, pow = ${pow}`);
     return ret;
 }
 var generateLump = (ticks) => {
@@ -2555,11 +2558,7 @@ var calcIdleCPS = () => {
     }
 }
 var performanceTester = () => {
-    updateAvailability();
-    for(let i=0;i<19;i++){
-        //generateCookie(i,5,terraBoost);
-        generateCookie(i,buildingData[i].collectionTime,terraBoost);
-    }
+    updateGlobalMult();
 }
 var profilingConst = false;
 //var profiler1 = profilers.get("profiler1");
@@ -2581,6 +2580,7 @@ var tick = (elapsedTime,multiplier) => {
         for(let i=0;i<spellUsed;i++){
             totalSpell += spellCount[i].level;
         }
+        updateLocalMult(1);
         totalSpellStore.setValue(totalSpell);
         updateBuildingLumpMaxLv();
         updateGlobalMult();
@@ -2616,6 +2616,7 @@ var tick = (elapsedTime,multiplier) => {
     }else{
         //cookie
         if(thyme.level % 5 == 0){
+            updateGlobalMult();
             updateAvailability();
             for(let i=0;i<19;i++){
                 if(dt >= buildingData[i].collectionTime){
