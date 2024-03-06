@@ -251,8 +251,8 @@ function throwawayUpgrade(id, desc, info){
 // States (And thus begins the spoilers)
 // beeg table
 class internalState {
-    width = 16;
-    height = 16;
+    width = 12;
+    height = 12;
     //the table is ENTIRELY in BigNumber form, so refer to it in calculations as you please
     constructor(width, height) {
         this.width = width;
@@ -273,16 +273,16 @@ class internalState {
         return ret;
     }
     getVal(r, c) {
-        return this.table[(r*16 + c)];
+        return this.table[(r*this.width + c)];
     }
     setVal(r, c, v) {
-        this.table[(r*16 + c)] = BF(v);
+        this.table[(r*this.width + c)] = BF(v);
     }
     getValIndex(indx) {
         return this.table[indx];
     }
 }
-var stateTable = new internalState(16,16);
+var stateTable = new internalState(12,12);
 var updateTable = (r, c, v) =>{
     //log(`Update [${r}][${c}] = ${v}`);
     stateTable.setVal(r,c,v);
@@ -328,14 +328,6 @@ class ISV {
         quTypeStore = new ISV(0, 7, 1);
     var vizType = new ISV(0, 7, 2);
     var eqCStore = new ISV(0, 7, 3);
-    var buildingExponentLvStore = new Array(19), buildingExponentLv = new Array(19);
-    buildingExponentLv.fill(0);
-    for(let i=0;i<16;i++){
-        buildingExponentLvStore[i] = new ISV(0,1,i);
-    }
-    for(let i=16;i<19;i++){
-        buildingExponentLvStore[i] = new ISV(0,2,i-16);
-    }
     var perkHas;
     //let time = ISV(0,0,0); // degrees
 }
@@ -357,19 +349,9 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxB
         CPSstore.readValue();HPSstore.readValue();totalSpellStore.readValue();
         achCountStore.readValue();lumpTotal.readValue();artUnlock.readValue();reactorModeStore.readValue();perkPoint.readValue();heavVis.readValue();
         bInfoStore.readValue();dominatestore.readValue();eqTypeStore.readValue();quTypeStore.readValue();vizType.readValue();eqCStore.readValue();maxBuildStore.readValue();
-        for(let i=0;i<19;i++){
-            buildingExponentLvStore[i].readValue();
-        }
         CPS = BF(CPSstore.value);
         dominate = Math.floor(dominatestore.value);if(Number.isNaN(dominate)){dominate = 0;}
         perkHas = Math.floor(perkPoint.value);if(Number.isNaN(perkHas)){perkHas = 0;}
-        for (let i = 0; i < 19; i++) {
-            buildingExponentLv[i] = Math.floor(buildingExponentLvStore[i].value);
-            if(Number.isNaN(buildingExponentLv[i])){buildingExponentLv[i]=0;}
-            //log(buildingExponentLv[i]);
-            perkHas -= buildingExponentLv[i];
-            perkMenu.content.children[3].children[0].children[i].children[1].text = `${buildingExponentLv[i]} / ${maxbuiPerk(i)}`;
-        }
         achCount = Math.floor(achCountStore.value);if(Number.isNaN(achCount)){achCount = 0;}
         eqC = Math.floor(eqCStore.value);if(Number.isNaN(eqC)){eqC = 0;}
         eqType = Math.floor(eqTypeStore.value);if(Number.isNaN(eqType)){eqType = 0;}
@@ -385,9 +367,11 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxB
 //! Buildings INFO + GIMMICKS
 var buildingPriceMult = ML2(1.15);
 var building50 = BigP(BigP(2,buildingPriceMult),50);
-var buildingExponent = 0.05, defaultSweetLim = 1;
+var buildingExponentMod = 0.05, defaultSweetLim = 1;
 //upgrade variables
 var covenant, ygg, terra, excavate, moreExcavator, recom, invest, investRespec, investHelp = new Array(19), archaeology, artArt, templeReset, artifactPouch, cookiearium, aquaCrust, timeDilate, accelerator, acceleratorMenu,synergy;
+//exponents
+var buildingExponent = new Array(19), buildingExponentRemove = new Array(19), exponentium, modeExponentium;
 
 //the funni
 //achName : 100, 1000, 5000, 10000, lump 100
@@ -645,11 +629,7 @@ var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, building
 
 //building exponents
 var getBuildingExp = (index) => {
-    if(Number.isNaN(buildingExponentLv[index])){
-        buildingExponentLv[index] = 0;
-        return 1;
-    }
-    return buildingExponentLv[index] * buildingExponent + 1;
+    return buildingExponent[index].level * buildingExponentMod + 1;
 }
 
 //building description + info
@@ -769,32 +749,6 @@ var updateBuildingLumpMaxLv = () => {
 }
 
 //! CPS
-// let arrcps = new Array(19);//raw values
-// let fenwick = new Array(255);//the fun
-// // getSum(18) gets the cps sun
-// function getSum(index) {
-//     let ret = 0;
-//     index = index + 1;//fenwick index magick
-//     while (index > 0) {
-//         sum += fenwick[index];
-//         index -= index & -index;
-//     }
-//     return ret;
-// }
-// function updateFen(n, index, delta) {
-//     index = index + 1;
-//     while (index <= n) {
-//         fenwick[index] += delta;
-//         index += index & -index;
-//     }
-// }
-
-// funni building
-// function constructFen(arr, n) {
-//     for (let i = 1; i <= n; i++) fenwick[i] = 0;
-//     for (let i = 0; i < n; i++) updateFen(n, i, arr[i]);
-// }
-
 //global mult - applies to C gained overall
 var globalMult = BF(1), clickPower;
 var clickPowerMaterials = ["Plastic","Iron","Titanium","Adamantium","Unobtainium","Eludium","Wishalloy","Fantasteel","Nevercrack","Armythril","Technobsidian","Plasmarble","Miraculite","Aetherice","Omniplast"], clickPowerDefault = "Selveradium", baseClickPower = 0.01, clickPowerMaterialTier = ["Weak","","Strong","Enchanted"], clickPowerMaterialTierLevel = 10;
@@ -810,7 +764,7 @@ var updateGlobalMult = () => {
     //3 "twin : " + ((TwinGates.level > 0) ? hc.value.pow(twinGateExp * TwinGates.level) : 1));
     globalMult *= theory.publicationMultiplier;
     //4 "pub : " + theory.publicationMultiplier);
-    globalMult *= (BigP(game.sigmaTotal, R9Box.level * R9BoxMult));
+    globalMult *= (R9Box.level > 0)?(BigP(game.sigmaTotal, R9Box.level * R9BoxMult)):BF(1);
     //5 "r9 : " + (BigP(game.sigmaTotal,R9Box.level * R9BoxMult)));
     globalMult *= ((artifactUpgrade[9].level > 0) ? symbolBookMult : BF(1));
     //6 "art9 : " + ((artArt.level > 9)?symbolBookMult:BF(1)));
@@ -1326,7 +1280,7 @@ var elementData = [
             onBought: (amount) => {updateGlobalMult();}
         }]
     },{
-        order: 2, weight: 3, prevUnlock: 1e15, excavatorPowerPow: 1.45, excavatorPowerFactor: 0.75,
+        order: 2, weight: 3, prevUnlock: 2e14, excavatorPowerPow: 1.45, excavatorPowerFactor: 0.75,
         symbol:"Bg", fullName: "Buttergold",
         gimmicks: [{
             uid: 32002,
@@ -1337,7 +1291,7 @@ var elementData = [
             onBought: (amount) => {updateGlobalMult();}
         }]
     },{
-        order: 3, weight: 5, prevUnlock: 1e18, excavatorPowerPow: 1.5, excavatorPowerFactor: 1,
+        order: 3, weight: 5, prevUnlock: 1e16, excavatorPowerPow: 1.5, excavatorPowerFactor: 1,
         symbol:"Su", fullName: "Sugarmuck",
         gimmicks: [{
             uid: 32003,
@@ -1348,27 +1302,27 @@ var elementData = [
             onBought: (amount) => {updateGlobalMult();}
         }]
     },{
-        order: 4, weight: 8, prevUnlock: 5e20, excavatorPowerPow: 1.55, excavatorPowerFactor: 1,
+        order: 4, weight: 8, prevUnlock: 8e19, excavatorPowerPow: 1.55, excavatorPowerFactor: 1,
         symbol:"Jm", fullName: "Jetmint",
         gimmicks: [{
             uid: 32004,
             name: "Jetmint Booster",
             info: "Jetmint has been shown to improve the overall efficiency of just about every building we can get ours hands on. Increases the base growth of building powers",
-            costModel: new ExponentialCost(1e11, ML2(100)),
+            costModel: new ExponentialCost(1e14, ML2(100)),
             maxLevel: 3,
-            onBought: (amount) => {CPSrefresh();}
+            onBought: (amount) => {updateGlobalMult();refreshLocalMult();CPSrefresh();}
         }]
     },{
-        order: 5, weight: 13, prevUnlock: 1e50, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
+        order: 5, weight: 13, prevUnlock: 1e50, excavatorPowerPow: 1.6, excavatorPowerFactor: 2,
         symbol:"Cs", fullName: "Cherrysilver",
     },{
-        order: 6, weight: 21, prevUnlock: 1e50, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
+        order: 6, weight: 21, prevUnlock: 1e50, excavatorPowerPow: 1.7, excavatorPowerFactor: 3,
         symbol:"Hz", fullName: "Hazelrald",
     },{
-        order: 7, weight: 34, prevUnlock: 1e50, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
+        order: 7, weight: 34, prevUnlock: 1e50, excavatorPowerPow: 1.75, excavatorPowerFactor: 5,
         symbol:"Mn", fullName: "Mooncandy",
     },{
-        order: 8, weight: 55, prevUnlock: 1e50, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
+        order: 8, weight: 55, prevUnlock: 1e50, excavatorPowerPow: 1.75, excavatorPowerFactor: 5,
         symbol:"As", fullName: "Astrofudge",
     },{
         order: 9, weight: 89, prevUnlock: 1e50,
@@ -1450,7 +1404,7 @@ const buip = 1.02;
 const buiexp = 0.05;
 
 //! Primary Vairables
-var COOKIE, HEAVENLY_CHIP, SUGAR_LUMP;
+var COOKIE, HEAVENLY_CHIP, SUGAR_LUMP, EXPO_BAR;
 var isCurrencyVisible = (indx) => indx <= 2;
 var thyme, normalUpgradeMenu, permUpgradeMenu;
 
@@ -1673,6 +1627,9 @@ var superP, superL, superC;
         "THAT\'S A LOTTA SUGARS",
     ];
     var lumpAchReq = [1, 10, 50, 100, 500, 1000, 10000, 100000, 1000000, 10000000];
+    var perkAchReq = [1, 5, 25, 50, 95];
+    var perkAchName = ["See the Exponent", "Touch the Exponent", "Feel the Exponent", "Cherish the Exponent", "Forfeit all mortal possessions to the Exponent"];
+    var perkAch = new Array(10);
     var SpellAchievementCat;
     var spellCastAchievement = new Array(99), totalCastAchievement = new Array(9);
     var totalSpellAchReq = [10, 50, 100, 500, 1000, 5000, 10000], spellAchName = ["Neophyte", "Acolyte", "Adept", "I\'m a what?", "Master of Spells", "Grand Master of Spells", "Great Sage of Spells"];
@@ -1909,7 +1866,7 @@ function printStateTable(){
     for(let i=0;i<stateTable.height;i++){
         var str = "";
         for(let j=0;j<stateTable.width;j++){
-            str += `${stateTable.table[(i*16) + j]} `;
+            str += `${stateTable.table[(i*stateTable.width) + j]} `;
         }
         log(`Row ${i} : ${str}`);
     }
@@ -1977,6 +1934,7 @@ var init = () => {
     COOKIE = theory.createCurrency("C", "C");
     HEAVENLY_CHIP = theory.createCurrency("H", "H");
     SUGAR_LUMP = theory.createCurrency("L", "L");
+    EXPO_BAR = theory.createCurrency("E","E");
     for(let i=0;i<=usedElements;i++){
         elements[i] = theory.createCurrency(elementData[i].symbol,elementData[i].symbol);
         elements[i].isAvailable = false;
@@ -1990,11 +1948,12 @@ var init = () => {
         thyme.getInfo = () => "how the fuck did you managed to see it";
     }
     {
+        var normalUpgradeMenuNames = ["Buildings","Cookies and Milk","Exponents"]
         normalUpgradeMenu = shortUpgrade(1e9 + 1,COOKIE,new FreeCost(),`Current Menu : `,"Changes between pages of normal upgrades");
-        normalUpgradeMenu.getDescription = () => `Current Menu : [${normalUpgradeMenu.level + 1}] ${((normalUpgradeMenu.level % 2) == 0)?"Buildings":"Cookies and Milk"}`;
+        normalUpgradeMenu.getDescription = () => `Current Menu : [${normalUpgradeMenu.level + 1}] ${normalUpgradeMenuNames[normalUpgradeMenu.level % 3]}`;
         normalUpgradeMenu.bought = (amount) => {
             //log("b");
-            if (normalUpgradeMenu.level > 1){
+            if (normalUpgradeMenu.level > 2){
                 normalUpgradeMenu.level = 0;
             }
             updateAvailability();
@@ -2139,8 +2098,12 @@ var init = () => {
                 log(cost);
                 if (elements[excavatorDrill.level - (amount - i + 1)].value >= cost) {
                     elements[excavatorDrill.level - (amount - i + 1)].value -= cost;
-                    excavatorDrill.level += 1;
                     log("unlocked");
+                    if(excavatorDrill.level == excavatorDrill.maxLevel){
+                        break;
+                    }else{
+                        excavatorDrill.level += 1;
+                    }
                 } else {
                     excavatorDrill.level = prev+i;
                     log("no afford");
@@ -2244,8 +2207,35 @@ var init = () => {
         kitty.getInfo = (amount) => (bInfo == 1) ? `\$ K_{i} = \$ ${Utils.getMathTo(kittyPower(kitty.level), kittyPower(kitty.level + amount))} ` : "You gain more CPS the more milk you have.";
         kitty.bought = (amount) => {updateGlobalMult();}
     }
+    // Exponentium
+    {
+        let exponentiumCostMod = Math.pow(10,7.5);
+        exponentium = shortUpgrade(100,COOKIE,new ExponentialCost(exponentiumCostMod,ML2(exponentiumCostMod)),"Exponentium Bars","get your bars here");
+        exponentium.getDescription = (_) => `Buy Exponentium Bars [${EXPO_BAR.value}/${exponentium.level}]`;
+        exponentium.getInfo = (amount) => `Purchase exponentium bars and add it to building to increase its exponent by ${buildingExponentMod}`;
+        exponentium.bought = (amount) => EXPO_BAR.value += amount;
+        modeExponentium = shortUpgradeML(101,COOKIE,new FreeCost(),"Toggle Mode","Change between adding or removing exponentium bar from buildings",2);
+        modeExponentium.getDescription = (_) => `Exponentium Mode : ${(modeExponentium.level == 0)?"Add":"Remove"}`;
+        modeExponentium.bought = (amount) => {
+            if(modeExponentium.level > 1){
+                modeExponentium.level = 0;
+            }
+        }
+    }
     // All 19 Buildings
     for (let i = 0; i < 19; i++) {
+        //exponent
+        buildingExponent[i] = shortUpgradeML(102+i,EXPO_BAR,new ConstantCost(1),`B[${i}] - +${buildingData[i].names[0]}`,`Increases the exponent of ${buildingData[i].names[0]} by ${buildingExponentMod}`,buildingData[i].maxExpLevel);
+        buildingExponent[i].getDescription = (_) => `B[${i}] - +${buildingData[i].names[0]} [${buildingExponent[i].level}/${buildingData[i].maxExpLevel}]`;
+        buildingExponentRemove[i] = shortUpgrade(202+i,EXPO_BAR,new FreeCost(),`B[${i}] - -${buildingData[i].names[0]}`,`Decreases the exponent of ${buildingData[i].names[0]} by ${buildingExponentMod}`);
+        buildingExponentRemove[i].getDescription = (_) => `B[${i}] - -${buildingData[i].names[0]} [${buildingExponent[i].level}/${buildingData[i].maxExpLevel}]`;
+        //bought
+        //buildingExponent[i].bought = (amount) => buildingExponentRemove[i].level = buildingExponent[i].level;
+        buildingExponentRemove[i].bought = (amount) => {
+            buildingExponent[i].level -= amount;
+            EXPO_BAR.value += amount;
+            buildingExponentRemove[i].level = 0;
+        }
         //main upgrade
         //log(`B${i}`);
         //power
@@ -2352,6 +2342,14 @@ var init = () => {
             }
             return res;
         };
+        var perkDesc = (p) => {
+            let res =
+                `Have a total of ${BigTS(p)} Exponentium Bar`;
+            if (p != 1) {
+                res += "s";
+            }
+            return res;
+        };
         // COOKIES = 0xx
         cookiesAchievement = theory.createAchievementCategory(0, cookiesAchievementCatName);
         for (let i = 0; i < 26; i++) {
@@ -2367,20 +2365,25 @@ var init = () => {
         // 10 Lumps - 2xx
         lumpAchCat = theory.createAchievementCategory(2, "Others");
         for (let i = 0; i < 10; i++) {
-            lumpAch[i] = theory.createAchievement(200 + i, lumpAchCat, lumpAchName[i], lumpDesc(lumpAchReq[i]), () => checkAchL(lumpAchReq[i]));
+            lumpAch[i] = theory.createAchievement(200 + i, lumpAchCat, lumpAchName[i], lumpDesc(lumpAchReq[i]), () => checkAchL(lumpAchReq[i]),() => (lumpTotal.value/lumpAchReq[i]));
+            achCountTV += 1;
+        }
+        // 10XX = perk
+        for (let i = 0; i < 5; i++) {
+            perkAch[i] = theory.createAchievement(1000 + i, lumpAchCat, perkAchName[i], perkDesc(perkAchReq[i]), () => checkAchBase(() => (exponentium.level >= perkAchReq[i]), 1), () => (exponentium.level / perkAchReq[i]));
             achCountTV += 1;
         }
         // 11XX = Count, 12XX 13XX 14XX = Per-Spell
         SpellAchievementCat = theory.createAchievementCategory(5,"Magic");
         for(let i=0,j=totalSpellAchReq.length;i<j;i++){
-            totalCastAchievement[i] = theory.createAchievement(1100+i,SpellAchievementCat,spellAchName[i],`Cast a total of ${totalSpellAchReq[i]} spells`, () => checkAchBase(() => totalSpell >= totalSpellAchReq[i],1));
+            totalCastAchievement[i] = theory.createAchievement(1100+i,SpellAchievementCat,spellAchName[i],`Cast a total of ${totalSpellAchReq[i]} spells`, () => checkAchBase(() => totalSpell >= totalSpellAchReq[i],1),() => (totalSpell / totalSpellAchReq[i]));
             achCountTV += 1;
         }
         for(let i=0;i<spellUsed;i++){
             spellCastAchievement[i] = new Array(3);
             const req = [25,250,2500];
             for(let j=0;j<3;j++){
-                spellCastAchievement[i][j] = theory.createAchievement(1200 + (j*100) + i,SpellAchievementCat,spellData[i].achievementNames[j],`Cast ${spellData[i].name} ${req[j]} times`,() => checkAchBase(() => spellCount[i].level >= req[j],1));
+                spellCastAchievement[i][j] = theory.createAchievement(1200 + (j*100) + i,SpellAchievementCat,spellData[i].achievementNames[j],`Cast ${spellData[i].name} ${req[j]} times`,() => checkAchBase(() => spellCount[i].level >= req[j],1),() => (spellCount[i].level / req[j]));
                 achCountTV += 1;
             }
         }
@@ -2388,14 +2391,14 @@ var init = () => {
         BuildingAchievement = theory.createAchievementCategory(3, "Buildings");
         for (let i = 0; i < 19; i++) {
             // too lazy to add proper pluralization sorry not sorry
-            buiAch1[i] = theory.createAchievement(300 + i, BuildingAchievement, buildingData[i].achName[0], `Have 100 ${buildingData[i].names[0]}s`, () => checkAchB(i, 100));
-            buiAch2[i] = theory.createAchievement(400 + i, BuildingAchievement, buildingData[i].achName[1], `Have 1,000 ${buildingData[i].names[0]}s`, () => checkAchB(i, 1000));
+            buiAch1[i] = theory.createAchievement(300 + i, BuildingAchievement, buildingData[i].achName[0], `Have 100 ${buildingData[i].names[0]}s`, () => checkAchB(i, 100),() => (building[i].level/100));
+            buiAch2[i] = theory.createAchievement(400 + i, BuildingAchievement, buildingData[i].achName[1], `Have 1,000 ${buildingData[i].names[0]}s`, () => checkAchB(i, 1000),() => (building[i].level/1000));
             buiAch3[i] = theory.createSecretAchievement(500 + i, BuildingAchievement, buildingData[i].achName[2], `Have 5,000 ${buildingData[i].names[0]}s`, `${buildingData[i].names[0]} by 5000`, () => checkAchB(i, 5000));
             if (i < 15) {
                 buiAch4[i] = theory.createSecretAchievement(600 + i, BuildingAchievement, buildingData[i].achName[3], `Have 10,000 ${buildingData[i].names[0]}s`, `${buildingData[i].names[0]} by 10000`, () => checkAchB(i, 10000));
                 achCountTV += 1;
             }
-            buiLumpAch[i] = theory.createAchievement(700 + i, BuildingAchievement, buildingData[i].achName[4], `Upgrade ${buildingData[i].names[0]} to level 100`, () => checkAchBP(i, 100));
+            buiLumpAch[i] = theory.createAchievement(700 + i, BuildingAchievement, buildingData[i].achName[4], `Upgrade ${buildingData[i].names[0]} to level 100`, () => checkAchBP(i, 100),() => (buildingLump[i].level/100));
             achCountTV += 4;
         }
         // Feats - 8xx, 9xx
@@ -2429,10 +2432,14 @@ var updateAvailability = () => {
     for (let i = 0; i < 19; i++) {
         if (i >= 3) {building[i].isAvailable = (COOKIE.value >= buildingData[i - 1].baseCost) || (building[i].level > 0);}
         else {building[i].isAvailable = true;}
-        building[i].isAvailable &= (normalUpgradeMenu.level % 2) == 0;
+        building[i].isAvailable &= (normalUpgradeMenu.level == 0);
         buildingPower[i].isAvailable = building[i].level > 0 && permUpgradeMenu.level == 0;
         buildingLump[i].isAvailable = building[i].level > 10 && permUpgradeMenu.level == 0;
+        buildingExponent[i].isAvailable = (building[i].level > 0) && (normalUpgradeMenu.level == 2) && (modeExponentium.level == 0);
+        buildingExponentRemove[i].isAvailable = (building[i].level > 0) && (normalUpgradeMenu.level == 2) && (modeExponentium.level == 1);
     }
+    exponentium.isAvailable = (normalUpgradeMenu.level == 2);
+    modeExponentium.isAvailable = (normalUpgradeMenu.level == 2);
     building[14].isAvailable &= (artifactUpgrade[9].level > 0);
     // Cookieh
     cookieTasty.isAvailable = COOKIE.value > BF(1e5) && normalUpgradeMenu.level == 1;
@@ -2457,17 +2464,17 @@ var updateAvailability = () => {
     Empower.isAvailable = HEAVENLY_CHIP.value > BF(1e115) && (permUpgradeMenu.level % 2) == 1;
     //milkOil.isAvailable = HEAVENLY_CHIP.value > BF(1e130) && (permUpgradeMenu.level % 2) == 1;
     // Gimmick
-    covenant.isAvailable = COOKIE.value >= BF(1e60) && (normalUpgradeMenu.level % 2) == 0;
-    ygg.isAvailable = COOKIE.value >= BF(1e100) && (normalUpgradeMenu.level % 2) == 0;
-    terra.isAvailable = COOKIE.value >= BF(1e125) && (normalUpgradeMenu.level % 2) == 0;
-    recom.isAvailable = COOKIE.value >= BF(1e155) && (normalUpgradeMenu.level % 2) == 0;
-    invest.isAvailable = COOKIE.value >= BF(1e180) && (normalUpgradeMenu.level % 2) == 0;
-    investRespec.isAvailable = invest.level >= 100 && (normalUpgradeMenu.level % 2) == 0;
-    archaeology.isAvailable = COOKIE.value >= BF(1e245) && (normalUpgradeMenu.level % 2) == 0;
-    artifactPouch.isAvailable = archaeology.isAvailable && (normalUpgradeMenu.level % 2) == 0;
-    templeReset.isAvailable = archaeology.isAvailable && archaeology.level >= 10 && (normalUpgradeMenu.level % 2) == 0;
+    covenant.isAvailable = COOKIE.value >= BF(1e60) && (normalUpgradeMenu.level == 0);
+    ygg.isAvailable = COOKIE.value >= BF(1e100) && (normalUpgradeMenu.level == 0);
+    terra.isAvailable = COOKIE.value >= BF(1e125) && (normalUpgradeMenu.level == 0);
+    recom.isAvailable = COOKIE.value >= BF(1e155) && (normalUpgradeMenu.level == 0);
+    invest.isAvailable = COOKIE.value >= BF(1e180) && (normalUpgradeMenu.level == 0);
+    investRespec.isAvailable = invest.level >= 100 && (normalUpgradeMenu.level == 0);
+    archaeology.isAvailable = COOKIE.value >= BF(1e245) && (normalUpgradeMenu.level == 0);
+    artifactPouch.isAvailable = archaeology.isAvailable && (normalUpgradeMenu.level == 0);
+    templeReset.isAvailable = archaeology.isAvailable && archaeology.level >= 10 && (normalUpgradeMenu.level == 0);
     for(let i=0;i<artifactCount;i++){
-        artifactUpgrade[i].isAvailable = archaeology.isAvailable && (artifactPouch.level == 1) && (normalUpgradeMenu.level % 2) == 0;
+        artifactUpgrade[i].isAvailable = archaeology.isAvailable && (artifactPouch.level == 1) && (normalUpgradeMenu.level == 0);
     }
     SpellView.isAvailable = artifactUpgrade[10].level > 0 && (normalUpgradeMenu.level == 0);
     for(let i=0;i<spellUsed;i++){
@@ -2511,12 +2518,8 @@ var generateCookie = (id, ticks, mult) => {
     let ret = BF(1);
     ret = BF(calcBuilding(id,investHelp[id].level) * globalMult * buildingData[id].mult * buildingData[id].baseCPS * (ticks / 10));
     let pow = getBuildingExp(id);
-    if(Number.isNaN(pow)){
-        pow = 1;
-        buildingExponentLv[id] = 0;
-    }
     //cursor power
-    if(buildingExponentLv[id] != 0){ret = BigP(ret,pow);}
+    if(buildingExponent[id].level != 0){ret = BigP(ret,pow);}
     ret /= cookieProductionNerfFunConsoleValue;
     if(ret > CPS){
         CPS = ret;
@@ -2630,6 +2633,7 @@ var tick = (elapsedTime,multiplier) => {
             }
         }
         if(thyme.level % 10 == 0){
+            clickStreak = 0;
             updateLocalMult(2);//yggdrasil, leave covenant to onBuildingBought
             //CPSrefresh();
         }
@@ -2787,7 +2791,7 @@ var getQuaternaryEntries = () => {
 
 
 //!==OTHER THEORY BACKBONE==
-var elemBefore = new Array(9);
+var elemBefore = new Array(9), clickStreak = 0, buildingExponentBefore = new Array(19), exponentiumBefore, exponentiumLvBefore;
 var get2DGraphValue = () => {
     if (vizType.value == 1)
         return (
@@ -2819,6 +2823,11 @@ var postPublish = () => {
     for (let i = 0; i < usedElements; i++) {
         elements[i].value = elemBefore[i];
     }
+    exponentium.level = exponentiumLvBefore;
+    EXPO_BAR.value = exponentiumBefore;
+    for(let i=0;i<19;i++){
+        buildingExponent[i].level = buildingExponentBefore[i] ;
+    }
 };
 var prePublish = () => {
     lumpbf = SUGAR_LUMP.value;
@@ -2831,6 +2840,11 @@ var prePublish = () => {
     }
     for(let i = 0;i < spellData.length;i++){
         spellCooldown[i].level = 0;
+    }
+    exponentiumLvBefore = exponentium.level;
+    exponentiumBefore = EXPO_BAR.value;
+    for(let i=0;i<19;i++){
+        buildingExponentBefore[i] = buildingExponent[i].level;
     }
 };
 var getTau = () => (COOKIE.value.abs()).pow(0.2);
@@ -3329,114 +3343,23 @@ let visualUI = ui.createPopup({
     })
 });
 //!1.6 : PERKS
-let calcCookieToPerk = (level) => {
-    if (Number.isNaN(level)) {
-        return calcCookieToPerk(0);
-    }
-    return BigP(10, 7.5 * (level + 1));
-};
-let perkLabel1 = ui.createLatexLabel({
-    text: "You can forge your cookies into exponentium bars to exponentiate your buildings for faster cookie production here.\n\nEach bar you give to a building increases their exponent by 0.05",
-    fontSize: 14,
-    // padding: new Thickness(10,10,10,10),
-    horizontalTextAlignment: TextAlignment.CENTER
-});
-let maxbuiPerk = (indx) => buildingData[indx].maxExpLevel;
-let perkLabel2 = ui.createLatexLabel({
-    text: `You have ${perkHas} exponentium bars`,
-    fontSize: 14,
-    // padding: new Thickness(1🍪,10,10,10),
-    horizontalTextAlignment: TextAlignment.CENTER
-});
-let perkForgeButton = ui.createButton({
-    text: `Forge another one (${calcCookieToPerk(perkPoint.value)} C)`,
-    onClicked: () => {
-        if (calcCookieToPerk(perkPoint.value) <= COOKIE.value) {
-            COOKIE.value -= calcCookieToPerk(perkPoint.value);
-            perkPoint.setValue(perkPoint.value+1);
-            perkHas++;
-            perkForgeButton.text = `Forge another one (${calcCookieToPerk(perkPoint.value)} C)`;
-            perkLabel2.text = `You have ${perkHas} exponentium bars`;
-        }
-    }
-});
-let perkAssign = (indx) => ui.createGrid({
-    columnDefinitions: ["65*", "15*", "10*", "10*"],
-    children: [
-        ui.createLatexLabel({
-            text: `B[${indx}] - ${buildingData[indx].names[0]}`, row: 0, column: 0,
-            horizontalTextAlignment: TextAlignment.START,
-            verticalTextAlignment: TextAlignment.CENTER,
-        }),
-        ui.createLatexLabel({
-            text: `${buildingExponentLv[indx]} / ${(maxbuiPerk(indx))}`, row: 0, column: 1,
-            horizontalTextAlignment: TextAlignment.CENTER,
-            verticalTextAlignment: TextAlignment.CENTER,
+let mysteryFunPopup = ui.createPopup({
+    title:"?????",
+    content: ui.createStackLayout({children:[
+        ui.createEntry({
+            isPassword: true,
+            maxLength: 256,
+            text:""
         }),
         ui.createButton({
-            text: `+`, row: 0, column: 2,
+            text: "Submit",
             onClicked: () => {
-                if (perkHas > 0 && (buildingExponentLv[indx] < maxbuiPerk(indx))) {
-                    perkHas--;
-                    buildingExponentLv[indx]+=1;
-                    buildingExponentLvStore[indx].setValue(buildingExponentLv[indx]);
-                    perkLabel2.text = `You have ${perkHas} exponentium bars`;
-                    perkMenu.content.children[3].children[0].children[indx].children[1].text = `${buildingExponentLv[indx]} / ${maxbuiPerk(indx)}`;
-                }
+                //let str = mysteryFunPopup.content.children[0].text;
+                //log(mysteryFunPopup.content.children[0].text);
+                mysteryFunPopup.hide();
             }
-        }),
-        ui.createButton({
-            text: `-`, row: 0, column: 3,
-            onClicked: () => {
-                if (buildingExponentLv[indx] > 0) {
-                    perkHas++;
-                    buildingExponentLv[indx]-=1;
-                    buildingExponentLvStore[indx].setValue(buildingExponentLv[indx]);
-                    perkLabel2.text = `You have ${perkHas} exponentium bars`;
-                    perkMenu.content.children[3].children[0].children[indx].children[1].text = `${buildingExponentLv[indx]} / ${maxbuiPerk(indx)}`;
-                }
-            }
-        }),
-    ]
-});
-let perkMenu = ui.createPopup({
-    title: "Exponents",
-    isPeekable: true,
-    content: ui.createStackLayout({
-        children: [
-            perkLabel1,
-            perkLabel2,
-            perkForgeButton,
-            ui.createScrollView({
-                heightRequest: 400,
-                children: [
-                    ui.createStackLayout({
-                        children: [
-                            perkAssign(0),
-                            perkAssign(1),
-                            perkAssign(2),
-                            perkAssign(3),
-                            perkAssign(4),
-                            perkAssign(5),
-                            perkAssign(6),
-                            perkAssign(7),
-                            perkAssign(8),
-                            perkAssign(9),
-                            perkAssign(10),
-                            perkAssign(11),
-                            perkAssign(12),
-                            perkAssign(13),
-                            perkAssign(14),
-                            perkAssign(15),
-                            perkAssign(16),
-                            perkAssign(17),
-                            perkAssign(18)
-                        ]
-                    })
-                ]
-            })
-        ]
-    })
+        })
+    ]}),
 });
 //!1.7 : SUBGAMES
 let subPopup = ui.createPopup({
@@ -3546,11 +3469,12 @@ let popup = ui.createPopup({
                         },
                     }),
                     ui.createButton({
-                        text: "Exponents", row: 0, column: 1,
+                        text: "???", row: 0, column: 1,
                         onClicked: () => {
-                            perkForgeButton.text = `Forge another one (${calcCookieToPerk(perkPoint.value)} C)`;
-                            perkLabel2.text = `You have ${perkHas} exponentium bars`;
-                            perkMenu.show();
+                            clickStreak += 1;
+                            if(clickStreak >= 5){
+                                mysteryFunPopup.show();
+                            }
                         }
                     }),
                     ui.createButton({
