@@ -1198,7 +1198,7 @@ var spellData = [{
     castCost: 1500, castCooldown: 7200,
     effect: (boost) => {
         var rand = RandI(100);
-        if (rand <= 85) {
+        if (rand <= 90 + (2*boost)) {
             rand = RandI(10 + (2 * SpellStack.level)) + boost;
             log(`Cookies for you ${rand * 10}`);
             minCookie(rand * 10);
@@ -1234,7 +1234,7 @@ var spellData = [{
     achievementNames: ["Explorer Wizard","Colonization but on a smaller scale","Pot of Artifacts, Cookies, Heavenly Chips, and Sugar Lumps"],
 },{
     order: 4,name: "Asseto Accio", desc: "Spawn buildings into existence, only works for a certain amount",
-    castCost: 6000, castCooldown: 10800,
+    castCost: 2500, castCooldown: 9600,
     effect: (boost) => {
         let rand = RandI(20);
         if (rand < 19) {
@@ -1248,7 +1248,7 @@ var spellData = [{
     achievementNames: ["Mogul Wizard","This looks to be slightly unaffordable, considering your CPS","With those cookie frauds that you've committed. If you pay you'll be acquitted. And your buildings all permitted"],
 },{
     order: 5,name: "Mimi Mami", desc: "Reduces the cooldown time of spells",
-    castCost: 1515, castCooldown: 7200,
+    castCost: 1212, castCooldown: 7200,
     effect: (boost) => {
         updateSpellCooldown(900 + (150 * SpellStack.level) + (60 * boost));
     },
@@ -1256,9 +1256,9 @@ var spellData = [{
     achievementNames: ["Impatient Wizard","The spells must go brrrrrrrrrr","Why must there be cooldowns? The spellcaster screams, for he does not know..."],
 },{
     order: 6,name: "Simply Sweetdelicious", desc: "Spawn some sugar lumps in",
-    castCost: 0, castCooldown: 72000,
+    castCost: 0, castCooldown: 60000,
     effect: (boost) => {
-        if (RandI(100 + boost) > 15) generateLump(1200 + (100 * SpellStack.level) + (100 * boost));
+        if (RandI(100 + boost) > 10) generateLump(1500 + (150 * SpellStack.level) + (100 * boost));
     },
     unlockCondition: () => {return true;},//unlock condition
     achievementNames: ["Very Sweet Wizard","Sugar Lump Magic Saga","Don\'t overdose on sugar, kids"],
@@ -1315,7 +1315,7 @@ var elementData = [
         order: 0, weight: 1, prevUnlock: 0, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Be", fullName: "Berrylium",
     },{
-        order: 1, weight: 2, prevUnlock: 1.2e13, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
+        order: 1, weight: 2, prevUnlock: 5e12, excavatorPowerPow: 1.45, excavatorPowerFactor: 0.5,
         symbol:"Ch", fullName: "Chalcedhoney",
         gimmicks: [{
             uid: 32001,
@@ -1326,7 +1326,7 @@ var elementData = [
             onBought: (amount) => {updateGlobalMult();}
         }]
     },{
-        order: 2, weight: 3, prevUnlock: 1e15, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
+        order: 2, weight: 3, prevUnlock: 1e15, excavatorPowerPow: 1.45, excavatorPowerFactor: 0.75,
         symbol:"Bg", fullName: "Buttergold",
         gimmicks: [{
             uid: 32002,
@@ -1337,7 +1337,7 @@ var elementData = [
             onBought: (amount) => {updateGlobalMult();}
         }]
     },{
-        order: 3, weight: 5, prevUnlock: 1e18, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
+        order: 3, weight: 5, prevUnlock: 1e18, excavatorPowerPow: 1.5, excavatorPowerFactor: 1,
         symbol:"Su", fullName: "Sugarmuck",
         gimmicks: [{
             uid: 32003,
@@ -1348,7 +1348,7 @@ var elementData = [
             onBought: (amount) => {updateGlobalMult();}
         }]
     },{
-        order: 4, weight: 8, prevUnlock: 5e20, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
+        order: 4, weight: 8, prevUnlock: 5e20, excavatorPowerPow: 1.55, excavatorPowerFactor: 1,
         symbol:"Jm", fullName: "Jetmint",
         gimmicks: [{
             uid: 32004,
@@ -1359,13 +1359,13 @@ var elementData = [
             onBought: (amount) => {CPSrefresh();}
         }]
     },{
-        order: 5, weight: 13, prevUnlock: 2.5e23, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
+        order: 5, weight: 13, prevUnlock: 1e50, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Cs", fullName: "Cherrysilver",
     },{
-        order: 6, weight: 21, prevUnlock: 1.25e26, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
+        order: 6, weight: 21, prevUnlock: 1e50, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Hz", fullName: "Hazelrald",
     },{
-        order: 7, weight: 34, prevUnlock: 6.25e28, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
+        order: 7, weight: 34, prevUnlock: 1e50, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
         symbol:"Mn", fullName: "Mooncandy",
     },{
         order: 8, weight: 55, prevUnlock: 1e50, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
@@ -1435,7 +1435,7 @@ var excModulueInfo = (indx, amount) => {
         case 0:
             return `Empowers your excavators with the essence of ${elementData[indx].fullName}`;
         case 1:
-            return `$E_{f${indx}} =$ ${Utils.getMathTo(getElemBoost(indx,excavatorModule[indx].level),getElemBoost(indx,excavatorModule[indx].level+amount))}`;
+            return `$E_{f${indx}} = 1 + ${elementData[indx].excavatorPowerFactor}Lv^{${elementData[indx].excavatorPowerPow}} =$ ${Utils.getMathTo(getElemBoost(indx,excavatorModule[indx].level),getElemBoost(indx,excavatorModule[indx].level+amount))}`;
         case 2:
             return `Expoeprws your excavatrors with the ssenwe of ${elementData[indx].fullName}`;
     }
@@ -1538,7 +1538,7 @@ var heavenlyUpgradeData = [
         uid: 12,
         name: "Continuos Growth",
         info: "Certain high-tier buildings get more powerful the more of them you have",
-        costModel: new ExponentialCost(1e106, ML2(1e15)),
+        costModel: new ExponentialCost(1e106, ML2(1e11)),
         maxLevel: 5,
         onBought: (amount) => {updateGlobalMult();}
     },{
@@ -1940,10 +1940,10 @@ function getBuildingCollect(){
 //? 7. Refreshes CPS
 function CPSrefresh(){
     CPS = BF(0);
-    log(`global = ${globalMult}`)
+    //log(`global = ${globalMult}`)
     for(let i=0;i<19;i++){
         let res = generateCookie(i,buildingData[i].collectionTime,terraBoost);
-        log(`generating for ${i}, ${BF(calcBuilding(i,investHelp[i].level))} base = ${res}, pow = ${getBuildingExp(i)}, mult = ${buildingData[i].mult}`);
+        //log(`generating for ${i}, ${BF(calcBuilding(i,investHelp[i].level))} base = ${res}, pow = ${getBuildingExp(i)}, mult = ${buildingData[i].mult}`);
         if(res > CPS){res = CPS;}
     }
     log(`New CPS = ${CPS}`);
@@ -2058,7 +2058,7 @@ var init = () => {
         //contributed by a_spiralist (Broom Meets World)
         clickPower.getInfo = (amount) => {
             if(bInfo == 0 || bInfo == 2){
-            return `Every building gain 1\\%\\ more CCB from having cursors as helpers, compounds with L[0] $(P_{cp})$`;
+            return `Every building gains 1\\%\\ more CCB from having cursors as helpers, compounds with L[0] $(P_{cp})$`;
             }else{
                 return `\$P_{cp} = \$${Utils.getMathTo(getCursorPower(clickPower.level),getCursorPower(clickPower.level+amount))}`;
             }
@@ -2147,6 +2147,7 @@ var init = () => {
                     break;
                 }
             }
+            calcEPS();
             log(excavatorDrill.getDescription());
         }
         //element-specific upgrades
@@ -2530,6 +2531,7 @@ var generateCookie = (id, ticks, mult) => {
 var generateLump = (ticks) => {
     let lumpChance = BF(1) / (BF(lumpTickChance) / BigL10(COOKIE.value + BF(10)));//it's normally 1/x
     let dLump = BF(lumpChance.floor() + (sugarTools.level * 0.25) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01)) * ticks;//yes, ticks ARE 0.1 seconds so 2.5LPS = 0.25LPT
+    //log(dLump);
     lumpChance -= lumpChance.floor();
     if (ticks == 1 && BF(Math.random()) <= lumpChance) {
         dLump += BF(1);
@@ -2826,6 +2828,9 @@ var prePublish = () => {
     CPS = BF(0);CPSstore.setValue(CPS);
     for (let i = 0; i < usedElements; i++) {
         elemBefore[i] = elements[i].value;
+    }
+    for(let i = 0;i < spellData.length;i++){
+        spellCooldown[i].level = 0;
     }
 };
 var getTau = () => (COOKIE.value.abs()).pow(0.2);
