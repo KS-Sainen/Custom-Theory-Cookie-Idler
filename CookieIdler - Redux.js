@@ -804,7 +804,7 @@ var updateGlobalMult = () => {
     globalMult *= (getCookieP(cookieTasty.level) * (BF(1) + (CookieTau.level * game.tau.log10().log10().pow(2))));
     //1 "cookiep : " + (getCookieP(cookieTasty.level) * (1+(CookieTau.level * game.tau.log10().log10().pow(2)))));
     // globalMult *= (BF(1) + (BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp));
-    globalMult *= getCursorPower(clickPower.level);
+    globalMult *= BF(1) + getCursorPower(clickPower.level);
     //2 "click : " + (1+(BF(clickp.level) * BigP(buip, buildingUpgrade[0].level)) * BF(bcp)));
     globalMult *= ((TwinGates.level > 0) ? HEAVENLY_CHIP.value.pow(BF(twinGateExp) * TwinGates.level) : BF(1));
     //3 "twin : " + ((TwinGates.level > 0) ? hc.value.pow(twinGateExp * TwinGates.level) : 1));
@@ -2055,7 +2055,7 @@ var init = () => {
         //contributed by a_spiralist (Broom Meets World)
         clickPower.getInfo = (amount) => {
             if(bInfo == 0 || bInfo == 2){
-            return `Cursors gain 1\\%\\ more of your highest cookie collected from a building, compounds with L[0] $(P_{cp})$`;
+            return `Every building gain 1\\%\\ more CCB from having cursors as helpers, compounds with L[0] $(P_{cp})$`;
             }else{
                 return `\$P_{cp} = \$${Utils.getMathTo(getCursorPower(clickPower.level),getCursorPower(clickPower.level+amount))}`;
             }
@@ -2077,6 +2077,13 @@ var init = () => {
         conGrow = shortPermaUpgradeObj(heavenlyUpgradeData[11],HEAVENLY_CHIP);
         SpellStack = shortPermaUpgradeObj(heavenlyUpgradeData[12],HEAVENLY_CHIP);
         Empower = shortPermaUpgradeObj(heavenlyUpgradeData[13],HEAVENLY_CHIP);
+        cookieTinUnlock.getDescription = () => {
+            if(cookieTinUnlock.level == cookieTinUnlock.maxLevel){
+                return `All Cookie Tins purchased`;
+            }else{
+                return cookieTinInfo[cookieTinUnlock.level].name;
+            }
+        }
         //milkOil = shortPermaUpgradeObj(heavenlyUpgradeData[15],HEAVENLY_CHIP);
     }
     //Page 3 : Element Drilling
@@ -2523,7 +2530,7 @@ var generateLump = (ticks) => {
     lumpChance -= lumpChance.floor();
     if (ticks == 1 && BF(Math.random()) <= lumpChance) {
         dLump += BF(1);
-    }else{
+    }else if(ticks > 1){
         dLump += lumpChance*ticks;
     }
     if(dLump > BF(0)){
