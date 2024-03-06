@@ -329,6 +329,7 @@ class ISV {
     var vizType = new ISV(0, 7, 2);
     var eqCStore = new ISV(0, 7, 3);
     var buildingExponentLvStore = new Array(19), buildingExponentLv = new Array(19);
+    buildingExponentLv.fill(0);
     for(let i=0;i<16;i++){
         buildingExponentLvStore[i] = new ISV(0,1,i);
     }
@@ -361,9 +362,10 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxB
         }
         CPS = BF(CPSstore.value);
         dominate = Math.floor(dominatestore.value);if(Number.isNaN(dominate)){dominate = 0;}
-        perkHas = perkPoint.value;
+        perkHas = Math.floor(perkPoint.value);if(Number.isNaN(perkHas)){perkHas = 0;}
         for (let i = 0; i < 19; i++) {
             buildingExponentLv[i] = Math.floor(buildingExponentLvStore[i].value);
+            if(Number.isNaN(buildingExponentLv[i])){buildingExponentLv[i]=0;}
             //log(buildingExponentLv[i]);
             perkHas -= buildingExponentLv[i];
             perkMenu.content.children[3].children[0].children[i].children[1].text = `${buildingExponentLv[i]} / ${maxbuiPerk(i)}`;
@@ -603,7 +605,7 @@ var buildingCount = 0;
 // Logistic funtion for Mine+
 // Param -> midpoint=30*L, max=500*L - 1, min=0
 // Display T, returns bignumber
-const terraDurMod = BF(300), terraInfPow = BF(0.005), maxLPowBase = BF(2.4), maxLPowMod = BF(0.1), maxLBPowBase = BF(1.2), maxLBPowMod = BF(0.03), dilateFactorDivBase = BF(2.125), dilateFactorDivMod = BF(0.125), dilateFactorBase = BF(1000), dilatePowBase = BF(1), dilatePowMod = BF(0.025);
+const terraDurMod = BF(300), terraInfPow = BF(0.005), maxLPowBase = BF(2.4), maxLPowMod = BF(0.1), maxLBPowBase = BF(1.2), maxLBPowMod = BF(0.03), dilateFactorDivBase = BF(2.125), dilateFactorDivMod = BF(0.125), dilateFactorBase = BF(1000), dilatePowBase = BF(1), dilatePowMod = BF(0.025), logBoot = BF(1);
 var xBegin = 0, maxL = 1;
 var updateMaxL = () => {
     maxL = (BigP(terra.level,maxLPowBase + maxLPowMod * (TerraInf.level + ((artifactUpgrade[6].level > 0) ? 1 : 0))) * 1500);
@@ -1119,7 +1121,7 @@ const maxRoll = 10000;
 var templeLuck = 0;
 let lootWeight = [10000, 9995, 9945, 9845, 9735, 9615, 9565, 9555, 9530, 9430, 9320, 9200, 9100, 9000];
 let minCookie = (i) => {
-    COOKIE.value += BF(2*60) * CPS * terraBoost * BF(i);
+    COOKIE.value += BF(60) * CPS * terraBoost * BF(i);
 };
 let pubH = (i) => {
     if (COOKIE.value <= 0) return;
@@ -1196,9 +1198,9 @@ var spellData = [{
     effect: (boost) => {
         var rand = RandI(100);
         if (rand <= 85) {
-            log("Cookies for you");
             rand = RandI(10 + (2 * SpellStack.level)) + boost;
-            minCookie(rand * 30);
+            log(`Cookies for you ${rand * 10}`);
+            minCookie(rand * 10);
         } else {
             log("No Cookies for you");
         }
@@ -1236,8 +1238,8 @@ var spellData = [{
         let rand = RandI(20);
         if (rand < 19) {
             if ((building[rand].level > 0) && (building[rand].cost.getCost(building[rand].level) <= (BF(1e10) * COOKIE.value * BigP(5,boost)))) {
-                //log(`You won ${buildingName[0][rand]}`);
-                building[rand].level += RandI(10 + boost) + 1 + SpellStack.level + boost;
+                log(`You won ${buildingData[rand].names[0]}`);
+                building[rand].level += RandI(10 + boost) + 1 + SpellStack.level + Math.round(boost);
             }
         }
     },
@@ -1938,7 +1940,7 @@ function getBuildingCollect(){
 function CPSrefresh(){
     CPS = BF(0);
     for(let i=0;i<19;i++){
-        let res = generateCookie(i,buildingData[i].collectionTime,terraBoost);
+        let res = generateCookie(i,10,terraBoost);
         if(res > CPS){res = CPS;}
     }
     log(`New CPS = ${CPS}`);
@@ -2116,20 +2118,21 @@ var init = () => {
         };
         excavatorDrill.bought = (amount) => {
             //excavatorDrill.level -= amount;
-            let cost;
+            let cost, prev = excavatorDrill.level-amount;
+            log(prev);
             if(excavatorDrill.level == 1){
                 excavatorDrill.level = 1;
                 return;
             }
             for(let i=0;i<amount;i++){
-                cost = elementData[excavatorDrill.level].prevUnlock;
+                cost = elementData[prev+i].prevUnlock;
                 log(cost);
                 if (elements[excavatorDrill.level - (amount - i + 1)].value >= cost) {
                     elements[excavatorDrill.level - (amount - i + 1)].value -= cost;
-                    //excavatorDrill.level += 1;
+                    excavatorDrill.level += 1;
                     log("unlocked");
                 } else {
-                    excavate.level -= amount - i;
+                    excavatorDrill.level = prev+i;
                     log("no afford");
                     break;
                 }
@@ -2757,7 +2760,7 @@ var getTertiaryEquation = () => {
 };
 var getQuaternaryEntries = () => {
     for (let i = 0; i < 9; i++) {
-        quartList[i].value = (excavatorDrill.level >= (i + 1) || ((i == 8) && (artifactUpgrade[13].level > 0)) || elements[i].value > 0) ? elements[i].value : null;
+        quartList[i].value = (excavatorDrill.level >= (i + 1) || ((i == 8) && (artifactUpgrade[13].level > 0))) ? elements[i].value : null;
     }
     quartList2[0].value = CPS;
     quartList2[1].value = thyme.level / 10;
@@ -2827,7 +2830,7 @@ var getCurrencyFromTau = (tau) => [tau.max(BigNumber.ONE).pow(5), COOKIE.symbol]
 var getHelpText = () => {
     let ret = [];
     ret.push(ui.createLabel({
-        text: "Welcome to a theory all about cookies and more cookies!!!\n You have 3 currencies, cookies(C), heavenly chips(H), and sugar lumps(L), which you'll be spending on upgrades located on both tabs.\n\nCookies(C) by far is the most important, as the majority of the gameplay revolves around it, from buildings to even tau! You can get your first batch of cookies by buying a cursor, which is gifted to you for free to kickstart your very own cookie empire! By maximizing CPS(C dot), you are sure to produce a whole lot of cookies.\n\nHeavenly Chips(H) are a special type of cookie that forms whenever you sacrificed everything material you own in exchange for greater power(called publications). They can be used for all sorts of special upgrades, and might even end up boosting your CPS if you know enough.\n\nSugar lumps(L) by far are the hardest to acquire, literally requiring luck in order to get some, but its powers of being able to outright boost your building's CPS by 10%, multiplicative! Rumor has it that it gets easier to acquire the more cookies you have.\n",
+        text: "Welcome to a theory all about cookies and more cookies!!!\n You have 3 currencies, cookies(C), heavenly chips(H), and sugar lumps(L), which you'll be spending on upgrades located on both tabs.\n\nCookies(C) by far is the most important, as the majority of the gameplay revolves around it, from buildings to even tau! You can get your first batch of cookies by buying a cursor, which is gifted to you for free to kickstart your very own cookie empire! Each building has their own production time which is depicted by a bar. When the bar is filled up, the building produces cookies! For this page, we will refer to the cookies collected from a building as CCB.\n\nHeavenly Chips(H) are a special type of cookie that forms whenever you sacrificed everything material you own in exchange for greater power(called publications). They can be used for all sorts of special upgrades, and might even end up boosting your CPS if you know enough.\n\nSugar lumps(L) by far are the hardest to acquire, literally requiring luck in order to get some, but its powers of being able to outright boost your building's CPS by 10%, multiplicative! Rumor has it that it gets easier to acquire the more cookies you have.\n",
         fontSize: 15,
         horizontalTextAlignment: TextAlignment.CENTER,
         fontAttributes: FontAttributes.NONE,
@@ -2849,7 +2852,7 @@ var getHelpText = () => {
             padding: Thickness(2, 10, 2, 10)
         }));
     }
-    if (cookieTasty.level > 0) {
+    if (COOKIE.value >= BF(500)) {
         ret.push(ui.createLabel({
             text: "Milk and Flavors",
             fontSize: 18,
@@ -2858,7 +2861,7 @@ var getHelpText = () => {
             padding: Thickness(2, 15, 2, 10)
         }));
         ret.push(ui.createLabel({
-            text: "In the main tab, there're 2 new upgrades that popped out: Milk and Cookie Flavor. Milk acts like a booster for having more achievements(the labors are all paid for by the felines). Cookie Flavor is exactly what it does, sprinkling more variance and flavor into your cookie empire which apparently makes more cookies for some reason.",
+            text: "Switching from \"Current Menu : [1] Buildings\" reveals 2 new upgrades : Milk and Cookie Flavor. Milk boosts CCB the more achievements you have(accessible through the \"Achievements\" page, and some achievement is worth more)(also the labors are all paid for by the felines[might not be the case later on]). Cookie Flavor sprinkles more variance and flavor into your cookie empire which apparently means more cookies for some reason.",
             fontSize: 15,
             horizontalTextAlignment: TextAlignment.CENTER,
             fontAttributes: FontAttributes.NONE,
@@ -2874,7 +2877,7 @@ var getHelpText = () => {
             padding: Thickness(2, 15, 2, 10)
         }));
         ret.push(ui.createLabel({
-            text: "The Grandmother\'s Covenant is the first of the so-called \"Unique Upgrades\". They provide a massive boost to that building's CPS and potentially unlocks new strategies and game mechanics. In this case, the covenant boosts the grandma with P1, The total amount of buildings you own excluding grandmas,  mildly exponentiated as a bonus.",
+            text: "Unique Upgrades are special upgrades that is placed directly under a building. These upgrades has a unique effect that totally overhauls how the custom theory is played. The Grandmother\'s Covenant is the first of the \"Unique Upgrades\". They provide a massive boost to that building's CPS through P1 and the total amount of buildings you own, mildly exponentiated as a bonus.",
             fontSize: 15,
             horizontalTextAlignment: TextAlignment.CENTER,
             fontAttributes: FontAttributes.NONE,
@@ -2890,7 +2893,7 @@ var getHelpText = () => {
             padding: Thickness(2, 15, 2, 10)
         }));
         ret.push(ui.createLabel({
-            text: "Terraform Buff is unlocked when you have the Unique Upgrade for mines, it provides a short boost to your CPS(until it doesn't) through the magic of Logistic Function automatically ending this buff depending on your terraforming level. You'll have higher maximum boosts the more mines you own, along with the upgrade level itself.",
+            text: "Terraform Buff is unlocked when you have the Unique Upgrade for mines, it provides a boost to your CCB for around 30 seconds depending on the level. To activate the buff, click the button directly below the Menu Button(Even if the icon is displayed as a padlock). You'll have higher maximum boosts the more mines you own, along with the upgrade level itself; and even a way to preserve some of the boosts later on.",
             fontSize: 15,
             horizontalTextAlignment: TextAlignment.CENTER,
             fontAttributes: FontAttributes.NONE,
@@ -2906,7 +2909,7 @@ var getHelpText = () => {
             padding: Thickness(2, 15, 2, 10)
         }));
         ret.push(ui.createLabel({
-            text: "Archaeology is a new game mechanic revolving around exploring your very own temple in search for funny parts and upgrades that helps you later on. To find an artifact, a certain requirement must be completed(which I won't tell you!) through reading the clue for the next one by viewing the information on the Archaeology upgrade. Sometimes exploration might just not come back with upgrades, but something else...",
+            text: "Archaeology is a game mechanic revolving around exploring your very own temple in search for funny artifacts that will help you later on. The \"Artifact Pouch\" upgrade is where all your artifacts, both discovered or not are listed. To discover an artifact, a certain requirement must be completed, perhaps some luck may be needed. That requirement can be somewhat discerned through reading the clue for the respective one by viewing the information. Sometimes exploration might just not come back with upgrades, but something else...",
             fontSize: 15,
             horizontalTextAlignment: TextAlignment.CENTER,
             fontAttributes: FontAttributes.NONE,
@@ -2922,14 +2925,14 @@ var getHelpText = () => {
             padding: Thickness(2, 15, 2, 10)
         }));
         ret.push(ui.createLabel({
-            text: "Grimoire allows you to cast spells through the tomes you had. It costs Sugar Lumps to cast a spell, and each spell can be casted once(until it doesn't) before needing to recharge. A spell is ready to be casted again when the level is set back to 0. Discover the effects of each spell yourself, that's the part of the surprise.",
+            text: "Grimoire allows you to cast spells through the tomes you had. It costs Sugar Lumps to cast a spell, and each spell can be casted until the level is maxed out(1 initially, until a certain heavenly upgrade is purchased). After casting a spell, it will need some time to recharge it(represented by a bar emptying out), which effectively resets the level back to 0 once the cooldown has finished.",
             fontSize: 15,
             horizontalTextAlignment: TextAlignment.CENTER,
             fontAttributes: FontAttributes.NONE,
             padding: Thickness(2, 10, 2, 10)
         }));
     }
-    if (false) {
+    if (artifactUpgrade[12].level > 0) {
         ret.push(ui.createLabel({
             text: "Elements",
             fontSize: 18,
@@ -2938,7 +2941,7 @@ var getHelpText = () => {
             padding: Thickness(2, 15, 2, 10)
         }));
         ret.push(ui.createLabel({
-            text: "Elements are a new thing that populated the world once you purchased the 12th artifact. There are 2 ways to get elements: Mining and Atomic Decay other heavier elements. You can mine elements by first establishing an excavation site for a certain elements, the first site doesn't use any element but later sites do. You can further the gain by improving the excavation efficiency. All progression related to elements persist between publishing. Elements can be used in a lot of permanent upgrades unlocked at the same time.",
+            text: "Elements are something that somehow appears once you purchased the 12th artifact, coming with it the third and final page of the \"Permanent\" upgrade tab. You can excavate elements by first getting a grant to do some \"Scorched Earth\" on the sites your geologists have carefully prospected out, costing you some cookies which gets more expensive the rarer the element is. Then you can establish an excavation site on, costing a certain amount of elements for all sites beyond Berrylium. Excavators are a new permanent building that is mainly used to excavate elements as mines are too crude to do one. For each element, there is a mining module for boosting mining output and a special upgrade for your cookie empire. All progression related to elements persist between publishing.",
             fontSize: 15,
             horizontalTextAlignment: TextAlignment.CENTER,
             fontAttributes: FontAttributes.NONE,
