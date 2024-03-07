@@ -1262,7 +1262,7 @@ let isSpellActive = (indx) => {
 //prevUnlock : previous element required to unlock the next excavator
 var elements = new Array(19), elemPrev = new Array(19), arrEPS = new Array(19);
 var excavator, excavatorModule = new Array(19), excavatorDrill, excavatorSiteGrant;
-var jetEngine, sugarTools, chalcedIngredient, butterBar;
+var jetEngine, sugarTools, chalcedIngredient, butterBar, jetRefine, astroExtract;
 const usedElements = 9, excavatedElements = 8, lossFactorBase = 100;
 var elementData = [
     {
@@ -1311,19 +1311,34 @@ var elementData = [
             costModel: new ExponentialCost(1e22, ML2(100)),
             maxLevel: 3,
             onBought: (amount) => {updateGlobalMult();refreshLocalMult();CPSrefresh();}
+        },{
+            uid: 32005,
+            name: "Jetmint Refinery",
+            info: "From the extractors, we can refine them until we get useful elements out of it. Reduces the loss factor by 1",
+            costModel: new ExponentialCost(1e24, ML2(10)),
+            maxLevel: 10,
+            onBought: (amount) => {updateGlobalMult();refreshLocalMult();CPSrefresh();}
         }]
     },{
-        order: 5, weight: 13, prevUnlock: 1e50, excavatorPowerPow: 1.6, excavatorPowerFactor: 2,
+        order: 5, weight: 13, prevUnlock: 1e50, excavatorPowerPow: 1.55, excavatorPowerFactor: 1,
         symbol:"Cs", fullName: "Cherrysilver",
     },{
-        order: 6, weight: 21, prevUnlock: 1e50, excavatorPowerPow: 1.7, excavatorPowerFactor: 3,
+        order: 6, weight: 21, prevUnlock: 1e50, excavatorPowerPow: 1.6, excavatorPowerFactor: 1,
         symbol:"Hz", fullName: "Hazelrald",
     },{
-        order: 7, weight: 34, prevUnlock: 1e50, excavatorPowerPow: 1.75, excavatorPowerFactor: 5,
+        order: 7, weight: 34, prevUnlock: 1e50, excavatorPowerPow: 1.65, excavatorPowerFactor: 1,
         symbol:"Mn", fullName: "Mooncandy",
     },{
-        order: 8, weight: 55, prevUnlock: 1e50, excavatorPowerPow: 1.75, excavatorPowerFactor: 5,
+        order: 8, weight: 55, prevUnlock: 1e50, excavatorPowerPow: 1.7, excavatorPowerFactor: 1,
         symbol:"As", fullName: "Astrofudge",
+        gimmicks: [{
+            uid: 32006,
+            name: "Astrofudge-Based Extractors",
+            info: "Use the cosmic property of Astrofudge to hopefully extract more useful things from the ground. Unlocks the possibility of reducing losses from excavating more exotic elements",
+            costModel: new ConstantCost(400000),
+            maxLevel: 1,
+            onBought: (amount) => {updateGlobalMult();}
+        }]
     },{
         order: 9, weight: 89, prevUnlock: 1e50,
         symbol:"Aa", fullName: "Alabascream",
@@ -1343,11 +1358,12 @@ arrEPS.fill(BF(0));
 var calcExcavator = (level) => Utils.getStepwisePowerSum(level, 5, 5, 0);
 var calcEPS = () => {
     let excRate = calcExcavator(excavator.level);
+    let lossFactor = lossFactorBase - jetRefine.level;
     for(let i = 0;i < excavatorDrill.level;i++){
         excRate *= getElemBoost(i,excavatorModule[i].level);
     }
     for (let i = 0;i < excavatorDrill.level;i++) {
-        arrEPS[i] = (BigL10(COOKIE.value + BF(10))/BF(100)) * BigP(lossFactorBase, -1 * i) * excRate;
+        arrEPS[i] = (BigL10(COOKIE.value + BF(10))/BF(100)) * BigP(lossFactor, -1 * i) * excRate;
         //log(arrEPS[i]);
     }
     if (artifactUpgrade[13].level > 0) {
@@ -2118,6 +2134,8 @@ var init = () => {
         butterBar = gimmickPermUpgrade(elementData[2].gimmicks[0],elements[2]);
         sugarTools = gimmickPermUpgrade(elementData[3].gimmicks[0],elements[3]);
         jetEngine = gimmickPermUpgrade(elementData[4].gimmicks[0],elements[4]);
+        jetRefine = gimmickPermUpgrade(elementData[4].gimmicks[1],elements[4]);
+        astroExtract = gimmickPermUpgrade(elementData[8].gimmicks[0],elements[8]);
         //the building itself
         excavator = shortPermaUpgrade(30004,elements[0],new FirstFreeCost(new ExponentialCost(15, Math.log2(2))),`Excavators ($E_{x}$)`,`Excavates elements for you`);
         excavator.getDescription = (_) => excavatorDescription();
@@ -2492,10 +2510,12 @@ var updateAvailability = () => {
     for(let i=0;i<excavatedElements;i++){
         excavatorModule[i].isAvailable = (permUpgradeMenu.level == 2);
     }
-    chalcedIngredient.isAvailable = (permUpgradeMenu.level == 2);
-    butterBar.isAvailable = (permUpgradeMenu.level == 2);
-    sugarTools.isAvailable = (permUpgradeMenu.level == 2);
-    jetEngine.isAvailable = (permUpgradeMenu.level == 2);
+    chalcedIngredient.isAvailable = (permUpgradeMenu.level == 2) && (excavatorDrill.level > 1);
+    butterBar.isAvailable = (permUpgradeMenu.level == 2) && (excavatorDrill.level > 2);
+    sugarTools.isAvailable = (permUpgradeMenu.level == 2) && (excavatorDrill.level > 3);
+    jetEngine.isAvailable = (permUpgradeMenu.level == 2) && (excavatorDrill.level > 4);
+    jetRefine.isAvailable = (permUpgradeMenu.level == 2) && (astroExtract.level > 0);
+    astroExtract.isAvailable = (permUpgradeMenu.level == 2) && (artifactUpgrade[13].level > 0);
     //Milestone
     superL.isAvailable = (superP.level > 0) && (superC.level > 0);
 };
@@ -2742,7 +2762,7 @@ var secondaryEq = (mode, col) => {
             return `\\color{#${eqColor[col]}}{T_d = \\frac{B[11]^{1+0.025T_D}}{1000^{T_f}}\\\\T_f = 1-\\frac{min(B[11],B[10]+B[12])}{(2.125-0.125T_{D}))(B[10]+B[12])}}`;
         case 9:// Elements
             theory.secondaryEquationScale = 0.85;
-            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{x}\\prod_{i=0}^{${excavatedElements}}{Ef_{i}}}{${lossFactorBase}^{n}},\\: n \\neq 8${(artifactUpgrade[13].level > 0) ? `\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}` : ``}}`;
+            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{x}\\prod_{i=0}^{${excavatedElements}}{Ef_{i}}}{${lossFactorBase - jetRefine.level}^{n}},\\: n \\neq 8${(artifactUpgrade[13].level > 0) ? `\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}` : ``}}`;
         case 10:// Decay
             let ingre = (reactorMode == -1) ? "E_{n}" : `${elemName[reactorMode + 2]}`;
             let r1 = (reactorMode == -1) ? "E_{n-1}" : `${elemName[reactorMode + 1]}`;
