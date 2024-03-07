@@ -1302,13 +1302,13 @@ var elementData = [
             onBought: (amount) => {updateGlobalMult();}
         }]
     },{
-        order: 4, weight: 8, prevUnlock: 8e19, excavatorPowerPow: 1.55, excavatorPowerFactor: 1,
+        order: 4, weight: 8, prevUnlock: 2.15e21, excavatorPowerPow: 1.55, excavatorPowerFactor: 1,
         symbol:"Jm", fullName: "Jetmint",
         gimmicks: [{
             uid: 32004,
             name: "Jetmint Booster",
             info: "Jetmint has been shown to improve the overall efficiency of just about every building we can get ours hands on. Increases the base growth of building powers",
-            costModel: new ExponentialCost(1e14, ML2(100)),
+            costModel: new ExponentialCost(1e22, ML2(100)),
             maxLevel: 3,
             onBought: (amount) => {updateGlobalMult();refreshLocalMult();CPSrefresh();}
         }]
@@ -1350,9 +1350,9 @@ var calcEPS = () => {
         arrEPS[i] = (BigL10(COOKIE.value + BF(10))/BF(100)) * BigP(lossFactorBase, -1 * i) * excRate;
         //log(arrEPS[i]);
     }
-    // if (artArt.level > 13) {
-    //     arreps[8] += BigL10(BF(10) + building[8].level) * BigL10(BF(10) + arrcps[8]) * 0.001;
-    // }
+    if (artifactUpgrade[13].level > 0) {
+        arrEPS[8] += BigL10(BF(10) + building[8].level) * BigL10(BF(10) + generateCookie(8,10,terraBoost)) * 0.001;
+    }
 }
 var excavatorDescription = () => {
     switch(bInfo){
@@ -1506,7 +1506,7 @@ var heavenlyUpgradeData = [
         uid: 14,
         name: "Empowerments of Buildings",
         info: "Increases how fast $P$ grows",
-        costModel: new ExponentialCost(5e130, ML2(1e5)),
+        costModel: new ExponentialCost(5e130, ML2(1e10)),
         maxLevel: 5,
         onBought: (amount) => {updateGlobalMult();}
     },{
@@ -2232,9 +2232,15 @@ var init = () => {
         //bought
         //buildingExponent[i].bought = (amount) => buildingExponentRemove[i].level = buildingExponent[i].level;
         buildingExponentRemove[i].bought = (amount) => {
-            buildingExponent[i].level -= amount;
-            EXPO_BAR.value += amount;
-            buildingExponentRemove[i].level = 0;
+            if(buildingExponent[i].level - amount > 0){
+                buildingExponent[i].level -= amount;
+                EXPO_BAR.value += amount;
+                buildingExponentRemove[i].level = 0;
+            }else{
+                EXPO_BAR.value += buildingExponent[i].level;
+                buildingExponent[i].level = 0;
+                buildingExponentRemove[i].level = 0;
+            }
         }
         //main upgrade
         //log(`B${i}`);
