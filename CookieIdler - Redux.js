@@ -407,7 +407,7 @@ var buildingData = [
      }]},
     {id: 3,
      names: ["Mine","Mein"], desc: "mining ", lumpBName: "Drilling Overclock",
-     baseCPS: 7.4e7, baseCost: 1.2e8, powerUpgradeMult: 125, mult: 1, collectionTime : 15,maxExpLevel: 5, sweetLimit: 25, sweetMax: 500,
+     baseCPS: 7.4e7, baseCost: 1.2e8, powerUpgradeMult: 125, mult: 1, collectionTime : 15,maxExpLevel: 5, sweetLimit: 25, sweetMax: 350,
      achName: ["Stop! Drilling Time!","Break the core","Dysonian Society","Breaking through omnirealitimetaplanes","r/drillingmasterrace"],
      gimmicks: [{
         uid: 10003,
@@ -431,7 +431,7 @@ var buildingData = [
      }]},
     {id: 5,
      names: ["Bank","Bkan"], desc: "interesting ", lumpBName: "Increase Interest Rates",
-     baseCPS: 1.4e12, baseCost: 1.4e18, powerUpgradeMult: 35, mult: 1, collectionTime : 20,maxExpLevel: 5, sweetLimit: 25, sweetMax: 500,
+     baseCPS: 1.4e12, baseCost: 1.4e18, powerUpgradeMult: 35, mult: 1, collectionTime : 20,maxExpLevel: 5, sweetLimit: 25, sweetMax: 350,
      achName: ["Pretty Penny Pinchers","Keynesian Cookinomics","New Neohyperglobalization Order","Money is just a human construct","Hypermetaflation"],
      gimmicks: [{
         uid: 10005,
@@ -469,7 +469,7 @@ var buildingData = [
      }]},
     {id: 6,
      names: ["Temple","Tmelpe"], desc: "directing in ", lumpBName: "Sacred Chocolate Artifact",
-     baseCPS: 1.18e18, baseCost: 2e25, powerUpgradeMult: 8, mult: 1, collectionTime : 25,maxExpLevel: 5, sweetLimit: 50, sweetMax: 500,
+     baseCPS: 1.18e18, baseCost: 2e25, powerUpgradeMult: 8, mult: 1, collectionTime : 25,maxExpLevel: 5, sweetLimit: 50, sweetMax: 350,
      achName: ["Way of the Temple","Balance of Faith","The Lord\'s Likeliness","Caricature of the forgotten Deities","Chief Artifact Curator"],
      gimmicks: [{
         uid: 10007,
@@ -507,7 +507,7 @@ var buildingData = [
     },
     {id: 7,
      names: ["Wizard Tower","Wixaradf Trower"], desc: "spawning in ", lumpBName: "Syllables",
-     baseCPS: 9.16e22, baseCost: 3.3e50, powerUpgradeMult: 17, mult: 1, collectionTime : 25,maxExpLevel: 5, sweetLimit: 100, sweetMax: 500,
+     baseCPS: 9.16e22, baseCost: 3.3e50, powerUpgradeMult: 17, mult: 1, collectionTime : 25,maxExpLevel: 5, sweetLimit: 100, sweetMax: 350,
      achName: ["Bewitched","Alakazamd","Shaspie Colupis","Cookiera Avadra Creamdera","Hours to pronounce, effects very pronounced"],
      gimmicks: [{
         uid: 10010,
@@ -524,47 +524,47 @@ var buildingData = [
     },
     {id: 8,
      names: ["Shipment","Shipemtn"], desc: "bringing in ", lumpBName: "Cosmic Exploration",
-     baseCPS: 9e32, baseCost: 5.1e75, powerUpgradeMult: 25, mult: 1, collectionTime : 30,maxExpLevel: 5, sweetLimit: 125, sweetMax: 500,
+     baseCPS: 9e32, baseCost: 5.1e75, powerUpgradeMult: 25, mult: 1, collectionTime : 30,maxExpLevel: 5, sweetLimit: 125, sweetMax: 350,
      achName: ["Local Expedition","Cosmic Mapping","Multiverse Ramble","Omniverse Realization","You could make a chronicle out of those"],
     },
     {id: 9,
-     names: ["Alchemy Lab","Alehfcehy Lba"], desc: "transmuting ", lumpBName: "New Esoteric Elements", sweetLimit: 150, sweetMax: 500,
+     names: ["Alchemy Lab","Alehfcehy Lba"], desc: "transmuting ", lumpBName: "New Esoteric Elements", sweetLimit: 150, sweetMax: 350,
      baseCPS: 1.15e43, baseCost: 7.5e100, powerUpgradeMult: 23, mult: 1, collectionTime : 30,maxExpLevel: 5,
      achName: ["Transmutation","Polytranselementation","With matter comes Cookies","Satiated in the gaudy mouths of Gold","Truly a Mendeleev's Nightmare"],
     },
     {id: 10,
      names: ["Portal","Proalt"], desc: "retrieving ", lumpBName: "Normalize Dimension",
-     baseCPS: 6.66e50, baseCost: BF("1e125"), powerUpgradeMult: 21, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 200, sweetMax: 450,
+     baseCPS: 6.66e50, baseCost: BF("1e125"), powerUpgradeMult: 21, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 200, sweetMax: 350,
      achName: ["Isekai\'d","H̶e̷ ̶C̶o̴m̵e̸s̵","I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎","Bottom of the abyss","Is this reality or is it cookieverse?"],
     },
     {id: 11,
      names: ["Time Machine","Tie Macine"], desc: "preventing cookies from being eaten by ", lumpBName: "Paradox Resolve",
-     baseCPS: BF("2.045e58"), baseCost: BF("7.5e150"), powerUpgradeMult: 20, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 225, sweetMax: 400,
+     baseCPS: BF("2.045e58"), baseCost: BF("7.5e150"), powerUpgradeMult: 20, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 225, sweetMax: 350,
      achName: ["Thyme Wrap","Thyme Pararegano","Thyme Sagaporal Nutmegstant","Out of past, Out of future","No more Thyme Pararegano"],
     },
     {id: 12,
      names: ["Antimatter Condenser","Antimatter Condenstor"], desc: "synthesizing ", lumpBName: "Derived Elementary Flavor",
-     baseCPS: BF("9.15e71"), baseCost: BF("1.7e185"), powerUpgradeMult: 15, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 250, sweetMax: 350,
+     baseCPS: BF("9.15e71"), baseCost: BF("1.7e185"), powerUpgradeMult: 15, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 250, sweetMax: 300,
      achName: ["When does it matter?","New Standard Model of Cookie and Flour","Unified Complete Theory of the Cookieverse","Hypersize my String and Gluten","Flavor Mathematics"],
     },
     {id: 13,
      names: ["Prism","Prius"], desc: "matterifying from light ", lumpBName: "Extended Spectrum",
-     baseCPS: BF("4.9e82"), baseCost: BF("2.1e228"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 350,
+     baseCPS: BF("4.9e82"), baseCost: BF("2.1e228"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 250,
      achName: ["Some rays of dough and batter","Total Enlightenment","O thy energy of sky, bring fourth the light rays","Neverending rays of bright brilliance shine on you all","4th Cone"],
     },
     {id: 14,
      names: ["Chancemaker","Chamceamekr"], desc: "lucking in ", lumpBName: "Serendipity",
-     baseCPS: BF(2.1e115/60.24), baseCost: BF("2.6e300"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 300, sweetMax: 350,
+     baseCPS: BF(2.1e115/60.24), baseCost: BF("2.6e300"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 300, sweetMax: 200,
      achName: ["Lucked up","Devil\'s Gambit","Gambler\'s Last Bet","Remember, the house always wins","Black Cat\'s Paw"],
     },
     {id: 15,
      names: ["Fractal Engine","Framcael Engeen"], desc: "duplicating in ", lumpBName: "Gone Iterative",
-     baseCPS: BF("2.2e133"), baseCost: BF("3.1e351"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 350, sweetMax: 350,
+     baseCPS: BF("2.2e133"), baseCost: BF("3.1e351"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 350, sweetMax: 150,
      achName: ["Z_n+1 = (Z_n)^2 + c","Apollonian Gasket","C_n := (C_n-1 ∪ (2+C_n-1))/3, where C_0 := [0,1]","Divide by zero, now, I dare you","Quite nearly but not so full"],
     },
     {id: 16,
      names: ["Javascript Console","Jacascipr Conseoul"], desc: "hacking in ", lumpBName: "Reformat JS Script",
-     baseCPS: BF("3.1e187"), baseCost: BF("7.1e425"), powerUpgradeMult: 9, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 400, sweetMax: 300,
+     baseCPS: BF("3.1e161"), baseCost: BF("7.1e425"), powerUpgradeMult: 9, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 400, sweetMax: 150,
      achName: ["Press F12","Infinite Theorycraft","I bring fourth reincarnation of reality","","The \"C\" Language"],
     },
     {id: 17,
@@ -699,7 +699,7 @@ var getBuildingPowerInfo = (indx,amount) => `\$P_{${TS10(indx)}}${(superP.level 
 
 // building lump data
 var buildingLumpMult = 1.1
-var buildingLumpCost = (i) => new LinearCost(i + 1, (i + 1) * ((i >= 11) ? (i - 1) * (i - 5) * 0.06 : 1.1));
+var buildingLumpCost = (i) => new LinearCost(i + 1, (i + 1) * ((i >= 11) ? (i - 1) * (i - 5) * 0.25 : 1.1));
 var getBuildingLumpDesc = (i) => {
     if(bInfo == 1){
         return `\$ ${buildingLumpMult}^{L[${i}]} = ${buildingLumpMult}^{${buildingLump[i].level}} = ${BigP(buildingLumpMult, buildingLump[i].level)}\$`;
@@ -1217,7 +1217,7 @@ var spellData = [{
     unlockCondition: () => {return true;},//unlock condition
     achievementNames: ["Very Sweet Wizard","Sugar Lump Magic Saga","Don\'t overdose on sugar, kids"],
 },{
-    order: 7,name: "The World", desc: "haha jojo reference goes brrrrrrrrrr",
+    order: 7,name: "Made in Heaven", desc: "haha jojo reference goes brrrrrrrrrr",
     castCost: 5555, castCooldown: 14400,
     effect: (boost) => {
         let warpthyme = ((100 + (10 * SpellStack.level)) * RandR(0.9, 1.1 + (0.05 * SpellStack.level)) + (15 * SpellStack.level)) + (10 * boost);
@@ -1227,7 +1227,7 @@ var spellData = [{
         }
     },
     unlockCondition: () => {return artifactUpgrade[11].level > 0;},//unlock condition
-    achievementNames: ["ゴゴゴゴゴゴゴゴ","やれやれだぜ！","このディオだ！"],
+    achievementNames: ["ゴゴゴゴゴゴゴゴ","やれやれだぜ！","「天国の時」はついに来た…"],
 },];
 var spellUsed = spellData.length;
 let updateSpellLayer = () => {
@@ -1262,8 +1262,8 @@ let isSpellActive = (indx) => {
 //prevUnlock : previous element required to unlock the next excavator
 var elements = new Array(19), elemPrev = new Array(19), arrEPS = new Array(19);
 var excavator, excavatorModule = new Array(19), excavatorDrill, excavatorSiteGrant;
-var jetEngine, sugarTools, chalcedIngredient, butterBar, jetRefine, astroExtract;
-const usedElements = 9, excavatedElements = 8, lossFactorBase = 100;
+var jetEngine, sugarTools, chalcedIngredient, butterBar, jetRefine, astroExtract, jetTransistor;
+const usedElements = 9, excavatedElements = 8, lossFactorBase = 100, jetRefineEff = 1.5;
 var elementData = [
     {
         order: 0, weight: 1, prevUnlock: 0, excavatorPowerPow: 1.4, excavatorPowerFactor: 0.5,
@@ -1276,7 +1276,7 @@ var elementData = [
             name: "Chalcedhoney Ingredients",
             info: "Replacing normal honey with Chalcedhoney has been proven to boost the tastiness and yield of cookies. Adds 10 level to normal cookie upgrade",
             costModel: new ExponentialCost(1e10, ML2(100)),
-            maxLevel: 7,
+            maxLevel: 8,
             onBought: (amount) => {updateGlobalMult();}
         }]
     },{
@@ -1308,26 +1308,41 @@ var elementData = [
             uid: 32004,
             name: "Jetmint Booster",
             info: "Jetmint has been shown to improve the overall efficiency of just about every building we can get ours hands on. Increases the base growth of building powers",
-            costModel: new ExponentialCost(1e22, ML2(100)),
+            costModel: new ExponentialCost(1e22, ML2(1e5)),
             maxLevel: 3,
             onBought: (amount) => {updateGlobalMult();refreshLocalMult();CPSrefresh();}
         },{
             uid: 32005,
             name: "Jetmint Refinery",
             info: "From the extractors, we can refine them until we get useful elements out of it. Reduces the loss factor by 1",
-            costModel: new ExponentialCost(1e24, ML2(10)),
-            maxLevel: 10,
+            costModel: new ExponentialCost(5e23, ML2(1.1)),
+            maxLevel: 20,
+            onBought: (amount) => {updateGlobalMult();refreshLocalMult();CPSrefresh();}
+        },{
+            uid: 32007,
+            name: "Jetmint Transistors",
+            info: "Yet another useful application of the magic metal Jetmint, now that its properties of being a semiconductor has been discovered. Unlocks JavaScript Console",
+            costModel: new ConstantCost(2.85e25),
+            maxLevel: 1,
             onBought: (amount) => {updateGlobalMult();refreshLocalMult();CPSrefresh();}
         }]
     },{
-        order: 5, weight: 13, prevUnlock: 1e50, excavatorPowerPow: 1.55, excavatorPowerFactor: 1,
+        order: 5, weight: 13, prevUnlock: 1.7e26, excavatorPowerPow: 1.55, excavatorPowerFactor: 1,
         symbol:"Cs", fullName: "Cherrysilver",
     },{
-        order: 6, weight: 21, prevUnlock: 1e50, excavatorPowerPow: 1.6, excavatorPowerFactor: 1,
+        order: 6, weight: 21, prevUnlock: 2e31, excavatorPowerPow: 1.6, excavatorPowerFactor: 1,
         symbol:"Hz", fullName: "Hazelrald",
     },{
-        order: 7, weight: 34, prevUnlock: 1e50, excavatorPowerPow: 1.65, excavatorPowerFactor: 1,
+        order: 7, weight: 34, prevUnlock: 6e36, excavatorPowerPow: 1.65, excavatorPowerFactor: 1,
         symbol:"Mn", fullName: "Mooncandy",
+        gimmicks: [{
+            uid: 32069,
+            name: "Mooncandium Marbles",
+            info: "Utilize the multiversial property of Mooncandy to build sophisticated spheres capable of holding up to 50 multiverses. Increases the maximum amount of Idleverse by 50",
+            costModel: new ExponentialCost(1e37, ML2(2.5)),
+            maxLevel: 100,
+            onBought: (amount) => {updateGlobalMult();refreshLocalMult();CPSrefresh();}
+        }]
     },{
         order: 8, weight: 55, prevUnlock: 1e50, excavatorPowerPow: 1.7, excavatorPowerFactor: 1,
         symbol:"As", fullName: "Astrofudge",
@@ -1335,7 +1350,7 @@ var elementData = [
             uid: 32006,
             name: "Astrofudge-Based Extractors",
             info: "Use the cosmic property of Astrofudge to hopefully extract more useful things from the ground. Unlocks the possibility of reducing losses from excavating more exotic elements",
-            costModel: new ConstantCost(400000),
+            costModel: new ConstantCost(500000),
             maxLevel: 1,
             onBought: (amount) => {updateGlobalMult();}
         }]
@@ -1358,7 +1373,7 @@ arrEPS.fill(BF(0));
 var calcExcavator = (level) => Utils.getStepwisePowerSum(level, 5, 5, 0);
 var calcEPS = () => {
     let excRate = calcExcavator(excavator.level);
-    let lossFactor = lossFactorBase - jetRefine.level;
+    let lossFactor = lossFactorBase - (jetRefine.level*jetRefineEff);
     for(let i = 0;i < excavatorDrill.level;i++){
         excRate *= getElemBoost(i,excavatorModule[i].level);
     }
@@ -2135,6 +2150,7 @@ var init = () => {
         sugarTools = gimmickPermUpgrade(elementData[3].gimmicks[0],elements[3]);
         jetEngine = gimmickPermUpgrade(elementData[4].gimmicks[0],elements[4]);
         jetRefine = gimmickPermUpgrade(elementData[4].gimmicks[1],elements[4]);
+        jetTransistor = gimmickPermUpgrade(elementData[4].gimmicks[2],elements[4]);
         astroExtract = gimmickPermUpgrade(elementData[8].gimmicks[0],elements[8]);
         //the building itself
         excavator = shortPermaUpgrade(30004,elements[0],new FirstFreeCost(new ExponentialCost(15, Math.log2(2))),`Excavators ($E_{x}$)`,`Excavates elements for you`);
@@ -2465,6 +2481,7 @@ var updateAvailability = () => {
     exponentium.isAvailable = (normalUpgradeMenu.level == 2);
     modeExponentium.isAvailable = (normalUpgradeMenu.level == 2);
     building[14].isAvailable &= (artifactUpgrade[9].level > 0);
+    building[16].isAvailable &= (jetTransistor.level > 0);
     // Cookieh
     cookieTasty.isAvailable = COOKIE.value > BF(1e5) && normalUpgradeMenu.level == 1;
     kitty.isAvailable = achCount > 1 && (normalUpgradeMenu.level % 2) == 1;
@@ -2515,6 +2532,7 @@ var updateAvailability = () => {
     sugarTools.isAvailable = (permUpgradeMenu.level == 2) && (excavatorDrill.level > 3);
     jetEngine.isAvailable = (permUpgradeMenu.level == 2) && (excavatorDrill.level > 4);
     jetRefine.isAvailable = (permUpgradeMenu.level == 2) && (astroExtract.level > 0);
+    jetTransistor.isAvailable = jetEngine.isAvailable;
     astroExtract.isAvailable = (permUpgradeMenu.level == 2) && (artifactUpgrade[13].level > 0);
     //Milestone
     superL.isAvailable = (superP.level > 0) && (superC.level > 0);
@@ -2647,8 +2665,6 @@ var tick = (elapsedTime,multiplier) => {
     }else{
         //cookie
         if(thyme.level % 5 == 0){
-            updateGlobalMult();
-            updateAvailability();
             for(let i=0;i<19;i++){
                 if(dt >= buildingData[i].collectionTime){
                     COOKIE.value += generateCookie(i,dt,terraBoost);
@@ -2660,6 +2676,8 @@ var tick = (elapsedTime,multiplier) => {
         }
         if(thyme.level % 10 == 0){
             clickStreak = 0;
+            updateGlobalMult();
+            updateAvailability();
             updateLocalMult(2);//yggdrasil, leave covenant to onBuildingBought
             //CPSrefresh();
         }
@@ -2762,7 +2780,7 @@ var secondaryEq = (mode, col) => {
             return `\\color{#${eqColor[col]}}{T_d = \\frac{B[11]^{1+0.025T_D}}{1000^{T_f}}\\\\T_f = 1-\\frac{min(B[11],B[10]+B[12])}{(2.125-0.125T_{D}))(B[10]+B[12])}}`;
         case 9:// Elements
             theory.secondaryEquationScale = 0.85;
-            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{x}\\prod_{i=0}^{${excavatedElements}}{Ef_{i}}}{${lossFactorBase - jetRefine.level}^{n}},\\: n \\neq 8${(artifactUpgrade[13].level > 0) ? `\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}` : ``}}`;
+            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{x}\\prod_{i=0}^{${excavatedElements}}{Ef_{i}}}{${lossFactorBase - (jetRefine.level*jetRefineEff)}^{n}},\\: n \\neq 8${(artifactUpgrade[13].level > 0) ? `\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}` : ``}}`;
         case 10:// Decay
             let ingre = (reactorMode == -1) ? "E_{n}" : `${elemName[reactorMode + 2]}`;
             let r1 = (reactorMode == -1) ? "E_{n-1}" : `${elemName[reactorMode + 1]}`;
