@@ -544,7 +544,7 @@ var buildingData = [
     },
     {id: 12,
      names: ["Antimatter Condenser","Antimatter Condenstor"], desc: "synthesizing ", lumpBName: "Derived Elementary Flavor",
-     baseCPS: BF("9.15e71"), baseCost: BF("1.7e185"), powerUpgradeMult: 15, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 250, sweetMax: 300,
+     baseCPS: BF("9.15e71"), baseCost: BF("1.7e185"), powerUpgradeMult: 15, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 250, sweetMax: 200,
      achName: ["When does it matter?","New Standard Model of Cookie and Flour","Unified Complete Theory of the Cookieverse","Hypersize my String and Gluten","Flavor Mathematics"],
      gimmicks: [{
         uid: 10011,
@@ -598,7 +598,7 @@ var buildingData = [
     },
     {id: 17,
      names: ["Idleverse","IDledeverse"], desc: "clicking ", lumpBName: "Install Another Idle Game",
-     baseCPS: 69420, baseCost: BF("6.9e500"), powerUpgradeMult: 7, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 450, sweetMax: 250,
+     baseCPS: BF("8.5e210"), baseCost: BF("6.9e500"), powerUpgradeMult: 7, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 450, sweetMax: 250,
      achName: ["Manifest Destiny","Is there enough worlds?","Lost your Cosmic Cookies?","We the People of the Cookieverse, in Order to form a more perfect Dimensional Union, establish Justice, insure domestic Tranquility, provide for the common defense, promote the general Welfare, and secure the Blessings of Cookies to ourselves and our Posterity, do ordain and establish this Constitution for the Cookieverse.","You need a new bluestack"],
     },
     {id: 18,
@@ -1054,7 +1054,7 @@ var updateLocalMult = (indx) => {
             break;
         case 12:
             if (cherryRegulator.level > 0) {
-                buildingData[indx].mult *= BF(1e32);
+                buildingData[indx].mult *= BF(1e30);
             }
             break;
         case 13:
@@ -1201,7 +1201,7 @@ var checkArtifactUnlock = () =>{
 var spellCast = new Array(99), spellCount = new Array(99), spellCooldown = new Array(99), spellView;
 var spellData = [{
     order: 0,name: "Conjure Idled Goods", desc: "You get more cookies, simple",
-    castCost: 1500, castCooldown: 7200,
+    castCost: 2500, castCooldown: 14400,
     effect: (boost) => {
         var rand = RandI(100);
         if (rand <= 90 + (2*boost)) {
@@ -1333,7 +1333,7 @@ var elementData = [
         }]
     },{
         order: 2, weight: 3, prevUnlock: 2e14, excavatorPowerPow: 1.45, excavatorPowerFactor: 0.75,
-        symbol:"Bg", fullName: "Buttergold",
+        symbol:"Bg", fullName: "Buttergold", minDecayAmt: BF("1e51"),
         gimmicks: [{
             uid: 32002,
             name: "Buttergolden Bars",
@@ -1344,7 +1344,7 @@ var elementData = [
         }]
     },{
         order: 3, weight: 5, prevUnlock: 1e16, excavatorPowerPow: 1.5, excavatorPowerFactor: 1,
-        symbol:"Su", fullName: "Sugarmuck",
+        symbol:"Su", fullName: "Sugarmuck", minDecayAmt: BF("1e49"),
         gimmicks: [{
             uid: 32003,
             name: "Sugarmuck-Powered Farming Tools",
@@ -1355,7 +1355,7 @@ var elementData = [
         }]
     },{
         order: 4, weight: 8, prevUnlock: 2.15e21, excavatorPowerPow: 1.55, excavatorPowerFactor: 1,
-        symbol:"Jm", fullName: "Jetmint",
+        symbol:"Jm", fullName: "Jetmint", minDecayAmt: BF("1e47"),
         gimmicks: [{
             uid: 32004,
             name: "Jetmint Booster",
@@ -1380,7 +1380,7 @@ var elementData = [
         }]
     },{
         order: 5, weight: 13, prevUnlock: 1.7e26, excavatorPowerPow: 1.55, excavatorPowerFactor: 1,
-        symbol:"Cs", fullName: "Cherrysilver",
+        symbol:"Cs", fullName: "Cherrysilver", minDecayAmt: BF("1e45"),
         gimmicks: [{
             uid: 32008,
             name: "Cherrysilver Regulators",
@@ -1391,7 +1391,7 @@ var elementData = [
         }]
     },{
         order: 6, weight: 21, prevUnlock: 2e31, excavatorPowerPow: 1.6, excavatorPowerFactor: 1,
-        symbol:"Hz", fullName: "Hazelrald",
+        symbol:"Hz", fullName: "Hazelrald", minDecayAmt: BF("1e43"),
         gimmicks: [{
             uid: 32009,
             name: "Hazelrald Solution",
@@ -1402,7 +1402,7 @@ var elementData = [
         }]
     },{
         order: 7, weight: 34, prevUnlock: 6e36, excavatorPowerPow: 1.65, excavatorPowerFactor: 1,
-        symbol:"Mn", fullName: "Mooncandy",
+        symbol:"Mn", fullName: "Mooncandy", minDecayAmt: BF("1e41"),
         gimmicks: [{
             uid: 32010,
             name: "Mooncandium Core",
@@ -1414,13 +1414,13 @@ var elementData = [
             uid: 32011,
             name: "Mooncandium Marbles",
             info: "Utilize the multiversial property of Mooncandy to build sophisticated spheres capable of holding up to 50 multiverses. Increases the maximum number of Idleverse by 50",
-            costModel: new ExponentialCost(1e43, ML2(1.25)),
+            costModel: new ExponentialCost(1e45, ML2(1.25)),
             maxLevel: 1000,
             onBought: (amount) => {updateGlobalMult();refreshLocalMult();CPSrefresh();}
         }]
     },{
         order: 8, weight: 55, prevUnlock: 1e50, excavatorPowerPow: 1.7, excavatorPowerFactor: 1,
-        symbol:"As", fullName: "Astrofudge",
+        symbol:"As", fullName: "Astrofudge", minDecayAmt: BF("1e39"),
         gimmicks: [{
             uid: 32006,
             name: "Astrofudge-Based Extractors",
@@ -1512,9 +1512,23 @@ var refreshExcavatorMaxLv = () => {
 }
 //accelerator
 var accelerator, acceleratorButton, acceleratorControl, acceleratorMode;
-var lightOn = "O", lightOff = "-", strobeCnt = new Array(15).fill(0), strobeOdds = [0.75,1/3,1/11,0.4,0.6,1/7,0.5], strobeUsed = 7;
-const maxDecayPow = 0.9, lambda =  BF(0.01), yieldfactor = BF(0.05), yieldPow = 1.05, cookieYieldPow = 1.5, cookieYieldFactor = 10, weightFactor = 228/40;
-var lightIndicator = (amt,cnt) => `[${(amt % 2 == 1)?lightOn.repeat(cnt):lightOff.repeat(cnt)}]`;
+var lightOn = "O", lightOff = "-", strobeCnt = new Array(15).fill(0), strobeOdds = [0.75,1/3,1/11,0.4,0.6,1/7,0.5], strobeUsed = 7, lightInvalid = "X";
+const maxDecayPow = 0.9, lambda =  BF(0.025), yieldfactor = BF(0.05), yieldPow = 1.05, cookieYieldPow = 1.5, cookieYieldFactor = 10, weightFactor = 228/40;
+var lightIndicator = (amt,cnt) => {
+    if(amt%2 == 1){
+        if(acceleratorMode.level > 0){
+            if(elements[acceleratorMode.level+1].value >= elementData[acceleratorMode.level+1].minDecayAmt){
+                return `[${lightOn.repeat(cnt)}]`;
+            }else{
+                return `[${lightInvalid.repeat(cnt)}]`;
+            }
+        }else{
+            return `[${lightOn.repeat(cnt)}]`;
+        }
+    }else{
+        return `[${lightOff.repeat(cnt)}]`;
+    }
+};
 var updateStrobe = () => {
     for(let i=0;i<strobeUsed;i++){
         if(Math.random() <= strobeOdds[i]){
@@ -1534,7 +1548,7 @@ var acceleratorStatus = (level, mode) => {
     }
 }
 function decayElement(indx, dt){
-    if(indx >= 2){
+    if(indx >= 2 && (elements[indx].value >= elementData[indx].minDecayAmt)){
         let rate = building[12].level * lambda * BigP(elements[indx].value,maxDecayPow);
         //addition
         elements[indx-2].value += dt * BigP(rate,yieldPow) * yieldfactor * (elementData[indx-2].weight / elementData[indx].weight);
@@ -1568,6 +1582,56 @@ function decayElementTest(indx, dt){
 }
 
 //! Bingo Center
+{
+    /* Documentations on Research
+    {name} string - name of the upgrade
+    {id} int - unique identifier
+    {desc} string - description of the upgrade
+    {time} int - the amount of time it takes to research(trueThyme ticks)
+    {preq} arr -> {type:int} - all previous upgrade that needs to be researched
+    {cost} arr -> {type:int,amount:BigNumber} - Arrays specifying costs for that upgrade
+    Lists for cost types:
+    0 - 8 = ["Be", "Ch", "Bg", "Su", "Jm", "Cs", "Hz", "Mn", "As"]
+    9 = Cookies
+    10 = Heavenly Chips
+    11 = Sugar Lumps
+    12 = High Elements
+    13 + n :
+    0 "Cursor",
+    1 "Grandma",
+    2 "Farm",
+    3 "Mine",
+    4 "Factory",
+    5 "Bank",
+    6 "Temple",
+    7 "Wizard Tower",
+    8 "Shipment",
+    9 "Alchemy Lab",
+    10 "Portal",
+    11 "Time Machine",
+    12 "Antimatter Condenser",
+    13 "Prism",
+    14 "Chancemaker",
+    15 "Fractal Engine",
+    16 "Javascript Console",
+    17 "Idleverse",
+    18 "Cortex Baker",
+    */
+}
+var researchCenter, researchUpgrade = new Array(199);
+var researchData = [{
+    id: 0, name: "Copyrighted Idea", desc: "Your first fruits of research. Although it may overlap with what other people have published, but recreating is a fine step towards something new.", time: 100, preq: [],
+    cost: [{type:9,amount:BF("1e510")},{type:0,amount:BF(1.5e57)}]
+},{
+    id: 1, name: "An Original Idea", desc: "Finally a figment of rational imagination that can be strictly classified as \"Original\". Although it may involve a seemingly nonsensical contraption and contrived definitions and theorycraft that won\'t do much ,but hey, it\'s a milestone.", time: 300, preq: [0],
+    cost: [{type:9,amount:BF("1e520")},{type:2,amount:BF(2.5e56)}]
+},{
+    id: 2, name: "Interdimensional Wormholes", desc: "An attempt at connecting multiple multiverses through a seemingly nonsensical and contradictory concept. Allows for a better coordination of cookie production across multiverses, but watch out for any signs of possible revolution(observable through a distinct smell of chocolate and bread)", time: 600, preq: [1],
+    cost: [{type:9,amount:BF("5e520")},{type:7,amount:BF(2e45)},{type:30,amount:BF(200)}]
+},{
+    id: 3, name: "Saccharin-Based Sugar", desc: "This mythical sweet substance boasts a sweetness rating 500 times higher than conventional onces. Including it into sugar plantations would surely boost the sweetness of the entire empire(minus the diabetes and possible addiction to sugar, of course)", time: 1200, preq: [1],
+    cost: [{type:9,amount:BF("1e530")},{type:10,amount:BF(1e7)}]
+},];
 
 //! Lumps
 const lumpTickChance = 5000;
@@ -1676,7 +1740,7 @@ var heavenlyUpgradeData = [
         name: "Empowerments of Buildings",
         info: "Increases how fast $P$ grows",
         costModel: new ExponentialCost(5e130, ML2(1e10)),
-        maxLevel: 5,
+        maxLevel: 3,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 15,
