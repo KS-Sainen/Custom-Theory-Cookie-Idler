@@ -15,6 +15,7 @@ import { profilers } from "../api/Profiler";
 import { TextAlignment } from "../api/ui/properties/TextAlignment";
 import { FontAttributes } from "../api/ui/properties/FontAttributes";
 import { QuaternaryEntry } from "../api/Theory";
+import { Color } from "../api/ui/properties/Color";
 // Hello to the person reading this "code"
 // Spoilers alert for ALL of the upgrades, buildings and achievements
 // Before leaving, please try and find any bugs or bad JS coding practices for me
@@ -598,7 +599,7 @@ var buildingData = [
     },
     {id: 17,
      names: ["Idleverse","IDledeverse"], desc: "clicking ", lumpBName: "Install Another Idle Game",
-     baseCPS: BF("8.5e210"), baseCost: BF("6.9e500"), powerUpgradeMult: 7, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 450, sweetMax: 250,
+     baseCPS: BF("8.5e205"), baseCost: BF("6.9e500"), powerUpgradeMult: 7, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 450, sweetMax: 250,
      achName: ["Manifest Destiny","Is there enough worlds?","Lost your Cosmic Cookies?","We the People of the Cookieverse, in Order to form a more perfect Dimensional Union, establish Justice, insure domestic Tranquility, provide for the common defense, promote the general Welfare, and secure the Blessings of Cookies to ourselves and our Posterity, do ordain and establish this Constitution for the Cookieverse.","You need a new bluestack"],
     },
     {id: 18,
@@ -1414,9 +1415,9 @@ var elementData = [
             uid: 32011,
             name: "Mooncandium Marbles",
             info: "Utilize the multiversial property of Mooncandy to build sophisticated spheres capable of holding up to 50 multiverses. Increases the maximum number of Idleverse by 50",
-            costModel: new ExponentialCost(1e45, ML2(1.25)),
+            costModel: new ExponentialCost(1e45, ML2(2.5)),
             maxLevel: 1000,
-            onBought: (amount) => {updateGlobalMult();refreshLocalMult();CPSrefresh();}
+            onBought: (amount) => {updateBuildingLumpMaxLv();}
         }]
     },{
         order: 8, weight: 55, prevUnlock: 1e50, excavatorPowerPow: 1.7, excavatorPowerFactor: 1,
@@ -1513,7 +1514,7 @@ var refreshExcavatorMaxLv = () => {
 //accelerator
 var accelerator, acceleratorButton, acceleratorControl, acceleratorMode;
 var lightOn = "O", lightOff = "-", strobeCnt = new Array(15).fill(0), strobeOdds = [0.75,1/3,1/11,0.4,0.6,1/7,0.5], strobeUsed = 7, lightInvalid = "X";
-const maxDecayPow = 0.9, lambda =  BF(0.025), yieldfactor = BF(0.05), yieldPow = 1.05, cookieYieldPow = 1.5, cookieYieldFactor = 10, weightFactor = 228/40;
+const maxDecayPow = 0.9, lambda =  BF(0.04), yieldfactor = BF(0.05), yieldPow = 1.05, cookieYieldPow = 1.5, cookieYieldFactor = 10, weightFactor = 228/40;
 var lightIndicator = (amt,cnt) => {
     if(amt%2 == 1){
         if(acceleratorMode.level > 0){
@@ -1537,7 +1538,7 @@ var updateStrobe = () => {
     }
 }
 var acceleratorStatus = (level, mode) => {
-    let str = `Accelerator Mode : ${(level % 2 == 1)?"ON":"OFF"} [${lightIndicator(level % 2,3)}]`;
+    let str = `Accelerator Control : ${(level % 2 == 1)?"ON":"OFF"} [${lightIndicator(level % 2,3)}]`;
     if(level % 2 == 0 || mode == 0){//off
         return `${str} ${`[-] `.repeat(strobeUsed)}`;
     }else{//on
@@ -1618,20 +1619,178 @@ function decayElementTest(indx, dt){
     18 "Cortex Baker",
     */
 }
-var researchCenter, researchUpgrade = new Array(199);
+var researchCenter, researchUpgrade = new Array(199), researchSlot = new Array(5), researchSlotID = new Array(5), researchSlotUpgrade, occupiedSlots, researchAvailable = new Array(199), maxResearchProgress = 180;
+const researchDone = `Progress : Completed!`;
 var researchData = [{
     id: 0, name: "Copyrighted Idea", desc: "Your first fruits of research. Although it may overlap with what other people have published, but recreating is a fine step towards something new.", time: 100, preq: [],
     cost: [{type:9,amount:BF("1e510")},{type:0,amount:BF(1.5e57)}]
 },{
     id: 1, name: "An Original Idea", desc: "Finally a figment of rational imagination that can be strictly classified as \"Original\". Although it may involve a seemingly nonsensical contraption and contrived definitions and theorycraft that won\'t do much ,but hey, it\'s a milestone.", time: 300, preq: [0],
-    cost: [{type:9,amount:BF("1e520")},{type:2,amount:BF(2.5e56)}]
+    cost: [{type:9,amount:BF("1e520")},{type:2,amount:BF(2.5e55)}]
 },{
     id: 2, name: "Interdimensional Wormholes", desc: "An attempt at connecting multiple multiverses through a seemingly nonsensical and contradictory concept. Allows for a better coordination of cookie production across multiverses, but watch out for any signs of possible revolution(observable through a distinct smell of chocolate and bread)", time: 600, preq: [1],
     cost: [{type:9,amount:BF("5e520")},{type:7,amount:BF(2e45)},{type:30,amount:BF(200)}]
 },{
     id: 3, name: "Saccharin-Based Sugar", desc: "This mythical sweet substance boasts a sweetness rating 500 times higher than conventional onces. Including it into sugar plantations would surely boost the sweetness of the entire empire(minus the diabetes and possible addiction to sugar, of course)", time: 1200, preq: [1],
-    cost: [{type:9,amount:BF("1e530")},{type:10,amount:BF(1e7)}]
+    cost: [{type:9,amount:BF("1e530")},{type:11,amount:BF(1e7)}]
+},{
+    id: 4, name: "Lab-Grown Heavenly Chips", desc: "How nice of the reset button on the cube to offer a partially pressed state, allowing heavenly chips to be made continuously(now that your monkeys have figured it out). Makes a concept known as HPS exists.", time: 2400, preq: [3],
+    cost: [{type:9,amount:BF("1e540")},{type:10,amount:BF("1e177")}]
+},{
+    id: 5, name: "101% Chocolate Mixture", desc: "A seemingly bizarre and illogical chocolate mixture consisting of more than what the space offers made through a process we can\'t describe here, but it definitely involves cocoa beans. Boosts the taste of cookies.", time: 6000, preq: [4],
+    cost: [{type:9,amount:BF("1e550")},{type:11,amount:BF(5000000)},{type:1,amount:BF(1.5e58)}]
+},{
+    id: 6, name: "Miniaturized Time Dilation", desc: "An early effort at warping thyme, this time focusing on correcting any distortions that comes with a difference in the flow of time. Though we can\'t go big with this one, it certainly fits nicely with all the idleverses.", time: 12000, preq: [2,4],
+    cost: [{type:9,amount:BF("1e540")},{type:24,amount:BF(6250)},{type:30,amount:BF(500)},{type:5,amount:BF(1e49)}]
+},{
+    id: 7, name: "Designer Brand Mining Drills", desc: "An overdesigned excavation marvel that somehow defies all expectations by outperforming everything we\'ve have so far with the power of hilariously complex efforts of research and something something. Multiplies EPS by 5 and reduces loss factor by 10.", time: 12000, preq: [5],
+    cost: [{type:0,amount:BF(1e59)},{type:1,amount:BF(1e59/50)},{type:2,amount:BF(1e58/2500)},{type:3,amount:BF(8e53)},{type:4,amount:BF(8e53/50)},{type:5,amount:BF(8e53/2500)},{type:6,amount:BF(8e53/12500)},{type:16,amount:BF(8750)},]
+},{
+    id: 8, name: "Aero(Cosmo)dynamic Design for Shipments", desc: "In the space there\'s nothing there. In the atmosphere there\'s air. Both places have vastly differing conditions that is a nightmare for space rockets. Preparing an effective design for both proves to increase the productivity and reduce the waste created from entering and exiting the atmosphere. Vastly increases the CPS of Shipments and multiplies EPS by 2.5.", time: 27000, preq: [5],
+    cost: [{type:9,amount:BF("1e560")},{type:21,amount:BF(8000)},{type:5,amount:BF(2.5e51)}]
+},{
+    id: 9, name: "Conditional Mass-Produced Goods Convergence", desc: "Most idleverses have difficulties converging to producing cookies, which slows down our Cookie Empire\'s growth. Through a clever usage of \"Higher Powers\", we can somewhat \"incentivize\" them to produce cookies instead of useless other stuffs.", time: 36000, preq: [8,6],
+    cost: [{type:9,amount:BF("1e560")},{type:30,amount:BF(800)},{type:19,amount:BF(8888)},{type:6,amount:BF(6e49)}]
 },];
+var getCostSymbol = (indx) => {
+    if(indx < 9){
+        return elementData[indx].symbol;
+    }else if(indx >= 13){
+        return `B[${indx-13}]`;
+    }else{
+        switch(indx){
+            case 9:return "C";break;
+            case 10:return "H";break;
+            case 11:return "L";break;
+            case 12:return "HEC";break;
+        }
+    }
+}
+var correctDigit = (num,digit) => {
+    if(num >= 1){
+        let cnt = Math.floor(Math.log10(num)) + 1;
+        return `${"0".repeat(digit-cnt)}${num}`;
+    }else{
+        return "0".repeat(digit);
+    }
+}
+var getTimeString = (ticks) => {
+    let hours = Math.floor(ticks/36000);ticks %= 36000;
+    let minutes = Math.floor(ticks/600);ticks %= 600;
+    let seconds = Math.floor(ticks/10);ticks %= 10;
+    return `${correctDigit(hours,2)}:${correctDigit(minutes,2)}:${correctDigit(seconds,2)}.${ticks}`;
+}
+var isValidCostObj = (cost) => Object.hasOwn(cost,'type') && Object.hasOwn(cost,'amount');
+var researchBegin = (indx) => {
+    if(researchUpgrade[indx].level > 0){
+        log("completed");
+        return;
+    }
+    //check if can begin
+    if(occupiedSlots.level < researchSlotUpgrade.level + 1){
+        //check afford -> deduct
+        if(canAffordResearch(researchData[indx].cost)){
+            //deduct
+            for(let i=0,j=researchData[indx].cost.length;i<j;i++){
+                if(isValidCostObj(researchData[indx].cost[i])){
+                    let index = researchData[indx].cost[i].type, val = researchData[indx].cost[i].amount;
+                    if(index < 9){
+                        elements[index].value -= val;
+                    }else if(index >= 13){
+                        building[index-13].level -= val;
+                    }else{
+                        switch(index){
+                            case 9:COOKIE.value -= val;break;
+                            case 10:HEAVENLY_CHIP.value -= val;break;
+                            case 11:SUGAR_LUMP.value -= val;break;
+                            //case 12:ret &= ;break;
+                        }
+                    }
+                }
+            }
+            //set levels
+            researchSlot[occupiedSlots.level].level = researchData[indx].time;
+            researchSlotID[occupiedSlots.level].level = indx;
+            occupiedSlots.level += 1;
+        }else{
+            log(`too poor m8`);
+            return;
+        }
+    }else{
+        log(`full slot`);
+    }
+}
+var updateResearchText = (indx,order,val) => {
+    if(order == 1){
+        mainUpgradeStack[indx].content.children[1].content.text = val;
+    }
+    mainUpgradeStack[indx].content.children[order].text = val;
+}
+var getResearchProgress = () => {
+    if(occupiedSlots.level > 0){
+        for(let i=0;i<occupiedSlots.level;i++){
+            let id = researchSlotID[i].level;
+            mainUpgradeStack[id].content.children[0].textColor = COLOR_YELLOW;
+            updateResearchText(id,2,`Researching : ${getCollectionBar((researchData[id].time - researchSlot[i].level)/(researchData[id].time/maxResearchProgress),maxResearchProgress)}`);
+        }
+    }
+}
+var updateResearchLabel = () => {
+    for(let i=0;i<researchData.length;i++){
+        if(researchUpgrade[i].level > 0){
+            mainUpgradeStack[i].content.children[0].textColor = COLOR_LIGHTBLUE;
+        }else if(canAffordResearch(researchData[i].cost)){
+            mainUpgradeStack[i].content.children[0].textColor = COLOR_GREEN;
+        }else{
+            mainUpgradeStack[i].content.children[0].textColor = COLOR_WHITE;
+        }
+        if(isResearchUnlock(i)){
+            researchAvailable[i] = true;
+            updateResearchText(i,0,`[${i+1}] ${researchData[i].name}`);
+            updateResearchText(i,1,`${researchData[i].desc}\nTime Required : ${getTimeString(researchData[i].time)}`);
+            updateResearchText(i,2,`Progress : ${getCollectionBar(0,maxResearchProgress)}`);
+            if(researchUpgrade[i].level > 0){
+                updateResearchText(i,2,researchDone);
+            }
+        }else{
+            researchAvailable[i] = false;
+            updateResearchText(i,0,`[${i+1}] ${"?".repeat(researchData[i].name.length)}`);
+            updateResearchText(i,1,`Undiscovered, research further and perhaps this will be discovered`);
+            updateResearchText(i,2,``);
+        }
+    }
+}
+function isResearchUnlock(indx){
+    let ret = true;
+    if(indx == 0){
+        return true;
+    }
+    for(let i=0,j=researchData[indx].preq.length;i<j;i++){
+        ret &= (researchUpgrade[researchData[indx].preq[i]].level > 0);
+    }
+    return ret;
+}
+function canAffordResearch(costs){
+    let ret = true;
+    for(let i=0;i<costs.length;i++){
+        if(isValidCostObj(costs[i])){
+            let indx = costs[i].type,val = costs[i].amount;
+            if(indx < 9){
+                ret &= (elements[indx].value >= val);
+            }else if(indx >= 13){
+                ret &= (building[indx-13].level >= val);
+            }else{
+                switch(indx){
+                    case 9:ret &= (COOKIE.value >= val);break;
+                    case 10:ret &= (HEAVENLY_CHIP.value >= val);break;
+                    case 11:ret &= (SUGAR_LUMP.value >= val);break;
+                    //case 12:ret &= ;break;
+                }
+            }
+        }
+    }
+    return ret;
+}
 
 //! Lumps
 const lumpTickChance = 5000;
@@ -2383,6 +2542,22 @@ var init = () => {
             excavatorModule[i].bought = (amount) => calcEPS();
         }
     }
+    //Page 3.5 : Research
+    {
+        for(let i=0;i<5;i++){
+            researchSlot[i] = shortPermaUpgrade(40001+i,COOKIE,new ConstantCost(BF("1e1000")),`Research Slot ${i+1}`,"research slot");researchSlot[i].isAvailable = false;
+            researchSlotID[i] = shortPermaUpgrade(40010+i,COOKIE,new ConstantCost(BF("1e1000")),`Research Slot ${i+1} ID`,"research slot ID");researchSlotID[i].isAvailable = false;
+        }
+        researchSlotUpgrade = shortPermaUpgrade(40100,COOKIE,new ConstantCost(BF("1e1000")),`Research Slot Count`,"research slot count");researchSlotUpgrade.isAvailable = false;
+        occupiedSlots = shortPermaUpgrade(40101,COOKIE,new ConstantCost(BF("1e1000")),`Number of used research Slot`,"occupied slot");occupiedSlots.isAvailable = false;
+        for(let i=0;i<researchData.length;i++){
+            log(`R${i}`);
+            researchUpgrade[i] = shortPermaUpgradeML(41000+i,COOKIE,new ConstantCost(BF("1e1000")),`${researchData[i].name}`,"research upgrade",2);researchUpgrade[i].isAvailable = false;
+            if(researchUpgrade[i].level > 0){
+                mainUpgradeStack[i].content.children[2].text = `Researched!`;
+            }
+        }
+    }
     ///////////////////
     // Regular Upgrades
     // Throwaway
@@ -2689,6 +2864,7 @@ var init = () => {
     quartList2[2] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T}`, null));
     quartList2[3] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_m}`, null));
     quartList2[4] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_d}`, null));
+    updateResearchLabel();
     updateAvailability();
 };
 
@@ -2754,7 +2930,7 @@ var updateAvailability = () => {
     for(let i=0;i<excavatedElements;i++){
         excavatorModule[i].isAvailable = (permUpgradeMenu.level == 2);
     }
-    accelerator.isAvailable = ((cherryRegulator.level + hazelSolution.level + moonCore.level) >= 3);
+    accelerator.isAvailable = ((cherryRegulator.level + hazelSolution.level + moonCore.level) >= 3) && (permUpgradeMenu.level == 2);
     acceleratorButton.isAvailable = (accelerator.level > 0) && (normalUpgradeMenu.level == 0);
     acceleratorControl.isAvailable = (accelerator.level > 0) && (normalUpgradeMenu.level == 0);
     //elements
@@ -2792,6 +2968,33 @@ var thymeInc = (ticks) => {
     thyme.level += (thyme.level < thyme.maxLevel) ? ticks : 0;
     if(artifactUpgrade[10].level > 0){
         updateSpellCooldown(ticks);
+    }
+}
+var researchInc = (ticks) => {
+    if(occupiedSlots.level > 0){
+        for(let i=0;i<occupiedSlots.level;i++){
+            let id = researchSlotID[i].level;
+            updateResearchText(id,2,`Researching : ${getCollectionBar((researchData[id].time - researchSlot[i].level)/(researchData[id].time/maxResearchProgress),maxResearchProgress)}`);
+            if(ticks >= researchSlot[i].level){
+                researchSlot[i].level = 0;
+                researchUpgrade[researchSlotID[i].level].level = 1;
+                updateResearchText(id,2,researchDone);
+                updateResearchLabel();
+                occupiedSlots.level -= 1;
+                //shift down
+                for(j=i;j>occupiedSlots.level;j++){
+                    researchSlot[j].level = researchSlot[j+1].level;
+                    researchSlotID[j].level = researchSlotID[j+1].level;
+                }
+                researchSlot[occupiedSlots.level].level = 0;
+                researchSlotID[occupiedSlots.level].level = 0;
+            }else{
+                researchSlot[i].level -= ticks;
+            }
+        }
+    }
+    if(!game.isCalculatingOfflineProgress){
+        getResearchProgress();
     }
 }
 var generateCookie = (id, ticks, mult) => {
@@ -2878,6 +3081,7 @@ var tick = (elapsedTime,multiplier) => {
         updateSpellLayer();
         calcEPS();
         refreshExcavatorMaxLv();
+        updateResearchLabel();
         setupTick = false;
     }
     if(profilingConst){
@@ -2887,6 +3091,8 @@ var tick = (elapsedTime,multiplier) => {
     }
     terraBoost = Logistic();
     dilateBoost = Dilate();
+    //research
+    researchInc(Math.round(elapsedTime * multiplier * 10));
     let dt =elapsedTime * multiplier * 10 * dilateBoost;//1 tick = 0.1 second
     thymeInc(Math.round(dt));
     trueThyme.level += 1;
@@ -3151,6 +3357,7 @@ var getCurrencyFromTau = (tau) => [tau.max(BigNumber.ONE).pow(5), COOKIE.symbol]
 
 //==UI==
 //! The text is arranged as follows: Introduction, Exponents, Cookies and Milk, Special Upgrades, Terraform Powerup, Archaeology, Grimoire, SPOILERS:(((((Elements and Alchemy, Subgames, Bingo Research Facility)))))
+var COLOR_WHITE = Color.fromRgb(1,1,1), COLOR_GREEN = Color.fromRgb(0,1,0), COLOR_YELLOW = Color.fromRgb(1,1,0), COLOR_LIGHTBLUE = Color.fromRgb(0,1,1);
 //!1.1 : HELP MENU; Just a bunch of text that is used in the help menu and a placeholder for the REAL help menu, meanwhile enjoy this placeholder text
 var getHelpText = () => {
     let ret = [];
@@ -3765,7 +3972,128 @@ let acceleratorMenu = ui.createPopup({
         ]
     })
 });
-//!1.9 : MAIN MENU
+//!1.9 : RESEARCH
+var costTableFontSize = 13, columnArr = [1,3,0,2], mainUpgradeStack = [], selectedResearch = -1;
+var costTable = new Array(16);
+for(let i=0;i<researchData.length;i++){
+    //log(`R${i}`);
+    mainUpgradeStack.push(ui.createFrame({
+        content:ui.createGrid({
+            heightRequest: 125,
+            rowDefinitions:["30*","50*","20*"],
+            children:[
+                ui.createLabel({
+                    padding: new Thickness(3,0,0,0), textColor: COLOR_WHITE,
+                    row:0,column:0,fontSize:16,fontFamily: FontFamily.CMU_REGULAR,
+                    horizontalTextAlignment: TextAlignment.START,
+                    text:`${researchData[i].name}`,
+                }),
+                ui.createScrollView({
+                    padding: new Thickness(3,0,0,0),
+                    row:1,column:0,
+                    content:ui.createLabel({
+                        fontSize:9,fontAttributes: FontAttributes.ITALIC,
+                        horizontalTextAlignment: TextAlignment.START,
+                        text:`${researchData[i].desc}\nTime Required : ${getTimeString(researchData[i].time)}`,
+                    })
+                }),
+                ui.createLabel({
+                    padding: new Thickness(3,0,0,0),
+                    row:2,column:0,fontSize:12,
+                    horizontalTextAlignment: TextAlignment.START,
+                    text:`Progress : ${getCollectionBar(0,100)}`,
+                }),
+            ]
+        }),
+        onTouched: (e) => {
+            if(researchAvailable[i]){
+                if(selectedResearch != -1){
+                    updateResearchText(selectedResearch,0,`[${selectedResearch+1}] ${researchData[selectedResearch].name}`);
+                }
+                selectedResearch = i;
+                updateCostTable(researchData[i].cost);
+                updateResearchText(i,0,`[${i+1}] >> ${researchData[i].name} <<`);
+                if(canAffordResearch(researchData[i].cost)){
+                    researchMenu.content.children[0].children[1].text = "Cost";
+                }else{
+                    researchMenu.content.children[0].children[1].text = "Cost (Unaffordable!)";
+                }
+            }
+        }
+    }));
+}
+for(let i=0;i<16;i++){
+    costTable[i] = ui.createLabel({fontSize:costTableFontSize,text:"",row:i%4,column:columnArr[Math.floor(i/4)],horizontalTextAlignment: TextAlignment.CENTER});
+}
+var updateCostTable = (costs) => {
+    for(let i=0;i<8;i++){
+        if(i < costs.length){
+            if(isValidCostObj(costs[i])){
+                costTable[i].text = costs[i].amount.toString();
+                costTable[i+8].text = `${getCostSymbol(costs[i].type)} : `;
+            }else{
+                costTable[i].text = "???";
+                costTable[i+8].text = `???`;
+            }
+        }else{
+            costTable[i].text = "";
+            costTable[i+8].text = `-`;
+        }
+    }
+}
+let researchMenu = ui.createPopup({
+    title: "Bingo Research Facility",
+    isPeekable: true,
+    content: ui.createGrid({
+        padding: new Thickness(6),
+        rowDefinitions:["80*","20*"],
+        children:[
+            ui.createStackLayout({
+                row:0,column:0,
+                padding: new Thickness(6),
+                children:[
+                    ui.createFrame({
+                        content:ui.createScrollView({
+                            heightRequest: 500,
+                            content: ui.createStackLayout({
+                                children:mainUpgradeStack
+                            })
+                        })
+                    }),
+                    ui.createLabel({
+                        text: "Cost",
+                        fontSize: 14,
+                    })
+                ]
+            }),
+            ui.createGrid({
+                row:1,column:0,
+                columnDefinitions: ["60*","40*"],
+                columnSpacing: 10,
+                children:[
+                    ui.createFrame({
+                        content:ui.createGrid({
+                            row:0, column:0, padding: new Thickness(3),
+                            heightRequest: 125,
+                            columnDefinitions: ["15*","35*","15*","35*"],
+                            children:costTable
+                        })
+                    }),
+                    ui.createButton({
+                        row:0, column:1, fontSize: 18,
+                        text:`Research`,
+                        onTouched: (e) => {
+                            if (e.type == TouchType.SHORTPRESS_RELEASED) {
+                                researchBegin(selectedResearch);
+                            }
+                        }
+                    }),
+                ]
+            }),
+        ]
+    })
+});
+//!1.10 : MAIN MENU
 let popup = ui.createPopup({
     title: "Main Menu",
     isPeekable: true,
@@ -3792,9 +4120,9 @@ let popup = ui.createPopup({
                         }
                     }),
                     ui.createButton({
-                        text: "Subgames", row: 1, column: 0,
+                        text: "Research", row: 1, column: 0,
                         onClicked: () => {
-                            subPopup.show();
+                            researchMenu.show();
                         }
                     }),
                     ui.createButton({
@@ -3826,7 +4154,7 @@ let popup = ui.createPopup({
         ]
     })
 });
-//!1.10 : OVERLAY
+//!1.11 : OVERLAY
 // credits to a_spiralist for making the button scale to the same size to the publication button + the source code of getImageSize(width)
 let getImageSize = (width) => {
     if (width >= 1080)
