@@ -826,7 +826,7 @@ var updateGlobalMult = () => {
     }
     //log(globalMult);
     //11 elem
-    globalMult *= BigP(50,astroExcavate.level);
+    globalMult *= BigP(50,astroExcavate.level) * BigP(1.01,researchUpgrade[0].level + researchUpgrade[1].level) * BigP(5,researchUpgrade[7].level);
 };
 //sub global mult - mmmmmmmmm those cookies
 //cookie tins, remember, they're unlocked in order :)
@@ -915,6 +915,7 @@ var cookieTinInfo = [
 var getCookieTP = (level) => {
     let res = BF(1);
     level += chalcedIngredient.level * 10;
+    level += researchUpgrade[5].level * 25;
     if (level >= 150) {
         res = BigP(1.13,level);
     } else if (level >= 100) {
@@ -1070,6 +1071,9 @@ var updateLocalMult = (indx) => {
             if (cherryRegulator.level > 0) {
                 buildingData[indx].mult *= BF(1.5e11);
             }
+            break;
+        case 17:
+            buildingData[indx].mult *= BigP(50,researchUpgrade[2].level+researchUpgrade[6].level+researchUpgrade[9].level);
             break;
     }
     if(buildingData[indx].mult == BF(0)){buildingData[indx].mult = BF(1)};
@@ -1454,9 +1458,10 @@ var elementData = [
 var getElemBoost = (indx,level) => (1 + (elementData[indx].excavatorPowerFactor * BigP(level,elementData[indx].excavatorPowerPow)));
 arrEPS.fill(BF(0));
 var calcExcavator = (level) => Utils.getStepwisePowerSum(level, 5, 5, 0);
+var getLossFactor = () => lossFactorBase - (jetRefine.level*jetRefineEff) - (10*researchUpgrade[7].level);
 var calcEPS = () => {
-    let excRate = calcExcavator(excavator.level) * BigP(1.2,cherryRegulator.level) * BigP(1.2,hazelSolution.level) * BigP(2,moonCore.level) * BigP(5,astroExcavate.level);
-    let lossFactor = lossFactorBase - (jetRefine.level*jetRefineEff);
+    let excRate = calcExcavator(excavator.level) * BigP(1.2,cherryRegulator.level) * BigP(1.2,hazelSolution.level) * BigP(2,moonCore.level) * BigP(5,astroExcavate.level) * BigP(5,researchUpgrade[7].level);
+    let lossFactor = getLossFactor();
     for(let i = 0;i < excavatorDrill.level;i++){
         excRate *= getElemBoost(i,excavatorModule[i].level);
     }
@@ -1643,7 +1648,7 @@ var researchData = [{
     id: 6, name: "Miniaturized Time Dilation", desc: "An early effort at warping thyme, this time focusing on correcting any distortions that comes with a difference in the flow of time. Though we can\'t go big with this one, it certainly fits nicely with all the idleverses.", time: 12000, preq: [2,4],
     cost: [{type:9,amount:BF("1e540")},{type:24,amount:BF(6250)},{type:30,amount:BF(500)},{type:5,amount:BF(1e49)}]
 },{
-    id: 7, name: "Designer Brand Mining Drills", desc: "An overdesigned excavation marvel that somehow defies all expectations by outperforming everything we\'ve have so far with the power of hilariously complex efforts of research and something something. Multiplies EPS by 5 and reduces loss factor by 10.", time: 12000, preq: [5],
+    id: 7, name: "Designer Brand Mining Drills", desc: "An overdesigned excavation marvel that somehow defies all expectations by outperforming everything we\'ve have so far with the power of hilariously complex efforts of research and something something. Multiplies EPS and CPS by 5 and reduces loss factor by 10.", time: 12000, preq: [5],
     cost: [{type:0,amount:BF(1e59)},{type:1,amount:BF(1e59/50)},{type:2,amount:BF(1e58/2500)},{type:3,amount:BF(8e53)},{type:4,amount:BF(8e53/50)},{type:5,amount:BF(8e53/2500)},{type:6,amount:BF(8e53/12500)},{type:16,amount:BF(8750)},]
 },{
     id: 8, name: "Aero(Cosmo)dynamic Design for Shipments", desc: "In the space there\'s nothing there. In the atmosphere there\'s air. Both places have vastly differing conditions that is a nightmare for space rockets. Preparing an effective design for both proves to increase the productivity and reduce the waste created from entering and exiting the atmosphere. Vastly increases the CPS of Shipments and multiplies EPS by 2.5.", time: 27000, preq: [5],
@@ -1719,6 +1724,7 @@ var researchBegin = (indx) => {
     }else{
         log(`full slot`);
     }
+    updateResearchButtonText();
 }
 var updateResearchText = (indx,order,val) => {
     if(order == 1){
@@ -2986,6 +2992,7 @@ var researchInc = (ticks) => {
                     researchSlot[j].level = researchSlot[j+1].level;
                     researchSlotID[j].level = researchSlotID[j+1].level;
                 }
+                updateResearchButtonText();
                 researchSlot[occupiedSlots.level].level = 0;
                 researchSlotID[occupiedSlots.level].level = 0;
             }else{
@@ -3016,7 +3023,7 @@ var generateCookie = (id, ticks, mult) => {
 }
 var generateLump = (ticks) => {
     let lumpChance = BF(1) / (BF(lumpTickChance) / BigL10(COOKIE.value + BF(10)));//it's normally 1/x
-    let dLump = BF(lumpChance.floor() + (sugarTools.level * 0.25) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01)) * ticks;//yes, ticks ARE 0.1 seconds so 2.5LPS = 0.25LPT
+    let dLump = BF(lumpChance.floor() + (sugarTools.level * 0.25) + (5 * researchUpgrade[3].level) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01)) * ticks;//yes, ticks ARE 0.1 seconds so 2.5LPS = 0.25LPT
     //log(dLump);
     lumpChance -= lumpChance.floor();
     if (ticks == 1 && BF(Math.random()) <= lumpChance) {
@@ -3081,7 +3088,7 @@ var tick = (elapsedTime,multiplier) => {
         updateSpellLayer();
         calcEPS();
         refreshExcavatorMaxLv();
-        updateResearchLabel();
+        updateResearchLabel();updateResearchButtonText();
         setupTick = false;
     }
     if(profilingConst){
@@ -3150,6 +3157,9 @@ var tick = (elapsedTime,multiplier) => {
         decayElement(acceleratorMode.level+1,dt);
     }
     //heavenly chips
+    if(researchUpgrade[4].level > 0){
+        HEAVENLY_CHIP.value += BigP(HEAVENLY_CHIP.value,0.9);
+    }
     theory.invalidateQuaternaryValues();
     theory.invalidateTertiaryEquation();
     //log(thyme.level);
@@ -3240,7 +3250,7 @@ var secondaryEq = (mode, col) => {
             return `\\color{#${eqColor[col]}}{T_d = \\frac{B[11]^{1+0.025T_D}}{1000^{T_f}}\\\\T_f = 1-\\frac{min(B[11],B[10]+B[12])}{(2.125-0.125T_{D}))(B[10]+B[12])}}`;
         case 9:// Elements
             theory.secondaryEquationScale = 0.85;
-            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{x}\\prod_{i=0}^{${excavatedElements}}{Ef_{i}}}{${lossFactorBase - (jetRefine.level*jetRefineEff)}^{n}},\\: n \\neq 8${(artifactUpgrade[13].level > 0) ? `\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}` : ``}}`;
+            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{x}\\prod_{i=0}^{${excavatedElements}}{Ef_{i}}}{${getLossFactor()}^{n}},\\: n \\neq 8${(artifactUpgrade[13].level > 0) ? `\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}` : ``}}`;
         case 10:// Decay
             let ingre = (acceleratorMode.level - 1 == -1) ? "E_{n}" : `${elementData[acceleratorMode.level - 1 + 2].symbol}`;
             let r1 = (acceleratorMode.level - 1 == -1) ? "E_{n-1}" : `${elementData[acceleratorMode.level - 1 + 1].symbol}`;
@@ -3979,17 +3989,17 @@ for(let i=0;i<researchData.length;i++){
     //log(`R${i}`);
     mainUpgradeStack.push(ui.createFrame({
         content:ui.createGrid({
-            heightRequest: 125,
+            heightRequest: 140,
             rowDefinitions:["30*","50*","20*"],
             children:[
                 ui.createLabel({
-                    padding: new Thickness(3,0,0,0), textColor: COLOR_WHITE,
+                    padding: new Thickness(6,6,0,0), textColor: COLOR_WHITE,
                     row:0,column:0,fontSize:16,fontFamily: FontFamily.CMU_REGULAR,
                     horizontalTextAlignment: TextAlignment.START,
                     text:`${researchData[i].name}`,
                 }),
                 ui.createScrollView({
-                    padding: new Thickness(3,0,0,0),
+                    padding: new Thickness(6,0,0,0),
                     row:1,column:0,
                     content:ui.createLabel({
                         fontSize:9,fontAttributes: FontAttributes.ITALIC,
@@ -3998,7 +4008,7 @@ for(let i=0;i<researchData.length;i++){
                     })
                 }),
                 ui.createLabel({
-                    padding: new Thickness(3,0,0,0),
+                    padding: new Thickness(6,0,0,6),
                     row:2,column:0,fontSize:12,
                     horizontalTextAlignment: TextAlignment.START,
                     text:`Progress : ${getCollectionBar(0,100)}`,
@@ -4014,9 +4024,9 @@ for(let i=0;i<researchData.length;i++){
                 updateCostTable(researchData[i].cost);
                 updateResearchText(i,0,`[${i+1}] >> ${researchData[i].name} <<`);
                 if(canAffordResearch(researchData[i].cost)){
-                    researchMenu.content.children[0].children[1].text = "Cost";
+                    researchMenu.content.children[1].children[0].text = "Cost";
                 }else{
-                    researchMenu.content.children[0].children[1].text = "Cost (Unaffordable!)";
+                    researchMenu.content.children[1].children[0].text = "Cost (Unaffordable!)";
                 }
             }
         }
@@ -4041,53 +4051,59 @@ var updateCostTable = (costs) => {
         }
     }
 }
+var updateResearchButtonText = () => researchButton.text = `Research\n[${occupiedSlots.level}/${researchSlotUpgrade.level + 1}]`;
+var researchButton = ui.createButton({
+    row:1, column:1, fontSize: 18,
+    text:`Research\n[0/0]`,
+    onTouched: (e) => {
+        if (e.type == TouchType.SHORTPRESS_RELEASED) {
+            researchBegin(selectedResearch);
+        }
+    }
+});
 let researchMenu = ui.createPopup({
     title: "Bingo Research Facility",
     isPeekable: true,
     content: ui.createGrid({
         padding: new Thickness(6),
-        rowDefinitions:["80*","20*"],
+        rowDefinitions:["70*","30*"],
+        heightRequest: 685,
         children:[
             ui.createStackLayout({
                 row:0,column:0,
-                padding: new Thickness(6),
                 children:[
                     ui.createFrame({
                         content:ui.createScrollView({
-                            heightRequest: 500,
                             content: ui.createStackLayout({
+                                padding: new Thickness(6),
+                                spacing: 6,
                                 children:mainUpgradeStack
                             })
                         })
-                    }),
-                    ui.createLabel({
-                        text: "Cost",
-                        fontSize: 14,
                     })
                 ]
             }),
             ui.createGrid({
                 row:1,column:0,
-                columnDefinitions: ["60*","40*"],
+                columnDefinitions: ["65*","45*"],
+                rowDefinitions: ["15*","85*"],
                 columnSpacing: 10,
                 children:[
+                    ui.createLabel({
+                        row:0, column:0,
+                        text: "Cost",
+                        fontSize: 14,
+                    }),
                     ui.createFrame({
+                        row:1, column:0,
                         content:ui.createGrid({
-                            row:0, column:0, padding: new Thickness(3),
-                            heightRequest: 125,
+                            heightRequest:125,
+                            padding: new Thickness(3),
                             columnDefinitions: ["15*","35*","15*","35*"],
                             children:costTable
                         })
                     }),
-                    ui.createButton({
-                        row:0, column:1, fontSize: 18,
-                        text:`Research`,
-                        onTouched: (e) => {
-                            if (e.type == TouchType.SHORTPRESS_RELEASED) {
-                                researchBegin(selectedResearch);
-                            }
-                        }
-                    }),
+                    researchButton
                 ]
             }),
         ]
