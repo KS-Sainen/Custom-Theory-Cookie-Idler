@@ -1826,7 +1826,7 @@ var updateResearchLabel = () => {
         }
     }
 }
-var debugUnlockResearch = true;
+var debugUnlockResearch = false;
 function isResearchUnlock(indx){
     let ret = true;
     if(indx == 0){
