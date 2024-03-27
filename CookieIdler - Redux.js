@@ -479,6 +479,7 @@ var buildingData = [
         costModel: new ExponentialCost(1e252, ML2(2)),
         maxLevel: 1000,
         onBought: (amount) => {
+            amount = Math.min(amount,500);
             for(let i=0;i<amount;i++){
                 rollLoot();
                 checkArtifactUnlock();
@@ -598,13 +599,13 @@ var buildingData = [
      achName: ["Press F12","Infinite Theorycraft","I bring fourth reincarnation of reality","","The \"C\" Language"],
     },
     {id: 17,
-     names: ["Idleverse","IDledeverse"], desc: "clicking ", lumpBName: "Install Another Idle Game",
+     names: ["Idleverse","IDledeverse"], desc: "idling in ", lumpBName: "Install Another Idle Game",
      baseCPS: BF("8.5e205"), baseCost: BF("6.9e500"), powerUpgradeMult: 7, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 450, sweetMax: 250,
      achName: ["Manifest Destiny","Is there enough worlds?","Lost your Cosmic Cookies?","We the People of the Cookieverse, in Order to form a more perfect Dimensional Union, establish Justice, insure domestic Tranquility, provide for the common defense, promote the general Welfare, and secure the Blessings of Cookies to ourselves and our Posterity, do ordain and establish this Constitution for the Cookieverse.","You need a new bluestack"],
     },
     {id: 18,
-     names: ["Cortex Baker","Corex Bakr"], desc: "clicking ", lumpBName: "Get an extra IQ Point",
-     baseCPS: 69420, baseCost: BF("6.9e1337"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 500, sweetMax: 200,
+     names: ["Cortex Baker","Corex Bakr"], desc: "thinking in ", lumpBName: "Get an extra IQ Point",
+     baseCPS: BF("8.5e250"), baseCost: BF("6.66e610"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 500, sweetMax: 200,
      achName: ["O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA","Cardinal Synapsis","I declare thee on all ye inferiors. Despair before me, I am the Ozymandias","Who are you? I̷ a̵͇̋͂̌m̷̡̨̉̀̂ s̷̬̏̓̓ø̷̘̜͚̒͒̓l̸͍̄͐͘i̷̡̛̞̯p̷͈̞̳̉̃s̶̬̲͕̝̓̕͝","I am smart"],
     },
 ];
@@ -619,7 +620,8 @@ var buildingCount = 0;
 // Logistic funtion for Mine+
 // Param -> midpoint=30*L, max=500*L - 1, min=0
 // Display T, returns bignumber
-const terraDurMod = BF(300), terraInfPow = BF(0.005), maxLPowBase = BF(2.4), maxLPowMod = BF(0.1), maxLBPowBase = BF(1.2), maxLBPowMod = BF(0.03), dilateFactorDivBase = BF(2.125), dilateFactorDivMod = BF(0.125), dilateFactorBase = BF(1000), dilatePowBase = BF(1), dilatePowMod = BF(0.025), logBoot = BF(1);
+const terraDurMod = BF(300), terraInfPow = BF(0.005), maxLPowBase = BF(2.4), maxLPowMod = BF(0.1), maxLBPowBase = BF(1.2), maxLBPowMod = BF(0.03), dilateFactorDivBase = BF(2.125), dilateFactorDivMod = BF(0.125), dilateFactorBase = BF(1000), dilatePowBase = BF(1), dilatePowMod = BF(0.025);
+var logBoost = BF(1);
 var xBegin = 0, maxL = 1;
 var updateMaxL = () => {
     maxL = (BigP(terra.level,maxLPowBase + maxLPowMod * (TerraInf.level + ((artifactUpgrade[6].level > 0) ? 1 : 0))) * 1500);
@@ -777,12 +779,14 @@ var updateBuildingLumpMaxLv = () => {
         }
     }
     //idleverse
+    moonMarbleCapacity = 50 + (10 * researchUpgrade[14].level) + (15 * researchUpgrade[16].level);
     log(`Marble Lv.${moonMarble.level}x${moonMarbleCapacity} = ${moonMarbleCapacity*moonMarble.level}`)
     if((building[17].level > 0) && (building[17].level >= moonMarbleCapacity*moonMarble.level)){
         building[17].maxLevel = building[17].level;
     }else{
         building[17].maxLevel = moonMarbleCapacity*moonMarble.level;
     }
+    archaeology.maxLevel = 1000 + (500 * researchUpgrade[12].level);
 }
 var updateBuildingLumpPower = () => {
     if(superL.level > 0){
@@ -826,7 +830,7 @@ var updateGlobalMult = () => {
     }
     //log(globalMult);
     //11 elem
-    globalMult *= BigP(50,astroExcavate.level) * BigP(1.01,researchUpgrade[0].level + researchUpgrade[1].level) * BigP(5,researchUpgrade[7].level);
+    globalMult *= BigP(50,astroExcavate.level) * BigP(1.01,researchUpgrade[0].level + researchUpgrade[1].level + researchUpgrade[13].level) * BigP(5,researchUpgrade[7].level + researchUpgrade[15].level);
 };
 //sub global mult - mmmmmmmmm those cookies
 //cookie tins, remember, they're unlocked in order :)
@@ -1054,6 +1058,11 @@ var updateLocalMult = (indx) => {
                 }
             }
             break;
+        case 8:
+            if (researchUpgrade[8].level > 0){
+                buildingData[indx].mult *= BF(3.6e89);
+            }
+            break;
         case 12:
             if (cherryRegulator.level > 0) {
                 buildingData[indx].mult *= BF(1e30);
@@ -1117,7 +1126,7 @@ var artifactData = [{
     cost: BF("1e330"),unlockCondition: () => {return (building[7].level >= (parseInt([+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[]]) ^ parseInt([+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[]])) + 100) && (Math.random() < 0.01);}, desc: "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 8 spells"
 },{
     order: 11,name: "Antediluvian Engine",clue: "Long-Lived 6048000",
-    cost: BF("1e510"),unlockCondition: () => {return (thyme.level >= 6048000) && (Math.random() < (0.001 * (thyme.level/6048000)));}, desc: "A peculiar machine somehow capable of locally accelerating spacetime using something about time crystals. Engravings of menacing nature can be found tucked away at the bottom, though we don\'t know why."
+    cost: BF("1e510"),unlockCondition: () => {return (thyme.level >= 6048000) && (Math.random() < (0.001 * (thyme.level/6048000)));}, desc: "A peculiar machine somehow capable of locally accelerating spacetime using something about time crystals. Engravings of menacing nature can be found tucked away at the bottom, though we don\'t know why. It also comes with a guidebook on parallel computing, not that anything in there makes no sense, right?"
 },{
     order: 12,name: "Elementium Infused Chocolate Chunk",clue: "Cavitilicious",
     cost: BF("1e365"),unlockCondition: () => {return (SUGAR_LUMP.value >= 0b10011100010000000000) && (Math.random() < 0.005);}, desc: "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?"
@@ -1251,7 +1260,12 @@ var spellData = [{
         if (rand < 19) {
             if ((building[rand].level > 0) && (building[rand].cost.getCost(building[rand].level) <= (BF(1e10) * COOKIE.value * BigP(5,boost)))) {
                 log(`You won ${buildingData[rand].names[0]}`);
-                building[rand].level += RandI(10 + boost) + 1 + SpellStack.level + Math.round(boost);
+                let res = RandI(10 + boost) + 1 + SpellStack.level + Math.round(boost);
+                if(rand != 17){
+                    building[rand].level += res;
+                }else{
+                    building[17].level = Math.min(building[17].level + res,building[17].maxLevel);
+                }
             }
         }
     },
@@ -1278,7 +1292,7 @@ var spellData = [{
     castCost: 5555, castCooldown: 14400,
     effect: (boost) => {
         let warpthyme = ((100 + (10 * SpellStack.level)) * RandR(0.9, 1.1 + (0.05 * SpellStack.level)) + (15 * SpellStack.level)) + (10 * boost);
-        //log("Time goes brrrrrrrr " + warpthyme);
+        log("Time goes brrrrrrrr " + warpthyme);
         for (let i = 0; i < warpthyme; i++) {
             tick(0.1, 1);
         }
@@ -1306,7 +1320,7 @@ let onSpellCast = (indx,amount) => {
     spellCooldown[indx].level = spellData[indx].castCooldown;
     spellCount[indx].level += amount;
     totalSpell += amount;totalSpellStore.setValue(totalSpell);
-    let spellBoost = totalCastAchievement[4].isUnlocked + totalCastAchievement[5].isUnlocked + totalCastAchievement[6].isUnlocked + spellCastAchievement[indx][0].isUnlocked + spellCastAchievement[indx][1].isUnlocked + spellCastAchievement[indx][2].isUnlocked + (0.25 * butterBar.level);
+    let spellBoost = totalCastAchievement[4].isUnlocked + totalCastAchievement[5].isUnlocked + totalCastAchievement[6].isUnlocked + spellCastAchievement[indx][0].isUnlocked + spellCastAchievement[indx][1].isUnlocked + spellCastAchievement[indx][2].isUnlocked + (0.25 * butterBar.level) + (10 * researchUpgrade[17].level);
     for(let i=0;i<amount;i++){
         spellData[indx].effect(spellBoost);
     }
@@ -1319,7 +1333,7 @@ let isSpellActive = (indx) => {
 //prevUnlock : previous element required to unlock the next excavator
 var elements = new Array(19), elemPrev = new Array(19), arrEPS = new Array(19);
 var excavator, excavatorModule = new Array(19), excavatorDrill, excavatorSiteGrant;
-var jetEngine, sugarTools, chalcedIngredient, butterBar, jetRefine, astroExtract, jetTransistor, cherryRegulator, hazelSolution, moonCore, moonMarble, astroExcavate;
+var jetEngine, sugarTools, chalcedIngredient, butterBar, jetRefine, astroExtract, jetTransistor, jetParallel, cherryRegulator, hazelSolution, moonCore, moonMarble, astroExcavate;
 const usedElements = 9, excavatedElements = 8, lossFactorBase = 100, jetRefineEff = 1.5;
 var elementData = [
     {
@@ -1382,6 +1396,13 @@ var elementData = [
             costModel: new ConstantCost(2.85e25),
             maxLevel: 1,
             onBought: (amount) => {updateGlobalMult();refreshLocalMult();CPSrefresh();}
+        },{
+            uid: 32013,
+            name: "Parallel Computing Chip",
+            info: "Does the impossible of computing 2 things at once. \'nuff said.",
+            costModel: new ConstantCost(8e55),
+            maxLevel: 1,
+            onBought: (amount) => {researchSlotUpgrade.level += 1;updateResearchButtonText();}
         }]
     },{
         order: 5, weight: 13, prevUnlock: 1.7e26, excavatorPowerPow: 1.55, excavatorPowerFactor: 1,
@@ -1439,7 +1460,7 @@ var elementData = [
             info: "Manifest your destiny of elements by extending your mining operations into the SPACE! Multiplies EPS by 5 and CPS by 50",
             costModel: new ExponentialCost(1000000,ML2(10)),
             maxLevel: 10,
-            onBought: (amount) => {updatreGlobalMult();calcEPS();}
+            onBought: (amount) => {updateGlobalMult();calcEPS();}
         }]
     },{
         order: 9, weight: 89, prevUnlock: 1e50,
@@ -1458,9 +1479,10 @@ var elementData = [
 var getElemBoost = (indx,level) => (1 + (elementData[indx].excavatorPowerFactor * BigP(level,elementData[indx].excavatorPowerPow)));
 arrEPS.fill(BF(0));
 var calcExcavator = (level) => Utils.getStepwisePowerSum(level, 5, 5, 0);
-var getLossFactor = () => lossFactorBase - (jetRefine.level*jetRefineEff) - (10*researchUpgrade[7].level);
+var getLossFactor = () => lossFactorBase - (jetRefine.level*jetRefineEff) - (10*researchUpgrade[7].level) - (10*researchUpgrade[11].level);
 var calcEPS = () => {
-    let excRate = calcExcavator(excavator.level) * BigP(1.2,cherryRegulator.level) * BigP(1.2,hazelSolution.level) * BigP(2,moonCore.level) * BigP(5,astroExcavate.level) * BigP(5,researchUpgrade[7].level);
+    let excMult = BigP(1.2,cherryRegulator.level) * BigP(1.2,hazelSolution.level) * BigP(2,moonCore.level) * BigP(5,astroExcavate.level) * BigP(5,researchUpgrade[7].level) * BigP(7.5,researchUpgrade[11].level);
+    let excRate = calcExcavator(excavator.level) * excMult;
     let lossFactor = getLossFactor();
     for(let i = 0;i < excavatorDrill.level;i++){
         excRate *= getElemBoost(i,excavatorModule[i].level);
@@ -1469,8 +1491,10 @@ var calcEPS = () => {
         arrEPS[i] = (BigL10(COOKIE.value + BF(10))/BF(100)) * BigP(lossFactor, -1 * i) * excRate;
         //log(arrEPS[i]);
     }
+    arrEPS[8] = 0;
     if (artifactUpgrade[13].level > 0) {
         arrEPS[8] += BigL10(BF(10) + building[8].level) * BigL10(BF(10) + generateCookie(8,10,terraBoost)) * 0.001;
+        arrEPS[8] *= excMult * BigP(2.5,researchUpgrade[8].level);
     }
 }
 var excavatorDescription = () => {
@@ -1646,16 +1670,46 @@ var researchData = [{
     cost: [{type:9,amount:BF("1e550")},{type:11,amount:BF(5000000)},{type:1,amount:BF(1.5e58)}]
 },{
     id: 6, name: "Miniaturized Time Dilation", desc: "An early effort at warping thyme, this time focusing on correcting any distortions that comes with a difference in the flow of time. Though we can\'t go big with this one, it certainly fits nicely with all the idleverses.", time: 12000, preq: [2,4],
-    cost: [{type:9,amount:BF("1e540")},{type:24,amount:BF(6250)},{type:30,amount:BF(500)},{type:5,amount:BF(1e49)}]
+    cost: [{type:9,amount:BF("1e540")},{type:24,amount:BF(6250)},{type:30,amount:BF(500)},{type:5,amount:BF(5e50)}]
 },{
     id: 7, name: "Designer Brand Mining Drills", desc: "An overdesigned excavation marvel that somehow defies all expectations by outperforming everything we\'ve have so far with the power of hilariously complex efforts of research and something something. Multiplies EPS and CPS by 5 and reduces loss factor by 10.", time: 12000, preq: [5],
     cost: [{type:0,amount:BF(1e59)},{type:1,amount:BF(1e59/50)},{type:2,amount:BF(1e58/2500)},{type:3,amount:BF(8e53)},{type:4,amount:BF(8e53/50)},{type:5,amount:BF(8e53/2500)},{type:6,amount:BF(8e53/12500)},{type:16,amount:BF(8750)},]
 },{
-    id: 8, name: "Aero(Cosmo)dynamic Design for Shipments", desc: "In the space there\'s nothing there. In the atmosphere there\'s air. Both places have vastly differing conditions that is a nightmare for space rockets. Preparing an effective design for both proves to increase the productivity and reduce the waste created from entering and exiting the atmosphere. Vastly increases the CPS of Shipments and multiplies EPS by 2.5.", time: 27000, preq: [5],
-    cost: [{type:9,amount:BF("1e560")},{type:21,amount:BF(8000)},{type:5,amount:BF(2.5e51)}]
+    id: 8, name: "Aero(Cosmo)dynamic Design for Shipments", desc: "In the space there\'s nothing there. In the atmosphere there\'s air. Both places have vastly differing conditions that is a nightmare for space rockets. Preparing an effective design for both proves to increase the productivity and reduce the waste created from entering and exiting the atmosphere. Vastly increases the CPS of Shipments and multiplies Astrofudge\'s gain by 2.5.", time: 27000, preq: [5],
+    cost: [{type:9,amount:BF("1e560")},{type:21,amount:BF(8000)},{type:5,amount:BF(2.5e56)}]
 },{
     id: 9, name: "Conditional Mass-Produced Goods Convergence", desc: "Most idleverses have difficulties converging to producing cookies, which slows down our Cookie Empire\'s growth. Through a clever usage of \"Higher Powers\", we can somewhat \"incentivize\" them to produce cookies instead of useless other stuffs.", time: 36000, preq: [8,6],
-    cost: [{type:9,amount:BF("1e560")},{type:30,amount:BF(800)},{type:19,amount:BF(8888)},{type:6,amount:BF(6e49)}]
+    cost: [{type:9,amount:BF("1e560")},{type:30,amount:BF(800)},{type:19,amount:BF(8888)},{type:6,amount:BF(3.5e54)}]
+},{
+    id: 10, name: "Optimization Model based off Slime Molds", desc: "Known for being able to make various mass-transit systems more effective. Bringing the same thing to the cookie production line will surely make the cookie flow better between each production stage..... at the cost of readability.", time: 54000, preq: [8],
+    cost: [{type:9,amount:BF("1e570")},{type:28,amount:BF(3625)},{type:3,amount:BF(5e59)},{type:11,amount:BF(2.5e7)}]
+},{
+    id: 11, name: "Superprospecting", desc: "What to do when ore reserves run out? Simple, just prospect it again(hence superprospecting), surely that\'ll make more ores appear out of thick rocks. Multiplies EPS by 7.5 and reduces loss factor by 10.", time: 72000, preq: [7,10],
+    cost: [{type:9,amount:BF("1e575")},{type:28,amount:BF(3000)},{type:3,amount:BF(1e60)},{type:4,amount:BF(1e60/65)},{type:5,amount:BF(1e60/BigP(65,2))},{type:6,amount:BF(1e60/BigP(65,3))},{type:7,amount:BF(1e60/BigP(65,4))},{type:8,amount:BF(1.5e9)}]
+},{
+    id: 12, name: "Templar Consecration", desc: "With your current capital, your ability to afford adventures to the temple has started to take over what those places have to offer. That is, until a ritual was discovered in one of its deepest chambers that looked quite like those Aztec sacrifice thingys. We don\'t know what would happen should this ritual succeed, but you the player definitely knows it.", time: 100000, preq: [6,9],
+    cost: [{type:9,amount:BF("1e560")},{type:19,amount:BF(8888)},{type:14,amount:BF(9200)},{type:23,amount:BF(6666)},{type:10,amount:BF(1e185)}]
+},{
+    id: 13, name: "Flux Machine", desc: "Flux, either a magical substance that boosts success in literally anything, or a rate of flow through a surface or substance in physics. This machine can beat the ambiguity of the word \"Flux\" by generating them as closest to whatever the user needs as possible(WARNING : Mixture of flux may occur, please make the request as specific as possible).", time: 108000, preq: [10],
+    cost: [{type:9,amount:BF("1e580")},{type:30,amount:BF(750)},{type:25,amount:BF(6500)},{type:22,amount:BF(7900)},{type:5,amount:BF(5e56)}]
+},{
+    id: 14, name: "Metaidleverses", desc: "Oh no! One of your metaverses has figured out how to capture other universes and put it into marbles. This is very big news, since no one here really thought of a multiverse containing multiverses. Even though their output may be miniscule compared to ours, it also somehow makes extra space for extra multiverses in a marble. Increases the capacity of Mooncandy Marbles by 10.", time: 144000, preq: [10,9],
+    cost: [{type:9,amount:BF("1e580")},{type:30,amount:BF(1001)},{type:22,amount:BF(7500)},{type:10,amount:BF(1e189)},{type:26,amount:BF(5500)},{type:11,amount:BF(1.5e7)}]
+},{
+    id: 15, name: "Thermodynamic Ovens", desc: "Ovens! How can we forget such simple things as ovens for baking cookies! Powered by the latest in heat circulation with specially made air meant to be as conductive as possible going with specially made air circulators optimizing airflow for heat. Put away those old stuffs and put your first one in a display or something.", time: 216000, preq: [13],
+    cost: [{type:9,amount:BF("1e590")},{type:0,amount:BF(1e66)},{type:4,amount:BF(1.5e59)},{type:5,amount:BF(3.5e57)},{type:8,amount:BF(3e10)},{type:14,amount:BF(9500)},{type:16,amount:BF(9500)},{type:17,amount:BF(9500)}]
+},{
+    id: 16, name: "Lunarcandy Marbles", desc: "An especially refined version of Mooncandy Marble, now with even more capacity for the growing demands of idleverses through the power of moon or something the space bois won\'t tell us. Increases the capacity of Mooncandy Marbles by 15.", time: 288000, preq: [11,10,14],
+    cost: [{type:9,amount:BF("3e600")},{type:7,amount:BF(1.5e55)},{type:8,amount:BF(2.5e10)},{type:21,amount:BF(8250)},{type:25,amount:BF(6500)},{type:28,amount:BF(4000)},{type:30,amount:BF(1501)},{type:11,amount:BF(1.5e7)}]
+},{
+    id: 17, name: "Manaleaching", desc: "Manaleaching is a new technique for sapping mana out of the surroundings, empowering spells in the process. Manaleaching requires a substantial amount of Buttergold, Sugar Lumps, and our Wizard Towers to set up initially as a stable source of mana for our spellcasters. Boosts Spell Power by 10.", time: 300000, preq: [15,12,16],
+    cost: [{type:9,amount:BF("2e600")},{type:11,amount:BF(5e7)},{type:13,amount:BF(10000)},{type:22,amount:BF(7500)},{type:23,amount:BF(7500)},{type:2,amount:BF(2.5e63)}]
+},{
+    id: 18, name: "One Mind", desc: "WARNING : THE GRANDMOTHERS ARE GROWING RESTLESS. DO NOT ENCOURAGE THEM.\nWe are one. We are many.\nUnlocks the Final Building", time: 363636, preq: [15,12],
+    cost: [{type:9,amount:BF("6.66e600")},{type:14,amount:BF(6666)},{type:23,amount:BF(6666)},{type:24,amount:BF(6666)},{type:29,amount:BF(666)},{type:5,amount:BF(6.66e60)}]
+},{
+    id: 19, name: "Higher Elements Cluster", desc: "Lately there has been an anomaly in reading from particle accelerators. Your scientists has determined those to be atoms of elements heavier than what we\'ve seen before. Maybe harnessing them would yield even more techs that only a baker could dream of.", time: 720000, preq: [18,16],
+    cost: [{type:8,amount:BF(1.5e12)},{type:5,amount:BF(7.8e60)},{type:6,amount:BF(1.5e59)},{type:7,amount:BF(3.1e57)},{type:28,amount:BF(7500)},{type:26,amount:BF(7500)},{type:25,amount:BF(7500)}]
 },];
 var getCostSymbol = (indx) => {
     if(indx < 9){
@@ -1702,7 +1756,7 @@ var researchBegin = (indx) => {
                     if(index < 9){
                         elements[index].value -= val;
                     }else if(index >= 13){
-                        building[index-13].level -= val;
+                        building[index-13].level -= Math.round(val.toNumber());
                     }else{
                         switch(index){
                             case 9:COOKIE.value -= val;break;
@@ -1764,35 +1818,49 @@ var updateResearchLabel = () => {
             updateResearchText(i,1,`Undiscovered, research further and perhaps this will be discovered`);
             updateResearchText(i,2,``);
         }
+        if(i==0 && (COOKIE.value < BF("1e500") && researchUpgrade[0].level == 0)){
+            researchAvailable[0] = false;
+            updateResearchText(0,0,`[${i+1}] ${"?".repeat(researchData[i].name.length)}`);
+            updateResearchText(0,1,`Unfortunately it seems that you don\'t have enough capital at hand to begin any research at this moment. Come back when you have more cookies.`);
+            updateResearchText(0,2,``);
+        }
     }
 }
+var debugUnlockResearch = true;
 function isResearchUnlock(indx){
     let ret = true;
     if(indx == 0){
         return true;
     }
     for(let i=0,j=researchData[indx].preq.length;i<j;i++){
-        ret &= (researchUpgrade[researchData[indx].preq[i]].level > 0);
+        ret &= debugUnlockResearch || (researchUpgrade[researchData[indx].preq[i]].level > 0);
     }
     return ret;
+}
+function canAffordCost(costObj){
+    if(isValidCostObj(costObj)){
+        let indx = costObj.type,val = costObj.amount;
+        if(indx < 9){
+            return (elements[indx].value >= val);
+        }else if(indx >= 13){
+            return (building[indx-13].level >= val);
+        }else{
+            switch(indx){
+                case 9:return (COOKIE.value >= val);break;
+                case 10:return (HEAVENLY_CHIP.value >= val);break;
+                case 11:return (SUGAR_LUMP.value >= val);break;
+                //case 12:ret &= ;break;
+            }
+        }
+    }else{
+        return false;
+    }
 }
 function canAffordResearch(costs){
     let ret = true;
     for(let i=0;i<costs.length;i++){
         if(isValidCostObj(costs[i])){
-            let indx = costs[i].type,val = costs[i].amount;
-            if(indx < 9){
-                ret &= (elements[indx].value >= val);
-            }else if(indx >= 13){
-                ret &= (building[indx-13].level >= val);
-            }else{
-                switch(indx){
-                    case 9:ret &= (COOKIE.value >= val);break;
-                    case 10:ret &= (HEAVENLY_CHIP.value >= val);break;
-                    case 11:ret &= (SUGAR_LUMP.value >= val);break;
-                    //case 12:ret &= ;break;
-                }
-            }
+           ret &= canAffordCost(costs[i]);
         }
     }
     return ret;
@@ -2327,6 +2395,31 @@ function nameAllTheNormalCookies(){
     log(ret);
 }
 
+function getResearching(){
+    for(let i=0,j=5;i<j;i++){
+        log(`${i+1}. ID = ${researchSlotID[i].level}, TR = ${researchSlot[i].level}`);
+    }
+}
+
+function getElementsTime(seconds){
+    log(`Seconds : ${seconds}`)
+    for(let i=0;i<usedElements;i++){
+        log(`E${i} - ${elementData[i].fullName}, EPS = ${arrEPS[i]} => ${arrEPS[i]*seconds}`);
+    }
+}
+function warpResearch(ticks){
+    if(ticks < 10){
+        log(`nop`);
+    }
+    for(let i=0;i<researchSlotUpgrade.level;i++){
+        if(researchSlot[i].level > 0){
+            researchSlot[i].level = ticks;
+            let id = researchSlotID[i].level;
+            updateResearchText(id,2,`Researching : ${getCollectionBar((researchData[id].time - researchSlot[i].level)/(researchData[id].time/maxResearchProgress),maxResearchProgress)}`);
+        }
+    }
+}
+
 //!==INIT==
 var init = () => {
     COOKIE = theory.createCurrency("C", "C");
@@ -2529,6 +2622,7 @@ var init = () => {
         jetEngine = gimmickPermUpgrade(elementData[4].gimmicks[0],elements[4]);
         jetRefine = gimmickPermUpgrade(elementData[4].gimmicks[1],elements[4]);
         jetTransistor = gimmickPermUpgrade(elementData[4].gimmicks[2],elements[4]);
+        jetParallel = gimmickPermUpgrade(elementData[4].gimmicks[3],elements[4]);
         cherryRegulator = gimmickPermUpgrade(elementData[5].gimmicks[0],elements[5]);
         hazelSolution = gimmickPermUpgrade(elementData[6].gimmicks[0],elements[6]);
         moonCore = gimmickPermUpgrade(elementData[7].gimmicks[0],elements[7]);
@@ -2557,7 +2651,7 @@ var init = () => {
         researchSlotUpgrade = shortPermaUpgrade(40100,COOKIE,new ConstantCost(BF("1e1000")),`Research Slot Count`,"research slot count");researchSlotUpgrade.isAvailable = false;
         occupiedSlots = shortPermaUpgrade(40101,COOKIE,new ConstantCost(BF("1e1000")),`Number of used research Slot`,"occupied slot");occupiedSlots.isAvailable = false;
         for(let i=0;i<researchData.length;i++){
-            log(`R${i}`);
+            //log(`R${i}`);
             researchUpgrade[i] = shortPermaUpgradeML(41000+i,COOKIE,new ConstantCost(BF("1e1000")),`${researchData[i].name}`,"research upgrade",2);researchUpgrade[i].isAvailable = false;
             if(researchUpgrade[i].level > 0){
                 mainUpgradeStack[i].content.children[2].text = `Researched!`;
@@ -2888,9 +2982,10 @@ var updateAvailability = () => {
     }
     exponentium.isAvailable = (normalUpgradeMenu.level == 2);
     modeExponentium.isAvailable = (normalUpgradeMenu.level == 2);
-    building[14].isAvailable &= (artifactUpgrade[9].level > 0);
-    building[16].isAvailable &= (jetTransistor.level > 0);
-    building[17].isAvailable &= (moonMarble.level > 0);
+    building[14].isAvailable = (artifactUpgrade[9].level > 0) && (normalUpgradeMenu.level == 0);
+    building[16].isAvailable = (jetTransistor.level > 0) && (normalUpgradeMenu.level == 0);
+    building[17].isAvailable = (moonMarble.level > 0) && (normalUpgradeMenu.level == 0);
+    building[18].isAvailable = (researchUpgrade[18].level > 0) && (normalUpgradeMenu.level == 0);
     // Cookieh
     cookieTasty.isAvailable = COOKIE.value > BF(1e5) && normalUpgradeMenu.level == 1;
     kitty.isAvailable = achCount > 1 && (normalUpgradeMenu.level % 2) == 1;
@@ -2946,6 +3041,7 @@ var updateAvailability = () => {
     jetEngine.isAvailable = (permUpgradeMenu.level == 2) && (excavatorDrill.level > 4);
     jetRefine.isAvailable = (permUpgradeMenu.level == 2) && (astroExtract.level > 0);
     jetTransistor.isAvailable = jetEngine.isAvailable;
+    jetParallel.isAvailable = (permUpgradeMenu.level == 2) && (artifactUpgrade[11].level > 0);
     astroExtract.isAvailable = (permUpgradeMenu.level == 2) && (artifactUpgrade[13].level > 0);
     cherryRegulator.isAvailable = (permUpgradeMenu.level == 2) && building[16].isAvailable;
     hazelSolution.isAvailable = (permUpgradeMenu.level == 2) && building[16].isAvailable;
@@ -2988,11 +3084,17 @@ var researchInc = (ticks) => {
                 updateResearchLabel();
                 occupiedSlots.level -= 1;
                 //shift down
-                for(j=i;j>occupiedSlots.level;j++){
+                for(let j=i;j>occupiedSlots.level;j++){
                     researchSlot[j].level = researchSlot[j+1].level;
                     researchSlotID[j].level = researchSlotID[j+1].level;
                 }
+                for(let i=0;i<19;i++){
+                    updateLocalMult(i);
+                }
                 updateResearchButtonText();
+                updateBuildingLumpMaxLv();updateGlobalMult();
+                CPSrefresh();
+                calcEPS();
                 researchSlot[occupiedSlots.level].level = 0;
                 researchSlotID[occupiedSlots.level].level = 0;
             }else{
@@ -3023,7 +3125,7 @@ var generateCookie = (id, ticks, mult) => {
 }
 var generateLump = (ticks) => {
     let lumpChance = BF(1) / (BF(lumpTickChance) / BigL10(COOKIE.value + BF(10)));//it's normally 1/x
-    let dLump = BF(lumpChance.floor() + (sugarTools.level * 0.25) + (5 * researchUpgrade[3].level) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01)) * ticks;//yes, ticks ARE 0.1 seconds so 2.5LPS = 0.25LPT
+    let dLump = BF(lumpChance.floor() + (sugarTools.level * 0.25) + (1 * researchUpgrade[3].level) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01)) * ticks;//yes, ticks ARE 0.1 seconds so 2.5LPS = 0.25LPT
     //log(dLump);
     lumpChance -= lumpChance.floor();
     if (ticks == 1 && BF(Math.random()) <= lumpChance) {
@@ -3506,6 +3608,22 @@ var getHelpText = () => {
             padding: Thickness(2, 10, 2, 10)
         }));
     }
+    if (COOKIE.value > BF("1e500")) {
+        ret.push(ui.createLabel({
+            text: "Bingo Research Center",
+            fontSize: 18,
+            horizontalTextAlignment: TextAlignment.CENTER,
+            fontAttributes: FontAttributes.BOLD,
+            padding: Thickness(2, 15, 2, 10)
+        }));
+        ret.push(ui.createLabel({
+            text: "Once you have baked enough cookies to start your own research conglomerate(around 1e500 C), you can begin to research even more advanced technologies for your empire. Click the \"Research\" button from the Main Menu to access the list of possible researches. Each research will have its own name, description, time requirement, and cost displayed in a scrollable list. Press on any unlocked research to see its cost and if you can afford it, press \"Research\" to begin researching. Initially, nearly the entire list will be unknown until you\'ve researched enough to unlock them, and certain research may require multiple other researches to even unlock them!",
+            fontSize: 15,
+            horizontalTextAlignment: TextAlignment.CENTER,
+            fontAttributes: FontAttributes.NONE,
+            padding: Thickness(2, 10, 2, 10)
+        }));
+    }
     ret.push(ui.createLabel({
         text: "Check back later for more in-game information",
         fontSize: 15,
@@ -3542,6 +3660,20 @@ var InsPopup = ui.createPopup({
 var getUpdateNotes = () => {
     let ret = [];
     ret.push(ui.createLabel({
+        text: "(0.5).3.0 - big brain time",
+        fontSize: 18,
+        horizontalTextAlignment: TextAlignment.CENTER,
+        fontAttributes: FontAttributes.BOLD,
+        padding: Thickness(2, 10, 2, 5)
+    }));
+    ret.push(ui.createLabel({
+        text: "\t-new feature : 🔬 bingo research center 🔬 for all your nerdy needs, replacing subgames \n\t-20 new researches (for NOW) \n\t-new building : idleverse (please don\'t make too much colonialism jokes) with a special method of unlocking them (again) \n\t-more elements fun \n\t-officially nooq\'d out time dilation and aqua crustulae, we don\'t need those anymore \n\t-official support for cortex bakers and progression to e600 \n\t-corrected jojo references for the secret spell \n\t-we really are heading towards uncharted lands, beyond what the original version could ever dream \n\t-it is now possible to buy catgirls (do not take this out of context) \n\t-story rework coming soon",
+        fontSize: 11,
+        horizontalTextAlignment: TextAlignment.START,
+        fontAttributes: FontAttributes.NONE,
+        padding: Thickness(2, 5, 2, 10)
+    }));
+    ret.push(ui.createLabel({
         text: "(0.5).2.0 - back in business bois",
         fontSize: 18,
         horizontalTextAlignment: TextAlignment.CENTER,
@@ -3549,7 +3681,7 @@ var getUpdateNotes = () => {
         padding: Thickness(2, 10, 2, 5)
     }));
     ret.push(ui.createLabel({
-        text: "\t- brought back elements and particle accelerators, find it in page 3 of permanent tab and below particle accelerators \n\t-overhauled the entire system of the 2 things mentioned above \n\t-e500 is real \n\t-more fleshed out upgrades that depend on elements, perhaps a pseudo-tech tree even \n\t-moved exponentium to page 3 of normal upgrades \n\t-technically made time dilation artifact discoverable \n\t-made accelerator more controllable and now comes with 7 fancy lights \n\t-heavenly upgrades \n\t-super L milestone now works \n\t-2 artifacts related to elements \n\t-idleverse now buyable but you must be able to contain them \n\t-bugfixes",
+        text: "\t-brought back elements and particle accelerators, find it in page 3 of permanent tab and below particle accelerators \n\t-overhauled the entire system of the 2 things mentioned above \n\t-e500 is real \n\t-more fleshed out upgrades that depend on elements, perhaps a pseudo-tech tree even \n\t-moved exponentium to page 3 of normal upgrades \n\t-technically made time dilation artifact discoverable \n\t-made accelerator more controllable and now comes with 7 fancy lights \n\t-heavenly upgrades \n\t-super L milestone now works \n\t-2 artifacts related to elements \n\t-idleverse now buyable but you must be able to contain them \n\t-bugfixes",
         fontSize: 11,
         horizontalTextAlignment: TextAlignment.START,
         fontAttributes: FontAttributes.NONE,
@@ -4033,12 +4165,19 @@ for(let i=0;i<researchData.length;i++){
     }));
 }
 for(let i=0;i<16;i++){
-    costTable[i] = ui.createLabel({fontSize:costTableFontSize,text:"",row:i%4,column:columnArr[Math.floor(i/4)],horizontalTextAlignment: TextAlignment.CENTER});
+    costTable[i] = ui.createLabel({fontSize:costTableFontSize,text:"",row:i%4,column:columnArr[Math.floor(i/4)],horizontalTextAlignment: TextAlignment.CENTER,textColor:COLOR_WHITE});
 }
 var updateCostTable = (costs) => {
     for(let i=0;i<8;i++){
         if(i < costs.length){
             if(isValidCostObj(costs[i])){
+                if(canAffordCost(costs[i])){
+                    costTable[i].textColor = COLOR_GREEN;
+                    costTable[i+8].textColor = COLOR_GREEN;
+                }else{
+                    costTable[i].textColor = COLOR_WHITE;
+                    costTable[i+8].textColor = COLOR_WHITE;
+                }
                 costTable[i].text = costs[i].amount.toString();
                 costTable[i+8].text = `${getCostSymbol(costs[i].type)} : `;
             }else{
@@ -4046,6 +4185,8 @@ var updateCostTable = (costs) => {
                 costTable[i+8].text = `???`;
             }
         }else{
+            costTable[i].textColor = COLOR_WHITE;
+            costTable[i+8].textColor = COLOR_WHITE;
             costTable[i].text = "";
             costTable[i+8].text = `-`;
         }
@@ -4085,7 +4226,7 @@ let researchMenu = ui.createPopup({
             }),
             ui.createGrid({
                 row:1,column:0,
-                columnDefinitions: ["65*","45*"],
+                columnDefinitions: ["65*","35*"],
                 rowDefinitions: ["15*","85*"],
                 columnSpacing: 10,
                 children:[
@@ -4165,7 +4306,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text: "Cookie Idler - 8222e8b\nv(0.5).2.0"
+                text: "Cookie Idler - c054bd0\nv(0.5).3.0"
             })
         ]
     })
