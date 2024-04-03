@@ -180,6 +180,17 @@ var version = 1.0;
         return arr[r] <= f ? r : r + 1;
     };
 }
+//COLORS SESAME
+function decimalToColHex(d) {
+    var hex = Number(d).toString(16);
+    while (hex.length < 2) {
+        hex = "0" + hex;
+    }
+    return hex.toUpperCase();
+}
+var colorize = (latexStr,r,g,b) => {
+    return `\\color{#${decimalToColHex(r)}${decimalToColHex(g)}${decimalToColHex(b)}}{${latexStr}}`;
+};
 //Upgrades
 /**
  * Returns a permanent/normal upgrade object from the arguments given.
@@ -646,6 +657,7 @@ var building = new Array(19), buildingPower = new Array(19), buildingLump = new 
 
 //calc building from level, use calcBuilding(id, 0) for current level
 var calcBuilding = (id, am) => {
+    //if (setupTick) return 1;
     if (conGrow.level > 0 && id >= 11) {
         return Utils.getStepwisePowerSum(building[id].level + am, 1.9 + (0.2 * conGrow.level) + (0.011 * (id - 11)), 50 - conGrow.level, 1) - 1;
     } else if (conGrow.level > 1 && id < 11) {
@@ -665,18 +677,26 @@ var getBuildingExp = (index) => {
 }
 
 //building description + info
+var ColorScale = 0;
+var updateColorScale = () => ColorScale = Math.round(Math.min(255,255*(building[18].level/1450)));
 var getBuildingDesc = (indx) => {
-    var bi = `\$B[${indx}]^{${(getBuildingExp(indx) > 1) ? TS10(getBuildingExp(indx)) : ""}}\$${(investHelp[indx].level>0)?`+${investHelp[indx].level}`:""}`;
+    var bi = `\$B[${indx}]^{${(getBuildingExp(indx) > 1) ? TS10(getBuildingExp(indx)) : ""}}\$${(investHelp[indx].level>0)?`+${investHelp[indx].level}`:""}`, displayedStr;
+    //let colorScale = Math.min(255,255*(building[18].level/1450));
     switch(bInfo){
         case 0:
-            return `${bi} - ${buildingData[indx].names[0]} ` + getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
+            displayedStr =`${bi} - ${buildingData[indx].names[0]} ` + getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
+            break;
         case 1:
-            return `${bi} = ${calcBuilding(indx, investHelp[indx].level)} ` + getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
+            displayedStr = `${bi} = ${calcBuilding(indx, investHelp[indx].level)} ` + getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
+            break;
         case 2:
-            return `${bi} - ${buildingData[indx].names[1]} ` + getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
+            displayedStr = `${bi} - ${buildingData[indx].names[1]} ` + getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
+            break;
         default:
-            return "Building Desc. Error!";
+            displayedStr = "Building Desc. Error!";
+            break;
     }
+    return colorize(displayedStr,255-ColorScale,255,255-ColorScale);
 }
 var getBuildingInfo = (indx,amount) => `${getBuildingInfo2(indx, amount)}, ${((bInfo == 1) ? `\$B(${indx}) = ${generateCookie(indx,buildingData[indx].collectionTime,terraBoost)}\$` : "")}`;
 var getBuildingInfo2 = (index, am) => {
@@ -702,6 +722,8 @@ var onBuildingBought = (indx,amount) => {
     }
     if(indx == 3){
         updateMaxL();
+    }else if(indx == 18){
+        updateColorScale();
     }
     buildingCount += amount;
     if(covenant.level > 0){
@@ -764,6 +786,21 @@ function TestBuildingDisplay(indx){
     log(getBuildingPowerDesc(indx));log(getBuildingPowerInfo(indx,1));
     log(getBuildingLumpDesc(indx));log(getBuildingLumpInfo(indx,1));
     bInfo = temp;
+}
+function ExponentiumSanity(){
+    let totalExp = exponentium.level, usedCount = 0, stateStr = `Current Setup : `;
+    log(`Total Bars : ${totalExp}\nCurrent Bars : ${EXPO_BAR.value}`);
+    for(let i=0;i<19;i++){
+        stateStr += `${buildingExponent[i].level}/`;
+        usedCount += buildingExponent[i].level;
+    }
+    log(`${stateStr}\nUsed Bars : ${usedCount}`);
+    if(EXPO_BAR.value+usedCount > totalExp){
+        log(`Exponentium Overflow Detected!`);
+    }else if(EXPO_BAR.value+usedCount < totalExp){
+        log(`Exponentium Deficit Detected!\nCorrecting....`);
+        EXPO_BAR.value = totalExp-usedCount;
+    }
 }
 var updateBuildingLumpMaxLv = () => {
     if(Number.isNaN(maxBuild)){maxBuild = 0;}
@@ -1092,7 +1129,7 @@ var updateLocalMult = (indx) => {
 var artArt, templeJ = false, artifactUpgrade = new Array(99), artifactUnlock = new Array(99), artifactCount = 0;
 const artifactLockText = "Not Discovered";
 var artifactData = [{
-    order: 0,name: "Rhombus of Chocolatance",clue: "it\'s at the foyer, you can\'t miss it",
+    order: 0,name: "Rhombus of Chocolatance",clue: "It\'s at the foyer, you can\'t miss it",
     cost: BF("1e250"),unlockCondition: () => {return true;}, desc: "Very shiny chocolate that somehow brings in attention of even more gods"
 },{
     order: 1,name: "Occam\'s Lazer",clue: "One is One, Seven Fives is Two",
@@ -1705,7 +1742,7 @@ var researchData = [{
     id: 17, name: "Manaleaching", desc: "Manaleaching is a new technique for sapping mana out of the surroundings, empowering spells in the process. Manaleaching requires a substantial amount of Buttergold, Sugar Lumps, and our Wizard Towers to set up initially as a stable source of mana for our spellcasters. Boosts Spell Power by 10.", time: 300000, preq: [15,12,16],
     cost: [{type:9,amount:BF("2e600")},{type:11,amount:BF(5e7)},{type:13,amount:BF(10000)},{type:22,amount:BF(7500)},{type:23,amount:BF(7500)},{type:2,amount:BF(2.5e63)}]
 },{
-    id: 18, name: "One Mind", desc: "WARNING : THE GRANDMOTHERS ARE GROWING RESTLESS. DO NOT ENCOURAGE THEM.\nWe are one. We are many.\nUnlocks the Final Building", time: 363636, preq: [15,12],
+    id: 18, name: "d", desc: "WARNING : THE GRANDMOTHERS ARE GROWING RESTLESS. DO NOT ENCOURAGE THEM.\nWe are one. We are many.\nUnlocks the Final Building", time: 363636, preq: [15,12],
     cost: [{type:9,amount:BF("6.66e600")},{type:14,amount:BF(6666)},{type:23,amount:BF(6666)},{type:24,amount:BF(6666)},{type:29,amount:BF(666)},{type:5,amount:BF(6.66e60)}]
 },{
     id: 19, name: "Higher Elements Cluster", desc: "Lately there has been an anomaly in reading from particle accelerators. Your scientists has determined those to be atoms of elements heavier than what we\'ve seen before. Maybe harnessing them would yield even more techs that only a baker could dream of.", time: 720000, preq: [18,16],
@@ -2092,7 +2129,7 @@ var superP, superL, superC;
         "Scrumptiosllionare",
         "THAT\'S A LOTTA SUGARS",
     ];
-    var lumpAchReq = [1, 10, 50, 100, 500, 1000, 10000, 100000, 1000000, 10000000];
+    var lumpAchReq = [1, 10, 50, 100, 500, 1000, 10000, 100000, 1000000, 10000000,100000000];
     var perkAchReq = [1, 5, 25, 50, 95];
     var perkAchName = ["See the Exponent", "Touch the Exponent", "Feel the Exponent", "Cherish the Exponent", "Forfeit all mortal possessions to the Exponent"];
     var perkAch = new Array(10);
@@ -2906,7 +2943,7 @@ var init = () => {
         // 10 Lumps - 2xx
         lumpAchCat = theory.createAchievementCategory(2, "Others");
         for (let i = 0; i < 10; i++) {
-            lumpAch[i] = theory.createAchievement(200 + i, lumpAchCat, lumpAchName[i], lumpDesc(lumpAchReq[i]), () => checkAchL(lumpAchReq[i]),() => (lumpTotal.value/lumpAchReq[i]));
+            lumpAch[i] = theory.createAchievement(200 + i, lumpAchCat, lumpAchName[i], lumpDesc(lumpAchReq[i]), () => checkAchL(lumpAchReq[i]),() => (lumpTotal.value/lumpAchReq[i]).toNumber());
             achCountTV += 1;
         }
         // 10XX = perk
@@ -3156,9 +3193,6 @@ var calcIdleCPS = () => {
 }
 var performanceTester = () => {
     updateGlobalMult();
-    refreshLocalMult();
-    calcIdleCPS();
-    calcEPS();
 }
 var profilingConst = false;
 //var profiler1 = profilers.get("profiler1");
@@ -3191,12 +3225,14 @@ var tick = (elapsedTime,multiplier) => {
         calcEPS();
         refreshExcavatorMaxLv();
         updateResearchLabel();updateResearchButtonText();
+        updateColorScale();
         setupTick = false;
     }
     if(profilingConst){
         profiler1.exec(performanceTester);
         //log(`X = ${profiler1.mean}, SD = ${profiler1.stddev}, Z = ${(profiler1.latest-profiler1.mean)/profiler1.stddev}`);
-        log(`X = ${profiler1.mean}`);
+        //log(`X = ${profiler1.mean}`);
+        log(`Xf = ${1/profiler1.mean}`);
     }
     terraBoost = Logistic();
     dilateBoost = Dilate();
