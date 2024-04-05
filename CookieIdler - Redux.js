@@ -427,7 +427,7 @@ var buildingData = [
         info: "Unlocks/Improves a buff that temporarily boosts your CPS by a lot",
         costModel: new ExponentialCost(1e130, ML2(1e10)),
         maxLevel: 20,
-        onBought: (amount) => {updateMaxL();getEquationOverlay();}
+        onBought: (amount) => {updateMaxL();getEquationOverlay();updateTerraOverlay();}
      }]},
     {id: 4,
      names: ["Factory","Fcotyr"], desc: "mass producing ", lumpBName: "Patent Publishing",
@@ -611,12 +611,12 @@ var buildingData = [
     },
     {id: 17,
      names: ["Idleverse","IDledeverse"], desc: "idling in ", lumpBName: "Install Another Idle Game",
-     baseCPS: BF("8.5e205"), baseCost: BF("6.9e500"), powerUpgradeMult: 7, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 450, sweetMax: 250,
+     baseCPS: BF("8.5e205"), baseCost: BF("6.9e500"), powerUpgradeMult: 7, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 450, sweetMax: 200,
      achName: ["Manifest Destiny","Is there enough worlds?","Lost your Cosmic Cookies?","We the People of the Cookieverse, in Order to form a more perfect Dimensional Union, establish Justice, insure domestic Tranquility, provide for the common defense, promote the general Welfare, and secure the Blessings of Cookies to ourselves and our Posterity, do ordain and establish this Constitution for the Cookieverse.","You need a new bluestack"],
     },
     {id: 18,
      names: ["Cortex Baker","Corex Bakr"], desc: "thinking in ", lumpBName: "Get an extra IQ Point",
-     baseCPS: BF("8.5e250"), baseCost: BF("6.66e610"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 500, sweetMax: 200,
+     baseCPS: BF("8.5e250"), baseCost: BF("6.66e610"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 500, sweetMax: 150,
      achName: ["O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA","Cardinal Synapsis","I declare thee on all ye inferiors. Despair before me, I am the Ozymandias","Who are you? I̷ a̵͇̋͂̌m̷̡̨̉̀̂ s̷̬̏̓̓ø̷̘̜͚̒͒̓l̸͍̄͐͘i̷̡̛̞̯p̷͈̞̳̉̃s̶̬̲͕̝̓̕͝","I am smart"],
     },
 ];
@@ -654,6 +654,15 @@ var Dilate = () => {
 //others
 var magicLoop = 12600;//lcm of 10-50, just in case
 var building = new Array(19), buildingPower = new Array(19), buildingLump = new Array(19); //buildingB, buildingPower, buildingLump containers
+var updateTerraOverlay = () => {
+    if(terra.level > 0){
+        eqOverlay.children[2].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/6/6f/CookieProduction39.png/revision/latest?cb=20200620182721");
+        eqOverlay.children[3].text = "Terraform Buff";
+    }else{
+        eqOverlay.children[2].source = ImageSource.LOCK;
+        eqOverlay.children[3].text = "Locked";
+    }
+}
 
 //calc building from level, use calcBuilding(id, 0) for current level
 var calcBuilding = (id, am) => {
@@ -823,6 +832,7 @@ var updateBuildingLumpMaxLv = () => {
     }else{
         building[17].maxLevel = moonMarbleCapacity*moonMarble.level;
     }
+    building[18].maxLevel = 500;
     archaeology.maxLevel = 1000 + (500 * researchUpgrade[12].level);
 }
 var updateBuildingLumpPower = () => {
@@ -1447,7 +1457,7 @@ var elementData = [
         gimmicks: [{
             uid: 32008,
             name: "Cherrysilver Regulators",
-            info: "Cherrysilver has been proven mathematically to be a better regulators than all those boring Boron you have lying around as a result of failed alchemical endeavors.",
+            info: "Cherrysilver has been proven mathematically to be a better regulator than all those boring Boron you have lying around as a result of failed alchemical endeavors.",
             costModel: new ConstantCost(2e46),
             maxLevel: 1,
             onBought: (amount) => {updateGlobalMult();refreshLocalMult();CPSrefresh();}
@@ -1569,7 +1579,7 @@ var excModulueInfo = (indx, amount) => {
         case 0:
             return `Empowers your excavators with the essence of ${elementData[indx].fullName}`;
         case 1:
-            return `$E_{f${indx}} = 1 + ${elementData[indx].excavatorPowerFactor}Lv^{${elementData[indx].excavatorPowerPow}} =$ ${Utils.getMathTo(getElemBoost(indx,excavatorModule[indx].level),getElemBoost(indx,excavatorModule[indx].level+amount))}`;
+            return `$Ef_{${indx}} = 1 + ${elementData[indx].excavatorPowerFactor}Lv^{${elementData[indx].excavatorPowerPow}} =$ ${Utils.getMathTo(getElemBoost(indx,excavatorModule[indx].level),getElemBoost(indx,excavatorModule[indx].level+amount))}`;
         case 2:
             return `Expoeprws your excavatrors with the ssenwe of ${elementData[indx].fullName}`;
     }
@@ -1742,7 +1752,7 @@ var researchData = [{
     id: 17, name: "Manaleaching", desc: "Manaleaching is a new technique for sapping mana out of the surroundings, empowering spells in the process. Manaleaching requires a substantial amount of Buttergold, Sugar Lumps, and our Wizard Towers to set up initially as a stable source of mana for our spellcasters. Boosts Spell Power by 10.", time: 300000, preq: [15,12,16],
     cost: [{type:9,amount:BF("2e600")},{type:11,amount:BF(5e7)},{type:13,amount:BF(10000)},{type:22,amount:BF(7500)},{type:23,amount:BF(7500)},{type:2,amount:BF(2.5e63)}]
 },{
-    id: 18, name: "d", desc: "WARNING : THE GRANDMOTHERS ARE GROWING RESTLESS. DO NOT ENCOURAGE THEM.\nWe are one. We are many.\nUnlocks the Final Building", time: 363636, preq: [15,12],
+    id: 18, name: "One Mind", desc: "WARNING : THE GRANDMOTHERS ARE GROWING RESTLESS. DO NOT ENCOURAGE THEM.\nWe are one. We are many.\nUnlocks the Final Building", time: 363636, preq: [15,12],
     cost: [{type:9,amount:BF("6.66e600")},{type:14,amount:BF(6666)},{type:23,amount:BF(6666)},{type:24,amount:BF(6666)},{type:29,amount:BF(666)},{type:5,amount:BF(6.66e60)}]
 },{
     id: 19, name: "Higher Elements Cluster", desc: "Lately there has been an anomaly in reading from particle accelerators. Your scientists has determined those to be atoms of elements heavier than what we\'ve seen before. Maybe harnessing them would yield even more techs that only a baker could dream of.", time: 720000, preq: [18,16],
@@ -2216,51 +2226,63 @@ function buildFeatAch(featAchObj){
 var stonkFlag = false, megaStonkFlag = false;
 
 //!==LORE==
-var chapter = new Array(16);
-var checkChapter = (c) => {
-    if (c == 0) return COOKIE.value >= BigNumber.ZERO;
-    else if (c == 1) return building[1].level >= 1;
-    else if (c == 2) return COOKIE.value > BF(1e12);
-    else if (c == 3) return building[6].level >= 1;
-    else if (c >= 15) return COOKIE.value >= BF("1e750");
-    else return building[c + 4].level >= 1;
-};
-const chapterName = [
-    "Wake and Bake",
-    "Grandma and her cats",
-    "Knead for Speed",
-    "Worshippers",
-    "Beyond the Vanilla Cosmos",
-    "Polymaterial Morphology",
-    "Dimensionalize Cookie Breakdown",
-    "To consume or not to consume",
-    "Chocolate just isn't enough",
-    "Spectroscopy",
-    "Existence beyond logic",
-    "Are you going deep enough?",
-    "Realitarium Engineering",
-    "Greedy",
-    "Effortless",
-    "Counter Conclusion",
-];
-const chapterLore = [
-    "As a newly graduated student from the Gilles Academy with a penchant for cookies\nYou stumbled upon a peculiar metallic box\nOn its side there is a display displaying 0/750. On the top there's a big red button on it. Finally on the bottom inscribes G to which you can't figure the significance out of.\nYou're compelled to press this button, though you don't know why.\nMaybe you could use something to click for you...",
-    "As you produced more and more cookies, the display seemingly freezes at 3/750, staying there for quite a while\nYou posted a flyer hiring people to bake cookies for you\nA few days later, a grandma comes knocking at your door\nYou let her in, and she starts to bake cookies for you, in return of her getting a set amount of your cookies\nBut that's not the only person that comes inside\nOn the far corner you heard a faint sound of cats purring for milk...",
-    "The cookies are piling up, but the display won't budge further than 12\nThen, a new button emerges from the underside, labeled 'Reset'\nYou're tempted to press it, but the display warns you about resetting in exchange for an even larger amount of cookies...",
-    "1e25 cookies, that's 25/750\nThe far reaches of your cookies spread far and wide\nYou notices certain groups of people are beginning to worship cookies\nSo you built a temple for them\nHopefully the prayers to the cookie god would satisfy them enough to will even more cookies in...",
-    "Resources are finite, and you're coming up close to the limit of planet Earth\nUsing your gains from your banks, you set out to fund a space project, in hopes of getting more resources for your ever-growing desire for cookies\nIt's one of the dreams of the many to explore the world beyond us\nThe vast world, limitless combinations of everything possible by physics\nYou'd really like it if some of them are all made out of cookies...\nBut the restless G grows",
-    "Wandering around landfills, it's a place full of useless refuse human throws out\nWhy bother looking far and wide when there's always something to find near us\nYou commissioned your scientists from the space program to assist in changing from non-cookies into cookies\nEven with the hardest of matter to change, it can always be turned into cookies.\nJust let the mother nature take care of the rest...",
-    "What naive thoughts do they think that the universe is the limit?\nCountless worlds exist beyond us, in perpetual chaos within infinite universes\nA place where laws and observation holds meaningless\nAt no sign, a red dimensional rift appears inside one of your cookie piles\nIt caused quite a big damage to your cookie treasury, but your assistants have pointed out that the world is called 'Cookieverse', a perilous place teeming with unimaginable monsters and indescribable topology\nExploring this place sure looks to be dangerous, but for some reason, the other world is all cookies\nYou quickly hopped in the chance to rob the world of cookies, slaying monsters, mass terraforming the place you name it!",
-    "They said that time can't be stopped nor reversed\nYou, a young(perhaps daring) person decided to go against it\nFrom all the exploitation you made in the Cookieverse\nThere's a very chaotic piece of cookie ore that seems to warp and distort itself\nYour assistants determined it was the time continuum that the ore is messing with, and aptly named it 'thyme'\nIn hopes of getting cookies through time itself, you now assign ever more scientists to break the laws of time.",
-    "18\n18 types of elementary particles\nNow there's 19 of them\nBut that's still 18 left to turn into cookies\nYou decided to commission the largest of the largest of particle accelerators to convert those particles into cookie particles\nYou gonna leak a lot of money for this, so you made the world dependent on cookies.",
-    "How long has it been since you last saw the light of the day?\nYou went outside(and touched grass), only to find the sun instantly making you sweat bullets\nComing back into your den(grand office) you looked into the mirror and find yourself splattered with cookies\nIt seems that light itself is being turned into cookies as well\nMight just as well focus all of them into a big burst of cookies\nAnd in the meantime spray a bit of radiance to those worshippers as well",
-    "POOF! And there goes nothing!\nYou just saw one of your cookies disappear into nothingness\nThen you saw a black cat in the corner of your vision again\nIn a panic, you hastily read through the book on symbolisms, and found out that a black cat means bad luck\nWith your amounts of cookies, fearing that it might all be GONE the next day,\nYou improvised up a device from that book that would apparently bring in good luck to your entire existence\nAnd your local spellcasters might take an interest in that too",
-    "Does your cookie look empty?\nI know that might sound like nonsense but how much of the cookie is really cookie?\nUsing your sheer amount of knowledge you got from working with your past projects\nYou somehow managed to 'convert mattern't to matter' and the cookie just splits into a whole lot more cookies\nPresenting the plan, you assigned the engineers to work on standardizing the device used to 'convert mattern't to matter'\nDoes going too deep might reveal something you weren\'t supposed to see?",
-    "Having lost your mind being overwhelmed with the thoughts of cookie\nYou went out on a quite little rampage with your cookies, tearing down any and all signs of resistance, even the fabric of reality itself\nYou definitely went mad, in search of something you can use to bend reality\nOne of the madness you did is parting some poor soul(Orteil?) of their laptop\nOn the laptop there's a console with the word 'Javascript' written on it\nYou of course, politely pressure your programmers to decipher the complicated syntax of 'Javascript'\nAnd they can become full again.....",
-    "I love cookies, why don't we enslave other idle games to produce cookies for us\nBreaking through dimensions, hijacking other \"innocent\" idle game universes to produce cookies for us",
-    "Nothing stops you anymore\nNot even getting the counter to 750(it's now 500/750)\nIn one of the everlasting days at the Cookie Megacorporation...\nYou managed to manifest your desire of cookies out of thin air\nSeeing this opportunity, you cleared your way through the legal system to get some subjects to perform something on\nIt was a success, seeing them thinking up cookies out of thin air\nWhy bother with all your buildings when you can just think up cookies...",
-    "The counter hit 750, and the sky immediately turned itself red...\n(To be continued)",
-];
+var chapter = new Array(69), chapterUnlock = new Array(69), usedStory = 17;
+let loreData = [{
+    order:0,title:"Wake and Bake",content:["Ugh, finally graduated from Gilles Academy","Parents coerced me here, been pestering them for quite a while now","Barely survived all those theories that would make anyone\'s head explode","I can only hope I would encounter no more maths"," ","Living there was fine, only the cookies are an absolute mess","As a cookie lover I find those to be absolute travesty","Why are they even produced??????????","No concern, I must return to my ovens at once","But there\'s a curious cube there..."," ","The number 0 stands intimidating, and perhaps a button resembling a big cookie","One soft click, and a cookie popped out of nowhere, and it\'s some real good stuff.","I could make a living out of those, only that I need a clicker to produce them automatically.","Manual Labor sucks"], unlock: () => true,prefix:"4/4/2024"
+},{
+    order:1,title:"Startup",content:["Sitting with only clickers is boring, can barely match the demands of customers","God gossip sure spreads fast about my good cookies","And I\'m adding new varieties every now and then, somehow makes it sell better","The cube seems to hint about having more helpers, symbols strangely reminding me of grandmas and facilities","Posted some flyers for assistant \"Bakers\"","Wait, are grandmas really showing up here only?","Can\'t complain about their baking skills and work ethics though","Easily puts my clickers to shame"," ","But grandmas are\'t only showing up here","I can smell the faint smell of milk.....",".....and kittens"],unlock:() => building[1].level > 0,prefix:"5/4/2024"
+},{
+    order:2,title:"Factory",content:["Business is growing steady","Managed to get hold of farms and mines","Pleasantly surprised about places you can find cookies"," ","Our funds steadily increase, therefore expanding workforces and land assets for cookies","We even have enough to build and operate our very first factory","Mass production of cookies and getting the first taste of sweet retribution","Watch out inferior cookies, I\'M COMING AFTER YOU"],unlock:() => building[4].level > 0,prefix:"12/4/2024"
+},{
+    order:3,title:"Knead for Speed",content:["At","A","Roadblock"," ","Faced with increasing costs for expanding the business","Like, 10 Octillion Cookies for a new building????????","I can barely scrape together a Sextillion myself","And all the other companies are pumping out like, Centillion, Hundred Quinsexagintacentillion Cookies?????","Like,","how."," ","Back to the cube, haven\'t noticed the bottom is clickable","The Big \"R\" Button, perhaps Resetting should somehow boost my business","...","And I\'m back at my couch, staring at the cube","My hands feel slightly cold and seems to glow a bit","Marbles, perhaps I could find a use for those, there might be places I can insert them"],unlock:() => HEAVENLY_CHIP.value >= BF(1),prefix:"1/5/2024"
+},{
+    order:4,title:"Cult Following",content:["Success!","At long last people are starting to stan my cookies","I know it had to happen, for my cookies is the best","Had some employees snoop around and perhaps a temple should satisfy their desires...","...for a cookie deity"," ","Heard there\'s a chocolate temple out in the jungle of Flourlandia","Apparently full of arcane lore and strange items all related to cookies","Don\'t have enough to sponsor an exploration right now, permits are insanely priced for normal human beings"],unlock:() => building[6].level > 0,prefix:"15/6/2024"
+},{
+    order:5,title:"Restlessness",content:["With the conglomerate so large","There\'s bound to be oppression","Fearing for the worst, I brainstormed a way to prevent such scenarios"," ","They pointed me to the grandmas, the first who joined me","Talking with them over a cup of camomile tea, I proposed the covenant","For the eternal existence of my cookie empire","At the price of assimilating my buildings into them","After all, they\'ll be better bakers than any other monkeys will ever be","And there is no reward without risk"," ","Or","There","Is?"],unlock:() => covenant.level > 0,prefix:"27/8/2024"
+},{
+    order:6,title:"Mother Nature",content:["Alchemy Labs, a place to turn useless trash into cookies and only cookies","A way of evading the laws of reality where everything returns to nothing"," ","Nature","Having the upper hand","Chose disaster as a means to uphold the law","But how much can they really destroy?"," ","In my wake, I cultivated the mother of all trees, Yggdrasil","A tree that only gives, not take","And only gives more the larger it grows","The ultimatum of my stance"],unlock:() => ygg.level > 0,prefix:"9/9/2024"
+},{
+    order:7,title:"Shake the Earth",content:["The mine has been remarkably successful in extracting cookies and useful materials to further my empire","However, expeditions into the newly discovered Cookie Dimension proves costly","I can\'t sustain the current rate any further"," ","One remarkable discovery is the technique somehow named \"Terraforming\"","Turns out that the name might have to do with our mines","Producing more useable material from the same earth","That\'d solve the issue for once..."],unlock:() => terra.level > 0,prefix:"9/12/2024"
+},{
+    order:8,title:"Magic Machine",content:["I\'m so close to being able to call my organization as an Empire","But something seems to be missing","As if our physical mark isn\'t enough for the vast world"," ","After the ordeal with material limitations, I started to get overwhelmed with spoils of expeditions","One technology after another,","Buildings that seem to defy reality,","Tearing through time and space","Then a blueprint for producing what I haven\'t been able to"," ","The more I look the more it stares back","As if sweetness is only dependent on luck"],unlock:() => recom.level > 0,prefix:"25/1/2025"
+},{
+    order:9,title:"Initial Public Offering",content:["Yet another success!","My empire has grown enough to be properly registered on the grandest stock market","Even if all the people there have more extravagant outfit that would trigger my envy like that roadblock","And the registration fee itself is exorbitant","This won\'t affect my mark in history","For if we continue to expand my empire,","Their trust in me would grow","And eventually foster into additional investments in terms of capital and labor"],unlock:() => invest.level > 0,prefix:"4/4/2025"
+},{
+    order:10,title:"Origin",content:["Managed to raise enough money to \'influence\' the ministry to allow us to explore the ancient temple","Took quite a while, even at peak efficiency and latest in buildings","It came with a caveat though","Limited space for us, with the rest lost in bureaucracy nonsense","Even with that, the team came back with more questions than answers"," ","Where","Does","This","Cube","Come","From?"," ","Why","Am","I","On","This","Path?"],unlock:() => archaeology.level > 0,prefix:"6/9/2025"
+},{
+    order:11,title:"Book of Symbolism",content:["The team mapped out more and more areas, and coercing the ministry itself to yield more space to us","Naturally that\'s a recipe for even more questions","The artifacts really are no such concern, fitting quite nicely with what we have","The treasures from the deep chambers are really boosting everything around with sweetness","But the answers are only a glint in an enormous chasm"," ","Though, the Book of Symbolisms might be a lightbulb","I should probably stop seeing things before it got worse","That book is real deal"],unlock:() => artifactUpgrade[9].level > 0,prefix:"13/10/2025"
+},{
+    order:12,title:"Reality",content:["The writing on the hallowed wall tells me all I need to know","I walk on the path","The path, to cookielightenment","Where my desires lead","The stone tells it all, down to the last scratch","Only luck may detract me from the path","But I don\'t know enough to judge how forsaking cookielightenment is worth"," ","There\'s a lot to be learnt from the buried secrets within the temple","I can see why the ministry wouldn\'t budge back when it was discovered","For once, wizards get to cast actual magic instead of pointless rituals for cookies","The grimoire, sealing the secrets of reality from everyone but the most knowing in magic","I could bend reality to my will, for the cookies","Every bit of sugar counts"],unlock:() => artifactUpgrade[10].level > 0,prefix:"13/12/2025"
+},{
+    order:13,title:"What was hidden",content:["With a land so vast under my grasp","I got some prospectors to look for more useful material from them","Even if they come up with nothing on their hands","They found rich deposits of otherworldly minerals right outside of my domain","Wasting no time, I immediately swooped in to acquire such blessed land","So blessed that even the government stepped in already"," ","Slapped them with even more tremendous sum","And the first of the land belong to me","One can only wonder what would be created","Through Beryllium and beyond..."],unlock:() => excavatorDrill.level > 0,prefix:"21/3/2026"
+},{
+    order:14,title:"Atomic",content:["With all 8 areas under my control","My team has constructed many wonderous creations out of those","And it\'s starting to culminate into 1 thing","Recently a discovery about properties of Cherrysilver, Hazelrald, and Mooncandy has made the possibility of atomic fission being real","They separate into atoms","And they smash","Under the watchful eyes of the regulators"," ","On paper the reaction may seem boring, the ultimate goal being a simple glyph","It chases up on my production in an instant","Though I can only decay the third lightest element at first","There\'s always more room for better quality materials to handle ever more intense reactions"],unlock:() => accelerator.level > 0,prefix:"23/9/2026"
+},{
+    order:15,title:"Bingo Research Facility",content:["My lightspeed developments across all sectors is steadily reaching its limits","If I were to only consider the collective advancement of knowledge","In particular, Idleverses are edging too close to the limits of multiverse theory","And any hope of further optimizations has vanished all too long ago"," ","I have to realize,","That there exists worlds beyond what humans could possibly know","And exploring them inevitably be the only way forward","Given the advanced state of research and theorycraft, it\'s no wonder inducing my original researches would have such a severe cost"],unlock:() => COOKIE.value > BF("1e500"),prefix:"??/5/2027"
+},{
+    order:16,title:"One Mind",content:["And then we realized","One simple statement","A reason why","Grandmas flock to my place back then","They seek the cookies","They know the drawings at the temple","They know my raison d\'etre","And they know what to do with it"," ","The Covenant","It should\'ve been-","[DATA L0ST]"," ","I should steel myself","For what\'s to come","And the final symbol on the screen shows it well","Cookies","Should only be made from my sheer willpower","Away from the grandmas"],unlock:() => researchUpgrade[18].level > 0,prefix:"??/8/2028"
+},];
+var calcChapterText = (indx) => {
+    //heading
+    let space = " ", equal = "=";
+    //find longest + pad 1st line
+    let longest = 0;
+    for(let i=0,j=loreData[indx].content.length;i<j;i++){
+        longest = Math.max(longest,loreData[indx].content[i].length);
+    }
+    //prefix
+    let ret = `${loreData[indx].prefix}${space.repeat(longest - loreData[indx].prefix.length)}\n`;
+    //date
+    //main
+    ret += `${equal.repeat(Math.min(longest,49))}\n`;
+    for(let i=0,j=loreData[indx].content.length;i<j;i++){
+        ret += `${loreData[indx].content[i]}${space.repeat(longest - loreData[indx].content[i].length)}\n`
+    }
+    //equal
+    ret += equal.repeat(Math.min(longest,49));
+    return ret;
+}
+let chapterText = new Array(69);
 
 //!==QUERY FUNCTIONS==
 //? 1. Check ALL Upgrades at 10^n C, with OVERALL multipliers
@@ -2459,6 +2481,8 @@ function warpResearch(ticks){
 
 //!==INIT==
 var init = () => {
+    var today = new Date();
+    // log(`it's ${today.getDate()}`);
     COOKIE = theory.createCurrency("C", "C");
     HEAVENLY_CHIP = theory.createCurrency("H", "H");
     SUGAR_LUMP = theory.createCurrency("L", "L");
@@ -2467,6 +2491,13 @@ var init = () => {
         elements[i] = theory.createCurrency(elementData[i].symbol,elementData[i].symbol);
         elements[i].isAvailable = false;
     }
+    ///////////////////
+    //// Story chapters
+    for(let i=0;i<usedStory;i++){
+        chapterUnlock[i] = shortUpgrade(1e8+i,COOKIE,new FreeCost(),`Unlock Log ${i}`,`Unlocks Log ${i}`);
+        chapter[i] = theory.createStoryChapter(i,`Log ${loreData[i].order} : ${loreData[i].title}`,calcChapterText(i),() => chapterUnlock[i].level > 0);
+    }
+
     // Shush
     {
         thyme = theory.createUpgrade(1e9, COOKIE, new ConstantCost(BF("1e1000")));
@@ -2882,6 +2913,9 @@ var init = () => {
             case 17:{
                 building[i].maxLevel = 999999;
             }
+            case 18:{
+                building[i].maxLevel = 999999;
+            }
         }
     }
 
@@ -2988,11 +3022,7 @@ var init = () => {
         achCountTV += achCountFeatTV;
     }
     sigmaCurseof = featAch1[19];
-    ///////////////////
-    //// Story chapters
-    for (let i = 0; i < 16; i++) {
-        chapter[i] = theory.createStoryChapter(i, chapterName[i], chapterLore[i], () => checkChapter(i));
-    }
+
     for (let i = 0; i < 9; i++) {
         quartList[i] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{_{${elementData[i].symbol}}}`, elements[i].value));
     }
@@ -3007,6 +3037,13 @@ var init = () => {
 
 //!Availability
 var updateAvailability = () => {
+    // Story
+    for(let i=0;i<usedStory;i++){
+        chapterUnlock[i].isAvailable = (chapterUnlock[i].level == 0 ) && loreData[i].unlock();
+        if(i > 0){
+            chapterUnlock[i].isAvailable &= chapterUnlock[i-1].level > 0;
+        }
+    }
     // Buildings
     for (let i = 0; i < 19; i++) {
         if (i >= 3) {building[i].isAvailable = (COOKIE.value >= buildingData[i - 1].baseCost) || (building[i].level > 0);}
@@ -3203,6 +3240,7 @@ var tick = (elapsedTime,multiplier) => {
     //dt = 0.1 normally, so x10 for 1 second
     if(setupTick){
         log("setup tick");
+        updateTerraOverlay();
         updateBuildingLumpPower();
         for(let i=0;i<19;i++){
             updateLocalMult(i);
@@ -3308,7 +3346,7 @@ const height = 60;
 var quartList = new Array(9), quartList2 = new Array(5);
 var PrimaryEquation = (col) => {
     //log(`${eqColor[Math.floor(col)]}`);
-    return `\\color{#${eqColor[col]}}{\\dot{C} = P(B(0) + \\sum_{i=1}^{18}{B(i)})}`;
+    return `\\color{#${eqColor[col]}}{\\dot{C} = P\\sum_{i=0}^{18}{B(i)}}`;
 };
 var secondaryCheck = (mode) => {
     switch (mode) {
@@ -3459,6 +3497,8 @@ var get2DGraphValue = () => {
 var getPublicationMultiplier = (tau) => tau.pow(1.07);
 var getPublicationMultiplierFormula = (symbol) => symbol + "^{1.07}";
 var postPublish = () => {
+    updateColorScale();
+    updateTerraOverlay();
     SUGAR_LUMP.value = lumpbf;
     HEAVENLY_CHIP.value = hbf;
     CPS = BigNumber.ZERO;
@@ -3474,6 +3514,9 @@ var postPublish = () => {
     }
     for (let i = 0; i < usedElements; i++) {
         elements[i].value = elemBefore[i];
+    }
+    for(let i=0;i<usedStory;i++){
+        chapterUnlock[i].level = (chapter[i].isUnlocked)?1:0;
     }
     exponentium.level = exponentiumLvBefore;
     EXPO_BAR.value = exponentiumBefore;
@@ -3695,6 +3738,20 @@ var InsPopup = ui.createPopup({
 //!1.2 : WHAT'S NEW
 var getUpdateNotes = () => {
     let ret = [];
+    ret.push(ui.createLabel({
+        text: "(0.5).3.1",
+        fontSize: 18,
+        horizontalTextAlignment: TextAlignment.CENTER,
+        fontAttributes: FontAttributes.BOLD,
+        padding: Thickness(2, 10, 2, 5)
+    }));
+    ret.push(ui.createLabel({
+        text: "\t-entire lore rework : better, more rad, and more lore\n\t-lore will not interrupt your session without prior consent\n\t-minor tweaks to some equations\n\t-removed bugs\n\t-removed demonic stuffs\n\t-buying a lot of cortex baker will do something idk\n\t-limited cortex bakers to 500 in preparations for 2nd wave of research upgrades and a new currency",
+        fontSize: 11,
+        horizontalTextAlignment: TextAlignment.START,
+        fontAttributes: FontAttributes.NONE,
+        padding: Thickness(2, 5, 2, 10)
+    }));
     ret.push(ui.createLabel({
         text: "(0.5).3.0 - big brain time",
         fontSize: 18,
@@ -4342,7 +4399,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text: "Cookie Idler - c054bd0\nv(0.5).3.0"
+                text: "Cookie Idler - 04799b8\nv(0.5).3.1"
             })
         ]
     })
@@ -4359,75 +4416,51 @@ let getImageSize = (width) => {
     return 20;
 };
 // ellipsis you're so epic for contributing to getEquationOverlay() function
-var getEquationOverlay = () =>
-    ui.createStackLayout({
-        children: [
-            ui.createImage({
-                source: ImageSource.INFO,
-                horizontalOptions: LayoutOptions.START,
-                verticalOptions: LayoutOptions.END,
-                aspect: Aspect.ASPECT_FIT,
-                heightRequest: getImageSize(ui.screenWidth),
-                widthRequest: getImageSize(ui.screenWidth),
-                margin: new Thickness(9, 9, 0, 0),
-                onTouched: (e) => {
-                    if (e.type == TouchType.SHORTPRESS_RELEASED) {
-                        popup.show();
-                    }
-                },
-            }),
-            ui.createLatexLabel({
-                text: `Menu`,
-                fontSize: 10,
-                padding: new Thickness(9, 4, 0, 0),
-            }),
-            terra.level > 0
-                ? ui.createImage({
-                    source: ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/6/6f/CookieProduction39.png/revision/latest?cb=20200620182721"),
-                    horizontalOptions: LayoutOptions.START,
-                    verticalOptions: LayoutOptions.END,
-                    aspect: Aspect.ASPECT_FIT,
-                    heightRequest: getImageSize(ui.screenWidth),
-                    widthRequest: getImageSize(ui.screenWidth),
-                    useTint: false,
-                    margin: new Thickness(9, 0, 0, 0),
-                    onTouched: (e) => {
-                        if (e.type == TouchType.SHORTPRESS_RELEASED) {
-                            log("Boost!");
-                            xBegin = thyme.level;
-                            updateGlobalMult();
-                        }
-                    },
-                })
-                : ui.createImage({
-                    source: ImageSource.LOCK,
-                    horizontalOptions: LayoutOptions.START,
-                    verticalOptions: LayoutOptions.END,
-                    aspect: Aspect.ASPECT_FIT,
-                    heightRequest: getImageSize(ui.screenWidth),
-                    widthRequest: getImageSize(ui.screenWidth),
-                    margin: new Thickness(9, 9, 0, 0),
-                    onTouched: (e) => {
-                        if (e.type == TouchType.SHORTPRESS_RELEASED && terra.level > 0) {
-                            log("Boost!");
-                            xBegin = thyme.level;
-                            updateGlobalMult();
-                        }
-                    },
-                }),
-            terra.level > 0
-                ? ui.createLatexLabel({
-                    text: "Terraform Buff",
-                    fontSize: 10,
-                    padding: new Thickness(9, 9, 0, 0),
-                })
-                : ui.createLatexLabel({
-                    text: "Locked",
-                    fontSize: 10,
-                    padding: new Thickness(9, 9, 0, 0),
-                }),
-        ],
+let eqOverlay = ui.createStackLayout({
+    children: [
+        ui.createImage({
+            source: ImageSource.INFO,
+            horizontalOptions: LayoutOptions.START,
+            verticalOptions: LayoutOptions.END,
+            aspect: Aspect.ASPECT_FIT,
+            heightRequest: getImageSize(ui.screenWidth),
+            widthRequest: getImageSize(ui.screenWidth),
+            margin: new Thickness(9, 9, 0, 0),
+            onTouched: (e) => {
+                if (e.type == TouchType.SHORTPRESS_RELEASED) {
+                    popup.show();
+                }
+            },
+        }),
+        ui.createLatexLabel({
+            text: `Menu`,
+            fontSize: 10,
+            padding: new Thickness(9, 4, 0, 0),
+        }),
+        ui.createImage({
+            source: ImageSource.LOCK,
+            horizontalOptions: LayoutOptions.START,
+            verticalOptions: LayoutOptions.END,
+            aspect: Aspect.ASPECT_FIT,
+            heightRequest: getImageSize(ui.screenWidth),
+            widthRequest: getImageSize(ui.screenWidth),
+            margin: new Thickness(9, 9, 0, 0),
+            onTouched: (e) => {
+                if (e.type == TouchType.SHORTPRESS_RELEASED && terra.level > 0) {
+                    log("Boost!");
+                    xBegin = thyme.level;
+                    updateGlobalMult();
+                }
+            },
+        }),
+        ui.createLatexLabel({
+            text: "Locked",
+            fontSize: 10,
+            padding: new Thickness(9, 9, 0, 0),
+        }),
+    ],
 });
+var getEquationOverlay = () => eqOverlay;
 
 
 init();
