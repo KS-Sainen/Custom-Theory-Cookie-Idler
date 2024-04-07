@@ -587,6 +587,17 @@ var buildingData = [
         onBought: (amount) => {
             //log(``)
         }
+     },{
+        uid: 10014,
+        name: "Fusion Mode : [OFF]",
+        info: "Turns the fusion reactor on or off",
+        costModel: new FreeCost(),
+        maxLevel: 2,
+        onBought: (amount) => {
+            if(fusionReactor.level > 1){
+                fusionReactor.level = 0;
+            }
+        }
      }],
     },
     {id: 13,
@@ -616,7 +627,7 @@ var buildingData = [
     },
     {id: 18,
      names: ["Cortex Baker","Corex Bakr"], desc: "thinking in ", lumpBName: "Get an extra IQ Point",
-     baseCPS: BF("8.5e250"), baseCost: BF("6.66e610"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 500, sweetMax: 150,
+     baseCPS: BF("1e246"), baseCost: BF("6.66e610"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 500, sweetMax: 150,
      achName: ["O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA","Cardinal Synapsis","I declare thee on all ye inferiors. Despair before me, I am the Ozymandias","Who are you? I̷ a̵͇̋͂̌m̷̡̨̉̀̂ s̷̬̏̓̓ø̷̘̜͚̒͒̓l̸͍̄͐͘i̷̡̛̞̯p̷͈̞̳̉̃s̶̬̲͕̝̓̕͝","I am smart"],
     },
 ];
@@ -676,9 +687,9 @@ var calcBuilding = (id, am) => {
     }
 }
 
-//building power
-var getPower = (index) => BigP(Utils.getStepwisePowerSum(buildingPower[index].level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * 1) + (jetEngine.level * 0.25), 5, 1), 1 + (superP.level * 0.02));
-var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * 1) + (jetEngine.level * 0.25), 5, 1), 1 + (superP.level * 0.02));
+//building power getPower2(index,buildingPower[index].level)
+var getPower = (index) => getPower2(index,buildingPower[index].level);
+var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * 1) + (jetEngine.level * 0.25) + (researchUpgrade[25].level * 0.5), 5, 1), 1 + (superP.level * 0.02));
 
 //building exponents
 var getBuildingExp = (index) => {
@@ -687,19 +698,24 @@ var getBuildingExp = (index) => {
 
 //building description + info
 var ColorScale = 0;
+var latestCollect = new Array(19);
 var updateColorScale = () => ColorScale = Math.round(Math.min(255,255*(building[18].level/1450)));
 var getBuildingDesc = (indx) => {
     var bi = `\$B[${indx}]^{${(getBuildingExp(indx) > 1) ? TS10(getBuildingExp(indx)) : ""}}\$${(investHelp[indx].level>0)?`+${investHelp[indx].level}`:""}`, displayedStr;
+    var collectBar = getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
+    if(latestCollect[indx]!=0 && latestCollect[indx] <= CPS/BF("1e12")){
+        collectBar = `[X]`;
+    }
     //let colorScale = Math.min(255,255*(building[18].level/1450));
     switch(bInfo){
         case 0:
-            displayedStr =`${bi} - ${buildingData[indx].names[0]} ` + getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
+            displayedStr =`${bi} - ${buildingData[indx].names[0]} ` + collectBar;
             break;
         case 1:
-            displayedStr = `${bi} = ${calcBuilding(indx, investHelp[indx].level)} ` + getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
+            displayedStr = `${bi} = ${calcBuilding(indx, investHelp[indx].level)} ` + collectBar;
             break;
         case 2:
-            displayedStr = `${bi} - ${buildingData[indx].names[1]} ` + getCollectionBar(thyme.level % buildingData[indx].collectionTime,buildingData[indx].collectionTime);
+            displayedStr = `${bi} - ${buildingData[indx].names[1]} ` + collectBar;
             break;
         default:
             displayedStr = "Building Desc. Error!";
@@ -832,8 +848,9 @@ var updateBuildingLumpMaxLv = () => {
     }else{
         building[17].maxLevel = moonMarbleCapacity*moonMarble.level;
     }
-    building[18].maxLevel = 500;
+    building[18].maxLevel = 250 + (250 * researchUpgrade[21].level) + (250 * researchUpgrade[26].level);
     archaeology.maxLevel = 1000 + (500 * researchUpgrade[12].level);
+    covenant.maxLevel = 2 + (4 * researchUpgrade[27].level);
 }
 var updateBuildingLumpPower = () => {
     if(superL.level > 0){
@@ -878,6 +895,8 @@ var updateGlobalMult = () => {
     //log(globalMult);
     //11 elem
     globalMult *= BigP(50,astroExcavate.level) * BigP(1.01,researchUpgrade[0].level + researchUpgrade[1].level + researchUpgrade[13].level) * BigP(5,researchUpgrade[7].level + researchUpgrade[15].level);
+    //12 meld
+    globalMult *= BigP(BigL10(elements[5].value+BF(10)),2*artifactUpgrade[14].level);
 };
 //sub global mult - mmmmmmmmm those cookies
 //cookie tins, remember, they're unlocked in order :)
@@ -1070,6 +1089,9 @@ var updateLocalMult = (indx) => {
             if (covenant.level > 0) {
                 buildingData[indx].mult *= BigP(buildingCount,(BigP(covenant.level,covLvMod) * covDelta + covExp) * (1 + ((covenant.level-1)*0.5)));
             }
+            if (researchUpgrade[27].level > 0) {
+                buildingData[indx].mult *= BigP(building[1].level+1,2) * BigP(building[16].level+1,2.5);
+            }
             break;
         case 2:
             if (ygg.level > 0 && thyme.level > 0) {
@@ -1129,8 +1151,10 @@ var updateLocalMult = (indx) => {
             }
             break;
         case 17:
-            buildingData[indx].mult *= BigP(50,researchUpgrade[2].level+researchUpgrade[6].level+researchUpgrade[9].level);
+            buildingData[indx].mult *= BigP(50,researchUpgrade[2].level+researchUpgrade[6].level+researchUpgrade[9].level+researchUpgrade[25].level);
             break;
+        case 18:
+            buildingData[indx].mult *= BigP(10,researchUpgrade[21].level+researchUpgrade[26].level);
     }
     if(buildingData[indx].mult == BF(0)){buildingData[indx].mult = BF(1)};
 };
@@ -1181,15 +1205,20 @@ var artifactData = [{
     order: 13,name: "Scent of Vanilla Nebula",clue: "5 Cosmic Mappings ah ah ah",
     cost: BF("1e400"),unlockCondition: () => {return (building[8].level >= 0b10011100010000 / 2) && (Math.random() < 0.005);}, desc: "Some astronomers go crazy over these"
 },{
-    order: 14,name: "Cherrysilverium Meld",clue: "15$(^=)$1.268e30, 16=117.39, 8E=500,000, Cs",
-    cost: BF("1e300"),unlockCondition: () => {return false;}, desc: "A curious blob of metal, one of the inscriptions inside the temple\'s numerous halls details a picture of it literally melding buildings together, with humans"
+    order: 14,name: "Cherrysilverium Meld",clue: "Melting Cs",
+    cost: BF("1e610"),unlockCondition: () => {return (Math.random() < 0.05) && (acceleratorMode.level == 4) && (acceleratorButton.level == 1);}, desc: "A curious blob of metal, one of the inscriptions inside the temple\'s numerous halls details a picture of it literally melding stuffs together, with humans and cookies"
+},{
+    order: 15,name: "Tokakyote Type-C",clue: "And then, everything was decayed, but what was left, was greater than what were there",
+    cost: BF("1e651"),unlockCondition: () => {return (Math.random() < 0.005) && (HIGH_ELEMENT_CLUSTER.value >= BF(100000));}, desc: "A helical structure that people claim is able to perform nuclear fusion. Why does such a thing exist inside a temple anyway?"
 }];
 //loot
 const maxRoll = 10000;
 var templeLuck = 0;
 let lootWeight = [10000, 9995, 9945, 9845, 9735, 9615, 9565, 9555, 9530, 9430, 9320, 9200, 9100, 9000];
 let minCookie = (i) => {
-    COOKIE.value += BF(60) * CPS * terraBoost * BF(i);
+    let prize = BF(60) * CPS * terraBoost * BF(i);
+    prize = checkGainOverLimit(prize);
+    COOKIE.value = checkCookieOverLimit(COOKIE.value + prize);
 };
 let pubH = (i) => {
     if (COOKIE.value <= 0) return;
@@ -1506,7 +1535,7 @@ var elementData = [
             name: "Extraterrestrial Excavators",
             info: "Manifest your destiny of elements by extending your mining operations into the SPACE! Multiplies EPS by 5 and CPS by 50",
             costModel: new ExponentialCost(1000000,ML2(10)),
-            maxLevel: 10,
+            maxLevel: 15,
             onBought: (amount) => {updateGlobalMult();calcEPS();}
         }]
     },{
@@ -1523,12 +1552,12 @@ var elementData = [
         symbol:"Gm", fullName: "Glimmeringue",
     }
 ];
-var getElemBoost = (indx,level) => (1 + (elementData[indx].excavatorPowerFactor * BigP(level,elementData[indx].excavatorPowerPow)));
+var getElemBoost = (indx,level) => (1 + ((elementData[indx].excavatorPowerFactor+(researchUpgrade[23].level * (0.15*indx))) * BigP(level,elementData[indx].excavatorPowerPow+(researchUpgrade[23].level * (0.03*indx)))));
 arrEPS.fill(BF(0));
 var calcExcavator = (level) => Utils.getStepwisePowerSum(level, 5, 5, 0);
-var getLossFactor = () => lossFactorBase - (jetRefine.level*jetRefineEff) - (10*researchUpgrade[7].level) - (10*researchUpgrade[11].level);
+var getLossFactor = () => lossFactorBase - (jetRefine.level*jetRefineEff) - (10*researchUpgrade[7].level) - (10*researchUpgrade[11].level) - (10*researchUpgrade[23].level);
 var calcEPS = () => {
-    let excMult = BigP(1.2,cherryRegulator.level) * BigP(1.2,hazelSolution.level) * BigP(2,moonCore.level) * BigP(5,astroExcavate.level) * BigP(5,researchUpgrade[7].level) * BigP(7.5,researchUpgrade[11].level);
+    let excMult = BigP(1.2,cherryRegulator.level) * BigP(1.2,hazelSolution.level) * BigP(2,moonCore.level) * BigP(5,astroExcavate.level) * BigP(5,researchUpgrade[7].level) * BigP(7.5,researchUpgrade[11].level) * BigP(BigL10(10+elements[5].value),artifactUpgrade[14].level);
     let excRate = calcExcavator(excavator.level) * excMult;
     let lossFactor = getLossFactor();
     for(let i = 0;i < excavatorDrill.level;i++){
@@ -1579,7 +1608,7 @@ var excModulueInfo = (indx, amount) => {
         case 0:
             return `Empowers your excavators with the essence of ${elementData[indx].fullName}`;
         case 1:
-            return `$Ef_{${indx}} = 1 + ${elementData[indx].excavatorPowerFactor}Lv^{${elementData[indx].excavatorPowerPow}} =$ ${Utils.getMathTo(getElemBoost(indx,excavatorModule[indx].level),getElemBoost(indx,excavatorModule[indx].level+amount))}`;
+            return `$Ef_{${indx}} = 1 + ${BF(elementData[indx].excavatorPowerFactor+(researchUpgrade[23].level * (0.15*indx)))}Lv^{${BF(elementData[indx].excavatorPowerPow+(researchUpgrade[23].level * (0.03*indx)))}} =$ ${Utils.getMathTo(getElemBoost(indx,excavatorModule[indx].level),getElemBoost(indx,excavatorModule[indx].level+amount))}`;
         case 2:
             return `Expoeprws your excavatrors with the ssenwe of ${elementData[indx].fullName}`;
     }
@@ -1590,7 +1619,7 @@ var refreshExcavatorMaxLv = () => {
 //accelerator
 var accelerator, acceleratorButton, acceleratorControl, acceleratorMode;
 var lightOn = "O", lightOff = "-", strobeCnt = new Array(15).fill(0), strobeOdds = [0.75,1/3,1/11,0.4,0.6,1/7,0.5], strobeUsed = 7, lightInvalid = "X";
-const maxDecayPow = 0.9, lambda =  BF(0.04), yieldfactor = BF(0.05), yieldPow = 1.05, cookieYieldPow = 1.5, cookieYieldFactor = 10, weightFactor = 228/40;
+const maxDecayPow = 0.9, lambda =  BF(0.04), yieldfactor = BF(0.05), yieldPow = 1.045, cookieYieldPow = 1.5, cookieYieldFactor = 10, weightFactor = 228/40;
 var lightIndicator = (amt,cnt) => {
     if(amt%2 == 1){
         if(acceleratorMode.level > 0){
@@ -1626,12 +1655,30 @@ var acceleratorStatus = (level, mode) => {
 }
 function decayElement(indx, dt){
     if(indx >= 2 && (elements[indx].value >= elementData[indx].minDecayAmt)){
-        let rate = building[12].level * lambda * BigP(elements[indx].value,maxDecayPow);
-        //addition
-        elements[indx-2].value += dt * BigP(rate,yieldPow) * yieldfactor * (elementData[indx-2].weight / elementData[indx].weight);
-        elements[indx-1].value += dt * BigP(rate,yieldPow+0.02) * yieldfactor * (elementData[indx-1].weight / elementData[indx].weight);
+        let rate = building[12].level * lambda * BigP(elements[indx].value,maxDecayPow + (elements[indx].value > BF(1e60)?(0.0025 * (BigL10(elements[indx].value)-60)):0));
+        let isCritical = dt * rate > elements[indx].value
+        if(isCritical){//critical point, happens at roughly e90
+            rate = elements[indx].value * 0.99;
+            HIGH_ELEMENT_CLUSTER.value += BigP(BigL10(rate),1.9);
+            //addition
+            elements[indx-2].value += dt * rate * yieldfactor * (elementData[indx-2].weight / elementData[indx].weight);
+            elements[indx-1].value += dt * rate * yieldfactor * (elementData[indx-1].weight / elementData[indx].weight);
+        }else{
+            //addition
+            elements[indx-2].value += dt * BigP(rate,yieldPow) * yieldfactor * (elementData[indx-2].weight / elementData[indx].weight);
+            elements[indx-1].value += dt * BigP(rate,yieldPow+0.015) * yieldfactor * (elementData[indx-1].weight / elementData[indx].weight);
+        }
+        //hec yield
+        if(elements[indx].value > BF(1e60)){
+            HIGH_ELEMENT_CLUSTER.value += (BigL10(elements[indx].value)-60) * BigP(((elementData[indx-2].weight+elementData[indx-1].weight+elementData[indx].weight) / weightFactor),researchUpgrade[22].level);
+        }
         //cookie yield
-        COOKIE.value += dt * BigL10(BigP(rate,cookieYieldPow)) * (CPS/cookieYieldFactor) * terraBoost * (elementData[indx-2].weight+elementData[indx-1].weight+elementData[indx].weight) / weightFactor;
+        let cookieGain = dt * BigL10(BigP(rate,cookieYieldPow)) * (CPS/cookieYieldFactor) * terraBoost * (elementData[indx-2].weight+elementData[indx-1].weight+elementData[indx].weight) / weightFactor;
+        if(fusionReactor.level > 0){
+            cookieGain = 0;
+        }
+        cookieGain = checkGainOverLimit(cookieGain);
+        COOKIE.value = checkCookieOverLimit(COOKIE.value + cookieGain);
         //deletion
         elements[indx].value -= dt * rate ;
     }
@@ -1640,21 +1687,66 @@ function decayElementTest(indx, dt){
     log(`======`);
     log(`Decaying.... ${elementData[indx].fullName}, dt = ${dt}`);
     if(indx >= 2){
-        let rate = building[12].level * lambda * BigP(elements[indx].value,maxDecayPow);
+        let rate = building[12].level * lambda * BigP(elements[indx].value,maxDecayPow + (elements[indx].value > BF(1e60)?(0.0025 * (BigL10(elements[indx].value)-60)):0)), Eyield = 0;
         log(`Rate = ${rate}/s`);
         //addition
-        log(`${elementData[indx-2].fullName} Gain = ${dt * BigP(rate,yieldPow) * yieldfactor * (elementData[indx-2].weight / elementData[indx].weight)}`);
-        log(`${elementData[indx-1].fullName} Gain = ${dt * BigP(rate,yieldPow+0.01) * yieldfactor * (elementData[indx-1].weight / elementData[indx].weight)}`);
+        Eyield = dt * BigP(rate,yieldPow) * yieldfactor * (elementData[indx-2].weight / elementData[indx].weight)
+        log(`${elementData[indx-2].fullName} Gain = ${Eyield} (${Eyield/arrEPS[indx-2]}x)`);
+        Eyield = dt * BigP(rate,yieldPow+0.02) * yieldfactor * (elementData[indx-1].weight / elementData[indx].weight)
+        log(`${elementData[indx-1].fullName} Gain = ${Eyield} (${Eyield/arrEPS[indx-1]}x)`);
         //cookie yield
         let cookieGain = dt * BigL10(BigP(rate,cookieYieldPow)) * (CPS/cookieYieldFactor) * terraBoost * (elementData[indx-2].weight+elementData[indx-1].weight+elementData[indx].weight) / weightFactor;
         log(`Cookie Gain, CPS = ${CPS}, Total = ${cookieGain}`);
+        let hecGain = 0;
+        if(elements[indx].value > BF(1e60)){
+            hecGain += (BigL10(elements[indx].value)-60) * ((elementData[indx-2].weight+elementData[indx-1].weight+elementData[indx].weight) / weightFactor);
+        }
+        log(`HEC Gain : ${hecGain}`);
         //deletion
         log(`${elementData[indx].fullName} Loss = ${dt * rate}`);
         log(`======`);
-        let t = BigP(elements[indx].value,1-maxDecayPow);
-        log(`Projected Cookies(t = ${t}) = ${t * cookieGain}`);
+        let t = elements[indx].value / (dt * rate);
+        log(`Projected Cookies(t = ${t}) = ${t * cookieGain}\nProjected HEC = ${t * hecGain}`);
     }else{
         log(`Invalid Decay!`)
+    }
+}
+//fusion
+var fusionReactor, astroDecayWF = (elementData[8].weight+elementData[7].weight+elementData[6].weight) / weightFactor;
+const magnitudeTime = 30, minFusion = 650, astroYieldConst = 0.75;//time to go down 10x, 10^n C required to begin fusion, base astrofudge/s yield
+const cookieLoss = Math.pow(10,(1/(magnitudeTime*10)) * -1);
+var fusionStatus = (level) => {
+    //0 = OFF, 1 = ON
+    if(level > 0){
+        if(COOKIE.value >= BigP(10,minFusion)){
+            return `Fusion Control : ON [${BigL10(10+COOKIE.value) - minFusion + BigL10(elements[8].value+10)}]`;
+        }else{
+            return `Fusion Control : ON [XXX]`;
+        }
+    }else{
+        return `Fusion Control : OFF [---]`;
+    }
+}
+function fuseCookie(dt, testConst){
+    let totalAstro = BigL10(elements[8].value+10);
+    if(COOKIE.value < BigP(10,minFusion)){
+        if(testConst)log(`not enough cookies`);
+        return;
+    }else{
+        totalAstro += BigL10(10+COOKIE.value) - minFusion;
+        let highYield = dt * astroDecayWF * totalAstro, astroYield = dt * astroYieldConst*totalAstro*arrEPS[8];
+        if(testConst){
+            let fusionTime = (BigL10(10+COOKIE.value) - minFusion) * magnitudeTime;
+            log(`The bar is set at 10^${minFusion}`)
+            log(`Total As : ${BigL10(elements[8].value+10)} + ${BigL10(10+COOKIE.value) - minFusion} = ${totalAstro}`);
+            log(`HEC Yield : ${highYield}`);
+            log(`As Yield : ${astroYield}`);
+            log(`Cookie Loss(set=${magnitudeTime}s, total=${fusionTime}s) = ${(1-BigP(cookieLoss,dt)) * COOKIE.value}`);
+        }else{
+            elements[8].value += astroYield;
+            HIGH_ELEMENT_CLUSTER.value += highYield;
+            COOKIE.value -= (1-BigP(cookieLoss,dt)) * COOKIE.value;
+        }
     }
 }
 
@@ -1753,11 +1845,35 @@ var researchData = [{
     cost: [{type:9,amount:BF("2e600")},{type:11,amount:BF(5e7)},{type:13,amount:BF(10000)},{type:22,amount:BF(7500)},{type:23,amount:BF(7500)},{type:2,amount:BF(2.5e63)}]
 },{
     id: 18, name: "One Mind", desc: "WARNING : THE GRANDMOTHERS ARE GROWING RESTLESS. DO NOT ENCOURAGE THEM.\nWe are one. We are many.\nUnlocks the Final Building", time: 363636, preq: [15,12],
-    cost: [{type:9,amount:BF("6.66e600")},{type:14,amount:BF(6666)},{type:23,amount:BF(6666)},{type:24,amount:BF(6666)},{type:29,amount:BF(666)},{type:5,amount:BF(6.66e60)}]
+    cost: [{type:9,amount:BF("6.66e600")},{type:14,amount:BF(6666)},{type:23,amount:BF(6666)},{type:24,amount:BF(6666)},{type:29,amount:BF(666)},{type:5,amount:BF(6.66e61)}]
 },{
     id: 19, name: "Higher Elements Cluster", desc: "Lately there has been an anomaly in reading from particle accelerators. Your scientists has determined those to be atoms of elements heavier than what we\'ve seen before. Maybe harnessing them would yield even more techs that only a baker could dream of.", time: 720000, preq: [18,16],
-    cost: [{type:8,amount:BF(1.5e12)},{type:5,amount:BF(7.8e60)},{type:6,amount:BF(1.5e59)},{type:7,amount:BF(3.1e57)},{type:28,amount:BF(7500)},{type:26,amount:BF(7500)},{type:25,amount:BF(7500)}]
-},];
+    cost: [{type:8,amount:BF(1.5e12)},{type:5,amount:BF(7.8e60)},{type:6,amount:BF(7.5e59)},{type:7,amount:BF(3.1e57)},{type:28,amount:BF(4200)},{type:26,amount:BF(6250)},{type:25,amount:BF(7500)}]
+},{
+    id: 20, name: "Multiverse Eschatology", desc: "The inevitable destruction of the universe. That\'s something we couldn\'t avoid (yet), so coming up with proper plans to deal with dying universes is critical towards sustaining its rate of production. The theory produced would be most useful when used in conjunction with cortex bakers. Makes Idleverses\'s CPS approach Cortex Baker, anyhow...", time: 1080000, preq: [18,16,20],
+    cost: [{type:9,amount:BF("1e620")},{type:30,amount:BF(2024)},{type:31,amount:BF(50)},{type:24,amount:BF(7725)},{type:7,amount:BF(3e60)},{type:8,amount:BF(1.5e13)}]
+},{
+    id: 21, name: "Electric Sheep", desc: "A revolutionary way of dreaming where instead of dreaming various mundane scenarios that may or may not hinder the brain\'s function. The dream is replaced with mathematical wonder of complex, fractalline patterns full of complex(perhaps complete) jargon and even more incomprehensible equations, all perfect fit for a resting cortex brain. Plus you get to see some cool stuffs to. Increases the maximum level of Cortex Baker by 250 and multiplies its CPS by 10.", time: 864000, preq: [18],
+    cost: [{type:9,amount:BF("1e625")},{type:31,amount:BF(250)},{type:11,amount:BF(1e7)},{type:4,amount:BF(5.25e65)},{type:5,amount:BF(1.1e65)},{type:7,amount:BF(1.5e60)},{type:8,amount:BF(7.5e12)}]
+},{
+    id: 22, name: "Fusion Reactor", desc: "In order to REALLY get those HECs pumping out. We have discovered that somehow fusing COOKIES together would do it, especially since all of the other elements are being stretched to the limits(thanks to our research efforts). Unlocks Fusion Reactors, and perhaps a way to FUSE elements soon?", time: 1440000, preq: [11,19,20],
+    cost: [{type:9,amount:BF("1e650")},{type:10,amount:BF("5e213")},{type:25,amount:BF(7650)},{type:0,amount:BF("5e80")},{type:4,amount:BF("2.6e75")},{type:7,amount:BF("2.1e65")},{type:8,amount:BF("1.1e13")},{type:12,amount:BF(250000)},]
+},{
+    id: 23, name: "Molecular Mining", desc: "The peak of mining. Separating everything from the ground into its molecules and separate them into various elements(mostly useless normal ones omg why), it\'s a surefire way of guaranteeing no loss from the refinement process that seems to dispose of a tiny bit of the real thing(but they add up though).", time: 1260000, preq: [19],
+    cost: [{type:9,amount:BF("1e650")},{type:16,amount:BF(10000)},{type:0,amount:BF("4e73")},{type:1,amount:BF("2e72")},{type:6,amount:BF("6e63")},{type:7,amount:BF("2.7e61")},{type:12,amount:BF(10000)},]
+},{
+    id: 24, name: "Arcane Sugar", desc: "The kind of sugar many would stay the hell away from. But you don\'t care about that, do you?", time: 1234567, preq: [18],
+    cost: [{type:9,amount:BF("1.23e645")},{type:11,amount:BF(2.5e7)},{type:2,amount:BF("7.777e83")},{type:3,amount:BF("5.555e81")},{type:12,amount:BF(1000000)},{type:14,amount:BF(10000)},]
+},{
+    id: 25, name: "E >> 0", desc: "The ultimate solution to \"Why does everything fade into nothing at the end\". It truly doesn\'t make any sense to a layman, but to those scaredy-cats universe doomers it sure invalidates them.", time: 805422, preq: [20],
+    cost: [{type:9,amount:BF("2.22e652")},{type:7,amount:BF("2.22e78")},{type:6,amount:BF(2.22e80)},{type:5,amount:BF("2.22e82")},{type:12,amount:BF(500000)},{type:25,amount:BF(2500)},{type:27,amount:BF(2500)},{type:30,amount:BF(2500)}]
+},{
+    id: 26, name: "W.O.K.E.", desc: "One of the main inhibitors of the CT(Cookie Thinking) functions is the neverending torrent of intrusive thoughts that would rudely barge in without consent. The most common of such thoughts is about political nonsense that only serves to distract people from real action(in the real world). Staying W.O.K.E.(full name redacted) would serve as a way to transcend those though a common realization(which is also redacted). Increases the maximum level of Cortex Baker by 250 and multiplies its CPS by 10.", time: 1208133, preq: [21],
+    cost: [{type:9,amount:BF("3.33e653")},{type:4,amount:BF(3.33e83)},{type:7,amount:BF("3.33e79")},{type:18,amount:BF(10400)},{type:29,amount:BF(3725)},{type:12,amount:BF(500000)},{type:31,amount:BF(500)},]
+},{
+    id: 27, name: "Communal Brainsweep", desc: "WARN1NG : PR0CEED1NG ANY FURTHER IN SC1ENT1F1C RES3ARCH MAY HAVE UN3XP3CTED RE5ULTS. Y0U HAVE BEEN WARNED.\nRemoves another layer of limit of the Cookie Empire, at a cost of even more unstable environment. Buffs grandmas by who knows what.", time: 1666666, preq: [26,18],
+    cost: [{type:9,amount:BF("1e656")},{type:11,amount:BF(6.6e7)},{type:4,amount:BF("6.66e90")},{type:6,amount:BF(6.66e83)},{type:7,amount:BF(6.66e81)},{type:8,amount:BF(6.66e17)},{type:12,amount:BF(666666)},{type:14,amount:BF(10759)}]
+}];
 var getCostSymbol = (indx) => {
     if(indx < 9){
         return elementData[indx].symbol;
@@ -1809,7 +1925,7 @@ var researchBegin = (indx) => {
                             case 9:COOKIE.value -= val;break;
                             case 10:HEAVENLY_CHIP.value -= val;break;
                             case 11:SUGAR_LUMP.value -= val;break;
-                            //case 12:ret &= ;break;
+                            case 12:HIGH_ELEMENT_CLUSTER.value -= val ;break;
                         }
                     }
                 }
@@ -1873,7 +1989,7 @@ var updateResearchLabel = () => {
         }
     }
 }
-var debugUnlockResearch = false;
+var debugUnlockResearch = true;
 function isResearchUnlock(indx){
     let ret = true;
     if(indx == 0){
@@ -1896,7 +2012,7 @@ function canAffordCost(costObj){
                 case 9:return (COOKIE.value >= val);break;
                 case 10:return (HEAVENLY_CHIP.value >= val);break;
                 case 11:return (SUGAR_LUMP.value >= val);break;
-                //case 12:ret &= ;break;
+                case 12:return (HIGH_ELEMENT_CLUSTER.value >= val);break;
             }
         }
     }else{
@@ -1917,9 +2033,24 @@ function canAffordResearch(costs){
 const lumpTickChance = 5000;
 
 //! Primary Vairables
-var COOKIE, HEAVENLY_CHIP, SUGAR_LUMP, EXPO_BAR;
-var isCurrencyVisible = (indx) => indx <= 2;
+var COOKIE, HEAVENLY_CHIP, SUGAR_LUMP, EXPO_BAR, HIGH_ELEMENT_CLUSTER;
+// var isCurrencyVisible = (indx) => {
+//     if(indx != 14){
+//         return indx <= 2;
+//     }else{
+//         return researchUpgrade[19].level > 0;
+//     }
+// };
 var thyme, normalUpgradeMenu, permUpgradeMenu, trueThyme;
+const cookieLimit = [BF("1e616"),BF("1e656"),BF("1e706"),BF("9.99e749"),BF("1e10000")];
+const CPSLimit = [BF("1e616"),BF("1e656")/10,BF("1e706")/1000,BF("9.99e749")/1000000,BF("1e10000")];
+var getLimitFlags = () => researchUpgrade[18].level + researchUpgrade[27].level;
+var checkCookieOverLimit = (cookie) => {
+    return BigMin(cookie,cookieLimit[getLimitFlags()]);
+}
+var checkGainOverLimit = (gain) => {
+    return BigMin(gain,CPSLimit[getLimitFlags()]);
+}
 
 //! Heavenly Upgrades
 var cookieTinUnlock, CookieH, CookieR, CookieS, CookieC, DivineD, CookieTau, TerraInf, TwinGates, ConjureBuild, ChronosAge, R9Box, conGrow, SpellStack, Empower, milkOil;//"Unlocks a new set of cookies that are more powerful than their normal counterparts, ooooooooo what could it be?"
@@ -2226,7 +2357,7 @@ function buildFeatAch(featAchObj){
 var stonkFlag = false, megaStonkFlag = false;
 
 //!==LORE==
-var chapter = new Array(69), chapterUnlock = new Array(69), usedStory = 17;
+var chapter = new Array(69), chapterUnlock = new Array(69), usedStory = 18;
 let loreData = [{
     order:0,title:"Wake and Bake",content:["Ugh, finally graduated from Gilles Academy","Parents coerced me here, been pestering them for quite a while now","Barely survived all those theories that would make anyone\'s head explode","I can only hope I would encounter no more maths"," ","Living there was fine, only the cookies are an absolute mess","As a cookie lover I find those to be absolute travesty","Why are they even produced??????????","No concern, I must return to my ovens at once","But there\'s a curious cube there..."," ","The number 0 stands intimidating, and perhaps a button resembling a big cookie","One soft click, and a cookie popped out of nowhere, and it\'s some real good stuff.","I could make a living out of those, only that I need a clicker to produce them automatically.","Manual Labor sucks"], unlock: () => true,prefix:"4/4/2024"
 },{
@@ -2261,6 +2392,8 @@ let loreData = [{
     order:15,title:"Bingo Research Facility",content:["My lightspeed developments across all sectors is steadily reaching its limits","If I were to only consider the collective advancement of knowledge","In particular, Idleverses are edging too close to the limits of multiverse theory","And any hope of further optimizations has vanished all too long ago"," ","I have to realize,","That there exists worlds beyond what humans could possibly know","And exploring them inevitably be the only way forward","Given the advanced state of research and theorycraft, it\'s no wonder inducing my original researches would have such a severe cost"],unlock:() => COOKIE.value > BF("1e500"),prefix:"??/5/2027"
 },{
     order:16,title:"One Mind",content:["And then we realized","One simple statement","A reason why","Grandmas flock to my place back then","They seek the cookies","They know the drawings at the temple","They know my raison d\'etre","And they know what to do with it"," ","The Covenant","It should\'ve been-","[DATA L0ST]"," ","I should steel myself","For what\'s to come","And the final symbol on the screen shows it well","Cookies","Should only be made from my sheer willpower","Away from the grandmas"],unlock:() => researchUpgrade[18].level > 0,prefix:"??/8/2028"
+},{
+    order:17,title:"C0mmunal Brainsweep",content:["There\'s no return","The deeper you go","The more unstable everything becomes","It happened once before, and now it\'s happening once again"," ","656","The second limit","Smashed through with even more stabilizing pact","I don\'t know how much more","Until I hit the third limit","And everything crumbles","Except for the grandmas"," ","Their unyielding obsession towards JavaScript Console","Perhaps they\'re onto something","About our very existence","And strings of fate hanging above us"],unlock:() => researchUpgrade[27].level > 0,prefix:"??/7/2029"
 },];
 var calcChapterText = (indx) => {
     //heading
@@ -2491,6 +2624,7 @@ var init = () => {
         elements[i] = theory.createCurrency(elementData[i].symbol,elementData[i].symbol);
         elements[i].isAvailable = false;
     }
+    HIGH_ELEMENT_CLUSTER = theory.createCurrency("$H_{EC}$","$H_{EC}$");
     ///////////////////
     //// Story chapters
     for(let i=0;i<usedStory;i++){
@@ -2702,13 +2836,16 @@ var init = () => {
         excavator.getDescription = (_) => excavatorDescription();
         excavator.getInfo = (amount) => excavatorInfo(amount);
         excavator.bought = (amount) => calcEPS();
+        excavator.maxLevel = 325;
         //mining modules
         for(let i=0;i<excavatedElements;i++){
             excavatorModule[i] = shortPermaUpgrade(31000+i,elements[i],new ExponentialCost((i==0)?10000:1e6, ML2((i==0)?1.25:(1.9 + (i*0.1)))),`${elementData[i].fullName} Mining Module`,`Empowers your excavators with the essence of ${elementData[i].fullName}`);
             excavatorModule[i].getDescription = (_) => excModulueDescription(i);
             excavatorModule[i].getInfo = (amount) => excModulueInfo(i,amount);
             excavatorModule[i].bought = (amount) => calcEPS();
+            excavatorModule[i].maxLevel = 300 - 20*i;
         }
+        excavatorModule[0].maxLevel = 900;
     }
     //Page 3.5 : Research
     {
@@ -2902,6 +3039,8 @@ var init = () => {
                 break;
             }
             case 12:{
+                fusionReactor = gimmickUpgrade(buildingData[i].gimmicks[3]);
+                fusionReactor.getDescription = (_) => fusionStatus(fusionReactor.level);
                 acceleratorButton = gimmickUpgrade(buildingData[i].gimmicks[0]);
                 acceleratorControl = gimmickUpgrade(buildingData[i].gimmicks[1]);
                 acceleratorMode = gimmickUpgrade(buildingData[i].gimmicks[2]);
@@ -3031,6 +3170,18 @@ var init = () => {
     quartList2[2] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T}`, null));
     quartList2[3] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_m}`, null));
     quartList2[4] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_d}`, null));
+    currencyBar.children[0].children[0].children[0].text = () => theory.tau.toString() + "$\\tau$";
+    currencyBar.children[0].children[1].children[0].text = () => {
+        let str = COOKIE.value.toString() + COOKIE.symbol;
+        if(COOKIE.value == cookieLimit[getLimitFlags()]){
+            return colorize(str,0,255,0);
+        }else{
+            return colorize(str,255,255,255);
+        }
+    };
+    currencyBar.children[0].children[2].children[0].text = () => HEAVENLY_CHIP.value.toString() + HEAVENLY_CHIP.symbol;
+    currencyBar.children[0].children[3].children[0].text = () => SUGAR_LUMP.value.toString() + SUGAR_LUMP.symbol;
+    
     updateResearchLabel();
     updateAvailability();
 };
@@ -3108,6 +3259,7 @@ var updateAvailability = () => {
     accelerator.isAvailable = ((cherryRegulator.level + hazelSolution.level + moonCore.level) >= 3) && (permUpgradeMenu.level == 2);
     acceleratorButton.isAvailable = (accelerator.level > 0) && (normalUpgradeMenu.level == 0);
     acceleratorControl.isAvailable = (accelerator.level > 0) && (normalUpgradeMenu.level == 0);
+    fusionReactor.isAvailable = (researchUpgrade[22].level > 0) && (artifactUpgrade[15].level > 0) && (normalUpgradeMenu.level == 0);
     //elements
     chalcedIngredient.isAvailable = (permUpgradeMenu.level == 2) && (excavatorDrill.level > 1);
     butterBar.isAvailable = (permUpgradeMenu.level == 2) && (excavatorDrill.level > 2);
@@ -3171,6 +3323,10 @@ var researchInc = (ticks) => {
                 calcEPS();
                 researchSlot[occupiedSlots.level].level = 0;
                 researchSlotID[occupiedSlots.level].level = 0;
+                if(researchSlotID[i].level == 19){
+                    currencyBar.children[0].children[4].children[0].text = () => HIGH_ELEMENT_CLUSTER.value.toString() + HIGH_ELEMENT_CLUSTER.symbol;
+                    updateCurrencyIcon();
+                }
             }else{
                 researchSlot[i].level -= ticks;
             }
@@ -3193,13 +3349,22 @@ var generateCookie = (id, ticks, mult) => {
         CPSstore.setValue(ret);
     }
     ret *= mult;
+    if(id == 17 && researchUpgrade[20].level > 0){
+        let cortexGen = generateCookie(18,ticks,mult);
+        if(cortexGen > ret){
+            ret += 0.9*(cortexGen-ret);
+        }
+    }
+    if(ticks == buildingData[id].collectionTime && mult == terraBoost){
+        latestCollect[id] = ret;
+    }
     //log(`get ${ret}`);
     //log(`generating for ${id}, base = ${ret}, pow = ${pow}`);
     return ret;
 }
 var generateLump = (ticks) => {
     let lumpChance = BF(1) / (BF(lumpTickChance) / BigL10(COOKIE.value + BF(10)));//it's normally 1/x
-    let dLump = BF(lumpChance.floor() + (sugarTools.level * 0.25) + (1 * researchUpgrade[3].level) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01)) * ticks;//yes, ticks ARE 0.1 seconds so 2.5LPS = 0.25LPT
+    let dLump = BF(lumpChance.floor() + (sugarTools.level * 0.25) + (2 * researchUpgrade[3].level) + ((recom.level + ((artifactUpgrade[7].level > 0) ? 10 : 0)) * 0.01)) * ticks;//yes, ticks ARE 0.1 seconds so 2.5LPS = 0.25LPT
     //log(dLump);
     lumpChance -= lumpChance.floor();
     if (ticks == 1 && BF(Math.random()) <= lumpChance) {
@@ -3207,6 +3372,7 @@ var generateLump = (ticks) => {
     }else if(ticks > 1){
         dLump += lumpChance*ticks;
     }
+    dLump *= BigP(RandR(7.5,20),researchUpgrade[24].level);
     if(dLump > BF(0)){
         SUGAR_LUMP.value += dLump;
         lumpTotal.setValue(lumpTotal.value + dLump);
@@ -3263,7 +3429,10 @@ var tick = (elapsedTime,multiplier) => {
         calcEPS();
         refreshExcavatorMaxLv();
         updateResearchLabel();updateResearchButtonText();
-        updateColorScale();
+        updateColorScale();updateCurrencyIcon();
+        if(researchUpgrade[19].level > 0){
+            currencyBar.children[0].children[4].children[0].text = () => HIGH_ELEMENT_CLUSTER.value.toString() + HIGH_ELEMENT_CLUSTER.symbol;
+        }
         setupTick = false;
     }
     if(profilingConst){
@@ -3276,7 +3445,7 @@ var tick = (elapsedTime,multiplier) => {
     dilateBoost = Dilate();
     //research
     researchInc(Math.round(elapsedTime * multiplier * 10));
-    let dt =elapsedTime * multiplier * 10 * dilateBoost;//1 tick = 0.1 second
+    let dt =elapsedTime * multiplier * 10 * dilateBoost, cookieGain = BF(0);//1 tick = 0.1 second
     thymeInc(Math.round(dt));
     trueThyme.level += 1;
     //log(dt);
@@ -3293,22 +3462,22 @@ var tick = (elapsedTime,multiplier) => {
             calcEPS();
         }
         dt *= 0.9;
-        COOKIE.value += IdleCPS * dt/10;
+        cookieGain += IdleCPS * dt/10;
     }else{
         //cookie
         if(thyme.level % 5 == 0){
             if(dt >= buildingData[dominate].collection){
-                COOKIE.value += generateCookie(dominate,dt,terraBoost);
+                cookieGain += generateCookie(dominate,dt,terraBoost);
             }else{
                 for(let i=0;i<=9;i++){
                     let id = i*2;
                     if(dt >= buildingData[id].collectionTime){
-                        COOKIE.value += generateCookie(id,dt,terraBoost);
-                        if(id < 18)COOKIE.value += generateCookie(id+1,dt,terraBoost);
+                        cookieGain += generateCookie(id,dt,terraBoost);
+                        if(id < 18)cookieGain += generateCookie(id+1,dt,terraBoost);
                     }else if(thyme.level % buildingData[id].collectionTime == 0){
                         //log(`${i} due!`);
-                        COOKIE.value += generateCookie(id,buildingData[id].collectionTime,terraBoost);
-                        if(id < 18)COOKIE.value += generateCookie(id+1,buildingData[id+1].collectionTime,terraBoost);
+                        cookieGain += generateCookie(id,buildingData[id].collectionTime,terraBoost);
+                        if(id < 18)cookieGain += generateCookie(id+1,buildingData[id+1].collectionTime,terraBoost);
                     }
                 }
             }
@@ -3317,11 +3486,18 @@ var tick = (elapsedTime,multiplier) => {
                 updateStrobe();
                 updateGlobalMult();
                 updateAvailability();
+                //updateCurrencyIcon();
                 updateLocalMult(2);//yggdrasil, leave covenant to onBuildingBought
                 //CPSrefresh();
             }
         }
     }
+    if(fusionReactor.level > 0){
+        cookieGain = BF(0);
+        fuseCookie(dt,false);
+    }
+    cookieGain = checkGainOverLimit(cookieGain);
+    COOKIE.value = checkCookieOverLimit(COOKIE.value + cookieGain);
     //lumps
     generateLump(dt);
     //elements
@@ -3441,7 +3617,7 @@ var TertiaryEquation = (col) => {
     if (Number.isNaN(col)) {
         col = 0;
     }
-    return `\\color{#${eqColor[col]}}{` + theory.latexSymbol + "=\\max C^{0.2}}";
+    return `\\color{#${eqColor[col]}}{` + theory.latexSymbol + "=\\max C^{0.8}}";
 };
 var getPrimaryEquation = () => {
     theory.primaryEquationScale = 1.15;
@@ -3494,11 +3670,22 @@ var get2DGraphValue = () => {
             (BigNumber.ONE + COOKIE.value.abs()).log10().toNumber()
         );
 };
-var getPublicationMultiplier = (tau) => tau.pow(1.07);
-var getPublicationMultiplierFormula = (symbol) => symbol + "^{1.07}";
+var getPublicationMultiplier = (tau) => tau.pow(0.267);
+var getPublicationMultiplierFormula = (symbol) => symbol + `^{${0.267}}`;
 var postPublish = () => {
     updateColorScale();
     updateTerraOverlay();
+    for (let i = 0; i < usedElements; i++) {
+        elements[i].value = elemBefore[i];
+    }
+    for(let i=0;i<usedStory;i++){
+        chapterUnlock[i].level = (chapter[i].isUnlocked)?1:0;
+    }
+    exponentium.level = exponentiumLvBefore;
+    EXPO_BAR.value = exponentiumBefore;
+    for(let i=0;i<19;i++){
+        buildingExponent[i].level = buildingExponentBefore[i] ;
+    }
     SUGAR_LUMP.value = lumpbf;
     HEAVENLY_CHIP.value = hbf;
     CPS = BigNumber.ZERO;
@@ -3511,17 +3698,6 @@ var postPublish = () => {
     updateMaxL();
     for(let i=0;i<19;i++){
         updateLocalMult(i);
-    }
-    for (let i = 0; i < usedElements; i++) {
-        elements[i].value = elemBefore[i];
-    }
-    for(let i=0;i<usedStory;i++){
-        chapterUnlock[i].level = (chapter[i].isUnlocked)?1:0;
-    }
-    exponentium.level = exponentiumLvBefore;
-    EXPO_BAR.value = exponentiumBefore;
-    for(let i=0;i<19;i++){
-        buildingExponent[i].level = buildingExponentBefore[i] ;
     }
 };
 var prePublish = () => {
@@ -3542,8 +3718,8 @@ var prePublish = () => {
         buildingExponentBefore[i] = buildingExponent[i].level;
     }
 };
-var getTau = () => (COOKIE.value.abs()).pow(0.2);
-var getCurrencyFromTau = (tau) => [tau.max(BigNumber.ONE).pow(5), COOKIE.symbol];
+var getTau = () => (COOKIE.value.abs()).pow(0.2*4);
+var getCurrencyFromTau = (tau) => [tau.max(BigNumber.ONE).pow(5/4), COOKIE.symbol];
 
 
 //==UI==
@@ -3738,6 +3914,20 @@ var InsPopup = ui.createPopup({
 //!1.2 : WHAT'S NEW
 var getUpdateNotes = () => {
     let ret = [];
+    ret.push(ui.createLabel({
+        text: "(0.5).3.2 - brains",
+        fontSize: 18,
+        horizontalTextAlignment: TextAlignment.CENTER,
+        fontAttributes: FontAttributes.BOLD,
+        padding: Thickness(2, 10, 2, 5)
+    }));
+    ret.push(ui.createLabel({
+        text: "\t-17th log added, getting to the endgame\n\t-added 8 new researches up to e650, where even more thing seems off\n\t-removed bugs, as always\n\t-currency bar rework, now with even more images\n\t-cortex baker capped to limit progression\n\t-added cookie LimitBreak\n\t-you can now fuse cookies, provided you have enough cookies\n\t-upped the ante of some research and accelerator\n\t-capped how much you can mine as the earth here is obviously limited\n\t-nerfed some cortex bakers and sugar lump demands\n\t-now compliant with new e600 tau standard",
+        fontSize: 11,
+        horizontalTextAlignment: TextAlignment.START,
+        fontAttributes: FontAttributes.NONE,
+        padding: Thickness(2, 5, 2, 10)
+    }));
     ret.push(ui.createLabel({
         text: "(0.5).3.1",
         fontSize: 18,
@@ -4399,7 +4589,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text: "Cookie Idler - 04799b8\nv(0.5).3.1"
+                text: "Cookie Idler - 04799b8\nv(0.5).3.2"
             })
         ]
     })
@@ -4416,7 +4606,7 @@ let getImageSize = (width) => {
     return 20;
 };
 // ellipsis you're so epic for contributing to getEquationOverlay() function
-let eqOverlay = ui.createStackLayout({
+var eqOverlay = ui.createStackLayout({
     children: [
         ui.createImage({
             source: ImageSource.INFO,
@@ -4461,6 +4651,149 @@ let eqOverlay = ui.createStackLayout({
     ],
 });
 var getEquationOverlay = () => eqOverlay;
-
+//!1.12 : CURRENCY DELEGATE
+var getCurrencyImageSize = (width) => {
+    if (width >= 1080)
+        return 30;
+    if (width >= 720)
+        return 24;
+    if (width >= 360)
+        return 18;
+    return 16;
+};
+var currencyTextMargin = 2, currencyTextSize = 11;
+//10 Cookie + 3 HC + 4 L + 3 HEC
+var updateCurrencyIcon = () => {
+    //cookie
+    let meas = COOKIE.value;
+    if(meas >= BF("1e750")){
+        currencyBar.children[0].children[1].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/6/66/Sugar_crystal_cookies.png/revision/latest?cb=20181024003829");
+    }else if(meas >= BF("1e700")){
+        currencyBar.children[0].children[1].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/7/7b/Glimmeringue_cookie.png/revision/latest?cb=20230309051504");
+    }else if(meas >= BF("1e600")){
+        currencyBar.children[0].children[1].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/7/7f/Alabascream_cookie.png/revision/latest?cb=20220309183149");
+    }else if(meas >= BF("1e500")){
+        currencyBar.children[0].children[1].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/b/ba/Cosmic_chocolate_butter_biscuit.png/revision/latest?cb=20200621081548");
+    }else if(meas >= BF("1e400")){
+        currencyBar.children[0].children[1].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/c1/Mooncandy_cookie.png/revision/latest?cb=20220309183046");
+    }else if(meas >= BF("1e300")){
+        currencyBar.children[0].children[1].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/7/79/Jetmint_cookie.png/revision/latest?cb=20220309182940");
+    }else if(meas >= BF("1e200")){
+        currencyBar.children[0].children[1].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/8/8b/Buttergold_cookie.png/revision/latest?cb=20220309182414");
+    }else if(meas >= BF("1e100")){
+        currencyBar.children[0].children[1].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/2/20/Empire_biscuits.png/revision/latest?cb=20160217140019");
+    }else if(meas >= BF("1e50")){
+        currencyBar.children[0].children[1].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/2/29/Double-chip_cookies.png/revision/latest?cb=20160217135951");
+    }else{
+        currencyBar.children[0].children[1].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/55/Chocolate_chip_cookie.png/revision/latest?cb=20210404132052");
+    }
+    //hc
+    meas = HEAVENLY_CHIP.value;
+    if(meas >= BF("1e200")){
+        currencyBar.children[0].children[2].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/f1/Heavenly_cookies.png/revision/latest?cb=20180510065009");
+    }else if(meas >= BF("1e100")){
+        currencyBar.children[0].children[2].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/a/a4/Glucosmium_antimatter_condenser.png/revision/latest?cb=20220309175501");
+    }else{
+        currencyBar.children[0].children[2].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/eb/Heavenly_chip.png/revision/latest?cb=20160226200959");
+    }
+    //l
+    meas = SUGAR_LUMP.value;
+    if(meas >= BF(1e8)){
+        currencyBar.children[0].children[3].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/f1/Caramelized_sugar_lump.png/revision/latest?cb=20180801004853");
+    }else if(meas >= BF(1e7)){
+        currencyBar.children[0].children[3].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/e3/Golden_sugar_lump.png/revision/latest?cb=20180512162412");
+    }else if(meas >= BF(1e6)){
+        currencyBar.children[0].children[3].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/a/a9/Sugar.png/revision/latest?cb=20200620212121");
+    }else{
+        currencyBar.children[0].children[3].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/d/dd/Sugar_lump.png/revision/latest?cb=20170812043247");
+    }
+    //hec
+    if(researchUpgrade[19].level > 0){
+        meas = HIGH_ELEMENT_CLUSTER.value;
+        if(meas >= BF("1e200")){
+            currencyBar.children[0].children[4].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/59/Unshackled_antimatter_condenser.png/revision/latest?cb=20220309190454");
+        }else if(meas >= BF(1e6)){
+            currencyBar.children[0].children[4].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/1/1c/Glimmeringue_antimatter_condenser.png/revision/latest?cb=20230309051614");
+        }else{
+            currencyBar.children[0].children[4].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/1/18/Alabascream_antimatter_condenser.png/revision/latest?cb=20200620233352");
+        }
+    }else{
+        currencyBar.children[0].children[4].children[1].source = ImageSource.LOCK;
+    }
+}
+var currencyBar = ui.createGrid({
+    margin: new Thickness(0,3,0,0),
+    rowDefinitions: ["auto", "auto"],
+    children: [
+        ui.createStackLayout({
+            row: 0,
+            horizontalOptions: LayoutOptions.FILL_AND_EXPAND,
+            orientation: StackOrientation.HORIZONTAL,
+            children: [
+                ui.createStackLayout({
+                    horizontalOptions: LayoutOptions.CENTER_AND_EXPAND,orientation: StackOrientation.HORIZONTAL,
+                    children: [
+                        ui.createLatexLabel({
+                            fontSize: currencyTextSize,margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "$\\tau$",
+                        }),
+                    ]
+                }),
+                ui.createStackLayout({
+                    horizontalOptions: LayoutOptions.CENTER_AND_EXPAND,orientation: StackOrientation.HORIZONTAL,
+                    children: [
+                        ui.createLatexLabel({
+                            fontSize: currencyTextSize,margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "C",
+                        }),
+                        ui.createImage({
+                            widthRequest: getCurrencyImageSize(ui.screenWidth),heightRequest: getCurrencyImageSize(ui.screenWidth),aspect: Aspect.ASPECT_FILL,horizontalOptions: LayoutOptions.START,
+                            source: ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/55/Chocolate_chip_cookie.png/revision/latest?cb=20210404132052")
+                        })
+                    ]
+                }),
+                ui.createStackLayout({
+                    horizontalOptions: LayoutOptions.CENTER_AND_EXPAND,orientation: StackOrientation.HORIZONTAL,
+                    children: [
+                        ui.createLatexLabel({
+                            fontSize: currencyTextSize,margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "H",
+                        }),
+                        ui.createImage({
+                            widthRequest: getCurrencyImageSize(ui.screenWidth),heightRequest: getCurrencyImageSize(ui.screenWidth),aspect: Aspect.ASPECT_FILL,horizontalOptions: LayoutOptions.START,
+                            source: ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/55/Chocolate_chip_cookie.png/revision/latest?cb=20210404132052")
+                        })
+                    ]
+                }),
+                ui.createStackLayout({
+                    horizontalOptions: LayoutOptions.CENTER_AND_EXPAND,orientation: StackOrientation.HORIZONTAL,
+                    children: [
+                        ui.createLatexLabel({
+                            fontSize: currencyTextSize,margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "L",
+                        }),
+                        ui.createImage({
+                            widthRequest: getCurrencyImageSize(ui.screenWidth),heightRequest: getCurrencyImageSize(ui.screenWidth),aspect: Aspect.ASPECT_FILL,horizontalOptions: LayoutOptions.START,
+                            source: ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/55/Chocolate_chip_cookie.png/revision/latest?cb=20210404132052")
+                        })
+                    ]
+                }),
+                ui.createStackLayout({
+                    horizontalOptions: LayoutOptions.CENTER_AND_EXPAND,orientation: StackOrientation.HORIZONTAL,
+                    children: [
+                        ui.createLatexLabel({
+                            fontSize: currencyTextSize,margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "????",
+                        }),
+                        ui.createImage({
+                            widthRequest: getCurrencyImageSize(ui.screenWidth),heightRequest: getCurrencyImageSize(ui.screenWidth),aspect: Aspect.ASPECT_FILL,horizontalOptions: LayoutOptions.START,
+                            source: ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/55/Chocolate_chip_cookie.png/revision/latest?cb=20210404132052")
+                        })
+                    ]
+                }),
+            ]
+        }),
+        ui.createFrame({
+            row: 1,
+            heightRequest: 2,
+        })
+    ]
+});
+var getCurrencyBarDelegate = () => currencyBar;
 
 init();
