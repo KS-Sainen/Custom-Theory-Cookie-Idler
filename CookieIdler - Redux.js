@@ -338,12 +338,12 @@ class ISV {
     // block 5 - VIZ
     var eqTypeStore = new ISV(0, 7, 0),
         quTypeStore = new ISV(0, 7, 1);
-    var vizType = new ISV(0, 7, 2);
+    var vizTypeStore = new ISV(0, 7, 2);
     var eqCStore = new ISV(0, 7, 3);
     var perkHas;
     //let time = ISV(0,0,0); // degrees
 }
-var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxBuild = 0, reactorMode = 0, totalSpell = 0;
+var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxBuild = 0, reactorMode = 0, totalSpell = 0, vizType = 0;
 
 //internal state work
 {
@@ -360,8 +360,9 @@ var dominate = 0, eqC = 0, quType = 0, eqType = 0, achCount = 0, bInfo = 0, maxB
         //assign!
         CPSstore.readValue();HPSstore.readValue();totalSpellStore.readValue();
         achCountStore.readValue();lumpTotal.readValue();artUnlock.readValue();reactorModeStore.readValue();perkPoint.readValue();heavVis.readValue();
-        bInfoStore.readValue();dominatestore.readValue();eqTypeStore.readValue();quTypeStore.readValue();vizType.readValue();eqCStore.readValue();maxBuildStore.readValue();
+        bInfoStore.readValue();dominatestore.readValue();eqTypeStore.readValue();quTypeStore.readValue();vizTypeStore.readValue();eqCStore.readValue();maxBuildStore.readValue();
         CPS = BF(CPSstore.value);
+        vizType = Math.floor(vizTypeStore.value);if(Number.isNaN(vizType)){vizType = 0;}
         dominate = Math.floor(dominatestore.value);if(Number.isNaN(dominate)){dominate = 0;}
         perkHas = Math.floor(perkPoint.value);if(Number.isNaN(perkHas)){perkHas = 0;}
         achCount = Math.floor(achCountStore.value);if(Number.isNaN(achCount)){achCount = 0;}
@@ -627,7 +628,7 @@ var buildingData = [
     },
     {id: 18,
      names: ["Cortex Baker","Corex Bakr"], desc: "thinking in ", lumpBName: "Get an extra IQ Point",
-     baseCPS: BF("1e246"), baseCost: BF("6.66e610"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 500, sweetMax: 150,
+     baseCPS: BF("1e243"), baseCost: BF("6.66e610"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 500, sweetMax: 150,
      achName: ["O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA","Cardinal Synapsis","I declare thee on all ye inferiors. Despair before me, I am the Ozymandias","Who are you? I̷ a̵͇̋͂̌m̷̡̨̉̀̂ s̷̬̏̓̓ø̷̘̜͚̒͒̓l̸͍̄͐͘i̷̡̛̞̯p̷͈̞̳̉̃s̶̬̲͕̝̓̕͝","I am smart"],
     },
 ];
@@ -665,9 +666,17 @@ var Dilate = () => {
 //others
 var magicLoop = 12600;//lcm of 10-50, just in case
 var building = new Array(19), buildingPower = new Array(19), buildingLump = new Array(19); //buildingB, buildingPower, buildingLump containers
+var terraIcons = [
+    ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/9/94/CookieProduction34.png/revision/latest?cb=20190924042205"),
+    ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/7/7b/CookieProduction36.png/revision/latest?cb=20190924042206"),
+    ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/6/6f/CookieProduction39.png/revision/latest?cb=20200620182721"),
+    ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/9/95/CookieProduction41.png/revision/latest?cb=20201030064717"),
+    ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/e3/CookieProduction44.png/revision/latest?cb=20211227060414")
+];
 var updateTerraOverlay = () => {
     if(terra.level > 0){
-        eqOverlay.children[2].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/6/6f/CookieProduction39.png/revision/latest?cb=20200620182721");
+        let terraIconLv = (terra.level >= 10) + (terra.level >= 20) + (TerraInf.level >= 7);
+        eqOverlay.children[2].source = terraIcons[terraIconLv];
         eqOverlay.children[3].text = "Terraform Buff";
     }else{
         eqOverlay.children[2].source = ImageSource.LOCK;
@@ -689,7 +698,7 @@ var calcBuilding = (id, am) => {
 
 //building power getPower2(index,buildingPower[index].level)
 var getPower = (index) => getPower2(index,buildingPower[index].level);
-var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * 1) + (jetEngine.level * 0.25) + (researchUpgrade[25].level * 0.5), 5, 1), 1 + (superP.level * 0.02));
+var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * 1) + (jetEngine.level * 0.25) + (researchUpgrade[25].level * 0.5) + researchUpgrade[29].level , 5, 1), 1 + (superP.level * 0.02));
 
 //building exponents
 var getBuildingExp = (index) => {
@@ -848,9 +857,15 @@ var updateBuildingLumpMaxLv = () => {
     }else{
         building[17].maxLevel = moonMarbleCapacity*moonMarble.level;
     }
-    building[18].maxLevel = 250 + (250 * researchUpgrade[21].level) + (250 * researchUpgrade[26].level);
+    building[18].maxLevel = 250 + (250 * researchUpgrade[21].level) + (250 * researchUpgrade[26].level) + (300 * researchUpgrade[30].level);
     archaeology.maxLevel = 1000 + (500 * researchUpgrade[12].level);
     covenant.maxLevel = 2 + (4 * researchUpgrade[27].level);
+    SpellStack.maxLevel = 3 + researchUpgrade[17].level + researchUpgrade[28].level;
+    excavatorModule[0].maxLevel = 900 + (researchUpgrade[29].level * 15);
+    excavator.maxLevel = 325 + (researchUpgrade[29].level * 15);
+    for(let i=1;i<excavatedElements;i++){
+        excavatorModule[i].maxLevel = (300 - 20*i) + (researchUpgrade[29].level * 15);
+    }
 }
 var updateBuildingLumpPower = () => {
     if(superL.level > 0){
@@ -1154,7 +1169,7 @@ var updateLocalMult = (indx) => {
             buildingData[indx].mult *= BigP(50,researchUpgrade[2].level+researchUpgrade[6].level+researchUpgrade[9].level+researchUpgrade[25].level);
             break;
         case 18:
-            buildingData[indx].mult *= BigP(10,researchUpgrade[21].level+researchUpgrade[26].level);
+            buildingData[indx].mult *= BigP(10,researchUpgrade[21].level+researchUpgrade[26].level+researchUpgrade[30].level);
     }
     if(buildingData[indx].mult == BF(0)){buildingData[indx].mult = BF(1)};
 };
@@ -1295,9 +1310,9 @@ var spellData = [{
     effect: (boost) => {
         var rand = RandI(100);
         if (rand <= 90 + (2*boost)) {
-            rand = RandI(10 + (2 * SpellStack.level)) + boost;
-            log(`Cookies for you ${rand * 10}`);
-            minCookie(rand * 10);
+            rand = RandI(10 + (2.5 * SpellStack.level) + (0.5*boost)) * RandR(5+(0.1*SpellStack.level)+(0.05*boost),11+(0.1*SpellStack.level)+(0.05*boost));
+            log(`Cookies for you ${rand}`);
+            minCookie(rand);
         } else {
             log("No Cookies for you");
         }
@@ -1314,8 +1329,8 @@ var spellData = [{
     order: 2,name: "Terrona Terra", desc: "Makes the terraforming business suddenly go to the cookie moon",
     castCost: 2500, castCooldown: 12000, effectLength: 600,
     effect: (boost) => {
-        xBegin = thyme.level - (150*(boost+2));
-        logBoost = 10 + (2.5 * SpellStack.level) + boost;
+        xBegin = thyme.level - (150*((boost*0.5)+2));
+        logBoost = 10 + (1.5 * SpellStack.level) + (0.1*boost);
         updateMaxL();
     },
     unlockCondition: () => {return true;},//unlock condition
@@ -1324,7 +1339,7 @@ var spellData = [{
     order: 3,name: "Replenish Extradionaire", desc: "Enriches your temple with a lot more loot",
     castCost: 3000, castCooldown: 8400, effectLength: 600,
     effect: (boost) => {
-        templeLuck = 50 * (boost+1);
+        templeLuck = 50 * ((boost*0.25)+1);
     },
     unlockCondition: () => {return true;},//unlock condition
     achievementNames: ["Explorer Wizard","Colonization but on a smaller scale","Pot of Artifacts, Cookies, Heavenly Chips, and Sugar Lumps"],
@@ -1332,17 +1347,21 @@ var spellData = [{
     order: 4,name: "Asseto Accio", desc: "Spawn buildings into existence, only works for a certain amount",
     castCost: 2500, castCooldown: 9600,
     effect: (boost) => {
-        let rand = RandI(20);
+        let rand = RandI(21);
         if (rand < 19) {
-            if ((building[rand].level > 0) && (building[rand].cost.getCost(building[rand].level) <= (BF(1e10) * COOKIE.value * BigP(5,boost)))) {
+            if ((building[rand].level > 0) && (building[rand].cost.getCost(building[rand].level) <= (BF(1e10) * COOKIE.value * BigP(2.5,boost+SpellStack.level)))) {
                 log(`You won ${buildingData[rand].names[0]}`);
-                let res = RandI(10 + boost) + 1 + SpellStack.level + Math.round(boost);
-                if(rand != 17){
-                    building[rand].level += res;
-                }else{
+                let res = RandI(10 + boost + (2*SpellStack.level)) + 1 + SpellStack.level + Math.round(boost*0.2);
+                if(rand == 18){
+                    building[18].level = Math.min(building[18].level + res,building[18].maxLevel);
+                }else if(rand == 17){
                     building[17].level = Math.min(building[17].level + res,building[17].maxLevel);
+                }else{
+                    building[rand].level += res;
                 }
             }
+        }else{
+            log(`nop`);
         }
     },
     unlockCondition: () => {return true;},//unlock condition
@@ -1351,7 +1370,7 @@ var spellData = [{
     order: 5,name: "Mimi Mami", desc: "Reduces the cooldown time of spells",
     castCost: 1212, castCooldown: 7200,
     effect: (boost) => {
-        updateSpellCooldown(900 + (150 * SpellStack.level) + (60 * boost));
+        updateSpellCooldown(900 + (180 * SpellStack.level) + (90 * boost));
     },
     unlockCondition: () => {return true;},//unlock condition
     achievementNames: ["Impatient Wizard","The spells must go brrrrrrrrrr","Why must there be cooldowns? The spellcaster screams, for he does not know..."],
@@ -1359,7 +1378,7 @@ var spellData = [{
     order: 6,name: "Simply Sweetdelicious", desc: "Spawn some sugar lumps in",
     castCost: 0, castCooldown: 60000,
     effect: (boost) => {
-        if (RandI(100 + boost) > 10) generateLump(1500 + (150 * SpellStack.level) + (100 * boost));
+        if (RandI(100 + boost) > 10) generateLump(1500 + (180 * SpellStack.level) + (75 * boost));
     },
     unlockCondition: () => {return true;},//unlock condition
     achievementNames: ["Very Sweet Wizard","Sugar Lump Magic Saga","Don\'t overdose on sugar, kids"],
@@ -1367,7 +1386,7 @@ var spellData = [{
     order: 7,name: "Made in Heaven", desc: "haha jojo reference goes brrrrrrrrrr",
     castCost: 5555, castCooldown: 14400,
     effect: (boost) => {
-        let warpthyme = ((100 + (10 * SpellStack.level)) * RandR(0.9, 1.1 + (0.05 * SpellStack.level)) + (15 * SpellStack.level)) + (10 * boost);
+        let warpthyme = (((100 + (15 * SpellStack.level) + (5 * boost)) * RandR(0.8, 1.2 + (0.25 * SpellStack.level))) + (25 * SpellStack.level));
         log("Time goes brrrrrrrr " + warpthyme);
         for (let i = 0; i < warpthyme; i++) {
             tick(0.1, 1);
@@ -1396,7 +1415,7 @@ let onSpellCast = (indx,amount) => {
     spellCooldown[indx].level = spellData[indx].castCooldown;
     spellCount[indx].level += amount;
     totalSpell += amount;totalSpellStore.setValue(totalSpell);
-    let spellBoost = totalCastAchievement[4].isUnlocked + totalCastAchievement[5].isUnlocked + totalCastAchievement[6].isUnlocked + spellCastAchievement[indx][0].isUnlocked + spellCastAchievement[indx][1].isUnlocked + spellCastAchievement[indx][2].isUnlocked + (0.25 * butterBar.level) + (10 * researchUpgrade[17].level);
+    let spellBoost = totalCastAchievement[4].isUnlocked + (3*totalCastAchievement[5].isUnlocked) + (5*totalCastAchievement[6].isUnlocked) + spellCastAchievement[indx][0].isUnlocked + (4*spellCastAchievement[indx][1].isUnlocked) + (9*spellCastAchievement[indx][2].isUnlocked) + (0.25 * butterBar.level) + (10 * researchUpgrade[17].level) + (15 * researchUpgrade[28].level);
     for(let i=0;i<amount;i++){
         spellData[indx].effect(spellBoost);
     }
@@ -1557,7 +1576,7 @@ arrEPS.fill(BF(0));
 var calcExcavator = (level) => Utils.getStepwisePowerSum(level, 5, 5, 0);
 var getLossFactor = () => lossFactorBase - (jetRefine.level*jetRefineEff) - (10*researchUpgrade[7].level) - (10*researchUpgrade[11].level) - (10*researchUpgrade[23].level);
 var calcEPS = () => {
-    let excMult = BigP(1.2,cherryRegulator.level) * BigP(1.2,hazelSolution.level) * BigP(2,moonCore.level) * BigP(5,astroExcavate.level) * BigP(5,researchUpgrade[7].level) * BigP(7.5,researchUpgrade[11].level) * BigP(BigL10(10+elements[5].value),artifactUpgrade[14].level);
+    let excMult = BigP(1.2,cherryRegulator.level) * BigP(1.2,hazelSolution.level) * BigP(2,moonCore.level) * BigP(5,astroExcavate.level) * BigP(5,researchUpgrade[7].level) * BigP(7.5,researchUpgrade[11].level) * BigP(BigL10(10+elements[5].value),artifactUpgrade[14].level) * BigP(BigL10(CPS+10),1.25*researchUpgrade[31].level);
     let excRate = calcExcavator(excavator.level) * excMult;
     let lossFactor = getLossFactor();
     for(let i = 0;i < excavatorDrill.level;i++){
@@ -1570,7 +1589,7 @@ var calcEPS = () => {
     arrEPS[8] = 0;
     if (artifactUpgrade[13].level > 0) {
         arrEPS[8] += BigL10(BF(10) + building[8].level) * BigL10(BF(10) + generateCookie(8,10,terraBoost)) * 0.001;
-        arrEPS[8] *= excMult * BigP(2.5,researchUpgrade[8].level);
+        arrEPS[8] *= excMult * BigP(2.5,researchUpgrade[8].level) * BigP(BigL10(10+excRate),researchUpgrade[29].level);
     }
 }
 var excavatorDescription = () => {
@@ -1701,6 +1720,7 @@ function decayElementTest(indx, dt){
         if(elements[indx].value > BF(1e60)){
             hecGain += (BigL10(elements[indx].value)-60) * ((elementData[indx-2].weight+elementData[indx-1].weight+elementData[indx].weight) / weightFactor);
         }
+        hecGain = BigP(hecGain,1.1);
         log(`HEC Gain : ${hecGain}`);
         //deletion
         log(`${elementData[indx].fullName} Loss = ${dt * rate}`);
@@ -1713,7 +1733,7 @@ function decayElementTest(indx, dt){
 }
 //fusion
 var fusionReactor, astroDecayWF = (elementData[8].weight+elementData[7].weight+elementData[6].weight) / weightFactor;
-const magnitudeTime = 30, minFusion = 650, astroYieldConst = 0.75;//time to go down 10x, 10^n C required to begin fusion, base astrofudge/s yield
+const magnitudeTime = 20, minFusion = 650, astroYieldConst = 0.75;//time to go down 10x, 10^n C required to begin fusion, base astrofudge/s yield
 const cookieLoss = Math.pow(10,(1/(magnitudeTime*10)) * -1);
 var fusionStatus = (level) => {
     //0 = OFF, 1 = ON
@@ -1733,12 +1753,12 @@ function fuseCookie(dt, testConst){
         if(testConst)log(`not enough cookies`);
         return;
     }else{
-        totalAstro += BigL10(10+COOKIE.value) - minFusion;
+        totalAstro += BigP(BigL10(10+COOKIE.value) - minFusion,1.11);
         let highYield = dt * astroDecayWF * totalAstro, astroYield = dt * astroYieldConst*totalAstro*arrEPS[8];
         if(testConst){
             let fusionTime = (BigL10(10+COOKIE.value) - minFusion) * magnitudeTime;
             log(`The bar is set at 10^${minFusion}`)
-            log(`Total As : ${BigL10(elements[8].value+10)} + ${BigL10(10+COOKIE.value) - minFusion} = ${totalAstro}`);
+            log(`Total As : ${BigL10(elements[8].value+10)} + ${BigP(BigL10(10+COOKIE.value) - minFusion,1.11)} = ${totalAstro}`);
             log(`HEC Yield : ${highYield}`);
             log(`As Yield : ${astroYield}`);
             log(`Cookie Loss(set=${magnitudeTime}s, total=${fusionTime}s) = ${(1-BigP(cookieLoss,dt)) * COOKIE.value}`);
@@ -1787,7 +1807,7 @@ function fuseCookie(dt, testConst){
     18 "Cortex Baker",
     */
 }
-var researchCenter, researchUpgrade = new Array(199), researchSlot = new Array(5), researchSlotID = new Array(5), researchSlotUpgrade, occupiedSlots, researchAvailable = new Array(199), maxResearchProgress = 180;
+var researchCenter, researchUpgrade = new Array(199), researchSlot = new Array(6), researchSlotID = new Array(6), researchSlotUpgrade, occupiedSlots, researchAvailable = new Array(199), maxResearchProgress = 180;
 const researchDone = `Progress : Completed!`;
 var researchData = [{
     id: 0, name: "Copyrighted Idea", desc: "Your first fruits of research. Although it may overlap with what other people have published, but recreating is a fine step towards something new.", time: 100, preq: [],
@@ -1842,7 +1862,7 @@ var researchData = [{
     cost: [{type:9,amount:BF("3e600")},{type:7,amount:BF(1.5e55)},{type:8,amount:BF(2.5e10)},{type:21,amount:BF(8250)},{type:25,amount:BF(6500)},{type:28,amount:BF(4000)},{type:30,amount:BF(1501)},{type:11,amount:BF(1.5e7)}]
 },{
     id: 17, name: "Manaleaching", desc: "Manaleaching is a new technique for sapping mana out of the surroundings, empowering spells in the process. Manaleaching requires a substantial amount of Buttergold, Sugar Lumps, and our Wizard Towers to set up initially as a stable source of mana for our spellcasters. Boosts Spell Power by 10.", time: 300000, preq: [15,12,16],
-    cost: [{type:9,amount:BF("2e600")},{type:11,amount:BF(5e7)},{type:13,amount:BF(10000)},{type:22,amount:BF(7500)},{type:23,amount:BF(7500)},{type:2,amount:BF(2.5e63)}]
+    cost: [{type:9,amount:BF("2e600")},{type:11,amount:BF(4e7)},{type:13,amount:BF(10000)},{type:22,amount:BF(7500)},{type:23,amount:BF(7500)},{type:2,amount:BF(2.5e63)}]
 },{
     id: 18, name: "One Mind", desc: "WARNING : THE GRANDMOTHERS ARE GROWING RESTLESS. DO NOT ENCOURAGE THEM.\nWe are one. We are many.\nUnlocks the Final Building", time: 363636, preq: [15,12],
     cost: [{type:9,amount:BF("6.66e600")},{type:14,amount:BF(6666)},{type:23,amount:BF(6666)},{type:24,amount:BF(6666)},{type:29,amount:BF(666)},{type:5,amount:BF(6.66e61)}]
@@ -1866,13 +1886,25 @@ var researchData = [{
     cost: [{type:9,amount:BF("1.23e645")},{type:11,amount:BF(2.5e7)},{type:2,amount:BF("7.777e83")},{type:3,amount:BF("5.555e81")},{type:12,amount:BF(1000000)},{type:14,amount:BF(10000)},]
 },{
     id: 25, name: "E >> 0", desc: "The ultimate solution to \"Why does everything fade into nothing at the end\". It truly doesn\'t make any sense to a layman, but to those scaredy-cats universe doomers it sure invalidates them.", time: 805422, preq: [20],
-    cost: [{type:9,amount:BF("2.22e652")},{type:7,amount:BF("2.22e78")},{type:6,amount:BF(2.22e80)},{type:5,amount:BF("2.22e82")},{type:12,amount:BF(500000)},{type:25,amount:BF(2500)},{type:27,amount:BF(2500)},{type:30,amount:BF(2500)}]
+    cost: [{type:9,amount:BF("2.22e652")},{type:7,amount:BF("2.22e78")},{type:6,amount:BF(2.22e80)},{type:5,amount:BF("2.22e82")},{type:12,amount:BF(444444)},{type:25,amount:BF(2500)},{type:27,amount:BF(2500)},{type:30,amount:BF(2500)}]
 },{
-    id: 26, name: "W.O.K.E.", desc: "One of the main inhibitors of the CT(Cookie Thinking) functions is the neverending torrent of intrusive thoughts that would rudely barge in without consent. The most common of such thoughts is about political nonsense that only serves to distract people from real action(in the real world). Staying W.O.K.E.(full name redacted) would serve as a way to transcend those though a common realization(which is also redacted). Increases the maximum level of Cortex Baker by 250 and multiplies its CPS by 10.", time: 1208133, preq: [21],
-    cost: [{type:9,amount:BF("3.33e653")},{type:4,amount:BF(3.33e83)},{type:7,amount:BF("3.33e79")},{type:18,amount:BF(10400)},{type:29,amount:BF(3725)},{type:12,amount:BF(500000)},{type:31,amount:BF(500)},]
+    id: 26, name: "W.O.K.E.", desc: "One of the main inhibitors of the CT(Cookie Thinking) functions is the neverending torrent of intrusive thoughts that would rudely barge in without consent. The most common of such thoughts is about political nonsense that only serves to distract people from real action(in the real world). Staying W.O.K.E.(full name redacted) would serve as a way to transcend those though a common realization(which is also redacted). Increases the maximum level of Cortex Baker by 300 and multiplies its CPS by 10.", time: 1208133, preq: [21],
+    cost: [{type:9,amount:BF("3.33e653")},{type:4,amount:BF(3.33e83)},{type:7,amount:BF("3.33e79")},{type:18,amount:BF(10400)},{type:29,amount:BF(3725)},{type:12,amount:BF(555555)},{type:31,amount:BF(500)},]
 },{
     id: 27, name: "Communal Brainsweep", desc: "WARN1NG : PR0CEED1NG ANY FURTHER IN SC1ENT1F1C RES3ARCH MAY HAVE UN3XP3CTED RE5ULTS. Y0U HAVE BEEN WARNED.\nRemoves another layer of limit of the Cookie Empire, at a cost of even more unstable environment. Buffs grandmas by who knows what.", time: 1666666, preq: [26,18],
     cost: [{type:9,amount:BF("1e656")},{type:11,amount:BF(6.6e7)},{type:4,amount:BF("6.66e90")},{type:6,amount:BF(6.66e83)},{type:7,amount:BF(6.66e81)},{type:8,amount:BF(6.66e17)},{type:12,amount:BF(666666)},{type:14,amount:BF(10759)}]
+},{
+    id: 28, name: "Mana Conviencetrons", desc: "By nature, mana usually all float away into thin air, making spells needlessly tedious to cast, and its effects severely hindered. Through the application of Mana Leaching and some recent innovations, we can now capture those runaway mana and put them into where it should be! Boosts Spell Power by 15.", time: 900000, preq: [17],
+    cost: [{type:20,amount:BF(10000)},{type:11,amount:BF(5e7)},{type:2,amount:BF(5e91)},{type:3,amount:BF(5e91)},{type:4,amount:BF(5e91)},{type:8,amount:BF(5e17)},{type:12,amount:BF(2222222)}]
+},{
+    id: 29, name: "Mechanized Fabrications", desc: "A marvel of machine construction whose uses seem infinite. Proven to be exceptionally useful for Spaced-based usage and improving throughput of power surging across all buildings. Also makes whoever carefully reading all of this have a cookieful day.", time: 1750000, preq: [27],
+    cost: [{type:9,amount:BF("1e675")},{type:17,amount:BF(10900)},{type:28,amount:BF(5300)},{type:0,amount:BF(4.5e94)},{type:4,amount:BF(1e91)},{type:5,amount:BF(2.5e90)},{type:7,amount:BF(2.75e83)},{type:12,amount:BF(1e7)}]
+},{
+    id: 30, name: "The Montessori Method", desc: "Nurturing new Cortex Bakers is proven to be way more efficient than fixing all the existing ones. With the Montessori Method of Education implemented, it can boost the overall efficiency of brains through through and concise development throughout all mental aspects. Also makes it less likely to antagonize each other. Increases the maximum level of Cortex Baker by 250 and multiplies its CPS by 10.", time: 1500000, preq: [27,26],
+    cost: [{type:9,amount:BF("1e673")},{type:10,amount:BF("1e221")},{type:31,amount:BF(750)},{type:2,amount:BF(1e91)},{type:3,amount:BF(5e89)},{type:12,amount:BF(2.5e6)}]
+},{
+    id: 31, name: "Spacellic Materializers", desc: "guys let\'s create something from nothing, just like E >> 0 research. nothing wrong will totally happen here!", time: 2000000, preq: [23,29],
+    cost: [{type:9,amount:BF("1e680")},{type:3,amount:BF(5e92)},{type:4,amount:BF(1e92)},{type:5,amount:BF(5e91)},{type:6,amount:BF(1e87)},{type:7,amount:BF(5e84)},{type:8,amount:BF(1e22)},{type:12,amount:BF(2.5e7)}]
 }];
 var getCostSymbol = (indx) => {
     if(indx < 9){
@@ -1934,6 +1966,7 @@ var researchBegin = (indx) => {
             researchSlot[occupiedSlots.level].level = researchData[indx].time;
             researchSlotID[occupiedSlots.level].level = indx;
             occupiedSlots.level += 1;
+            getResearching();
         }else{
             log(`too poor m8`);
             return;
@@ -2144,7 +2177,7 @@ var heavenlyUpgradeData = [
         name: "Spell Cast Layering",
         info: "Allows multiples of the same spell to be casted, and slightly empowers every spell",
         costModel: new ExponentialCost(1e109, ML2(1e5)),
-        maxLevel: 3,
+        maxLevel: 69,
         onBought: (amount) => {updateSpellLayer();updateGlobalMult();}
     },{
         uid: 14,
@@ -2603,9 +2636,9 @@ function warpResearch(ticks){
     if(ticks < 10){
         log(`nop`);
     }
-    for(let i=0;i<researchSlotUpgrade.level;i++){
+    for(let i=0;i<=researchSlotUpgrade.level;i++){
         if(researchSlot[i].level > 0){
-            researchSlot[i].level = ticks;
+            researchSlot[i].level = ticks * (i+1);
             let id = researchSlotID[i].level;
             updateResearchText(id,2,`Researching : ${getCollectionBar((researchData[id].time - researchSlot[i].level)/(researchData[id].time/maxResearchProgress),maxResearchProgress)}`);
         }
@@ -2836,20 +2869,20 @@ var init = () => {
         excavator.getDescription = (_) => excavatorDescription();
         excavator.getInfo = (amount) => excavatorInfo(amount);
         excavator.bought = (amount) => calcEPS();
-        excavator.maxLevel = 325;
+        excavator.maxLevel = 999999;
         //mining modules
         for(let i=0;i<excavatedElements;i++){
             excavatorModule[i] = shortPermaUpgrade(31000+i,elements[i],new ExponentialCost((i==0)?10000:1e6, ML2((i==0)?1.25:(1.9 + (i*0.1)))),`${elementData[i].fullName} Mining Module`,`Empowers your excavators with the essence of ${elementData[i].fullName}`);
             excavatorModule[i].getDescription = (_) => excModulueDescription(i);
             excavatorModule[i].getInfo = (amount) => excModulueInfo(i,amount);
             excavatorModule[i].bought = (amount) => calcEPS();
-            excavatorModule[i].maxLevel = 300 - 20*i;
+            excavatorModule[i].maxLevel = 999999;
         }
-        excavatorModule[0].maxLevel = 900;
+        excavatorModule[0].maxLevel = 999999;
     }
     //Page 3.5 : Research
     {
-        for(let i=0;i<5;i++){
+        for(let i=0;i<6;i++){
             researchSlot[i] = shortPermaUpgrade(40001+i,COOKIE,new ConstantCost(BF("1e1000")),`Research Slot ${i+1}`,"research slot");researchSlot[i].isAvailable = false;
             researchSlotID[i] = shortPermaUpgrade(40010+i,COOKIE,new ConstantCost(BF("1e1000")),`Research Slot ${i+1} ID`,"research slot ID");researchSlotID[i].isAvailable = false;
         }
@@ -3057,7 +3090,6 @@ var init = () => {
             }
         }
     }
-
     /////////////////
     //// Achievements
     //bunch of unlock condition stuffs
@@ -3167,21 +3199,27 @@ var init = () => {
     }
     quartList2[0] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{C_m}`, null));
     quartList2[1] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{t}`, null));
-    quartList2[2] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T}`, null));
-    quartList2[3] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_m}`, null));
+    quartList2[2] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{A_c}`, null));
+    quartList2[3] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{P}`, null));
     quartList2[4] = (new QuaternaryEntry(`\\color{#${eqColor[eqC]}}{T_d}`, null));
     currencyBar.children[0].children[0].children[0].text = () => theory.tau.toString() + "$\\tau$";
     currencyBar.children[0].children[1].children[0].text = () => {
-        let str = COOKIE.value.toString() + COOKIE.symbol;
+        let str = COOKIE.value.toString() + ((vizType == 0)?COOKIE.symbol:"");
         if(COOKIE.value == cookieLimit[getLimitFlags()]){
             return colorize(str,0,255,0);
         }else{
             return colorize(str,255,255,255);
         }
     };
-    currencyBar.children[0].children[2].children[0].text = () => HEAVENLY_CHIP.value.toString() + HEAVENLY_CHIP.symbol;
-    currencyBar.children[0].children[3].children[0].text = () => SUGAR_LUMP.value.toString() + SUGAR_LUMP.symbol;
-    
+    currencyBar.children[0].children[2].children[0].text = () => HEAVENLY_CHIP.value.toString() + ((vizType == 0)?HEAVENLY_CHIP.symbol:"");
+    currencyBar.children[0].children[3].children[0].text = () => SUGAR_LUMP.value.toString() + ((vizType == 0)?SUGAR_LUMP.symbol:"");
+    currencyBar.children[0].children[4].children[0].text = () => {
+        if(researchUpgrade[19].level > 0){
+            return HIGH_ELEMENT_CLUSTER.value.toString() + ((vizType == 0)?HIGH_ELEMENT_CLUSTER.symbol:"");
+        }else{
+            return "????";
+        }
+    };
     updateResearchLabel();
     updateAvailability();
 };
@@ -3309,11 +3347,13 @@ var researchInc = (ticks) => {
                 updateResearchText(id,2,researchDone);
                 updateResearchLabel();
                 occupiedSlots.level -= 1;
+                log(`R${researchSlotID[i].level} completed, i = ${i}`);
                 //shift down
-                for(let j=i;j>occupiedSlots.level;j++){
+                for(let j=i;j<=occupiedSlots.level;j++){
                     researchSlot[j].level = researchSlot[j+1].level;
                     researchSlotID[j].level = researchSlotID[j+1].level;
                 }
+                getResearching();
                 for(let i=0;i<19;i++){
                     updateLocalMult(i);
                 }
@@ -3324,9 +3364,9 @@ var researchInc = (ticks) => {
                 researchSlot[occupiedSlots.level].level = 0;
                 researchSlotID[occupiedSlots.level].level = 0;
                 if(researchSlotID[i].level == 19){
-                    currencyBar.children[0].children[4].children[0].text = () => HIGH_ELEMENT_CLUSTER.value.toString() + HIGH_ELEMENT_CLUSTER.symbol;
                     updateCurrencyIcon();
                 }
+                break;
             }else{
                 researchSlot[i].level -= ticks;
             }
@@ -3430,9 +3470,6 @@ var tick = (elapsedTime,multiplier) => {
         refreshExcavatorMaxLv();
         updateResearchLabel();updateResearchButtonText();
         updateColorScale();updateCurrencyIcon();
-        if(researchUpgrade[19].level > 0){
-            currencyBar.children[0].children[4].children[0].text = () => HIGH_ELEMENT_CLUSTER.value.toString() + HIGH_ELEMENT_CLUSTER.symbol;
-        }
         setupTick = false;
     }
     if(profilingConst){
@@ -3617,7 +3654,11 @@ var TertiaryEquation = (col) => {
     if (Number.isNaN(col)) {
         col = 0;
     }
-    return `\\color{#${eqColor[col]}}{` + theory.latexSymbol + "=\\max C^{0.8}}";
+    let terraStr = ``;
+    if(terra.level > 0){
+        terraStr = `\\quad T = ${Logistic()}/${maxL}`
+    }
+    return `\\color{#${eqColor[col]}}{` + theory.latexSymbol + `=\\max C^{0.8}${terraStr}}`;
 };
 var getPrimaryEquation = () => {
     theory.primaryEquationScale = 1.15;
@@ -3644,8 +3685,8 @@ var getQuaternaryEntries = () => {
     }
     quartList2[0].value = CPS;
     quartList2[1].value = thyme.level / 10;
-    quartList2[2].value = (terra.level > 0) ? Logistic() : null;
-    quartList2[3].value = (terra.level > 0) ? maxL : null;
+    quartList2[2].value = achCount;
+    quartList2[3].value = globalMult;
     quartList2[4].value = (timeDilate.level > 0) ? Dilate() : null;
     if (quType == 0) {
         return quartList2;
@@ -3659,16 +3700,7 @@ var getQuaternaryEntries = () => {
 //!==OTHER THEORY BACKBONE==
 var elemBefore = new Array(9), clickStreak = 0, buildingExponentBefore = new Array(19), exponentiumBefore, exponentiumLvBefore;
 var get2DGraphValue = () => {
-    if (vizType.value == 1)
-        return (
-            (milk >= 100 ? 100 : milk) +
-            ((BigNumber.PI * BF(time)) / BigNumber.TEN).sin().abs()
-        ).toNumber();
-    else if (vizType.value == 0)
-        return (
-            COOKIE.value.sign *
-            (BigNumber.ONE + COOKIE.value.abs()).log10().toNumber()
-        );
+    return (COOKIE.value.sign *(BigNumber.ONE + COOKIE.value.abs()).log10().toNumber());
 };
 var getPublicationMultiplier = (tau) => tau.pow(0.267);
 var getPublicationMultiplierFormula = (symbol) => symbol + `^{${0.267}}`;
@@ -4051,11 +4083,12 @@ let biButton = ui.createButton({
         biButton.text = `Building Display\n${binfoname[bInfo]}`;
     }
 });
-//!1.5 : COLOR
+//!1.5 : COLOR / VISUALS
 var indecide = 0;
 const eqColor = ["FFFFFF", "E6DFCF", "A06846", "FFD4D8", "FE3246", "ABED6A", "EA8B01", "C48AE2", "F4E4BA", "FBF2D5", "AC6329", "E5BD46", "E71334", "E2DBD2", "83F2BC", "8F9098", "FF6D98", "AB5DF8", "F1398D", "50AB21", "D08072", "B08F7A", "00FFFF", "8800FF"];
 const eqColorName = ["White", "Milk", "Chocolate", "Strawberry", "Raspberry", "Lime", "Orange", "Blueberry", "Banana", "Vanilla", "Caramel", "Honey", "Cherry", "Coconut", "Mint", "Licorice", "Rose", "Blackcurrant", "Dragonfruit", "Black Forest", "Peach", "Hazelnut", "Crystallized", "Pentallized"];
 const eqColorAch = [0, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 225];
+const vizNames = ["On","Off","Zero Null Zilch Nada"];
 let visButton = ui.createButton({
     text: `Modify Visuals`, row: 0, column: 1,
     onClicked: () => {
@@ -4064,6 +4097,20 @@ let visButton = ui.createButton({
         visualUI.content.children[2].text = `Chosen Equation : ${eqName[nexSec]}`;
         visualUI.content.children[5].text = `Chosen Color : ${eqColorName[nexCol]}`;
         visualUI.show();
+    }
+});
+let currencySymButton = ui.createButton({
+    text: `Currency Symbol\n${vizNames[vizType]}`, row: 0, column: 0,
+    fontFamily: FontFamily.CMU_REGULAR,
+    onClicked: () => {
+        if(vizType > 0){
+            vizType = 0;
+        }else{
+            vizType += 1;
+        }
+        currencySymButton.text = `Currency Symbol\n${vizNames[vizType]}`;
+        vizTypeStore.setValue(vizType);
+        //updateCurrencyIcon();
     }
 });
 // complete image grid
@@ -4578,7 +4625,7 @@ let popup = ui.createPopup({
                 columnDefinitions: ["50*", "50*"],
                 rowSpacing: 8,
                 children: [
-                    ui.createButton({text: "Visualizer Type\nNormal", row: 0, column: 0}),
+                    currencySymButton,
                     biButton,
                     visButton,
                     quartButton,
@@ -4656,12 +4703,19 @@ var getCurrencyImageSize = (width) => {
     if (width >= 1080)
         return 30;
     if (width >= 720)
-        return 24;
+        return 25;
     if (width >= 360)
         return 18;
     return 16;
 };
-var currencyTextMargin = 2, currencyTextSize = 11;
+var getCurrencyTextSize = (width) => {
+    if (width >= 720)
+        return 11;
+    if (width >= 360)
+        return 10;
+    return 9;
+};
+var currencyTextMargin = 1, currencyTextSize = 11;
 //10 Cookie + 3 HC + 4 L + 3 HEC
 var updateCurrencyIcon = () => {
     //cookie
@@ -4734,7 +4788,7 @@ var currencyBar = ui.createGrid({
                     horizontalOptions: LayoutOptions.CENTER_AND_EXPAND,orientation: StackOrientation.HORIZONTAL,
                     children: [
                         ui.createLatexLabel({
-                            fontSize: currencyTextSize,margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "$\\tau$",
+                            fontSize: getCurrencyTextSize(ui.screenWidth),margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "$\\tau$",
                         }),
                     ]
                 }),
@@ -4742,19 +4796,7 @@ var currencyBar = ui.createGrid({
                     horizontalOptions: LayoutOptions.CENTER_AND_EXPAND,orientation: StackOrientation.HORIZONTAL,
                     children: [
                         ui.createLatexLabel({
-                            fontSize: currencyTextSize,margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "C",
-                        }),
-                        ui.createImage({
-                            widthRequest: getCurrencyImageSize(ui.screenWidth),heightRequest: getCurrencyImageSize(ui.screenWidth),aspect: Aspect.ASPECT_FILL,horizontalOptions: LayoutOptions.START,
-                            source: ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/55/Chocolate_chip_cookie.png/revision/latest?cb=20210404132052")
-                        })
-                    ]
-                }),
-                ui.createStackLayout({
-                    horizontalOptions: LayoutOptions.CENTER_AND_EXPAND,orientation: StackOrientation.HORIZONTAL,
-                    children: [
-                        ui.createLatexLabel({
-                            fontSize: currencyTextSize,margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "H",
+                            fontSize: getCurrencyTextSize(ui.screenWidth),margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "C",
                         }),
                         ui.createImage({
                             widthRequest: getCurrencyImageSize(ui.screenWidth),heightRequest: getCurrencyImageSize(ui.screenWidth),aspect: Aspect.ASPECT_FILL,horizontalOptions: LayoutOptions.START,
@@ -4766,7 +4808,7 @@ var currencyBar = ui.createGrid({
                     horizontalOptions: LayoutOptions.CENTER_AND_EXPAND,orientation: StackOrientation.HORIZONTAL,
                     children: [
                         ui.createLatexLabel({
-                            fontSize: currencyTextSize,margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "L",
+                            fontSize: getCurrencyTextSize(ui.screenWidth),margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "H",
                         }),
                         ui.createImage({
                             widthRequest: getCurrencyImageSize(ui.screenWidth),heightRequest: getCurrencyImageSize(ui.screenWidth),aspect: Aspect.ASPECT_FILL,horizontalOptions: LayoutOptions.START,
@@ -4778,7 +4820,19 @@ var currencyBar = ui.createGrid({
                     horizontalOptions: LayoutOptions.CENTER_AND_EXPAND,orientation: StackOrientation.HORIZONTAL,
                     children: [
                         ui.createLatexLabel({
-                            fontSize: currencyTextSize,margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "????",
+                            fontSize: getCurrencyTextSize(ui.screenWidth),margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "L",
+                        }),
+                        ui.createImage({
+                            widthRequest: getCurrencyImageSize(ui.screenWidth),heightRequest: getCurrencyImageSize(ui.screenWidth),aspect: Aspect.ASPECT_FILL,horizontalOptions: LayoutOptions.START,
+                            source: ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/55/Chocolate_chip_cookie.png/revision/latest?cb=20210404132052")
+                        })
+                    ]
+                }),
+                ui.createStackLayout({
+                    horizontalOptions: LayoutOptions.CENTER_AND_EXPAND,orientation: StackOrientation.HORIZONTAL,
+                    children: [
+                        ui.createLatexLabel({
+                            fontSize: getCurrencyTextSize(ui.screenWidth),margin: new Thickness(0,currencyTextMargin,0,0),horizontalOptions: LayoutOptions.CENTER,text: "????",
                         }),
                         ui.createImage({
                             widthRequest: getCurrencyImageSize(ui.screenWidth),heightRequest: getCurrencyImageSize(ui.screenWidth),aspect: Aspect.ASPECT_FILL,horizontalOptions: LayoutOptions.START,
