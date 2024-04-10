@@ -857,14 +857,15 @@ var updateBuildingLumpMaxLv = () => {
     }else{
         building[17].maxLevel = moonMarbleCapacity*moonMarble.level;
     }
-    building[18].maxLevel = 250 + (250 * researchUpgrade[21].level) + (250 * researchUpgrade[26].level) + (300 * researchUpgrade[30].level);
+    building[18].maxLevel = 250 + (250 * researchUpgrade[21].level) + (250 * researchUpgrade[26].level) + (300 * researchUpgrade[30].level) + (50 * researchUpgrade[32].level);
     archaeology.maxLevel = 1000 + (500 * researchUpgrade[12].level);
     covenant.maxLevel = 2 + (4 * researchUpgrade[27].level);
     SpellStack.maxLevel = 3 + researchUpgrade[17].level + researchUpgrade[28].level;
     excavatorModule[0].maxLevel = 900 + (researchUpgrade[29].level * 15);
-    excavator.maxLevel = 325 + (researchUpgrade[29].level * 15);
+    excavator.maxLevel = 325 + (researchUpgrade[29].level * 15) + (researchUpgrade[31].level * 10);
+    astroExcavate.maxLevel = 15 + (researchUpgrade[31].level * 2);
     for(let i=1;i<excavatedElements;i++){
-        excavatorModule[i].maxLevel = (300 - 20*i) + (researchUpgrade[29].level * 15);
+        excavatorModule[i].maxLevel = (300 - 20*i) + (researchUpgrade[29].level * 15) + (researchUpgrade[31].level * 10);
     }
 }
 var updateBuildingLumpPower = () => {
@@ -1231,7 +1232,8 @@ const maxRoll = 10000;
 var templeLuck = 0;
 let lootWeight = [10000, 9995, 9945, 9845, 9735, 9615, 9565, 9555, 9530, 9430, 9320, 9200, 9100, 9000];
 let minCookie = (i) => {
-    let prize = BF(60) * CPS * terraBoost * BF(i);
+    if(Number.isNaN(maxBuild)){maxBuild = 0;}
+    let prize = BF(60) * (CPS/(buildingData[maxBuild].collectionTime/10)) * terraBoost * BF(i);
     prize = checkGainOverLimit(prize);
     COOKIE.value = checkCookieOverLimit(COOKIE.value + prize);
 };
@@ -1310,7 +1312,7 @@ var spellData = [{
     effect: (boost) => {
         var rand = RandI(100);
         if (rand <= 90 + (2*boost)) {
-            rand = RandI(10 + (2.5 * SpellStack.level) + (0.5*boost)) * RandR(5+(0.1*SpellStack.level)+(0.05*boost),11+(0.1*SpellStack.level)+(0.05*boost));
+            rand = RandI(7.5 + (2.5 * SpellStack.level) + (0.5*boost)) * RandR(2.5+(0.25*SpellStack.level)+(0.05*boost),5+(0.25*SpellStack.level)+(0.05*boost));
             log(`Cookies for you ${rand}`);
             minCookie(rand);
         } else {
@@ -1345,7 +1347,7 @@ var spellData = [{
     achievementNames: ["Explorer Wizard","Colonization but on a smaller scale","Pot of Artifacts, Cookies, Heavenly Chips, and Sugar Lumps"],
 },{
     order: 4,name: "Asseto Accio", desc: "Spawn buildings into existence, only works for a certain amount",
-    castCost: 2500, castCooldown: 9600,
+    castCost: 2500, castCooldown: 10000,
     effect: (boost) => {
         let rand = RandI(21);
         if (rand < 19) {
@@ -1368,9 +1370,9 @@ var spellData = [{
     achievementNames: ["Mogul Wizard","This looks to be slightly unaffordable, considering your CPS","With those cookie frauds that you've committed. If you pay you'll be acquitted. And your buildings all permitted"],
 },{
     order: 5,name: "Mimi Mami", desc: "Reduces the cooldown time of spells",
-    castCost: 1212, castCooldown: 7200,
+    castCost: 1212, castCooldown: 8000,
     effect: (boost) => {
-        updateSpellCooldown(900 + (180 * SpellStack.level) + (90 * boost));
+        updateSpellCooldown(810 + (150 * SpellStack.level) + (50 * boost));
     },
     unlockCondition: () => {return true;},//unlock condition
     achievementNames: ["Impatient Wizard","The spells must go brrrrrrrrrr","Why must there be cooldowns? The spellcaster screams, for he does not know..."],
@@ -1386,7 +1388,7 @@ var spellData = [{
     order: 7,name: "Made in Heaven", desc: "haha jojo reference goes brrrrrrrrrr",
     castCost: 5555, castCooldown: 14400,
     effect: (boost) => {
-        let warpthyme = (((100 + (15 * SpellStack.level) + (5 * boost)) * RandR(0.8, 1.2 + (0.25 * SpellStack.level))) + (25 * SpellStack.level));
+        let warpthyme = (((100 + (25 * SpellStack.level) + (10 * boost)) * RandR(0.5, 1.5 + (0.25 * SpellStack.level))) + (25 * SpellStack.level));
         log("Time goes brrrrrrrr " + warpthyme);
         for (let i = 0; i < warpthyme; i++) {
             tick(0.1, 1);
@@ -1576,7 +1578,7 @@ arrEPS.fill(BF(0));
 var calcExcavator = (level) => Utils.getStepwisePowerSum(level, 5, 5, 0);
 var getLossFactor = () => lossFactorBase - (jetRefine.level*jetRefineEff) - (10*researchUpgrade[7].level) - (10*researchUpgrade[11].level) - (10*researchUpgrade[23].level);
 var calcEPS = () => {
-    let excMult = BigP(1.2,cherryRegulator.level) * BigP(1.2,hazelSolution.level) * BigP(2,moonCore.level) * BigP(5,astroExcavate.level) * BigP(5,researchUpgrade[7].level) * BigP(7.5,researchUpgrade[11].level) * BigP(BigL10(10+elements[5].value),artifactUpgrade[14].level) * BigP(BigL10(CPS+10),1.25*researchUpgrade[31].level);
+    let excMult = BigP(1.2,cherryRegulator.level) * BigP(1.2,hazelSolution.level) * BigP(2,moonCore.level) * BigP(5,astroExcavate.level) * BigP(5,researchUpgrade[7].level) * BigP(7.5,researchUpgrade[11].level) * BigP(BigL10(10+elements[5].value),artifactUpgrade[14].level) * BigP(BigL10(CPS+10),1.25*researchUpgrade[31].level) * BigP(BigL10(terraBoost + 10),researchUpgrade[31].level);
     let excRate = calcExcavator(excavator.level) * excMult;
     let lossFactor = getLossFactor();
     for(let i = 0;i < excavatorDrill.level;i++){
@@ -1638,7 +1640,7 @@ var refreshExcavatorMaxLv = () => {
 //accelerator
 var accelerator, acceleratorButton, acceleratorControl, acceleratorMode;
 var lightOn = "O", lightOff = "-", strobeCnt = new Array(15).fill(0), strobeOdds = [0.75,1/3,1/11,0.4,0.6,1/7,0.5], strobeUsed = 7, lightInvalid = "X";
-const maxDecayPow = 0.9, lambda =  BF(0.04), yieldfactor = BF(0.05), yieldPow = 1.045, cookieYieldPow = 1.5, cookieYieldFactor = 10, weightFactor = 228/40;
+const maxDecayPow = 0.9, lambda =  BF(0.04), yieldfactor = BF(0.05), yieldPow = 1.045, cookieYieldPow = 1.5, cookieYieldFactor = 10, weightFactor = 228/40, criticalConst = 0.0025;
 var lightIndicator = (amt,cnt) => {
     if(amt%2 == 1){
         if(acceleratorMode.level > 0){
@@ -1674,7 +1676,8 @@ var acceleratorStatus = (level, mode) => {
 }
 function decayElement(indx, dt){
     if(indx >= 2 && (elements[indx].value >= elementData[indx].minDecayAmt)){
-        let rate = building[12].level * lambda * BigP(elements[indx].value,maxDecayPow + (elements[indx].value > BF(1e60)?(0.0025 * (BigL10(elements[indx].value)-60)):0));
+        let calcCriticalConst = criticalConst - (0.00027777 * researchUpgrade[33].level);
+        let rate = building[12].level * lambda * BigP(elements[indx].value,maxDecayPow + (elements[indx].value > BF(1e60)?((calcCriticalConst) * (BigL10(elements[indx].value)-60)):0));
         let isCritical = dt * rate > elements[indx].value
         if(isCritical){//critical point, happens at roughly e90
             rate = elements[indx].value * 0.99;
@@ -1706,7 +1709,8 @@ function decayElementTest(indx, dt){
     log(`======`);
     log(`Decaying.... ${elementData[indx].fullName}, dt = ${dt}`);
     if(indx >= 2){
-        let rate = building[12].level * lambda * BigP(elements[indx].value,maxDecayPow + (elements[indx].value > BF(1e60)?(0.0025 * (BigL10(elements[indx].value)-60)):0)), Eyield = 0;
+        let calcCriticalConst = criticalConst - (0.00027777 * researchUpgrade[33].level);
+        let rate = building[12].level * lambda * BigP(elements[indx].value,maxDecayPow + (elements[indx].value > BF(1e60)?((calcCriticalConst) * (BigL10(elements[indx].value)-60)):0)), Eyield = 0;
         log(`Rate = ${rate}/s`);
         //addition
         Eyield = dt * BigP(rate,yieldPow) * yieldfactor * (elementData[indx-2].weight / elementData[indx].weight)
@@ -1873,7 +1877,7 @@ var researchData = [{
     id: 20, name: "Multiverse Eschatology", desc: "The inevitable destruction of the universe. That\'s something we couldn\'t avoid (yet), so coming up with proper plans to deal with dying universes is critical towards sustaining its rate of production. The theory produced would be most useful when used in conjunction with cortex bakers. Makes Idleverses\'s CPS approach Cortex Baker, anyhow...", time: 1080000, preq: [18,16,20],
     cost: [{type:9,amount:BF("1e620")},{type:30,amount:BF(2024)},{type:31,amount:BF(50)},{type:24,amount:BF(7725)},{type:7,amount:BF(3e60)},{type:8,amount:BF(1.5e13)}]
 },{
-    id: 21, name: "Electric Sheep", desc: "A revolutionary way of dreaming where instead of dreaming various mundane scenarios that may or may not hinder the brain\'s function. The dream is replaced with mathematical wonder of complex, fractalline patterns full of complex(perhaps complete) jargon and even more incomprehensible equations, all perfect fit for a resting cortex brain. Plus you get to see some cool stuffs to. Increases the maximum level of Cortex Baker by 250 and multiplies its CPS by 10.", time: 864000, preq: [18],
+    id: 21, name: "Electric Sheep", desc: "A revolutionary way of dreaming where instead of dreaming various mundane scenarios that may or may not hinder the brain\'s function. The dream is replaced with mathematical wonder of complex, fractalline patterns full of complex(perhaps complete) jargon and even more incomprehensible equations, all perfect fit for a resting cortex brain. Plus you get to see some cool stuffs to. Increases the maximum amount of Cortex Baker by 250 and multiplies its CPS by 10.", time: 864000, preq: [18],
     cost: [{type:9,amount:BF("1e625")},{type:31,amount:BF(250)},{type:11,amount:BF(1e7)},{type:4,amount:BF(5.25e65)},{type:5,amount:BF(1.1e65)},{type:7,amount:BF(1.5e60)},{type:8,amount:BF(7.5e12)}]
 },{
     id: 22, name: "Fusion Reactor", desc: "In order to REALLY get those HECs pumping out. We have discovered that somehow fusing COOKIES together would do it, especially since all of the other elements are being stretched to the limits(thanks to our research efforts). Unlocks Fusion Reactors, and perhaps a way to FUSE elements soon?", time: 1440000, preq: [11,19,20],
@@ -1888,7 +1892,7 @@ var researchData = [{
     id: 25, name: "E >> 0", desc: "The ultimate solution to \"Why does everything fade into nothing at the end\". It truly doesn\'t make any sense to a layman, but to those scaredy-cats universe doomers it sure invalidates them.", time: 805422, preq: [20],
     cost: [{type:9,amount:BF("2.22e652")},{type:7,amount:BF("2.22e78")},{type:6,amount:BF(2.22e80)},{type:5,amount:BF("2.22e82")},{type:12,amount:BF(444444)},{type:25,amount:BF(2500)},{type:27,amount:BF(2500)},{type:30,amount:BF(2500)}]
 },{
-    id: 26, name: "W.O.K.E.", desc: "One of the main inhibitors of the CT(Cookie Thinking) functions is the neverending torrent of intrusive thoughts that would rudely barge in without consent. The most common of such thoughts is about political nonsense that only serves to distract people from real action(in the real world). Staying W.O.K.E.(full name redacted) would serve as a way to transcend those though a common realization(which is also redacted). Increases the maximum level of Cortex Baker by 300 and multiplies its CPS by 10.", time: 1208133, preq: [21],
+    id: 26, name: "W.O.K.E.", desc: "One of the main inhibitors of the CT(Cookie Thinking) functions is the neverending torrent of intrusive thoughts that would rudely barge in without consent. The most common of such thoughts is about political nonsense that only serves to distract people from real action(in the real world). Staying W.O.K.E.(full name redacted) would serve as a way to transcend those though a common realization(which is also redacted). Increases the maximum amount of Cortex Baker by 300 and multiplies its CPS by 10.", time: 1208133, preq: [21],
     cost: [{type:9,amount:BF("3.33e653")},{type:4,amount:BF(3.33e83)},{type:7,amount:BF("3.33e79")},{type:18,amount:BF(10400)},{type:29,amount:BF(3725)},{type:12,amount:BF(555555)},{type:31,amount:BF(500)},]
 },{
     id: 27, name: "Communal Brainsweep", desc: "WARN1NG : PR0CEED1NG ANY FURTHER IN SC1ENT1F1C RES3ARCH MAY HAVE UN3XP3CTED RE5ULTS. Y0U HAVE BEEN WARNED.\nRemoves another layer of limit of the Cookie Empire, at a cost of even more unstable environment. Buffs grandmas by who knows what.", time: 1666666, preq: [26,18],
@@ -1900,11 +1904,17 @@ var researchData = [{
     id: 29, name: "Mechanized Fabrications", desc: "A marvel of machine construction whose uses seem infinite. Proven to be exceptionally useful for Spaced-based usage and improving throughput of power surging across all buildings. Also makes whoever carefully reading all of this have a cookieful day.", time: 1750000, preq: [27],
     cost: [{type:9,amount:BF("1e675")},{type:17,amount:BF(10900)},{type:28,amount:BF(5300)},{type:0,amount:BF(4.5e94)},{type:4,amount:BF(1e91)},{type:5,amount:BF(2.5e90)},{type:7,amount:BF(2.75e83)},{type:12,amount:BF(1e7)}]
 },{
-    id: 30, name: "The Montessori Method", desc: "Nurturing new Cortex Bakers is proven to be way more efficient than fixing all the existing ones. With the Montessori Method of Education implemented, it can boost the overall efficiency of brains through through and concise development throughout all mental aspects. Also makes it less likely to antagonize each other. Increases the maximum level of Cortex Baker by 250 and multiplies its CPS by 10.", time: 1500000, preq: [27,26],
+    id: 30, name: "The Montessori Method", desc: "Nurturing new Cortex Bakers is proven to be way more efficient than fixing all the existing ones. With the Montessori Method of Education implemented, it can boost the overall efficiency of brains through through and concise development throughout all mental aspects. Also makes it less likely to antagonize each other. Increases the maximum amount of Cortex Baker by 250 and multiplies its CPS by 10.", time: 1500000, preq: [27,26],
     cost: [{type:9,amount:BF("1e673")},{type:10,amount:BF("1e221")},{type:31,amount:BF(750)},{type:2,amount:BF(1e91)},{type:3,amount:BF(5e89)},{type:12,amount:BF(2.5e6)}]
 },{
-    id: 31, name: "Spacellic Materializers", desc: "guys let\'s create something from nothing, just like E >> 0 research. nothing wrong will totally happen here!", time: 2000000, preq: [23,29],
+    id: 31, name: "Spacellic Materializers", desc: "From E>>0 research, it has been discovered that the method of creating something from nothing is really possible in our universe. A truly new method of getting even more elements from the same earth. Adds additional levels to Extraterrestrial Excavators, Excavator, and Mining Modules. Also allows the power of Terraform Buff to affect excavations.", time: 2000000, preq: [23,29],
     cost: [{type:9,amount:BF("1e680")},{type:3,amount:BF(5e92)},{type:4,amount:BF(1e92)},{type:5,amount:BF(5e91)},{type:6,amount:BF(1e87)},{type:7,amount:BF(5e84)},{type:8,amount:BF(1e22)},{type:12,amount:BF(2.5e7)}]
+},{
+    id: 32, name: "Anti-Conspiratorial-Grandmatriachs Program", desc: "A personal project about pushing grandmas away from your array of cortex brains. Even though the gains may be questionable from the outside, but every bit helps! Increases the maximum amount of Cortex Baker by 50.\nNOTE : CANNOT BE INITIATED IN PRESENCE OF ANY ELDERLY INDIVIDUAL AND THEIR INFLUENCE", time: 2222222, preq: [27],
+    cost: [{type:9,amount:BF("1e690")},{type:31,amount:BF(1050)},{type:30,amount:BF(3125)},{type:29,amount:BF(4340)},{type:28,amount:BF(5570)},{type:4,amount:BF(7.77e92)},{type:12,amount:BF(17777777)}]
+},{
+    id: 33, name: "Aberrant Decay", desc: "Tweaking the laws of physics JUSSSSSSSSSSSSSSSSST a bit might be the key to our perplexing properties of elements suddenly disappearing into nothingness past a certain point(well, more like an ever-increasing diminishing returns). Reduces the critical penalty constant slightly.", time: 2121212, preq: [22,29],
+    cost: [{type:27,amount:BF(3600)},{type:0,amount:BF(2e97)},{type:1,amount:BF(5e95)},{type:2,amount:BF(1.25e94)},{type:7,amount:BF(1.25e86)},{type:8,amount:BF(5e22)},{type:12,amount:BF(12345678)}]
 }];
 var getCostSymbol = (indx) => {
     if(indx < 9){
@@ -1945,6 +1955,10 @@ var researchBegin = (indx) => {
         //check afford -> deduct
         if(canAffordResearch(researchData[indx].cost)){
             //deduct
+            if(indx == 32 && (covenant.level + building[1].level > 0)){
+                log(`lol no`);
+                return;
+            }
             for(let i=0,j=researchData[indx].cost.length;i<j;i++){
                 if(isValidCostObj(researchData[indx].cost[i])){
                     let index = researchData[indx].cost[i].type, val = researchData[indx].cost[i].amount;
@@ -2076,7 +2090,7 @@ var COOKIE, HEAVENLY_CHIP, SUGAR_LUMP, EXPO_BAR, HIGH_ELEMENT_CLUSTER;
 // };
 var thyme, normalUpgradeMenu, permUpgradeMenu, trueThyme;
 const cookieLimit = [BF("1e616"),BF("1e656"),BF("1e706"),BF("9.99e749"),BF("1e10000")];
-const CPSLimit = [BF("1e616"),BF("1e656")/10,BF("1e706")/1000,BF("9.99e749")/1000000,BF("1e10000")];
+const CPSLimit = [BF("1e616"),BF("1e656")/10,BF("1e706")/1000,BF("9.99e749")/10000,BF("1e10000")];
 var getLimitFlags = () => researchUpgrade[18].level + researchUpgrade[27].level;
 var checkCookieOverLimit = (cookie) => {
     return BigMin(cookie,cookieLimit[getLimitFlags()]);
@@ -2377,6 +2391,8 @@ var superP, superL, superC;
          unlock: () => {return stonkFlag;},},
         {order: 26, name: "mega stonks", desc: "Get +1000 from Investments\n\nhopefully not a bubble :)", weight: 5, secretClue : "",
          unlock: () => {return megaStonkFlag;},},
+        {order: 27, name: "Just Wrong", desc: "Sell all of your grandmas\n\n\"I thought you loved me.\"", weight: 2, secretClue : "",
+         unlock: () => {return wrongFlag;},},
     ];
 }
 function buildFeatAch(featAchObj){
@@ -2394,29 +2410,29 @@ var chapter = new Array(69), chapterUnlock = new Array(69), usedStory = 18;
 let loreData = [{
     order:0,title:"Wake and Bake",content:["Ugh, finally graduated from Gilles Academy","Parents coerced me here, been pestering them for quite a while now","Barely survived all those theories that would make anyone\'s head explode","I can only hope I would encounter no more maths"," ","Living there was fine, only the cookies are an absolute mess","As a cookie lover I find those to be absolute travesty","Why are they even produced??????????","No concern, I must return to my ovens at once","But there\'s a curious cube there..."," ","The number 0 stands intimidating, and perhaps a button resembling a big cookie","One soft click, and a cookie popped out of nowhere, and it\'s some real good stuff.","I could make a living out of those, only that I need a clicker to produce them automatically.","Manual Labor sucks"], unlock: () => true,prefix:"4/4/2024"
 },{
-    order:1,title:"Startup",content:["Sitting with only clickers is boring, can barely match the demands of customers","God gossip sure spreads fast about my good cookies","And I\'m adding new varieties every now and then, somehow makes it sell better","The cube seems to hint about having more helpers, symbols strangely reminding me of grandmas and facilities","Posted some flyers for assistant \"Bakers\"","Wait, are grandmas really showing up here only?","Can\'t complain about their baking skills and work ethics though","Easily puts my clickers to shame"," ","But grandmas are\'t only showing up here","I can smell the faint smell of milk.....",".....and kittens"],unlock:() => building[1].level > 0,prefix:"5/4/2024"
+    order:1,title:"Startup",content:["Sitting with only clickers is boring, can bArely match the demands of customers","God gossip sure spreads fast about my good cookies","And I\'m adding new varieties every now and then, somehow makes it sell better","The cube seems to hint about having more helpers, symbols strangely reminding me of grandmas and facilities","Posted some flyers for assistant \"Bakers\"","Wait, are grandmas really showing up here only?","Can\'t complain about their baking skills and work ethics though","Easily puts my clickers to shame"," ","But grandmas are\'t only showing up here","I can smell the faint smell of milk.....",".....and kittens"],unlock:() => building[1].level > 0,prefix:"5/4/2024"
 },{
-    order:2,title:"Factory",content:["Business is growing steady","Managed to get hold of farms and mines","Pleasantly surprised about places you can find cookies"," ","Our funds steadily increase, therefore expanding workforces and land assets for cookies","We even have enough to build and operate our very first factory","Mass production of cookies and getting the first taste of sweet retribution","Watch out inferior cookies, I\'M COMING AFTER YOU"],unlock:() => building[4].level > 0,prefix:"12/4/2024"
+    order:2,title:"Factory",content:["Business is growing steady","Managed to get hold of farMs and mines","Pleasantly surprised about places you can find cookies"," ","Our funds steadily increase, therefore expanding workforces and land assets for cookies","We even have enough to build and operate our very first factory","Mass production of cookies and getting the first taste of sweet retribution","Watch out inferior cookies, I\'M COMING AFTER YOU"],unlock:() => building[4].level > 0,prefix:"12/4/2024"
 },{
-    order:3,title:"Knead for Speed",content:["At","A","Roadblock"," ","Faced with increasing costs for expanding the business","Like, 10 Octillion Cookies for a new building????????","I can barely scrape together a Sextillion myself","And all the other companies are pumping out like, Centillion, Hundred Quinsexagintacentillion Cookies?????","Like,","how."," ","Back to the cube, haven\'t noticed the bottom is clickable","The Big \"R\" Button, perhaps Resetting should somehow boost my business","...","And I\'m back at my couch, staring at the cube","My hands feel slightly cold and seems to glow a bit","Marbles, perhaps I could find a use for those, there might be places I can insert them"],unlock:() => HEAVENLY_CHIP.value >= BF(1),prefix:"1/5/2024"
+    order:3,title:"Knead for Speed",content:["At","A","Roadblock"," ","Faced with increasing costs for expanding the business","Like, 10 Octillion Cookies for a new building????????","I can barely scrape together a Sextillion myself","And all the other coMpanies are pumping out like, Centillion, Hundred Quinsexagintacentillion Cookies?????","Like,","how."," ","Back to the cube, haven\'t noticed the bottom is clickable","The Big \"R\" Button, perhaps Resetting should somehow boost my business","...","And I\'m back at my couch, staring at the cube","My hands feel slightly cold and seems to glow a bit","Marbles, perhaps I could find a use for those, there might be places I can insert them"],unlock:() => HEAVENLY_CHIP.value >= BF(1),prefix:"1/5/2024"
 },{
-    order:4,title:"Cult Following",content:["Success!","At long last people are starting to stan my cookies","I know it had to happen, for my cookies is the best","Had some employees snoop around and perhaps a temple should satisfy their desires...","...for a cookie deity"," ","Heard there\'s a chocolate temple out in the jungle of Flourlandia","Apparently full of arcane lore and strange items all related to cookies","Don\'t have enough to sponsor an exploration right now, permits are insanely priced for normal human beings"],unlock:() => building[6].level > 0,prefix:"15/6/2024"
+    order:4,title:"Cult Following",content:["Success!","At long last people are starting to stan my cookies","I know it had to happen, for my cookies is the best","Had some employees snoop around and perhaps a temple should satisfy their desires...","...for a cookie deity"," ","Heard there\'s a chocolate temple out in the jungle of Flourlandia","Apparently full of arcane lore and strange items all rElated to cookies","Don\'t have enough to sponsor an exploration right now, permits are insanely priced for normal human beings"],unlock:() => building[6].level > 0,prefix:"15/6/2024"
 },{
-    order:5,title:"Restlessness",content:["With the conglomerate so large","There\'s bound to be oppression","Fearing for the worst, I brainstormed a way to prevent such scenarios"," ","They pointed me to the grandmas, the first who joined me","Talking with them over a cup of camomile tea, I proposed the covenant","For the eternal existence of my cookie empire","At the price of assimilating my buildings into them","After all, they\'ll be better bakers than any other monkeys will ever be","And there is no reward without risk"," ","Or","There","Is?"],unlock:() => covenant.level > 0,prefix:"27/8/2024"
+    order:5,title:"Restlessness",content:["With the conGlomerate so large","There\'s bound to be oppression","Fearing for the worst, I brainstormed a way to prevent such scenarios"," ","They pointed me to the grandmas, the first who joined me","Talking with them over a cup of camomile tea, I proposed the covenant","For the eternal existence of my cookie empire","At the price of assimilating my buildings into them","After all, they\'ll be better bakers than any other monkeys will ever be","And there is no reward without risk"," ","Or","There","Is?"],unlock:() => covenant.level > 0,prefix:"27/8/2024"
 },{
-    order:6,title:"Mother Nature",content:["Alchemy Labs, a place to turn useless trash into cookies and only cookies","A way of evading the laws of reality where everything returns to nothing"," ","Nature","Having the upper hand","Chose disaster as a means to uphold the law","But how much can they really destroy?"," ","In my wake, I cultivated the mother of all trees, Yggdrasil","A tree that only gives, not take","And only gives more the larger it grows","The ultimatum of my stance"],unlock:() => ygg.level > 0,prefix:"9/9/2024"
+    order:6,title:"Mother Nature",content:["Alchemy Labs, a place to turn useless trash into cookies and only cookies","A way of evading the laws of reality where everything returns to nothing"," ","Nature","Having the upper hand","Chose disaster as a means to uphold the law","But how much can they really destroy?"," ","In my wake, I cultivated the mother of all trees, Yggdrasil","A tRee that only gives, not take","And only gives more the larger it grows","The ultimatum of my stance"],unlock:() => ygg.level > 0,prefix:"9/9/2024"
 },{
-    order:7,title:"Shake the Earth",content:["The mine has been remarkably successful in extracting cookies and useful materials to further my empire","However, expeditions into the newly discovered Cookie Dimension proves costly","I can\'t sustain the current rate any further"," ","One remarkable discovery is the technique somehow named \"Terraforming\"","Turns out that the name might have to do with our mines","Producing more useable material from the same earth","That\'d solve the issue for once..."],unlock:() => terra.level > 0,prefix:"9/12/2024"
+    order:7,title:"Shake the Earth",content:["The mine has been remarkably successful in extracting cookies and useful materials to further my empire","However, expediTions into the newly discovered Cookie Dimension proves costly","I can\'t sustain the current rate any further"," ","One remarkable discovery is the technique somehow named \"Terraforming\"","Turns out that the name might have to do with our mines","Producing more useable material from the same earth","That\'d solve the issue for once..."],unlock:() => terra.level > 0,prefix:"9/12/2024"
 },{
-    order:8,title:"Magic Machine",content:["I\'m so close to being able to call my organization as an Empire","But something seems to be missing","As if our physical mark isn\'t enough for the vast world"," ","After the ordeal with material limitations, I started to get overwhelmed with spoils of expeditions","One technology after another,","Buildings that seem to defy reality,","Tearing through time and space","Then a blueprint for producing what I haven\'t been able to"," ","The more I look the more it stares back","As if sweetness is only dependent on luck"],unlock:() => recom.level > 0,prefix:"25/1/2025"
+    order:8,title:"Magic Machine",content:["I\'m so close to being able to call my organization as an Empire","But something seems to be missing","As if our physical mark isn\'t enough for the vast world"," ","After the ordeal with material limitations, I started to get overwhelmed with spoils of expeditions","One technology after another,","Buildings that seem to defy reality,","Tearing through time and space","Then a blueprint for producing what I haven\'t been able to"," ","The more I look the more it stares back","As if sweetNess is only dependent on luck"],unlock:() => recom.level > 0,prefix:"25/1/2025"
 },{
-    order:9,title:"Initial Public Offering",content:["Yet another success!","My empire has grown enough to be properly registered on the grandest stock market","Even if all the people there have more extravagant outfit that would trigger my envy like that roadblock","And the registration fee itself is exorbitant","This won\'t affect my mark in history","For if we continue to expand my empire,","Their trust in me would grow","And eventually foster into additional investments in terms of capital and labor"],unlock:() => invest.level > 0,prefix:"4/4/2025"
+    order:9,title:"Initial Public Offering",content:["Yet another success!","My empire has grown enough to be properly registered on the grandest stock market","Even if all the people there have more extravagant outfit that would trigger my envy like that roAdblock","And the registration fee itself is exorbitant","This won\'t affect my mark in history","For if we continue to expand my empire,","Their trust in me would grow","And eventually foster into additional investments in terms of capital and labor"],unlock:() => invest.level > 0,prefix:"4/4/2025"
 },{
-    order:10,title:"Origin",content:["Managed to raise enough money to \'influence\' the ministry to allow us to explore the ancient temple","Took quite a while, even at peak efficiency and latest in buildings","It came with a caveat though","Limited space for us, with the rest lost in bureaucracy nonsense","Even with that, the team came back with more questions than answers"," ","Where","Does","This","Cube","Come","From?"," ","Why","Am","I","On","This","Path?"],unlock:() => archaeology.level > 0,prefix:"6/9/2025"
+    order:10,title:"Origin",content:["Managed to raise enough money to \'influence\' the ministry to allow us to explore the ancient temple","Took quite a while, even at peak efficiency and latest in buildings","It came with a caveat though","Limited space for us, with the rest lost in bureaucracy nonSense","Even with that, the team came back with more questions than answers"," ","Where","Does","This","Cube","Come","From?"," ","Why","Am","I","On","This","Path?"],unlock:() => archaeology.level > 0,prefix:"6/9/2025"
 },{
-    order:11,title:"Book of Symbolism",content:["The team mapped out more and more areas, and coercing the ministry itself to yield more space to us","Naturally that\'s a recipe for even more questions","The artifacts really are no such concern, fitting quite nicely with what we have","The treasures from the deep chambers are really boosting everything around with sweetness","But the answers are only a glint in an enormous chasm"," ","Though, the Book of Symbolisms might be a lightbulb","I should probably stop seeing things before it got worse","That book is real deal"],unlock:() => artifactUpgrade[9].level > 0,prefix:"13/10/2025"
+    order:11,title:"Book of Symbolism",content:["The team mapped out more and more areas, and coercing the ministry itself to yield more space to us","NatuRally that\'s a recipe for even more questions","The artifacts really are no such concern, fitting quite nicely with what we have","The treasures from the deep chambers are really boosting everything around with sweetness","But the answers are only a glint in an enormous chasm"," ","Though, the Book of Symbolisms might be a lightbulb","I should probably stop seeing things before it got worse","That book is real deal"],unlock:() => artifactUpgrade[9].level > 0,prefix:"13/10/2025"
 },{
-    order:12,title:"Reality",content:["The writing on the hallowed wall tells me all I need to know","I walk on the path","The path, to cookielightenment","Where my desires lead","The stone tells it all, down to the last scratch","Only luck may detract me from the path","But I don\'t know enough to judge how forsaking cookielightenment is worth"," ","There\'s a lot to be learnt from the buried secrets within the temple","I can see why the ministry wouldn\'t budge back when it was discovered","For once, wizards get to cast actual magic instead of pointless rituals for cookies","The grimoire, sealing the secrets of reality from everyone but the most knowing in magic","I could bend reality to my will, for the cookies","Every bit of sugar counts"],unlock:() => artifactUpgrade[10].level > 0,prefix:"13/12/2025"
+    order:12,title:"Reality",content:["The writing on the hallowed wall tells me all I need to know","I walk on the path","The path, to cookielightenment","Where my desires lead","The stone tells it all, down to the last scratch","Only luck may detract me from the path","But I don\'t know enough to judge how forsaking cookielightenment is worth"," ","There\'s a lot to be learnt from the buried secrets within the temple","I can see why the ministry wouldn\'t buDge back when it was discovered","For once, wizards get to cast actual magic instead of pointless rituals for cookies","The grimoire, sealing the secrets of reality from everyone but the most knowing in magic","I could bend reality to my will, for the cookies","Every bit of sugar counts"],unlock:() => artifactUpgrade[10].level > 0,prefix:"13/12/2025"
 },{
     order:13,title:"What was hidden",content:["With a land so vast under my grasp","I got some prospectors to look for more useful material from them","Even if they come up with nothing on their hands","They found rich deposits of otherworldly minerals right outside of my domain","Wasting no time, I immediately swooped in to acquire such blessed land","So blessed that even the government stepped in already"," ","Slapped them with even more tremendous sum","And the first of the land belong to me","One can only wonder what would be created","Through Beryllium and beyond..."],unlock:() => excavatorDrill.level > 0,prefix:"21/3/2026"
 },{
@@ -2426,7 +2442,7 @@ let loreData = [{
 },{
     order:16,title:"One Mind",content:["And then we realized","One simple statement","A reason why","Grandmas flock to my place back then","They seek the cookies","They know the drawings at the temple","They know my raison d\'etre","And they know what to do with it"," ","The Covenant","It should\'ve been-","[DATA L0ST]"," ","I should steel myself","For what\'s to come","And the final symbol on the screen shows it well","Cookies","Should only be made from my sheer willpower","Away from the grandmas"],unlock:() => researchUpgrade[18].level > 0,prefix:"??/8/2028"
 },{
-    order:17,title:"C0mmunal Brainsweep",content:["There\'s no return","The deeper you go","The more unstable everything becomes","It happened once before, and now it\'s happening once again"," ","656","The second limit","Smashed through with even more stabilizing pact","I don\'t know how much more","Until I hit the third limit","And everything crumbles","Except for the grandmas"," ","Their unyielding obsession towards JavaScript Console","Perhaps they\'re onto something","About our very existence","And strings of fate hanging above us"],unlock:() => researchUpgrade[27].level > 0,prefix:"??/7/2029"
+    order:17,title:"Communal Brainsweep",content:["There\'s no return","The deeper you go","The more unstable everything becomes","It happened once before, and now it\'s happening once again"," ","656","The second limit","Smashed through with even more stabilizing pact","I don\'t know how much more","Until I hit the third limit","And everything crumbles","Except for the grandmas"," ","Their unyielding obsession towards JavaScript Console","Perhaps they\'re onto something","About our very existence","And strings of fate hanging above us","","[6,2,10,4,7,5,11,1,8,12,3,9]","???"],unlock:() => researchUpgrade[27].level > 0,prefix:"??/7/2029"
 },];
 var calcChapterText = (indx) => {
     //heading
@@ -2705,7 +2721,7 @@ var init = () => {
     }
     ///////////////////////
     //// Milestone Upgrades
-    theory.setMilestoneCost(new LinearCost(30, 30));
+    theory.setMilestoneCost(new LinearCost(90, 90));
     superP = theory.createMilestoneUpgrade(0, 1);
     superP.boughtOrRefunded = (amount) => {
         updateGlobalMult();
@@ -3063,10 +3079,25 @@ var init = () => {
                     spellCooldown[i].isAvailable = false;
                     //actual spell
                     spellCast[i] = shortUpgrade(70000+i,SUGAR_LUMP,new ExponentialCost(spellData[i].castCost,ML2(1.5)),`${spellData[i].name}`,`${spellData[i].desc}`);
-                    spellCast[i].getDescription = (_) => `${spellData[i].name} ${(spellCooldown[i].level > 0)?`- ${getCollectionBar(Math.round(60 * (spellCooldown[i].level/spellData[i].castCooldown)),60)}`:""}`;
+                    spellCast[i].getDescription = (_) => `${(researchUpgrade[24].level > 0)?"Arcane ":""}${spellData[i].name} ${(spellCooldown[i].level > 0)?`- ${getCollectionBar(Math.round(60 * (spellCooldown[i].level/spellData[i].castCooldown)),60)}`:""}`;
                     spellCast[i].maxLevel = 99;
                     spellCast[i].bought = (amount) => {
-                        onSpellCast(i,amount);
+                        let trueAmount = amount, cost = 0;
+                        if(researchUpgrade[24].level > 0 && spellData[i].castCost > 0){
+                            //trueAmount = 0;
+                            for(let j=1;j<=amount;j++){
+                                cost = spellCast[i].cost.getCost((spellCast[i].level - amount) + (j-1));
+                                //log(cost);
+                                if(cost * 10 > SUGAR_LUMP.value){
+                                    spellCast[i].level += amount;
+                                    return;
+                                }
+                                SUGAR_LUMP.value -= cost*10;
+                                trueAmount += 1;
+                            }
+                        }
+                        //log(spellCast[i].cost.getCost(spellCast[i].level - amount));
+                        onSpellCast(i,trueAmount);
                     };
                 }
                 break;
@@ -4334,19 +4365,26 @@ let visualUI = ui.createPopup({
     })
 });
 //!1.6 : PERKS
+var wrongFlag = false;
+let mysteryFunEntry = ui.createEntry({
+    isPassword: true,
+    maxLength: 256
+});
 let mysteryFunPopup = ui.createPopup({
     title:"?????",
     content: ui.createStackLayout({children:[
-        ui.createEntry({
-            isPassword: true,
-            maxLength: 256,
-            text:""
-        }),
+        mysteryFunEntry,
         ui.createButton({
             text: "Submit",
             onClicked: () => {
-                //let str = mysteryFunPopup.content.children[0].text;
-                //log(mysteryFunPopup.content.children[0].text);
+                let str = mysteryFunEntry.text;
+                log(`Input : ${str}`);
+                if(str === "GRANDMARESET"){
+                    log(`You...`);
+                    wrongFlag = true;
+                    building[1].level = 0;
+                    covenant.level = 0;
+                }
                 mysteryFunPopup.hide();
             }
         })
