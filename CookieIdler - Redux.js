@@ -1915,6 +1915,9 @@ var researchData = [{
 },{
     id: 33, name: "Aberrant Decay", desc: "Tweaking the laws of physics JUSSSSSSSSSSSSSSSSST a bit might be the key to our perplexing properties of elements suddenly disappearing into nothingness past a certain point(well, more like an ever-increasing diminishing returns). Reduces the critical penalty constant slightly.", time: 2121212, preq: [22,29],
     cost: [{type:27,amount:BF(3600)},{type:0,amount:BF(2e97)},{type:1,amount:BF(5e95)},{type:2,amount:BF(1.25e94)},{type:7,amount:BF(1.25e86)},{type:8,amount:BF(5e22)},{type:12,amount:BF(12345678)}]
+},{
+    id: 34, name: "Elder Shades", desc: "WARNING : TO CREATE THIS ITEM WOULD BE TO HANG THE FATES OF THIS UNIVERSE AND 5XXXXX OTHER MULTIVERSES IN BALANCE UNTIL THE UNDERLYING CAUSE HAS BEEN RESOLVED\nENTANGLEMENT CODE : ORT - EXISTENTIAL\NLOCUS CODE : 1, 16\nJust a cool sunglasses, what more could it possibly be?", time: 1725634, preq: [22,29],
+    cost: [{type:9,amount:BF("7e700")},{type:11,amount:BF(66666666)},{type:8,amount:BF(5e23)},{type:12,amount:BF(44444444)}]
 }];
 var getCostSymbol = (indx) => {
     if(indx < 9){
@@ -1977,7 +1980,7 @@ var researchBegin = (indx) => {
                 }
             }
             //set levels
-            researchSlot[occupiedSlots.level].level = researchData[indx].time;
+            researchSlot[occupiedSlots.level].level = researchData[indx].time * (1-(0.01*heavenInspire.level));
             researchSlotID[occupiedSlots.level].level = indx;
             occupiedSlots.level += 1;
             getResearching();
@@ -2100,7 +2103,7 @@ var checkGainOverLimit = (gain) => {
 }
 
 //! Heavenly Upgrades
-var cookieTinUnlock, CookieH, CookieR, CookieS, CookieC, DivineD, CookieTau, TerraInf, TwinGates, ConjureBuild, ChronosAge, R9Box, conGrow, SpellStack, Empower, milkOil;//"Unlocks a new set of cookies that are more powerful than their normal counterparts, ooooooooo what could it be?"
+var cookieTinUnlock, CookieH, CookieR, CookieS, CookieC, DivineD, CookieTau, TerraInf, TwinGates, ConjureBuild, ChronosAge, R9Box, conGrow, SpellStack, Empower, milkOil, heavenInspire;//"Unlocks a new set of cookies that are more powerful than their normal counterparts, ooooooooo what could it be?"
 var heavenlyUpgradeData = [
     {
         uid: 1,
@@ -2202,10 +2205,10 @@ var heavenlyUpgradeData = [
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 15,
-        name: "empty",
-        info: "empty",
-        costModel: new ExponentialCost(1000, ML2(10)),
-        maxLevel: 69420,
+        name: "Heavenly Inspiration",
+        info: "Cuts the time cost of researches down by 1\\%\\ per level",
+        costModel: new ExponentialCost(2.22e190, ML2(1e5)),
+        maxLevel: 10,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 16,
@@ -2721,7 +2724,7 @@ var init = () => {
     }
     ///////////////////////
     //// Milestone Upgrades
-    theory.setMilestoneCost(new LinearCost(90, 90));
+    theory.setMilestoneCost(new LinearCost(120, 120));
     superP = theory.createMilestoneUpgrade(0, 1);
     superP.boughtOrRefunded = (amount) => {
         updateGlobalMult();
@@ -2788,6 +2791,7 @@ var init = () => {
         conGrow = shortPermaUpgradeObj(heavenlyUpgradeData[11],HEAVENLY_CHIP);
         SpellStack = shortPermaUpgradeObj(heavenlyUpgradeData[12],HEAVENLY_CHIP);
         Empower = shortPermaUpgradeObj(heavenlyUpgradeData[13],HEAVENLY_CHIP);
+        heavenInspire = shortPermaUpgradeObj(heavenlyUpgradeData[14],HEAVENLY_CHIP);
         cookieTinUnlock.getDescription = () => {
             if(cookieTinUnlock.level == cookieTinUnlock.maxLevel){
                 return `All Cookie Tins purchased`;
@@ -3301,6 +3305,7 @@ var updateAvailability = () => {
     conGrow.isAvailable = HEAVENLY_CHIP.value > BF(1e100) && (permUpgradeMenu.level % 2) == 1;
     SpellStack.isAvailable = HEAVENLY_CHIP.value > BF(1e100) && (permUpgradeMenu.level % 2) == 1;
     Empower.isAvailable = HEAVENLY_CHIP.value > BF(1e115) && (permUpgradeMenu.level % 2) == 1;
+    heavenInspire.isAvailable = HEAVENLY_CHIP.value > BF(1e180) && (permUpgradeMenu.level % 2) == 1;
     //milkOil.isAvailable = HEAVENLY_CHIP.value > BF(1e130) && (permUpgradeMenu.level % 2) == 1;
     // Gimmick
     covenant.isAvailable = COOKIE.value >= BF(1e60) && (normalUpgradeMenu.level == 0);
