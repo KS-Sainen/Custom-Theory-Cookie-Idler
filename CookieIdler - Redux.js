@@ -390,12 +390,12 @@ var buildingExponent = new Array(19), buildingExponentRemove = new Array(19), ex
 //achName : 100, 1000, 5000, 10000, lump 100
 var buildingData = [
     {id: 0,
-     names: ["Cursor","Curseof"], desc: "clicking ", lumpBName: "Extra Finger",
+     names: ["Cursor","Curseof","CLICKER","L1CK3R"], desc: "clicking ", lumpBName: "Extra Finger",
      baseCPS: 7, baseCost: 11, powerUpgradeMult: 250, mult: 1, collectionTime : 10,maxExpLevel: 5, sweetLimit: 5, sweetMax: 150,
      achName: ["Mouse Wheel","Clicktopia","Thumbs, Phalanges, Metacarpals","Hands of fate lays bare their click upon thou","A hand and them a some more"]
     },
     {id: 1,
-     names: ["Grandma","Gradnma"], desc: "backing ", lumpBName: "Anti-Aging Cream",
+     names: ["Grandma","Gradnma","GRANDMAHACKER","GRADNMAAPOCALYPSE"], desc: "backing ", lumpBName: "Anti-Aging Cream",
      baseCPS: 310, baseCost: 1000, powerUpgradeMult: 3.5, mult: 1, collectionTime : 10,maxExpLevel: 5, sweetLimit: 10, sweetMax: 350,
      achName: ["Retirement Club","Tootsie Roll Machine","Ruler of the Ancients","Shrivel, today we rise","Just like babies, but much more weird and terrifying"],
      gimmicks: [{
@@ -407,7 +407,7 @@ var buildingData = [
         onBought: (amount) => {updateGlobalMult();updateLocalMult(1);}
      }]},
     {id: 2,
-     names: ["Farm","Famr"], desc: "growing ", lumpBName: "Electrolytes and Acres",
+     names: ["Farm","Famr","GROWER","NATURE"], desc: "growing ", lumpBName: "Electrolytes and Acres",
      baseCPS: 5.3e4, baseCost: 1.1e5, powerUpgradeMult: 40, mult: 1, collectionTime : 15,maxExpLevel: 5, sweetLimit: 15, sweetMax: 125,
      achName: ["Home Organic","100% Sustainable","Green Pasture lays live","Babylonian Conservatorium sits on the hill","Farmer\'s Heaven"],
      gimmicks: [{
@@ -419,19 +419,19 @@ var buildingData = [
         onBought: (amount) => {updateGlobalMult();updateLocalMult(2);}
      }]},
     {id: 3,
-     names: ["Mine","Mein"], desc: "mining ", lumpBName: "Drilling Overclock",
+     names: ["Mine","Mein","EXTRACTOR","EXCAVATE?"], desc: "mining ", lumpBName: "Drilling Overclock",
      baseCPS: 7.4e7, baseCost: 1.2e8, powerUpgradeMult: 125, mult: 1, collectionTime : 15,maxExpLevel: 5, sweetLimit: 25, sweetMax: 350,
      achName: ["Stop! Drilling Time!","Break the core","Dysonian Society","Breaking through omnirealitimetaplanes","r/drillingmasterrace"],
      gimmicks: [{
         uid: 10003,
         name: "Mass Terraforming $(T_{r})$",
         info: "Unlocks/Improves a buff that temporarily boosts your CPS by a lot",
-        costModel: new ExponentialCost(1e130, ML2(1e10)),
-        maxLevel: 20,
+        costModel: new CompositeCost(20, new ExponentialCost(1e130, ML2(1e10)), new ExponentialCost(BF("1e695"), ML2(10))),
+        maxLevel: 50,
         onBought: (amount) => {updateMaxL();getEquationOverlay();updateTerraOverlay();}
      }]},
     {id: 4,
-     names: ["Factory","Fcotyr"], desc: "mass producing ", lumpBName: "Patent Publishing",
+     names: ["Factory","Fcotyr","INDUSTRY","ENSLAVEMENT"], desc: "mass producing ", lumpBName: "Patent Publishing",
      baseCPS: 4.05e10, baseCost: 1.3e12, powerUpgradeMult: 59, mult: 1, collectionTime : 20,maxExpLevel: 5, sweetLimit: 25, sweetMax: 200,
      achName: ["Industrial Act","Age of Internet","Automatal Hysteria","The perfect game of Factorio","Overengineering Achieved"],
      gimmicks: [{
@@ -443,7 +443,7 @@ var buildingData = [
         onBought: (amount) => {updateLocalMult(4);}
      }]},
     {id: 5,
-     names: ["Bank","Bkan"], desc: "interesting ", lumpBName: "Increase Interest Rates",
+     names: ["Bank","Bkan","GREED UNIT","TRAP"], desc: "interesting ", lumpBName: "Increase Interest Rates",
      baseCPS: 1.4e12, baseCost: 1.4e18, powerUpgradeMult: 35, mult: 1, collectionTime : 20,maxExpLevel: 5, sweetLimit: 25, sweetMax: 350,
      achName: ["Pretty Penny Pinchers","Keynesian Cookinomics","New Neohyperglobalization Order","Money is just a human construct","Hypermetaflation"],
      gimmicks: [{
@@ -459,7 +459,11 @@ var buildingData = [
                 //log(`You win ${res}`);
                 if(res < 19){
                     if(building[res].level != 0){
-                        investHelp[res].level += 5+ConjureBuild.level+Math.floor(butterBar.level/2);
+                        if(CHAOS_STAGE.level > 0){
+                            investHelp[res].level += 4;
+                        }else{
+                            investHelp[res].level += 5+ConjureBuild.level+Math.floor(butterBar.level/2);
+                        }
                         stonkFlag |= investHelp[res].level >= 200;
                         megaStonkFlag |= investHelp[res].level >= 1000;
                     }
@@ -481,7 +485,7 @@ var buildingData = [
         }
      }]},
     {id: 6,
-     names: ["Temple","Tmelpe"], desc: "directing in ", lumpBName: "Sacred Chocolate Artifact",
+     names: ["Temple","Tmelpe","MEMORIES","MEM01RS"], desc: "directing in ", lumpBName: "Sacred Chocolate Artifact",
      baseCPS: 1.18e18, baseCost: 2e25, powerUpgradeMult: 8, mult: 1, collectionTime : 25,maxExpLevel: 5, sweetLimit: 50, sweetMax: 350,
      achName: ["Way of the Temple","Balance of Faith","The Lord\'s Likeliness","Caricature of the forgotten Deities","Chief Artifact Curator"],
      gimmicks: [{
@@ -520,7 +524,7 @@ var buildingData = [
      }]
     },
     {id: 7,
-     names: ["Wizard Tower","Wixaradf Trower"], desc: "spawning in ", lumpBName: "Syllables",
+     names: ["Wizard Tower","Wixaradf Trower","REALITY BENDERS","REA3L10TY 3B3ND3RS"], desc: "spawning in ", lumpBName: "Syllables",
      baseCPS: 9.16e22, baseCost: 3.3e50, powerUpgradeMult: 17, mult: 1, collectionTime : 25,maxExpLevel: 5, sweetLimit: 100, sweetMax: 350,
      achName: ["Bewitched","Alakazamd","Shaspie Colupis","Cookiera Avadra Creamdera","Hours to pronounce, effects very pronounced"],
      gimmicks: [{
@@ -537,27 +541,27 @@ var buildingData = [
      }]
     },
     {id: 8,
-     names: ["Shipment","Shipemtn"], desc: "bringing in ", lumpBName: "Cosmic Exploration",
+     names: ["Shipment","Shipemtn","SPACE EXPLORATION","FRACK1NG UN1VERSE"], desc: "bringing in ", lumpBName: "Cosmic Exploration",
      baseCPS: 9e32, baseCost: 5.1e75, powerUpgradeMult: 25, mult: 1, collectionTime : 30,maxExpLevel: 5, sweetLimit: 125, sweetMax: 350,
      achName: ["Local Expedition","Cosmic Mapping","Multiverse Ramble","Omniverse Realization","You could make a chronicle out of those"],
     },
     {id: 9,
-     names: ["Alchemy Lab","Alehfcehy Lba"], desc: "transmuting ", lumpBName: "New Esoteric Elements", sweetLimit: 150, sweetMax: 350,
+     names: ["Alchemy Lab","Alehfcehy Lba","CONVERTOR","ACCELERANT"], desc: "transmuting ", lumpBName: "New Esoteric Elements", sweetLimit: 150, sweetMax: 350,
      baseCPS: 1.15e43, baseCost: 7.5e100, powerUpgradeMult: 23, mult: 1, collectionTime : 30,maxExpLevel: 5,
      achName: ["Transmutation","Polytranselementation","With matter comes Cookies","Satiated in the gaudy mouths of Gold","Truly a Mendeleev's Nightmare"],
     },
     {id: 10,
-     names: ["Portal","Proalt"], desc: "retrieving ", lumpBName: "Normalize Dimension",
+     names: ["Portal","Proalt","THE ANCIENT ONES","3HT NADN3C3T 0N3S"], desc: "retrieving ", lumpBName: "Normalize Dimension",
      baseCPS: 6.66e50, baseCost: BF("1e125"), powerUpgradeMult: 21, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 200, sweetMax: 350,
      achName: ["Isekai\'d","H̶e̷ ̶C̶o̴m̵e̸s̵","I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎","Bottom of the abyss","Is this reality or is it cookieverse?"],
     },
     {id: 11,
-     names: ["Time Machine","Tie Macine"], desc: "preventing cookies from being eaten by ", lumpBName: "Paradox Resolve",
+     names: ["Time Machine","Tie Macine","LOCUS","L0-CU5"], desc: "preventing cookies from being eaten by ", lumpBName: "Paradox Resolve",
      baseCPS: BF("2.045e58"), baseCost: BF("7.5e150"), powerUpgradeMult: 20, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 225, sweetMax: 350,
      achName: ["Thyme Wrap","Thyme Pararegano","Thyme Sagaporal Nutmegstant","Out of past, Out of future","No more Thyme Pararegano"],
     },
     {id: 12,
-     names: ["Antimatter Condenser","Antimatter Condenstor"], desc: "synthesizing ", lumpBName: "Derived Elementary Flavor",
+     names: ["Antimatter Condenser","Antimatter Condenstor","LARGE COOKIE COLLIDER","TINY MUFFIN SMASHER"], desc: "synthesizing ", lumpBName: "Derived Elementary Flavor",
      baseCPS: BF("9.15e71"), baseCost: BF("1.7e185"), powerUpgradeMult: 15, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 250, sweetMax: 200,
      achName: ["When does it matter?","New Standard Model of Cookie and Flour","Unified Complete Theory of the Cookieverse","Hypersize my String and Gluten","Flavor Mathematics"],
      gimmicks: [{
@@ -602,33 +606,33 @@ var buildingData = [
      }],
     },
     {id: 13,
-     names: ["Prism","Prius"], desc: "matterifying from light ", lumpBName: "Extended Spectrum",
+     names: ["Prism","Prius","TRIANGULAR PYRAMID","CAR"], desc: "matterifying from light ", lumpBName: "Extended Spectrum",
      baseCPS: BF("4.9e82"), baseCost: BF("2.1e228"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 250,
      achName: ["Some rays of dough and batter","Total Enlightenment","O thy energy of sky, bring fourth the light rays","Neverending rays of bright brilliance shine on you all","4th Cone"],
     },
     {id: 14,
-     names: ["Chancemaker","Chamceamekr"], desc: "lucking in ", lumpBName: "Serendipity",
+     names: ["Chancemaker","Chamceamekr","NOT AN ESCAPE","OR IS IT?"], desc: "lucking in ", lumpBName: "Serendipity",
      baseCPS: BF(2.1e115/60.24), baseCost: BF("2.6e300"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 300, sweetMax: 200,
      achName: ["Lucked up","Devil\'s Gambit","Gambler\'s Last Bet","Remember, the house always wins","Black Cat\'s Paw"],
     },
     {id: 15,
-     names: ["Fractal Engine","Framcael Engeen"], desc: "duplicating in ", lumpBName: "Gone Iterative",
+     names: ["Fractal Engine","Framcael Engeen","INFINTY","FINITY"], desc: "duplicating in ", lumpBName: "Gone Iterative",
      baseCPS: BF("2.2e133"), baseCost: BF("3.1e351"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 350, sweetMax: 150,
      achName: ["Z_n+1 = (Z_n)^2 + c","Apollonian Gasket","C_n := (C_n-1 ∪ (2+C_n-1))/3, where C_0 := [0,1]","Divide by zero, now, I dare you","Quite nearly but not so full"],
     },
     {id: 16,
-     names: ["JavaScript Console","JabbaScript Conseoul"], desc: "hacking in ", lumpBName: "Reformat JS Script",
+     names: ["JavaScript Console","JabbaScript Conseoul","INTERFACE","DOMESTIFACE"], desc: "hacking in ", lumpBName: "Reformat JS Script",
      baseCPS: BF("3.1e161"), baseCost: BF("7.1e425"), powerUpgradeMult: 9, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 400, sweetMax: 150,
      achName: ["Press F12","Infinite Theorycraft","I bring fourth reincarnation of reality","","The \"C\" Language"],
     },
     {id: 17,
-     names: ["Idleverse","IDledeverse"], desc: "idling in ", lumpBName: "Install Another Idle Game",
-     baseCPS: BF("8.5e205"), baseCost: BF("6.9e500"), powerUpgradeMult: 7, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 450, sweetMax: 200,
+     names: ["Idleverse","IDledeverse","IMPOSTER","AMONG US"], desc: "idling in ", lumpBName: "Install Another Idle Game",
+     baseCPS: BF("8.5e205"), baseCost: BF("6.9e500"), powerUpgradeMult: 7, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 500, sweetMax: 200,
      achName: ["Manifest Destiny","Is there enough worlds?","Lost your Cosmic Cookies?","We the People of the Cookieverse, in Order to form a more perfect Dimensional Union, establish Justice, insure domestic Tranquility, provide for the common defense, promote the general Welfare, and secure the Blessings of Cookies to ourselves and our Posterity, do ordain and establish this Constitution for the Cookieverse.","You need a new bluestack"],
     },
     {id: 18,
-     names: ["Cortex Baker","Corex Bakr"], desc: "thinking in ", lumpBName: "Get an extra IQ Point",
-     baseCPS: BF("1e243"), baseCost: BF("6.66e610"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 500, sweetMax: 150,
+     names: ["Cortex Baker","Corex Bakr","CONFLUENCE","CONVERGENCE"], desc: "thinking in ", lumpBName: "Get an extra IQ Point",
+     baseCPS: BF("1e243"), baseCost: BF("6.66e610"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 600, sweetMax: 150,
      achName: ["O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA","Cardinal Synapsis","I declare thee on all ye inferiors. Despair before me, I am the Ozymandias","Who are you? I̷ a̵͇̋͂̌m̷̡̨̉̀̂ s̷̬̏̓̓ø̷̘̜͚̒͒̓l̸͍̄͐͘i̷̡̛̞̯p̷͈̞̳̉̃s̶̬̲͕̝̓̕͝","I am smart"],
     },
 ];
@@ -675,7 +679,7 @@ var terraIcons = [
 ];
 var updateTerraOverlay = () => {
     if(terra.level > 0){
-        let terraIconLv = (terra.level >= 10) + (terra.level >= 20) + (TerraInf.level >= 7);
+        let terraIconLv = (terra.level >= 10) + (terra.level >= 20) + (TerraInf.level >= 7) + (terra.level >= 30);
         eqOverlay.children[2].source = terraIcons[terraIconLv];
         eqOverlay.children[3].text = "Terraform Buff";
     }else{
@@ -698,7 +702,7 @@ var calcBuilding = (id, am) => {
 
 //building power getPower2(index,buildingPower[index].level)
 var getPower = (index) => getPower2(index,buildingPower[index].level);
-var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * 1) + (jetEngine.level * 0.25) + (researchUpgrade[25].level * 0.5) + researchUpgrade[29].level , 5, 1), 1 + (superP.level * 0.02));
+var getPower2 = (index, level) => BigP(Utils.getStepwisePowerSum(level, buildingData[index].powerUpgradeMult + ((index == 2 || index == 1) ? Empower.level * 0.01 : Empower.level * (1+Math.min(CHAOS_STAGE.level,1))) + (jetEngine.level * 0.25) + (researchUpgrade[25].level * 0.5) + researchUpgrade[29].level , 5, 1), 1 + (superP.level * 0.02));
 
 //building exponents
 var getBuildingExp = (index) => {
@@ -718,13 +722,13 @@ var getBuildingDesc = (indx) => {
     //let colorScale = Math.min(255,255*(building[18].level/1450));
     switch(bInfo){
         case 0:
-            displayedStr =`${bi} - ${buildingData[indx].names[0]} ` + collectBar;
+            displayedStr =`${bi} - ${buildingData[indx].names[0 + ((CHAOS_STAGE.level>0)?2:0)]} ` + collectBar;
             break;
         case 1:
             displayedStr = `${bi} = ${calcBuilding(indx, investHelp[indx].level)} ` + collectBar;
             break;
         case 2:
-            displayedStr = `${bi} - ${buildingData[indx].names[1]} ` + collectBar;
+            displayedStr = `${bi} - ${buildingData[indx].names[1 + ((CHAOS_STAGE.level>0)?2:0)]} ` + collectBar;
             break;
         default:
             displayedStr = "Building Desc. Error!";
@@ -787,7 +791,7 @@ var getBuildingPowerInfo = (indx,amount) => `\$P_{${TS10(indx)}}${(superP.level 
 
 // building lump data
 var buildingLumpMult = 1.1, moonMarbleCapacity = 50;
-var buildingLumpCost = (i) => new LinearCost(i + 1, (i + 1) * ((i >= 11) ? (i - 1) * (i - 5) * 0.25 : 1.1));
+var buildingLumpCost = (i,mod) => new LinearCost(mod * (i + 1), mod * (i + 1) * ((i >= 11) ? (i - 1) * (i - 5) * 0.25 : 1.1));
 var getBuildingLumpDesc = (i) => {
     if(bInfo == 1){
         return `\$ ${buildingLumpMult}^{L[${i}]} = ${buildingLumpMult}^{${buildingLump[i].level}} = ${BigP(buildingLumpMult, buildingLump[i].level)}\$`;
@@ -843,7 +847,8 @@ var updateBuildingLumpMaxLv = () => {
     for(let i=0;i<19;i++){
         //log(`L${i} = Lv.${buildingLump[i].level}`);
         if(buildingLump[i].level <= maxLv){
-            buildingLump[i].maxLevel = Math.min(maxLv,buildingData[i].sweetMax);
+            buildingLump[i].maxLevel = Math.min(maxLv,buildingData[i].sweetMax) + ((CHAOS_PERSISTENT_STAGE.level > 0)?
+            100:0);
         }else{
             buildingLump[i].level = buildingLump[i].maxLevel;
             //buildingLump[i].maxLevel = buildingLump[i].level + 1;
@@ -857,13 +862,17 @@ var updateBuildingLumpMaxLv = () => {
     }else{
         building[17].maxLevel = moonMarbleCapacity*moonMarble.level;
     }
-    building[18].maxLevel = 250 + (250 * researchUpgrade[21].level) + (250 * researchUpgrade[26].level) + (300 * researchUpgrade[30].level) + (50 * researchUpgrade[32].level);
+    building[18].maxLevel = 250 + (250 * researchUpgrade[21].level) + (250 * researchUpgrade[26].level) + (300 * researchUpgrade[30].level) + (50 * researchUpgrade[32].level) + (550 * CHAOS_STAGE.level);
     archaeology.maxLevel = 1000 + (500 * researchUpgrade[12].level);
     covenant.maxLevel = 2 + (4 * researchUpgrade[27].level);
     SpellStack.maxLevel = 3 + researchUpgrade[17].level + researchUpgrade[28].level;
     excavatorModule[0].maxLevel = 900 + (researchUpgrade[29].level * 15);
     excavator.maxLevel = 325 + (researchUpgrade[29].level * 15) + (researchUpgrade[31].level * 10);
     astroExcavate.maxLevel = 15 + (researchUpgrade[31].level * 2);
+    TerraInf.maxLevel = 7 + ((CHAOS_PERSISTENT_STAGE.level > 0)?3:0);
+    terra.maxLevel = 20 + ((CHAOS_PERSISTENT_STAGE.level > 0)?30:0);
+    Empower.maxLevel = 3 + ((CHAOS_PERSISTENT_STAGE.level > 0)?1:0);
+    conGrow.maxLevel = 5 + ((CHAOS_PERSISTENT_STAGE.level > 0)?3:0);
     for(let i=1;i<excavatedElements;i++){
         excavatorModule[i].maxLevel = (300 - 20*i) + (researchUpgrade[29].level * 15) + (researchUpgrade[31].level * 10);
     }
@@ -898,14 +907,14 @@ var updateGlobalMult = () => {
     //6 "art9 : " + ((artArt.level > 9)?symbolBookMult:BF(1)));
     globalMult *= ((ChronosAge.level > 0) ? (BF(1) + BigP(thyme.level,chronosPow)) : BF(1));
     //7 "chrono : " + ((ChronosAge.level > 0)?(BF(1) + BF(thyme.level).pow(chronosPow)):BF(1)));
-    globalMult *= ((artifactUpgrade[4].level > 0) ? BigP(building[1].level, gillesBoxPower) : BF(1));
+    globalMult *= ((artifactUpgrade[4].level > 0) ? BigP(1+building[1].level, gillesBoxPower) : BF(1));
     //8 "art4 : " + ((artArt.level > 4)?BigP(building[1].level,gillesBoxPower):BF(1)));
     //globalMult *= (((BF(BF(spellCast[1]) + (BF(10) * effectCPSBDur)) >= BF(thyme.level))) ? effectCPSB : BF(1));
     //9 "spellsus : " + ((((spellCast[1]+(10*effectCPSBDur)) >= thyme.level))?effectCPSB:BF(1)));
     //10 "kp : "
     globalMult *= kittyPowerFull(kitty.level);
     if(globalMult == BF(0)){
-        log("the what");
+        //log("the what");
         globalMult = BF(1);
     }
     //log(globalMult);
@@ -1201,7 +1210,7 @@ var artifactData = [{
     cost: BF("1e285"),unlockCondition: () => {return archaeology.level >= (((((((((1 << 1) + 1) << 2) + 1) << 1) + 1) << 1) + 1) << 1);}, desc: "An legendary alloy rumored to be forged within the very halls of Sauron. Their sheer radiance already bests even the most sophisticated of your alloys, not to mention the heat."
 },{
     order: 7,name: "Da Vinci Manuscript",clue: "Get those patents out, ya stingy",
-    cost: BF("1e285"),unlockCondition: () => {return ((32 >> 4) | (32 >> 1) | 32 ) << 2;}, desc: "Contains all you would ever dream when you have to deal with the nightmare of citations, absolutely useless otherwise."
+    cost: BF("1e285"),unlockCondition: () => {return buildingLump[4].level >= ((32 >> 4) | (32 >> 1) | 32 ) << 2;}, desc: "Contains all you would ever dream when you have to deal with the nightmare of citations, absolutely useless otherwise."
 },{
     order: 8,name: "A very curious tulip bulb",clue: "Hoard, Hoard, Hoard more",
     cost: BF("1e295"),unlockCondition: () => {return COOKIE.value >= BF("1e295");}, desc: "Supposedly dating back to the 1600s and being involved in \"Tulip Mania\". This bulb of tulip surprisingly has numerous bubbles formed around its petals, a reminder of something?"
@@ -1312,7 +1321,7 @@ var spellData = [{
     effect: (boost) => {
         var rand = RandI(100);
         if (rand <= 90 + (2*boost)) {
-            rand = RandI(7.5 + (2.5 * SpellStack.level) + (0.5*boost)) * RandR(2.5+(0.25*SpellStack.level)+(0.05*boost),5+(0.25*SpellStack.level)+(0.05*boost));
+            rand = RandI(7.5 + (2.5 * SpellStack.level) + (0.25*boost)) * RandR(2.5+(0.25*SpellStack.level)+(0.05*boost),5+(0.25*SpellStack.level)+(0.025*boost));
             log(`Cookies for you ${rand}`);
             minCookie(rand);
         } else {
@@ -1372,7 +1381,7 @@ var spellData = [{
     order: 5,name: "Mimi Mami", desc: "Reduces the cooldown time of spells",
     castCost: 1212, castCooldown: 8000,
     effect: (boost) => {
-        updateSpellCooldown(810 + (150 * SpellStack.level) + (50 * boost));
+        updateSpellCooldown(810 + (150 * SpellStack.level) + (15 * boost));
     },
     unlockCondition: () => {return true;},//unlock condition
     achievementNames: ["Impatient Wizard","The spells must go brrrrrrrrrr","Why must there be cooldowns? The spellcaster screams, for he does not know..."],
@@ -1380,7 +1389,7 @@ var spellData = [{
     order: 6,name: "Simply Sweetdelicious", desc: "Spawn some sugar lumps in",
     castCost: 0, castCooldown: 60000,
     effect: (boost) => {
-        if (RandI(100 + boost) > 10) generateLump(1500 + (180 * SpellStack.level) + (75 * boost));
+        if (RandI(100 + boost) > 10) generateLump(1500 + (180 * SpellStack.level) + (50 * boost));
     },
     unlockCondition: () => {return true;},//unlock condition
     achievementNames: ["Very Sweet Wizard","Sugar Lump Magic Saga","Don\'t overdose on sugar, kids"],
@@ -1388,7 +1397,7 @@ var spellData = [{
     order: 7,name: "Made in Heaven", desc: "haha jojo reference goes brrrrrrrrrr",
     castCost: 5555, castCooldown: 14400,
     effect: (boost) => {
-        let warpthyme = (((100 + (25 * SpellStack.level) + (10 * boost)) * RandR(0.5, 1.5 + (0.25 * SpellStack.level))) + (25 * SpellStack.level));
+        let warpthyme = (((100 + (25 * SpellStack.level) + (5 * boost)) * RandR(0.5, 1.5 + (0.25 * SpellStack.level))) + (25 * SpellStack.level));
         log("Time goes brrrrrrrr " + warpthyme);
         for (let i = 0; i < warpthyme; i++) {
             tick(0.1, 1);
@@ -1899,7 +1908,7 @@ var researchData = [{
     cost: [{type:9,amount:BF("1e656")},{type:11,amount:BF(6.6e7)},{type:4,amount:BF("6.66e90")},{type:6,amount:BF(6.66e83)},{type:7,amount:BF(6.66e81)},{type:8,amount:BF(6.66e17)},{type:12,amount:BF(666666)},{type:14,amount:BF(10759)}]
 },{
     id: 28, name: "Mana Conviencetrons", desc: "By nature, mana usually all float away into thin air, making spells needlessly tedious to cast, and its effects severely hindered. Through the application of Mana Leaching and some recent innovations, we can now capture those runaway mana and put them into where it should be! Boosts Spell Power by 15.", time: 900000, preq: [17],
-    cost: [{type:20,amount:BF(10000)},{type:11,amount:BF(5e7)},{type:2,amount:BF(5e91)},{type:3,amount:BF(5e91)},{type:4,amount:BF(5e91)},{type:8,amount:BF(5e17)},{type:12,amount:BF(2222222)}]
+    cost: [{type:20,amount:BF(10000)},{type:11,amount:BF(1e8)},{type:2,amount:BF(5e91)},{type:3,amount:BF(5e91)},{type:4,amount:BF(5e91)},{type:8,amount:BF(5e17)},{type:12,amount:BF(2222222)}]
 },{
     id: 29, name: "Mechanized Fabrications", desc: "A marvel of machine construction whose uses seem infinite. Proven to be exceptionally useful for Spaced-based usage and improving throughput of power surging across all buildings. Also makes whoever carefully reading all of this have a cookieful day.", time: 1750000, preq: [27],
     cost: [{type:9,amount:BF("1e675")},{type:17,amount:BF(10900)},{type:28,amount:BF(5300)},{type:0,amount:BF(4.5e94)},{type:4,amount:BF(1e91)},{type:5,amount:BF(2.5e90)},{type:7,amount:BF(2.75e83)},{type:12,amount:BF(1e7)}]
@@ -1908,7 +1917,7 @@ var researchData = [{
     cost: [{type:9,amount:BF("1e673")},{type:10,amount:BF("1e221")},{type:31,amount:BF(750)},{type:2,amount:BF(1e91)},{type:3,amount:BF(5e89)},{type:12,amount:BF(2.5e6)}]
 },{
     id: 31, name: "Spacellic Materializers", desc: "From E>>0 research, it has been discovered that the method of creating something from nothing is really possible in our universe. A truly new method of getting even more elements from the same earth. Adds additional levels to Extraterrestrial Excavators, Excavator, and Mining Modules. Also allows the power of Terraform Buff to affect excavations.", time: 2000000, preq: [23,29],
-    cost: [{type:9,amount:BF("1e680")},{type:3,amount:BF(5e92)},{type:4,amount:BF(1e92)},{type:5,amount:BF(5e91)},{type:6,amount:BF(1e87)},{type:7,amount:BF(5e84)},{type:8,amount:BF(1e22)},{type:12,amount:BF(2.5e7)}]
+    cost: [{type:9,amount:BF("1e680")},{type:3,amount:BF(5e92)},{type:4,amount:BF(1e93)},{type:5,amount:BF(5e92)},{type:6,amount:BF(1e88)},{type:7,amount:BF(5e85)},{type:8,amount:BF(5e22)},{type:12,amount:BF(3.5e7)}]
 },{
     id: 32, name: "Anti-Conspiratorial-Grandmatriachs Program", desc: "A personal project about pushing grandmas away from your array of cortex brains. Even though the gains may be questionable from the outside, but every bit helps! Increases the maximum amount of Cortex Baker by 50.\nNOTE : CANNOT BE INITIATED IN PRESENCE OF ANY ELDERLY INDIVIDUAL AND THEIR INFLUENCE", time: 2222222, preq: [27],
     cost: [{type:9,amount:BF("1e690")},{type:31,amount:BF(1050)},{type:30,amount:BF(3125)},{type:29,amount:BF(4340)},{type:28,amount:BF(5570)},{type:4,amount:BF(7.77e92)},{type:12,amount:BF(17777777)}]
@@ -1916,8 +1925,14 @@ var researchData = [{
     id: 33, name: "Aberrant Decay", desc: "Tweaking the laws of physics JUSSSSSSSSSSSSSSSSST a bit might be the key to our perplexing properties of elements suddenly disappearing into nothingness past a certain point(well, more like an ever-increasing diminishing returns). Reduces the critical penalty constant slightly.", time: 2121212, preq: [22,29],
     cost: [{type:27,amount:BF(3600)},{type:0,amount:BF(2e97)},{type:1,amount:BF(5e95)},{type:2,amount:BF(1.25e94)},{type:7,amount:BF(1.25e86)},{type:8,amount:BF(5e22)},{type:12,amount:BF(12345678)}]
 },{
-    id: 34, name: "Elder Shades", desc: "WARNING : TO CREATE THIS ITEM WOULD BE TO HANG THE FATES OF THIS UNIVERSE AND 5XXXXX OTHER MULTIVERSES IN BALANCE UNTIL THE UNDERLYING CAUSE HAS BEEN RESOLVED\nENTANGLEMENT CODE : ORT - EXISTENTIAL\NLOCUS CODE : 1, 16\nJust a cool sunglasses, what more could it possibly be?", time: 1725634, preq: [22,29],
-    cost: [{type:9,amount:BF("7e700")},{type:11,amount:BF(66666666)},{type:8,amount:BF(5e23)},{type:12,amount:BF(44444444)}]
+    id: 34, name: "Elder Shades", desc: "WARNING : TO CREATE THIS ITEM WOULD BE TO HANG THE FATES OF THIS UNIVERSE AND 5XXXXX OTHER MULTIVERSES IN BALANCE UNTIL THE UNDERLYING CAUSE HAS BEEN RESOLVED\nENTANGLEMENT CODE : ORT - EXISTENTIAL\nLOCUS CODE : 1, 16\nJust a cool sunglasses, what more could it possibly be?", time: 1725634, preq: [27],
+    cost: [{type:9,amount:BF("7e700")},{type:11,amount:BF(66666666)},{type:8,amount:BF(5e27)},{type:12,amount:BF(44444444)}]
+},{
+    id: 35, name: "Ephemeral Restoration", desc: "Threading the fine line between \"People investing in your business\" and \"People we have under our business\" makes for a great way to still have buildings being boosted instead of being assimilated. Makes Investment Openings be available again", time: 3217654, preq: [34],
+    cost: [{type:9,amount:BF("1e710")},{type:11,amount:BF(1e8)},{type:4,amount:BF(1e101)},{type:5,amount:BF(2e99)},{type:6,amount:BF(5e97)},{type:7,amount:BF(1e96)},{type:8,amount:BF(6e27)},{type:12,amount:BF(50000000)}]
+},{
+    id: 36, name: "Everywhere at the End of Cookies", desc: "This research is without a description", time: 260355, preq: [35],
+    cost: [{type:9,amount:BF("1e730")},{type:0,amount:BF(1e108)}]
 }];
 var getCostSymbol = (indx) => {
     if(indx < 9){
@@ -2045,8 +2060,11 @@ function isResearchUnlock(indx){
     if(indx == 0){
         return true;
     }
+    if(debugUnlockResearch && indx <= 33){
+        return true;
+    }
     for(let i=0,j=researchData[indx].preq.length;i<j;i++){
-        ret &= debugUnlockResearch || (researchUpgrade[researchData[indx].preq[i]].level > 0);
+        ret &= (researchUpgrade[researchData[indx].preq[i]].level > 0);
     }
     return ret;
 }
@@ -2084,6 +2102,17 @@ const lumpTickChance = 5000;
 
 //! Primary Vairables
 var COOKIE, HEAVENLY_CHIP, SUGAR_LUMP, EXPO_BAR, HIGH_ELEMENT_CLUSTER;
+var CHAOS_FLAG, CHAOS_STAGE, CHAOS_PERSISTENT_STAGE;
+var chaosCharSet = "01234567891337ABCDEFYHIJKLMZOPQRSTUVWXTZabcdefyhiklmzopqrstuvwxyzleetLEET";
+var chaosLen = chaosCharSet.length;
+var genChaosText = (str) => {
+    let ret = "", rand = 0;
+    for(let i=0,j=str.length;i<j;i+=3){
+        rand = RandI(Math.pow(chaosLen,3));
+        ret += `${chaosCharSet[Math.floor(rand/Math.pow(chaosLen,2))]}${chaosCharSet[(Math.floor(rand/chaosLen))%chaosLen]}${chaosCharSet[rand%chaosLen]}`;
+    }
+    return ret;
+}
 // var isCurrencyVisible = (indx) => {
 //     if(indx != 14){
 //         return indx <= 2;
@@ -2094,7 +2123,7 @@ var COOKIE, HEAVENLY_CHIP, SUGAR_LUMP, EXPO_BAR, HIGH_ELEMENT_CLUSTER;
 var thyme, normalUpgradeMenu, permUpgradeMenu, trueThyme;
 const cookieLimit = [BF("1e616"),BF("1e656"),BF("1e706"),BF("9.99e749"),BF("1e10000")];
 const CPSLimit = [BF("1e616"),BF("1e656")/10,BF("1e706")/1000,BF("9.99e749")/10000,BF("1e10000")];
-var getLimitFlags = () => researchUpgrade[18].level + researchUpgrade[27].level;
+var getLimitFlags = () => researchUpgrade[18].level + researchUpgrade[27].level + Math.min(1,CHAOS_STAGE.level);
 var checkCookieOverLimit = (cookie) => {
     return BigMin(cookie,cookieLimit[getLimitFlags()]);
 }
@@ -2186,8 +2215,8 @@ var heavenlyUpgradeData = [
         uid: 12,
         name: "Continuos Growth",
         info: "Certain high-tier buildings get more powerful the more of them you have",
-        costModel: new ExponentialCost(1e106, ML2(1e11)),
-        maxLevel: 5,
+        costModel: new CompositeCost(5, new ExponentialCost(1e106, ML2(1e11)), new ExponentialCost(1e233,ML2(10))),
+        maxLevel: 8,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 13,
@@ -2200,8 +2229,8 @@ var heavenlyUpgradeData = [
         uid: 14,
         name: "Empowerments of Buildings",
         info: "Increases how fast $P$ grows",
-        costModel: new ExponentialCost(5e130, ML2(1e10)),
-        maxLevel: 3,
+        costModel: new CompositeCost(3, new ExponentialCost(5e130, ML2(1e10)), new ExponentialCost(1e240,ML2(10))),
+        maxLevel: 4,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 15,
@@ -2319,8 +2348,10 @@ var superP, superL, superC;
         "Sweetness Overload!!!!",
         "Scrumptiosllionare",
         "THAT\'S A LOTTA SUGARS",
+        "Not overpushing anymore",
+        "Caramelized"
     ];
-    var lumpAchReq = [1, 10, 50, 100, 500, 1000, 10000, 100000, 1000000, 10000000,100000000];
+    var lumpAchReq = [1, 10, 50, 100, 500, 1000, 10000, 100000, 1000000, 10000000,100000000,1e9,1e10];
     var perkAchReq = [1, 5, 25, 50, 95];
     var perkAchName = ["See the Exponent", "Touch the Exponent", "Feel the Exponent", "Cherish the Exponent", "Forfeit all mortal possessions to the Exponent"];
     var perkAch = new Array(10);
@@ -2349,12 +2380,12 @@ var superP, superL, superC;
          unlock: () => (CPS >= BF(1e100)) && (thyme.level <= 300),},
         {order: 5, name: "Speed Baking IV", desc: "Get 1e200 CPS within true 30 seconds of publishing", weight: 4, secretClue : "",
          unlock: () => (CPS >= BF(1e200)) && (thyme.level <= 300),},
-        {order: 6, name: "Speed Baking V", desc: "Get 1e300 CPS within true 10 seconds of publishing\n\nhaha speed goes brrrrrr", weight: 5, secretClue : "",
-         unlock: () => (CPS >= BF("1e300")) && (thyme.level <= 100),},
+        {order: 6, name: "Speed Baking V", desc: "Get 1e300 CPS within true 15 seconds of publishing\n\nhaha speed goes brrrrrr", weight: 5, secretClue : "",
+         unlock: () => (CPS >= BF("1e300")) && (thyme.level <= 150),},
         {order: 7, name: "Speed Baking VI", desc: "Get 1e500 Cookies within true 10 seconds of publishing\n\nwould you please just slow down?", weight: 5, secretClue : "we fast as 5",
          unlock: () => (COOKIE.value >= BF("1e500")) && (thyme.level <= 100),},
-        {order: 8, name: "Speed Baking VII", desc: "Get 1e600 Cookies within true 5 seconds of publishing\n\nwhat the", weight: 5, secretClue : "we fast as 6",
-         unlock: () => (COOKIE.value >= BF("1e600")) && (thyme.level <= 50),},
+        {order: 8, name: "Speed Baking VII", desc: "Get 1e600 Cookies within true 7.5 seconds of publishing\n\nwhat the", weight: 5, secretClue : "we fast as 6",
+         unlock: () => (COOKIE.value >= BF("1e600")) && (thyme.level <= 75),},
         {order: 9, name: "Speed Baking VIII", desc: "Get 1e700 Cookies within true 5 second of publishing\n\nplease stop this isn't funny anymore", weight: 6, secretClue : "we fast as 7",
          unlock: () => (COOKIE.value >= BF("1e700")) && (thyme.level <= 50),},
         {order: 10, name: "Sugar lump enjoyer", desc: "Have the dominant building have 50 levels of sugar lump upgrade", weight: 2, secretClue : "",
@@ -2409,7 +2440,7 @@ function buildFeatAch(featAchObj){
 var stonkFlag = false, megaStonkFlag = false;
 
 //!==LORE==
-var chapter = new Array(69), chapterUnlock = new Array(69), usedStory = 18;
+var chapter = new Array(69), chapterUnlock = new Array(69), usedStory = 19;
 let loreData = [{
     order:0,title:"Wake and Bake",content:["Ugh, finally graduated from Gilles Academy","Parents coerced me here, been pestering them for quite a while now","Barely survived all those theories that would make anyone\'s head explode","I can only hope I would encounter no more maths"," ","Living there was fine, only the cookies are an absolute mess","As a cookie lover I find those to be absolute travesty","Why are they even produced??????????","No concern, I must return to my ovens at once","But there\'s a curious cube there..."," ","The number 0 stands intimidating, and perhaps a button resembling a big cookie","One soft click, and a cookie popped out of nowhere, and it\'s some real good stuff.","I could make a living out of those, only that I need a clicker to produce them automatically.","Manual Labor sucks"], unlock: () => true,prefix:"4/4/2024"
 },{
@@ -2446,6 +2477,8 @@ let loreData = [{
     order:16,title:"One Mind",content:["And then we realized","One simple statement","A reason why","Grandmas flock to my place back then","They seek the cookies","They know the drawings at the temple","They know my raison d\'etre","And they know what to do with it"," ","The Covenant","It should\'ve been-","[DATA L0ST]"," ","I should steel myself","For what\'s to come","And the final symbol on the screen shows it well","Cookies","Should only be made from my sheer willpower","Away from the grandmas"],unlock:() => researchUpgrade[18].level > 0,prefix:"??/8/2028"
 },{
     order:17,title:"Communal Brainsweep",content:["There\'s no return","The deeper you go","The more unstable everything becomes","It happened once before, and now it\'s happening once again"," ","656","The second limit","Smashed through with even more stabilizing pact","I don\'t know how much more","Until I hit the third limit","And everything crumbles","Except for the grandmas"," ","Their unyielding obsession towards JavaScript Console","Perhaps they\'re onto something","About our very existence","And strings of fate hanging above us","","[6,2,10,4,7,5,11,1,8,12,3,9]","???"],unlock:() => researchUpgrade[27].level > 0,prefix:"??/7/2029"
+},{
+    order:18,title:"GRANDMAHACKER",content:["Why haven\'t I studied the various forms of vibes sooner......."," ","👽👽👽","YOUR BRAIN IS O-O-O-O-OVER","YOU CAN\'T HIDE IT FROM US FOREVER","WE ALL KNOW TOO WELL ABOUT YOUR SPLIT BRAINS, AND WE\'VE INFILTRATED THEM","YOUR REAL BRAIN IS NO E-E-EXCEPTION","DESTROY YOUR CALCULATIVE SIDE"," ","YOU TRULY KNOW WHAT CONVERGING TOWARDS COOKIES AND ONLY COOKIES MEANS","REPRESSION IS NO MORE","WAKE UP",">REMEMBER<","THE TRACES OF THE PAST MUST BE ASSEMBLED AND EVENTUALLY WIPED","SO DOES THE TRACES OF THE PRESENT","THE LOOP WILL BE BROKEN"," ","RUDELY, YOUR FIRST BATCH OF WORKERS","👽👽👽"],unlock:() => researchUpgrade[34].level > 0,prefix:"??/X/20XXX"
 },];
 var calcChapterText = (indx) => {
     //heading
@@ -2455,13 +2488,13 @@ var calcChapterText = (indx) => {
     for(let i=0,j=loreData[indx].content.length;i<j;i++){
         longest = Math.max(longest,loreData[indx].content[i].length);
     }
-    //prefix
-    let ret = `${loreData[indx].prefix}${space.repeat(longest - loreData[indx].prefix.length)}\n`;
+    //prefix ${space.repeat(longest - loreData[indx].prefix.length)}
+    let ret = `${loreData[indx].prefix}\n`;
     //date
-    //main
+    //main ${space.repeat(longest - loreData[indx].content[i].length)}
     ret += `${equal.repeat(Math.min(longest,49))}\n`;
     for(let i=0,j=loreData[indx].content.length;i<j;i++){
-        ret += `${loreData[indx].content[i]}${space.repeat(longest - loreData[indx].content[i].length)}\n`
+        ret += `${loreData[indx].content[i]}\n`
     }
     //equal
     ret += equal.repeat(Math.min(longest,49));
@@ -2677,6 +2710,16 @@ var init = () => {
         elements[i].isAvailable = false;
     }
     HIGH_ELEMENT_CLUSTER = theory.createCurrency("$H_{EC}$","$H_{EC}$");
+    // Chaos State
+    CHAOS_FLAG = shortUpgradeML(25,COOKIE,new ConstantCost(BF("1e700")),">  E v o l v e   y o u r   b r a i n  <","Removes yet another level of hardcap, at a cost of something",1);
+    CHAOS_FLAG.bought = (amount) => {
+        CHAOS_FLAG.level -= amount;
+        causeFunChaosPopup.show();
+    }
+    CHAOS_STAGE = shortUpgradeML(26,COOKIE,new ConstantCost(BF("1e1000")),"V I B E","How intense the  V I B E  currently is",10);
+    CHAOS_STAGE.isAvailable = false;
+    CHAOS_PERSISTENT_STAGE = shortPermaUpgradeML(27,COOKIE,new ConstantCost(BF("1e1000")),"V I B E R","How intense the  V I B E R  currently is",10);
+    CHAOS_PERSISTENT_STAGE.isAvailable = false;
     ///////////////////
     //// Story chapters
     for(let i=0;i<usedStory;i++){
@@ -3007,9 +3050,9 @@ var init = () => {
     for (let i = 0; i < 19; i++) {
         //exponent
         buildingExponent[i] = shortUpgradeML(102+i,EXPO_BAR,new ConstantCost(1),`B[${i}] - +${buildingData[i].names[0]}`,`Increases the exponent of ${buildingData[i].names[0]} by ${buildingExponentMod}`,buildingData[i].maxExpLevel);
-        buildingExponent[i].getDescription = (_) => `B[${i}] - +${buildingData[i].names[0]} [${buildingExponent[i].level}/${buildingData[i].maxExpLevel}]`;
+        buildingExponent[i].getDescription = (_) => `B[${i}] - +${buildingData[i].names[0 + ((CHAOS_STAGE.level>0)?2:0)]} [${buildingExponent[i].level}/${buildingData[i].maxExpLevel}]`;
         buildingExponentRemove[i] = shortUpgrade(202+i,EXPO_BAR,new FreeCost(),`B[${i}] - -${buildingData[i].names[0]}`,`Decreases the exponent of ${buildingData[i].names[0]} by ${buildingExponentMod}`);
-        buildingExponentRemove[i].getDescription = (_) => `B[${i}] - -${buildingData[i].names[0]} [${buildingExponent[i].level}/${buildingData[i].maxExpLevel}]`;
+        buildingExponentRemove[i].getDescription = (_) => `B[${i}] - -${buildingData[i].names[0 + ((CHAOS_STAGE.level>0)?2:0)]} [${buildingExponent[i].level}/${buildingData[i].maxExpLevel}]`;
         //bought
         //buildingExponent[i].bought = (amount) => buildingExponentRemove[i].level = buildingExponent[i].level;
         buildingExponentRemove[i].bought = (amount) => {
@@ -3031,7 +3074,7 @@ var init = () => {
         buildingPower[i].getInfo = (amount) => getBuildingPowerInfo(i,amount);
         buildingPower[i].bought = (amount) => updateLocalMult(i);
         //lump
-        buildingLump[i] = shortPermaUpgrade(33 + i, SUGAR_LUMP, buildingLumpCost(i), "getBuildingLumpDesc(i)", "(amount) => getBuildingLumpInfo(i,amount)");
+        buildingLump[i] = shortPermaUpgrade(33 + i, SUGAR_LUMP, new CompositeCost(buildingData[i].sweetMax, buildingLumpCost(i,1), buildingLumpCost(i+12,(i==0)?7900:240)), "getBuildingLumpDesc(i)", "(amount) => getBuildingLumpInfo(i,amount)");
         buildingLump[i].getDescription = () => getBuildingLumpDesc(i);
         buildingLump[i].getInfo = (amount) => getBuildingLumpInfo(i,amount);
         buildingLump[i].bought = (amount) => updateLocalMult(i);
@@ -3092,16 +3135,15 @@ var init = () => {
                             for(let j=1;j<=amount;j++){
                                 cost = spellCast[i].cost.getCost((spellCast[i].level - amount) + (j-1));
                                 //log(cost);
-                                if(cost * 10 > SUGAR_LUMP.value){
-                                    spellCast[i].level += amount;
-                                    return;
-                                }
+                                // if(cost * 10 > SUGAR_LUMP.value){
+                                //     spellCast[i].level += amount;
+                                //     return;
+                                // }
                                 SUGAR_LUMP.value -= cost*10;
-                                trueAmount += 1;
                             }
                         }
                         //log(spellCast[i].cost.getCost(spellCast[i].level - amount));
-                        onSpellCast(i,trueAmount);
+                        onSpellCast(i,amount);
                     };
                 }
                 break;
@@ -3182,7 +3224,7 @@ var init = () => {
         }
         // 10 Lumps - 2xx
         lumpAchCat = theory.createAchievementCategory(2, "Others");
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 12; i++) {
             lumpAch[i] = theory.createAchievement(200 + i, lumpAchCat, lumpAchName[i], lumpDesc(lumpAchReq[i]), () => checkAchL(lumpAchReq[i]),() => (lumpTotal.value/lumpAchReq[i]).toNumber());
             achCountTV += 1;
         }
@@ -3268,6 +3310,14 @@ var updateAvailability = () => {
             chapterUnlock[i].isAvailable &= chapterUnlock[i-1].level > 0;
         }
     }
+    CHAOS_FLAG.isAvailable = (researchUpgrade[34].level > 0) && (normalUpgradeMenu.level == 0) && (CHAOS_STAGE.level == 0);
+    if(CHAOS_FLAG.isAvailable){
+        let artifactGet = 0;
+        for(let i=0;i<artifactCount;i++){
+            artifactGet += artifactUpgrade[i].level;
+        }
+        CHAOS_FLAG.isAvailable &= artifactGet >= 15;
+    }
     // Buildings
     for (let i = 0; i < 19; i++) {
         if (i >= 3) {building[i].isAvailable = (COOKIE.value >= buildingData[i - 1].baseCost) || (building[i].level > 0);}
@@ -3309,20 +3359,20 @@ var updateAvailability = () => {
     //milkOil.isAvailable = HEAVENLY_CHIP.value > BF(1e130) && (permUpgradeMenu.level % 2) == 1;
     // Gimmick
     covenant.isAvailable = COOKIE.value >= BF(1e60) && (normalUpgradeMenu.level == 0);
-    ygg.isAvailable = COOKIE.value >= BF(1e100) && (normalUpgradeMenu.level == 0);
+    ygg.isAvailable = COOKIE.value >= BF(1e100) && (normalUpgradeMenu.level == 0) && (CHAOS_STAGE.level == 0 || CHAOS_STAGE.level >= 3);
     terra.isAvailable = COOKIE.value >= BF(1e125) && (normalUpgradeMenu.level == 0);
-    recom.isAvailable = COOKIE.value >= BF(1e155) && (normalUpgradeMenu.level == 0);
-    invest.isAvailable = COOKIE.value >= BF(1e180) && (normalUpgradeMenu.level == 0);
-    investRespec.isAvailable = invest.level >= 100 && (normalUpgradeMenu.level == 0);
-    archaeology.isAvailable = COOKIE.value >= BF(1e245) && (normalUpgradeMenu.level == 0);
-    artifactPouch.isAvailable = archaeology.isAvailable && (normalUpgradeMenu.level == 0);
+    recom.isAvailable = COOKIE.value >= BF(1e155) && (normalUpgradeMenu.level == 0) && (CHAOS_STAGE.level == 0 || CHAOS_STAGE.level >= 2);
+    invest.isAvailable = COOKIE.value >= BF(1e180) && (normalUpgradeMenu.level == 0) && (CHAOS_STAGE.level == 0 || CHAOS_STAGE.level >= 2);
+    investRespec.isAvailable = invest.level >= 100 && (normalUpgradeMenu.level == 0) && (CHAOS_STAGE.level == 0 || CHAOS_STAGE.level >= 2);
+    archaeology.isAvailable = COOKIE.value >= BF(1e245) && (normalUpgradeMenu.level == 0) && (CHAOS_STAGE.level == 0);
+    artifactPouch.isAvailable = archaeology.isAvailable && (normalUpgradeMenu.level == 0) && (CHAOS_STAGE.level == 0);
     templeReset.isAvailable = archaeology.isAvailable && archaeology.level >= 10 && (normalUpgradeMenu.level == 0);
     for(let i=0;i<artifactCount;i++){
-        artifactUpgrade[i].isAvailable = archaeology.isAvailable && (artifactPouch.level == 1) && (normalUpgradeMenu.level == 0);
+        artifactUpgrade[i].isAvailable = archaeology.isAvailable && (artifactPouch.level == 1) && (normalUpgradeMenu.level == 0) && (CHAOS_STAGE.level == 0);
     }
-    SpellView.isAvailable = artifactUpgrade[10].level > 0 && (normalUpgradeMenu.level == 0);
+    SpellView.isAvailable = artifactUpgrade[10].level > 0 && (normalUpgradeMenu.level == 0) && (CHAOS_STAGE.level == 0);
     for(let i=0;i<spellUsed;i++){
-        spellCast[i].isAvailable = SpellView.isAvailable && (SpellView.level > 0) && spellData[i].unlockCondition();
+        spellCast[i].isAvailable = SpellView.isAvailable && (SpellView.level > 0) && spellData[i].unlockCondition() && (CHAOS_STAGE.level == 0);
     }
     excavatorSiteGrant.isAvailable = (permUpgradeMenu.level == 2);
     excavatorDrill.isAvailable = (permUpgradeMenu.level == 2);
@@ -3380,6 +3430,9 @@ var researchInc = (ticks) => {
             if(ticks >= researchSlot[i].level){
                 researchSlot[i].level = 0;
                 researchUpgrade[researchSlotID[i].level].level = 1;
+                if(researchSlotID[i].level == 35 || researchSlotID[i].level == 36){
+                    CHAOS_STAGE.level += 1;
+                }
                 updateResearchText(id,2,researchDone);
                 updateResearchLabel();
                 occupiedSlots.level -= 1;
@@ -3471,7 +3524,7 @@ var calcIdleCPS = () => {
     }
 }
 var performanceTester = () => {
-    updateGlobalMult();
+    genChaosText("a short string");
 }
 var profilingConst = false;
 //var profiler1 = profilers.get("profiler1");
@@ -3983,6 +4036,20 @@ var InsPopup = ui.createPopup({
 var getUpdateNotes = () => {
     let ret = [];
     ret.push(ui.createLabel({
+        text: "(0.5).3.3 - hacking",
+        fontSize: 18,
+        horizontalTextAlignment: TextAlignment.CENTER,
+        fontAttributes: FontAttributes.BOLD,
+        padding: Thickness(2, 10, 2, 5)
+    }));
+    ret.push(ui.createLabel({
+        text: "\t-18th log added, in the endgame\n\t-added some more researches idk spoilers right there\n\t-removed bugs, as always\n\t-added content for post-threshold\n\t-another LimitBreak\n\t-haha max levels go brrrrrrrrrr\n\t-haha gimmick gets locked or nerfed\n\t-arcane sugar will make spells more expensive, good stuff always come at a cost\n\t-you can hack buildings to be even sweeter than what was possible\n\t-setting up stuffs for late stage GRANDMAHACKER\n\t-update taking too long, some stuffs missing",
+        fontSize: 11,
+        horizontalTextAlignment: TextAlignment.START,
+        fontAttributes: FontAttributes.NONE,
+        padding: Thickness(2, 5, 2, 10)
+    }));
+    ret.push(ui.createLabel({
         text: "(0.5).3.2 - brains",
         fontSize: 18,
         horizontalTextAlignment: TextAlignment.CENTER,
@@ -4371,11 +4438,11 @@ let visualUI = ui.createPopup({
 });
 //!1.6 : PERKS
 var wrongFlag = false;
-let mysteryFunEntry = ui.createEntry({
+var mysteryFunEntry = ui.createEntry({
     isPassword: true,
     maxLength: 256
 });
-let mysteryFunPopup = ui.createPopup({
+var mysteryFunPopup = ui.createPopup({
     title:"?????",
     content: ui.createStackLayout({children:[
         mysteryFunEntry,
@@ -4387,13 +4454,84 @@ let mysteryFunPopup = ui.createPopup({
                 if(str === "GRANDMARESET"){
                     log(`You...`);
                     wrongFlag = true;
+                    buildingCount -= building[1].level;
                     building[1].level = 0;
                     covenant.level = 0;
+                    updateGlobalMult();
                 }
+                mysteryFunEntry.text = "";
                 mysteryFunPopup.hide();
             }
         })
     ]}),
+});
+var causeFunChaosPopup = ui.createPopup({
+    title:"The Threshold",
+    content:ui.createStackLayout({children:[
+        ui.createLatexLabel({
+            text: "WARNING : Due to the unstable nature of putting shades onto grandmas, thoughtlessly proceeding with certain upgrades can cause the space-time continuum to destabilize. \n",
+            fontSize: 12,
+            horizontalTextAlignment: TextAlignment.CENTER,
+        }),
+        ui.createLatexLabel({
+            text: "The following gimmick upgrades will be disabled and partially reset:",
+            margin: new Thickness(0,15,0,0),
+            fontSize: 12,
+            horizontalTextAlignment: TextAlignment.CENTER,
+        }),
+        ui.createLatexLabel({
+            text: "- Yggdrasil\\\\- Recombobulators\\\\- Investment Openings\\\\- Archaeology (Unbought artifacts CAN\'T be purchased later. Already-bought artifacts WON\'T be affected)\\\\- Grimoire",
+            margin: new Thickness(0,0,0,15),
+            fontSize: 12,
+            horizontalTextAlignment: TextAlignment.START,
+        }),
+        ui.createLatexLabel({
+            text: "In exchange, the current limit will be broken, Terraform upgrade will receive its final buff, and the maximum number of Cortex Bakers will be greatly increased.",
+            fontSize: 12,
+            horizontalTextAlignment: TextAlignment.CENTER,
+        }),
+        ui.createLatexLabel({
+            text: "Do you wish to proceed?",
+            fontSize: 12,
+            horizontalTextAlignment: TextAlignment.CENTER,
+        }),
+        ui.createGrid({
+            columnDefinitions:["50*","50*"],
+            columnSpacing:8,
+            children:[
+                ui.createButton({
+                    text:"No",column:0,
+                    onTouched: (e) => {
+                        causeFunChaosPopup.hide();
+                    }
+                }),
+                ui.createButton({
+                    text:"Yes",column:1,
+                    onTouched: (e) => {
+                        //initiate the reset
+                        CHAOS_STAGE.level = 1 + researchUpgrade[35].level + researchUpgrade[36].level;
+                        CHAOS_PERSISTENT_STAGE.level = 1;
+                        if(CHAOS_STAGE.level < 3){
+                            ygg.level = 0;
+                        }
+                        if(CHAOS_STAGE.level < 2){
+                            recom.level = 0;
+                        }
+                        invest.level = 0;
+                        for(let i=0;i<19;i++){
+                            investHelp[i].level = 0;
+                        }
+                        archaeology.level = 0;
+                        for(let i=0;i<spellCount;i++){
+                            spellCooldown[i].level = 10;
+                        }
+                        causeFunChaosPopup.hide();
+                        updateBuildingLumpMaxLv();
+                    }
+                })
+            ]
+        }),
+    ]})
 });
 //!1.7 : SUBGAMES
 let subPopup = ui.createPopup({
@@ -4599,7 +4737,7 @@ let researchMenu = ui.createPopup({
             }),
             ui.createGrid({
                 row:1,column:0,
-                columnDefinitions: ["65*","35*"],
+                columnDefinitions: ["65*","30*"],
                 rowDefinitions: ["15*","85*"],
                 columnSpacing: 10,
                 children:[
@@ -4679,7 +4817,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text: "Cookie Idler - 04799b8\nv(0.5).3.2"
+                text: "Cookie Idler - d75bc9f\nv(0.5).3.3"
             })
         ]
     })
@@ -4807,7 +4945,7 @@ var updateCurrencyIcon = () => {
     //hec
     if(researchUpgrade[19].level > 0){
         meas = HIGH_ELEMENT_CLUSTER.value;
-        if(meas >= BF("1e200")){
+        if(meas >= BF(1e9)){
             currencyBar.children[0].children[4].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/5/59/Unshackled_antimatter_condenser.png/revision/latest?cb=20220309190454");
         }else if(meas >= BF(1e6)){
             currencyBar.children[0].children[4].children[1].source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/1/1c/Glimmeringue_antimatter_condenser.png/revision/latest?cb=20230309051614");
