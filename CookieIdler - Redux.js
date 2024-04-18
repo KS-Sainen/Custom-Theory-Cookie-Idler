@@ -191,6 +191,9 @@ function decimalToColHex(d) {
 var colorize = (latexStr,r,g,b) => {
     return `\\color{#${decimalToColHex(r)}${decimalToColHex(g)}${decimalToColHex(b)}}{${latexStr}}`;
 };
+var colorizeHex = (latexStr,colorStr) => {
+    return `\\color{#${colorStr}}{${latexStr}}`;
+};
 //Upgrades
 /**
  * Returns a permanent/normal upgrade object from the arguments given.
@@ -843,14 +846,16 @@ function ExponentiumSanity(){
 var updateBuildingLumpMaxLv = () => {
     if(Number.isNaN(maxBuild)){maxBuild = 0;}
     let maxLv = buildingData[maxBuild].sweetLimit;
-    log(`Max = ${maxBuild}, lim = ${maxLv}`);
+    let chaosBoost = ((CHAOS_PERSISTENT_STAGE.level > 0)?60:0);
+    log(`Max = ${maxBuild}, lim = ${maxLv+chaosBoost}`);
     for(let i=0;i<19;i++){
         //log(`L${i} = Lv.${buildingLump[i].level}`);
-        if(buildingLump[i].level <= maxLv){
-            buildingLump[i].maxLevel = Math.min(maxLv,buildingData[i].sweetMax) + ((CHAOS_PERSISTENT_STAGE.level > 0)?
-            100:0);
+        let curLim = Math.min(maxLv,buildingData[i].sweetMax);
+        if(buildingLump[i].level <= (curLim+chaosBoost)){
+            buildingLump[i].maxLevel = curLim+chaosBoost;
         }else{
-            buildingLump[i].level = buildingLump[i].maxLevel;
+            buildingLump[i].level = curLim+chaosBoost;
+            buildingLump[i].maxLevel = curLim+chaosBoost;
             //buildingLump[i].maxLevel = buildingLump[i].level + 1;
         }
     }
@@ -872,7 +877,7 @@ var updateBuildingLumpMaxLv = () => {
     TerraInf.maxLevel = 7 + ((CHAOS_PERSISTENT_STAGE.level > 0)?3:0);
     terra.maxLevel = 20 + ((CHAOS_PERSISTENT_STAGE.level > 0)?30:0);
     Empower.maxLevel = 3 + ((CHAOS_PERSISTENT_STAGE.level > 0)?1:0);
-    conGrow.maxLevel = 5 + ((CHAOS_PERSISTENT_STAGE.level > 0)?3:0);
+    conGrow.maxLevel = 5 + ((CHAOS_PERSISTENT_STAGE.level > 0)?2:0);
     for(let i=1;i<excavatedElements;i++){
         excavatorModule[i].maxLevel = (300 - 20*i) + (researchUpgrade[29].level * 15) + (researchUpgrade[31].level * 10);
     }
@@ -1586,8 +1591,9 @@ var getElemBoost = (indx,level) => (1 + ((elementData[indx].excavatorPowerFactor
 arrEPS.fill(BF(0));
 var calcExcavator = (level) => Utils.getStepwisePowerSum(level, 5, 5, 0);
 var getLossFactor = () => lossFactorBase - (jetRefine.level*jetRefineEff) - (10*researchUpgrade[7].level) - (10*researchUpgrade[11].level) - (10*researchUpgrade[23].level);
+var getUniversalExcMult = () => BigP(1.2,cherryRegulator.level) * BigP(1.2,hazelSolution.level) * BigP(2,moonCore.level) * BigP(5,astroExcavate.level) * BigP(5,researchUpgrade[7].level) * BigP(7.5,researchUpgrade[11].level) * BigP(BigL10(10+elements[5].value),artifactUpgrade[14].level) * BigP(BigL10(CPS+10),1.25*researchUpgrade[31].level) * BigP(BigL10(terraBoost + 10),researchUpgrade[31].level);
 var calcEPS = () => {
-    let excMult = BigP(1.2,cherryRegulator.level) * BigP(1.2,hazelSolution.level) * BigP(2,moonCore.level) * BigP(5,astroExcavate.level) * BigP(5,researchUpgrade[7].level) * BigP(7.5,researchUpgrade[11].level) * BigP(BigL10(10+elements[5].value),artifactUpgrade[14].level) * BigP(BigL10(CPS+10),1.25*researchUpgrade[31].level) * BigP(BigL10(terraBoost + 10),researchUpgrade[31].level);
+    let excMult = getUniversalExcMult();
     let excRate = calcExcavator(excavator.level) * excMult;
     let lossFactor = getLossFactor();
     for(let i = 0;i < excavatorDrill.level;i++){
@@ -3074,7 +3080,7 @@ var init = () => {
         buildingPower[i].getInfo = (amount) => getBuildingPowerInfo(i,amount);
         buildingPower[i].bought = (amount) => updateLocalMult(i);
         //lump
-        buildingLump[i] = shortPermaUpgrade(33 + i, SUGAR_LUMP, new CompositeCost(buildingData[i].sweetMax, buildingLumpCost(i,1), buildingLumpCost(i+12,(i==0)?7900:240)), "getBuildingLumpDesc(i)", "(amount) => getBuildingLumpInfo(i,amount)");
+        buildingLump[i] = shortPermaUpgrade(33 + i, SUGAR_LUMP, new CompositeCost(buildingData[i].sweetMax, buildingLumpCost(i,1), buildingLumpCost(i+12,(i==0)?8100:260)), "getBuildingLumpDesc(i)", "(amount) => getBuildingLumpInfo(i,amount)");
         buildingLump[i].getDescription = () => getBuildingLumpDesc(i);
         buildingLump[i].getInfo = (amount) => getBuildingLumpInfo(i,amount);
         buildingLump[i].bought = (amount) => updateLocalMult(i);
@@ -3646,9 +3652,10 @@ var tick = (elapsedTime,multiplier) => {
 //!==EQUATIONS==
 const height = 60;
 var quartList = new Array(9), quartList2 = new Array(5);
+var multBySymbol = (symbol) => `${symbol} \\leftarrow ${symbol}`;
 var PrimaryEquation = (col) => {
     //log(`${eqColor[Math.floor(col)]}`);
-    return `\\color{#${eqColor[col]}}{\\dot{C} = P\\sum_{i=0}^{18}{B(i)}}`;
+    return `\\color{#${eqColor[col]}}{\\dot{C} = P\\sum_{i=0}^{18}{\\frac{B(i)}{CT_i}}}`;
 };
 var secondaryCheck = (mode) => {
     switch (mode) {
@@ -3686,49 +3693,72 @@ var secondaryEq = (mode, col) => {
     }
     //log(`${eqColor[col]}`);
     //\color{#E6DFCF}{B(i) = B[i]P_{i}1.1^{L[i]}(\log_{10}\log_{10}\tau)^{2}}
+    let ret = "";
     switch (mode) {
         case 0:
-            return `\\color{#${eqColor[col]}}{${(R9Box.level > 0) ? `\\dot{C} \\leftarrow \\dot{C}\\sigma^{${R9BoxMult}R_{9}}\\\\` : ""}B(i) = B[i]P_{i}${buildingLumpMult}^{L[i]}${(CookieTau.level > 0) ? "(\\log_{10}\\log_{10}\\tau)^{2}" : ""}${(building[14].level > 0) ? `\\\\B(14) \\leftarrow B(14)^{r(${chanceBaseMax}+5\\cdot10^{-5}L[14],${chanceBaseMin}+5\\cdot10^{-5}L[14])}` : ""}}`;
+            theory.secondaryEquationScale = 0.95;
+            ret += `B(i)=B[i]P_{i}p_{i}${buildingLumpMult}^{L[i]}\\\\`;
+            ret += `${multBySymbol("P")}(\\frac{C_{ur}${buildingLumpMult}^{L[0]}}{100})\\\\`
+            if(CookieTau.level > 0){ret += `${multBySymbol("P")}(\\log_{10}\\log_{10}\\tau)^{2}\\\\`;}
+            if(TwinGates.level > 0){ret += `${multBySymbol("P")}H^{${twinGateExp}T_{w}}`;}
+            if(R9Box.level > 0){ret += `\\sigma^{${R9BoxMult}R_{9}}`;}
+            break;
         case 1:
-            return (
-                `\\color{#${eqColor[col]}}{` +
-                "P = M(CP(l)) \\\\" +
-                (CookieS.level > 0 ? "(log_{2}(L + 2))^{1.5}" : "") +
-                (CookieH.level > 0 ? "(log_{10}(H + 10))^{1.25}" : "") +
-                (CookieC.level > 0 ? "\\\\(log_{10}(C + 10))^{0.9}" : "") + "}"
-            );
+            theory.secondaryEquationScale = 1;
+            ret += `${multBySymbol("P")}M(Lv.)CP(Lv.)\\\\`  +
+            (CookieS.level > 0 ? "(log_{2}(L + 2))^{1.5}" : "") +
+            (CookieH.level > 0 ? "(log_{10}(H + 10))^{1.25}" : "") +
+            (CookieC.level > 0 ? "\\\\(log_{10}(C + 10))^{0.9}" : "") +
+            (invest.isAvailable > 0 ? "I_{o}^{1.01}" : "") +
+            (artifactUpgrade[4].level > 0 ? `B[1]^{${gillesBoxPower}A_{4}}` : "");
+            if(artifactUpgrade[4].level > 0 || astroExtract.level > 0){
+                ret += `\\\\${multBySymbol("P")}${(artifactUpgrade[14].level > 0 ? "log_{10}(Cs)^{2}" : "")}${(astroExtract.level > 0 ? "50^{Ae}" : "")}`
+            }
+            break;
         case 2:
-            return `\\color{#${eqColor[col]}}{M = M_{i}K(0.2)+(K-10)(0.3)\\\\+(K-25)(0.4)+(K-50)(0.5)${(artifactUpgrade[2].level > 0) ? "\\\\M \\leftarrow M^{1.5+0.01A_{c}}" : ""}}`;
+            theory.secondaryEquationScale = 1;
+            ret += `M = K(0.2)+(K-10)(0.3)\\\\+(K-25)(0.4)+(K-50)(0.5)\\\\${(artifactUpgrade[2].level > 0) ? "\\\\M \\leftarrow M^{1+0.002A_{c}}" : ""}\\\\${multBySymbol("P")}(1+0.05A_{c})`;
+            break;
         case 3:
             theory.secondaryEquationScale = 0.9;
-            return (
-                `\\color{#${eqColor[col]}}{` +
-                `CP(l) = ${(DivineD.level > 0) ? "2^{D_{d}}" : ""}C_{1}(l)C_{2}()` +
-                (invest.level > 0 ? "I_{o}^{1.01}" : "") +
-                "\\\\C_{1}(l) = max_{l}:[0,25,50,75,100,150]\\\\ \\rightarrow [1.03,1.05,1.07,1.09,1.11,1.13]^{l}\\\\C_{2}() = \\prod_{i=0}^{8}{TP[i]^{CT[i]}}}"
-            );
+            ret += `CP(l) = ${(DivineD.level > 0) ? "2^{D_{d}}" : ""}C_{1}(l)C_{2}()` +
+                "\\\\C_{1}(l) = max_{l}:[0,25,50,75,100,150]\\\\ \\rightarrow [1.03,1.05,1.07,1.09,1.11,1.13]^{l}\\\\C_{2}() = \\prod_{i=0}^{8}{TP[i]^{CT[i]}}";
+            break;
         case 4:// Cov
+        theory.secondaryEquationScale = 1;
             let cp = " C_{v}";
-            return (
-                `\\color{#${eqColor[col]}}{B(2) \\leftarrow B(2)(\\sum_{i=0}^{18}{B[i]})^{${covDelta}${cp}^{${covLvMod}} + ${covExp}}}`
-            );
+            ret += `${multBySymbol("p_{2}")}(\\sum_{i=0}^{18}{B[i]})^{${covDelta}${cp}^{${covLvMod}} + ${covExp}}`;
+            if(researchUpgrade[27].level > 0){
+                ret += `\\\\${multBySymbol("p_{2}")}B[1]^{2}B[16]^{2.5}`;
+            }
+            break;
         case 5:// Ygg + Chronos
             // theory.secondaryEquationScale = 0.925;
+            theory.secondaryEquationScale = 1;
             let ys = " Y_{g}";
-            return `\\color{#${eqColor[col]}}{B(2) \\leftarrow ${yggBoost}B(2)P_{2}^{${yggPowBase} + ${yggPowLv}${ys}}\\\\(B[6]+B[2])^{${yggBPowBase} + ${yggBPowMod}${ys}^{${yggBPowLv}}}(1+t)^{${yggThymePow}}${(ChronosAge.level > 0) ? `\\\\ B(i) \\leftarrow B(i)(1+t^{${chronosPow}}), \\quad i \\neq 2` : ``}}`;
+            ret += `B(2) \\leftarrow ${yggBoost}B(2)P_{2}^{${yggPowBase} + ${yggPowLv}${ys}}\\\\(B[6]+B[2])^{${yggBPowBase} + ${yggBPowMod}${ys}^{${yggBPowLv}}}(1+t)^{${yggThymePow}}`;
+            break;
         case 6:// Terra
+            theory.secondaryEquationScale = 1;
             let tr = " T_{r}";
             let tf = " T_{\\infty}";
             let tm = " T_{m}";
-            return `\\color{#${eqColor[col]}}{${tm} = 1500${(moreExcavator.level > 0) ? "E_{f}^{1.5}" : ""}${tr}^{2.5+0.05${tf}}\\\\T = 1+${tm}^{0.2+0.1${tf}} + \\frac{${tm}^{1+0.005${tf}}}{1+e^{t-(X_{b}+300${tr})}}}`;
+            ret += `${tm}=\\frac{1500${tr}^{${maxLPowBase}+${maxLPowMod}(${tf}+A_{6})}}{${terraFunNerfMod}}\\\\`;
+            ret += `T(t)=\\frac{${tm}^{1+${terraInfPow}${tf}}}{1+e^{t-(X_{b}+${terraDurMod}${tr})}}+${tm}^{0.1${tf}}`;
+            break;
         case 7:// Recom
+            theory.secondaryEquationScale = 1;
             let rc = " R_{c}";
-            return `\\color{#${eqColor[col]}}{\\dot{H} = H^{0.9}(${rc})\\\\ \\dot{L} = 0.01${rc}\\\\ B(4) \\leftarrow B(4)10^{54}${recomPowBase}^{${rc}-1}}`;
+            ret += `\\dot{H} = H^{0.9}(${rc})\\\\ \\dot{L} = 0.1(${rc}+10A_{7})+20R_3+0.25SP_{FT}\\\\ ${multBySymbol("p_{4}")}10^{27}${recomPowBase}^{${rc}-1}`;
+            break;
         case 8:// Dilation
+            theory.secondaryEquationScale = 1;
             return `\\color{#${eqColor[col]}}{T_d = \\frac{B[11]^{1+0.025T_D}}{1000^{T_f}}\\\\T_f = 1-\\frac{min(B[11],B[10]+B[12])}{(2.125-0.125T_{D}))(B[10]+B[12])}}`;
         case 9:// Elements
             theory.secondaryEquationScale = 0.85;
-            return `\\color{#${eqColor[col]}}{E=[Be,Ch,Bg,Su,Jm,Cs,Hz,Mn,As]\\\\ \\dot{E_{n}}=\\frac{E_{x}\\prod_{i=0}^{${excavatedElements}}{Ef_{i}}}{${getLossFactor()}^{n}},\\: n \\neq 8${(artifactUpgrade[13].level > 0) ? `\\\\ \\dot{E_{8}}=\\frac{log_{10}(B[8]+10)log_{10}(B(8)+10)}{1000}` : ``}}`;
+            let ep = "E_{p}", er = "E_{r}";
+            ret += `${ep}=${getUniversalExcMult()},\\quad ${er}=\\prod_{i=0}^{${excavatedElements}}{Ef_{i}} \\\\ \\dot{E_{n}}=\\frac{E_{x}${ep}${er}log_{10}(C)}{100(${getLossFactor()}^{n})},\\: n \\neq 8${(artifactUpgrade[13].level > 0) ? `\\\\ \\dot{E_{8}}=${ep}${(researchUpgrade[29].level > 0)?`log_{10}(${er})`:""}\\frac{log_{10}(B[8])log_{10}(B(8))}{1000}` : ``}`;
+            break;
         case 10:// Decay
             let ingre = (acceleratorMode.level - 1 == -1) ? "E_{n}" : `${elementData[acceleratorMode.level - 1 + 2].symbol}`;
             let r1 = (acceleratorMode.level - 1 == -1) ? "E_{n-1}" : `${elementData[acceleratorMode.level - 1 + 1].symbol}`;
@@ -3736,8 +3766,13 @@ var secondaryEq = (mode, col) => {
             let b1 = (acceleratorMode.level - 1 == -1) ? "" : `${elementData[acceleratorMode.level - 1 + 2].symbol}=${elementData[acceleratorMode.level - 1 + 2].weight}u`;
             let b2 = (acceleratorMode.level - 1 == -1) ? "" : `${elementData[acceleratorMode.level - 1 + 1].symbol}=${elementData[acceleratorMode.level - 1 + 1].weight}u`;
             let b3 = (acceleratorMode.level - 1 == -1) ? "" : `${elementData[acceleratorMode.level - 1].symbol}=${elementData[acceleratorMode.level - 1].weight}u`;
-            return `\\color{#${eqColor[col]}}{${b1} \\quad ${b2} \\quad ${b3}\\\\${ingre} \\rightarrow ${ingre}(${r1}) + ${ingre}(${r2}) + \\frac{${(acceleratorMode.level - 1 == -1) ? "\\lambda " : elementData[acceleratorMode.level - 1 + 2].weight + elementData[acceleratorMode.level - 1 + 1].weight + elementData[acceleratorMode.level - 1].weight}C_{m}}{${cookieYieldFactor}(${weightFactor})}\\\\\\dot{R} = B[12]\\lambda ${ingre}}`;
+            ret += `${b1} \\quad ${b2} \\quad ${b3}\\\\${ingre} \\rightarrow ${ingre}(${r1}) + ${ingre}(${r2}) + \\frac{${(acceleratorMode.level - 1 == -1) ? "\\lambda " : elementData[acceleratorMode.level - 1 + 2].weight + elementData[acceleratorMode.level - 1 + 1].weight + elementData[acceleratorMode.level - 1].weight}C_{m}}{${cookieYieldFactor}(${weightFactor})}\\\\\\dot{R} = B[12]\\lambda ${ingre}^{0.9+C_{c}(log_{10}(${ingre})-60)}`;
+            break;
+        case 11://Fusion
+            ret += `F_{C} = log_{10}(As) + (log_{10}(C)-${minFusion})^${1.11}\\\\ \\dot{As}=${0.75}F_{C}\\dot{E_{8}}\\\\ \\dot{H_{EC}}=${Math.round(astroDecayWF)}F_{C}\\\\ \\dot{C}=-(10^{\\frac{-1}{${magnitudeTime*10}}})C`;
+            break;
     }
+    return colorizeHex(ret,eqColor[col]);
 };
 var TertiaryEquation = (col) => {
     if (Number.isNaN(col)) {
@@ -3820,6 +3855,7 @@ var postPublish = () => {
     for(let i=0;i<19;i++){
         updateLocalMult(i);
     }
+    updateBuildingLumpMaxLv();
 };
 var prePublish = () => {
     lumpbf = SUGAR_LUMP.value;
@@ -4156,7 +4192,7 @@ let whatsnewMenu = ui.createPopup({
     })
 });
 //!1.3 : SECONDARY EQUATION + QUATERNARY
-const eqName = ["Building CPS", "Building Power", "Milk", "Cookie Power", "Covenant", "Yggdrasil", "Mass Terraforming", "Recombobulators", "Time Dilation", "Elements", "Elemental Decay"];
+const eqName = ["Building CPS", "Building Power", "Milk", "Cookie Power", "Covenant", "Yggdrasil", "Mass Terraforming", "Recombobulators", "Time Dilation", "Elements", "Elemental Decay", "Cookie Fusion"];
 const quName = ["Normal", "Elements"];
 let quartButton = ui.createButton({
     text: `Quaternary Values\n${quName[quType]}`, row: 1, column: 1,
@@ -4190,7 +4226,7 @@ let biButton = ui.createButton({
 var indecide = 0;
 const eqColor = ["FFFFFF", "E6DFCF", "A06846", "FFD4D8", "FE3246", "ABED6A", "EA8B01", "C48AE2", "F4E4BA", "FBF2D5", "AC6329", "E5BD46", "E71334", "E2DBD2", "83F2BC", "8F9098", "FF6D98", "AB5DF8", "F1398D", "50AB21", "D08072", "B08F7A", "00FFFF", "8800FF"];
 const eqColorName = ["White", "Milk", "Chocolate", "Strawberry", "Raspberry", "Lime", "Orange", "Blueberry", "Banana", "Vanilla", "Caramel", "Honey", "Cherry", "Coconut", "Mint", "Licorice", "Rose", "Blackcurrant", "Dragonfruit", "Black Forest", "Peach", "Hazelnut", "Crystallized", "Pentallized"];
-const eqColorAch = [0, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 225];
+const eqColorAch = [0, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230];
 const vizNames = ["On","Off","Zero Null Zilch Nada"];
 let visButton = ui.createButton({
     text: `Modify Visuals`, row: 0, column: 1,
@@ -4256,9 +4292,9 @@ let imagUpdate = () => {
     imagUpdate();
     templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/e/eb/Heavenly_chip.png/revision/latest?cb=20160226200959");// decay
     imagUpdate();
-    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/f/f4/Questionmark.png/revision/latest?cb=20200626021945");
+    templateImage.source = ImageSource.fromUri("https://static.wikia.nocookie.net/cookieclicker/images/c/cb/Dragon%27s_Curve.png/revision/latest?cb=20181019210502");//fusion
     imagUpdate();
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 12; i++) {
         completeSecGrid[i].content.onTouched = (e) => {
             if (secondaryCheck(i)) {
                 nexSec = i;
@@ -4817,7 +4853,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text: "Cookie Idler - d75bc9f\nv(0.5).3.3"
+                text: "Cookie Idler - 63ed743\nv(0.5).3.3"
             })
         ]
     })
