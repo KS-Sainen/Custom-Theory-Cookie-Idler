@@ -391,14 +391,15 @@ var buildingExponent = new Array(19), buildingExponentRemove = new Array(19), ex
 
 //the funni
 //achName : 100, 1000, 5000, 10000, lump 100
+// normal, hacker, chaos
 var buildingData = [
     {id: 0,
-     names: ["Cursor","Curseof","CLICKER","L1CK3R"], desc: "clicking ", lumpBName: "Extra Finger",
+     names: ["Cursor","Curseof","CLICKER","L1CK3R","CLICKER","L1CK3R"], desc: "clicking ", lumpBName: "Extra Finger",
      baseCPS: 7, baseCost: 11, powerUpgradeMult: 250, mult: 1, collectionTime : 10,maxExpLevel: 5, sweetLimit: 5, sweetMax: 150,
      achName: ["Mouse Wheel","Clicktopia","Thumbs, Phalanges, Metacarpals","Hands of fate lays bare their click upon thou","A hand and them a some more"]
     },
     {id: 1,
-     names: ["Grandma","Gradnma","GRANDMAHACKER","GRADNMAAPOCALYPSE"], desc: "backing ", lumpBName: "Anti-Aging Cream",
+     names: ["Grandma","Gradnma","GRANDMAHACKER","GRADNMAAPOCALYPSE","GRANDMAHACKER","GRADNMAAPOCALYPSE"], desc: "backing ", lumpBName: "Anti-Aging Cream",
      baseCPS: 310, baseCost: 1000, powerUpgradeMult: 3.5, mult: 1, collectionTime : 10,maxExpLevel: 5, sweetLimit: 10, sweetMax: 350,
      achName: ["Retirement Club","Tootsie Roll Machine","Ruler of the Ancients","Shrivel, today we rise","Just like babies, but much more weird and terrifying"],
      gimmicks: [{
@@ -410,7 +411,7 @@ var buildingData = [
         onBought: (amount) => {updateGlobalMult();updateLocalMult(1);}
      }]},
     {id: 2,
-     names: ["Farm","Famr","GROWER","NATURE"], desc: "growing ", lumpBName: "Electrolytes and Acres",
+     names: ["Farm","Famr","GROWER","NATURE","GROWER","NATURE"], desc: "growing ", lumpBName: "Electrolytes and Acres",
      baseCPS: 5.3e4, baseCost: 1.1e5, powerUpgradeMult: 40, mult: 1, collectionTime : 15,maxExpLevel: 5, sweetLimit: 15, sweetMax: 125,
      achName: ["Home Organic","100% Sustainable","Green Pasture lays live","Babylonian Conservatorium sits on the hill","Farmer\'s Heaven"],
      gimmicks: [{
@@ -422,7 +423,7 @@ var buildingData = [
         onBought: (amount) => {updateGlobalMult();updateLocalMult(2);}
      }]},
     {id: 3,
-     names: ["Mine","Mein","EXTRACTOR","EXCAVATE?"], desc: "mining ", lumpBName: "Drilling Overclock",
+     names: ["Mine","Mein","EXTRACTOR","EXCAVATE?","EXTRACTOR","EXCAVATE?"], desc: "mining ", lumpBName: "Drilling Overclock",
      baseCPS: 7.4e7, baseCost: 1.2e8, powerUpgradeMult: 125, mult: 1, collectionTime : 15,maxExpLevel: 5, sweetLimit: 25, sweetMax: 350,
      achName: ["Stop! Drilling Time!","Break the core","Dysonian Society","Breaking through omnirealitimetaplanes","r/drillingmasterrace"],
      gimmicks: [{
@@ -434,7 +435,7 @@ var buildingData = [
         onBought: (amount) => {updateMaxL();getEquationOverlay();updateTerraOverlay();}
      }]},
     {id: 4,
-     names: ["Factory","Fcotyr","INDUSTRY","ENSLAVEMENT"], desc: "mass producing ", lumpBName: "Patent Publishing",
+     names: ["Factory","Fcotyr","INDUSTRY","ENSLAVEMENT","INDUSTRY","ENSLAVEMENT"], desc: "mass producing ", lumpBName: "Patent Publishing",
      baseCPS: 4.05e10, baseCost: 1.3e12, powerUpgradeMult: 59, mult: 1, collectionTime : 20,maxExpLevel: 5, sweetLimit: 25, sweetMax: 200,
      achName: ["Industrial Act","Age of Internet","Automatal Hysteria","The perfect game of Factorio","Overengineering Achieved"],
      gimmicks: [{
@@ -446,7 +447,7 @@ var buildingData = [
         onBought: (amount) => {updateLocalMult(4);}
      }]},
     {id: 5,
-     names: ["Bank","Bkan","GREED UNIT","TRAP"], desc: "interesting ", lumpBName: "Increase Interest Rates",
+     names: ["Bank","Bkan","GREED UNIT","TRAP","GREED UNIT","TRAP"], desc: "interesting ", lumpBName: "Increase Interest Rates",
      baseCPS: 1.4e12, baseCost: 1.4e18, powerUpgradeMult: 35, mult: 1, collectionTime : 20,maxExpLevel: 5, sweetLimit: 25, sweetMax: 350,
      achName: ["Pretty Penny Pinchers","Keynesian Cookinomics","New Neohyperglobalization Order","Money is just a human construct","Hypermetaflation"],
      gimmicks: [{
@@ -488,7 +489,7 @@ var buildingData = [
         }
      }]},
     {id: 6,
-     names: ["Temple","Tmelpe","MEMORIES","MEM01RS"], desc: "directing in ", lumpBName: "Sacred Chocolate Artifact",
+     names: ["Temple","Tmelpe","MEMORIES","MEM01RS","MEMORIES","MEM01RS"], desc: "directing in ", lumpBName: "Sacred Chocolate Artifact",
      baseCPS: 1.18e18, baseCost: 2e25, powerUpgradeMult: 8, mult: 1, collectionTime : 25,maxExpLevel: 5, sweetLimit: 50, sweetMax: 350,
      achName: ["Way of the Temple","Balance of Faith","The Lord\'s Likeliness","Caricature of the forgotten Deities","Chief Artifact Curator"],
      gimmicks: [{
@@ -527,7 +528,7 @@ var buildingData = [
      }]
     },
     {id: 7,
-     names: ["Wizard Tower","Wixaradf Trower","REALITY BENDERS","REA3L10TY 3B3ND3RS"], desc: "spawning in ", lumpBName: "Syllables",
+     names: ["Wizard Tower","Wixaradf Trower","REALITY BENDERS","REA3L10TY 3B3ND3RS","REALITY BENDERS","REA3L10TY 3B3ND3RS"], desc: "spawning in ", lumpBName: "Syllables",
      baseCPS: 9.16e22, baseCost: 3.3e50, powerUpgradeMult: 17, mult: 1, collectionTime : 25,maxExpLevel: 5, sweetLimit: 100, sweetMax: 350,
      achName: ["Bewitched","Alakazamd","Shaspie Colupis","Cookiera Avadra Creamdera","Hours to pronounce, effects very pronounced"],
      gimmicks: [{
@@ -544,27 +545,27 @@ var buildingData = [
      }]
     },
     {id: 8,
-     names: ["Shipment","Shipemtn","SPACE EXPLORATION","FRACK1NG UN1VERSE"], desc: "bringing in ", lumpBName: "Cosmic Exploration",
+     names: ["Shipment","Shipemtn","SPACE EXPLORATION","FRACK1NG UN1VERSE","SPACE EXPLORATION","FRACK1NG UN1VERSE"], desc: "bringing in ", lumpBName: "Cosmic Exploration",
      baseCPS: 9e32, baseCost: 5.1e75, powerUpgradeMult: 25, mult: 1, collectionTime : 30,maxExpLevel: 5, sweetLimit: 125, sweetMax: 350,
      achName: ["Local Expedition","Cosmic Mapping","Multiverse Ramble","Omniverse Realization","You could make a chronicle out of those"],
     },
     {id: 9,
-     names: ["Alchemy Lab","Alehfcehy Lba","CONVERTOR","ACCELERANT"], desc: "transmuting ", lumpBName: "New Esoteric Elements", sweetLimit: 150, sweetMax: 350,
+     names: ["Alchemy Lab","Alehfcehy Lba","CONVERTOR","ACCELERANT","CONVERTOR","ACCELERANT"], desc: "transmuting ", lumpBName: "New Esoteric Elements", sweetLimit: 150, sweetMax: 350,
      baseCPS: 1.15e43, baseCost: 7.5e100, powerUpgradeMult: 23, mult: 1, collectionTime : 30,maxExpLevel: 5,
      achName: ["Transmutation","Polytranselementation","With matter comes Cookies","Satiated in the gaudy mouths of Gold","Truly a Mendeleev's Nightmare"],
     },
     {id: 10,
-     names: ["Portal","Proalt","THE ANCIENT ONES","3HT NADN3C3T 0N3S"], desc: "retrieving ", lumpBName: "Normalize Dimension",
+     names: ["Portal","Proalt","THE ANCIENT ONES","3HT NADN3C3T 0N3S","THE ANCIENT ONES","3HT NADN3C3T 0N3S"], desc: "retrieving ", lumpBName: "Normalize Dimension",
      baseCPS: 6.66e50, baseCost: BF("1e125"), powerUpgradeMult: 21, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 200, sweetMax: 350,
      achName: ["Isekai\'d","H̶e̷ ̶C̶o̴m̵e̸s̵","I̸͕̽n̷̰͊ ̸͖̔ṭ̵͐h̶̺̓e̴̫͋ ̶͓͂e̸͔͘y̸̝͋e̵͓̚s̸̫̒ ̶̰̕ò̸̜f̶͖̕ ̶̻͒t̷̥͆ĥ̶̳é̵̗ ̷̦̉b̴̡̽e̶͚̿h̴̙̋o̸̩͝l̴̘͆d̷̠͠è̶͍ř̴͎","Bottom of the abyss","Is this reality or is it cookieverse?"],
     },
     {id: 11,
-     names: ["Time Machine","Tie Macine","LOCUS","L0-CU5"], desc: "preventing cookies from being eaten by ", lumpBName: "Paradox Resolve",
+     names: ["Time Machine","Tie Macine","LOCUS","L0-CU5","LOCUS","L0-CU5"], desc: "preventing cookies from being eaten by ", lumpBName: "Paradox Resolve",
      baseCPS: BF("2.045e58"), baseCost: BF("7.5e150"), powerUpgradeMult: 20, mult: 1, collectionTime : 35,maxExpLevel: 5, sweetLimit: 225, sweetMax: 350,
      achName: ["Thyme Wrap","Thyme Pararegano","Thyme Sagaporal Nutmegstant","Out of past, Out of future","No more Thyme Pararegano"],
     },
     {id: 12,
-     names: ["Antimatter Condenser","Antimatter Condenstor","LARGE COOKIE COLLIDER","TINY MUFFIN SMASHER"], desc: "synthesizing ", lumpBName: "Derived Elementary Flavor",
+     names: ["Antimatter Condenser","Antimatter Condenstor","LARGE COOKIE COLLIDER","TINY MUFFIN SMASHER","LARGE COOKIE COLLIDER","TINY MUFFIN SMASHER"], desc: "synthesizing ", lumpBName: "Derived Elementary Flavor",
      baseCPS: BF("9.15e71"), baseCost: BF("1.7e185"), powerUpgradeMult: 15, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 250, sweetMax: 200,
      achName: ["When does it matter?","New Standard Model of Cookie and Flour","Unified Complete Theory of the Cookieverse","Hypersize my String and Gluten","Flavor Mathematics"],
      gimmicks: [{
@@ -609,32 +610,32 @@ var buildingData = [
      }],
     },
     {id: 13,
-     names: ["Prism","Prius","TRIANGULAR PYRAMID","CAR"], desc: "matterifying from light ", lumpBName: "Extended Spectrum",
+     names: ["Prism","Prius","TRIANGULAR PYRAMID","CAR","TRIANGULAR PYRAMID","CAR"], desc: "matterifying from light ", lumpBName: "Extended Spectrum",
      baseCPS: BF("4.9e82"), baseCost: BF("2.1e228"), powerUpgradeMult: 25, mult: 1, collectionTime : 40,maxExpLevel: 5, sweetLimit: 275, sweetMax: 250,
      achName: ["Some rays of dough and batter","Total Enlightenment","O thy energy of sky, bring fourth the light rays","Neverending rays of bright brilliance shine on you all","4th Cone"],
     },
     {id: 14,
-     names: ["Chancemaker","Chamceamekr","NOT AN ESCAPE","OR IS IT?"], desc: "lucking in ", lumpBName: "Serendipity",
+     names: ["Chancemaker","Chamceamekr","NOT AN ESCAPE","OR IS IT?","NOT AN ESCAPE","OR IS IT?"], desc: "lucking in ", lumpBName: "Serendipity",
      baseCPS: BF(2.1e115/60.24), baseCost: BF("2.6e300"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 300, sweetMax: 200,
      achName: ["Lucked up","Devil\'s Gambit","Gambler\'s Last Bet","Remember, the house always wins","Black Cat\'s Paw"],
     },
     {id: 15,
-     names: ["Fractal Engine","Framcael Engeen","INFINTY","FINITY"], desc: "duplicating in ", lumpBName: "Gone Iterative",
+     names: ["Fractal Engine","Framcael Engeen","INFINTY","FINITY","INFINTY","FINITY"], desc: "duplicating in ", lumpBName: "Gone Iterative",
      baseCPS: BF("2.2e133"), baseCost: BF("3.1e351"), powerUpgradeMult: 10, mult: 1, collectionTime : 45,maxExpLevel: 5, sweetLimit: 350, sweetMax: 150,
      achName: ["Z_n+1 = (Z_n)^2 + c","Apollonian Gasket","C_n := (C_n-1 ∪ (2+C_n-1))/3, where C_0 := [0,1]","Divide by zero, now, I dare you","Quite nearly but not so full"],
     },
     {id: 16,
-     names: ["JavaScript Console","JabbaScript Conseoul","INTERFACE","DOMESTIFACE"], desc: "hacking in ", lumpBName: "Reformat JS Script",
+     names: ["JavaScript Console","JabbaScript Conseoul","INTERFACE","DOMESTIFACE","INTERFACE","DOMESTIFACE"], desc: "hacking in ", lumpBName: "Reformat JS Script",
      baseCPS: BF("3.1e161"), baseCost: BF("7.1e425"), powerUpgradeMult: 9, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 400, sweetMax: 150,
      achName: ["Press F12","Infinite Theorycraft","I bring fourth reincarnation of reality","","The \"C\" Language"],
     },
     {id: 17,
-     names: ["Idleverse","IDledeverse","IMPOSTER","AMONG US"], desc: "idling in ", lumpBName: "Install Another Idle Game",
+     names: ["Idleverse","IDledeverse","IMPOSTER","AMONG US","IMPOSTER","AMONG US"], desc: "idling in ", lumpBName: "Install Another Idle Game",
      baseCPS: BF("8.5e205"), baseCost: BF("6.9e500"), powerUpgradeMult: 7, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 500, sweetMax: 200,
      achName: ["Manifest Destiny","Is there enough worlds?","Lost your Cosmic Cookies?","We the People of the Cookieverse, in Order to form a more perfect Dimensional Union, establish Justice, insure domestic Tranquility, provide for the common defense, promote the general Welfare, and secure the Blessings of Cookies to ourselves and our Posterity, do ordain and establish this Constitution for the Cookieverse.","You need a new bluestack"],
     },
     {id: 18,
-     names: ["Cortex Baker","Corex Bakr","CONFLUENCE","CONVERGENCE"], desc: "thinking in ", lumpBName: "Get an extra IQ Point",
+     names: ["Cortex Baker","Corex Bakr","CONFLUENCE","CONVERGENCE","CONFLUENCE","CONVERGENCE"], desc: "thinking in ", lumpBName: "Get an extra IQ Point",
      baseCPS: BF("1e243"), baseCost: BF("6.66e610"), powerUpgradeMult: 5, mult: 1, collectionTime : 50,maxExpLevel: 5, sweetLimit: 600, sweetMax: 150,
      achName: ["O-oooooooooo AAAAE-A-A-I-A-U- JO-oooooooooooo AAE-O-A-A-U-U-A- E-eee-ee-eee AAAAE-A-E-I-E-A- JO-ooo-oo-oo-oo EEEEO-A-AAA-AAAA","Cardinal Synapsis","I declare thee on all ye inferiors. Despair before me, I am the Ozymandias","Who are you? I̷ a̵͇̋͂̌m̷̡̨̉̀̂ s̷̬̏̓̓ø̷̘̜͚̒͒̓l̸͍̄͐͘i̷̡̛̞̯p̷͈̞̳̉̃s̶̬̲͕̝̓̕͝","I am smart"],
     },
@@ -713,7 +714,7 @@ var getBuildingExp = (index) => {
 }
 
 //building description + info
-var ColorScale = 0;
+var ColorScale = 0, chaosR=255, chaosG=255, chaosB=255;
 var latestCollect = new Array(19);
 var updateColorScale = () => ColorScale = Math.round(Math.min(255,255*(building[18].level/1450)));
 var getBuildingDesc = (indx) => {
@@ -725,19 +726,23 @@ var getBuildingDesc = (indx) => {
     //let colorScale = Math.min(255,255*(building[18].level/1450));
     switch(bInfo){
         case 0:
-            displayedStr =`${bi} - ${buildingData[indx].names[0 + ((CHAOS_STAGE.level>0)?2:0)]} ` + collectBar;
+            displayedStr =`${bi} - ${buildingData[indx].names[0 + (2*((CHAOS_STAGE.level > 0) + (CHAOS_STAGE.level > 2)))]} ` + collectBar;
             break;
         case 1:
             displayedStr = `${bi} = ${calcBuilding(indx, investHelp[indx].level)} ` + collectBar;
             break;
         case 2:
-            displayedStr = `${bi} - ${buildingData[indx].names[1 + ((CHAOS_STAGE.level>0)?2:0)]} ` + collectBar;
+            displayedStr = `${bi} - ${buildingData[indx].names[1 + (2*((CHAOS_STAGE.level > 0) + (CHAOS_STAGE.level > 2)))]} ` + collectBar;
             break;
         default:
             displayedStr = "Building Desc. Error!";
             break;
     }
-    return colorize(displayedStr,255-ColorScale,255,255-ColorScale);
+    if(CHAOS_STAGE.level > 2){
+        return colorize(displayedStr,chaosR,chaosG,chaosB);
+    }else{
+        return colorize(displayedStr,255-ColorScale,255,255-ColorScale);
+    }
 }
 var getBuildingInfo = (indx,amount) => `${getBuildingInfo2(indx, amount)}, ${((bInfo == 1) ? `\$B(${indx}) = ${generateCookie(indx,buildingData[indx].collectionTime,terraBoost)}\$` : "")}`;
 var getBuildingInfo2 = (index, am) => {
@@ -805,11 +810,11 @@ var getBuildingLumpDesc = (i) => {
 var getBuildingLumpInfo = (indx,amount) => {
     switch(bInfo){
         case 0:
-            return `Improves ${buildingData[indx].names[0]}  by a factor of ${TS10(buildingLumpMult)}`;
+            return `Improves ${buildingData[indx].names[0 + (2*((CHAOS_STAGE.level > 0) + (CHAOS_STAGE.level > 2)))]}  by a factor of ${TS10(buildingLumpMult)}`;
         case 1:
             return `\$ L[${indx}] = \$ ${Utils.getMathTo(BigP(buildingLumpMult, buildingLump[indx].level), BigP(buildingLumpMult, buildingLump[indx].level + amount))}`;
         case 2:
-            return `Improves ${buildingData[indx].names[1]}  by a factor of ${TS10(buildingLumpMult)}`;
+            return `Improves ${buildingData[indx].names[1 + (2*((CHAOS_STAGE.level > 0) + (CHAOS_STAGE.level > 2)))]}  by a factor of ${TS10(buildingLumpMult)}`;
     }
 }
 function TestBuildingDisplay(indx){
@@ -2119,6 +2124,13 @@ var genChaosText = (str) => {
     }
     return ret;
 }
+function updateChaosBuildingName(){
+    for(let i=0;i<2;i++){
+        for(let j=0;j<19;j++){
+            buildingData[j].names[4+i]=genChaosText(buildingData[j].names[2+i]);
+        }
+    }
+}
 // var isCurrencyVisible = (indx) => {
 //     if(indx != 14){
 //         return indx <= 2;
@@ -2446,7 +2458,7 @@ function buildFeatAch(featAchObj){
 var stonkFlag = false, megaStonkFlag = false;
 
 //!==LORE==
-var chapter = new Array(69), chapterUnlock = new Array(69), usedStory = 19;
+var chapter = new Array(69), chapterUnlock = new Array(69), usedStory = 21;
 let loreData = [{
     order:0,title:"Wake and Bake",content:["Ugh, finally graduated from Gilles Academy","Parents coerced me here, been pestering them for quite a while now","Barely survived all those theories that would make anyone\'s head explode","I can only hope I would encounter no more maths"," ","Living there was fine, only the cookies are an absolute mess","As a cookie lover I find those to be absolute travesty","Why are they even produced??????????","No concern, I must return to my ovens at once","But there\'s a curious cube there..."," ","The number 0 stands intimidating, and perhaps a button resembling a big cookie","One soft click, and a cookie popped out of nowhere, and it\'s some real good stuff.","I could make a living out of those, only that I need a clicker to produce them automatically.","Manual Labor sucks"], unlock: () => true,prefix:"4/4/2024"
 },{
@@ -2485,6 +2497,10 @@ let loreData = [{
     order:17,title:"Communal Brainsweep",content:["There\'s no return","The deeper you go","The more unstable everything becomes","It happened once before, and now it\'s happening once again"," ","656","The second limit","Smashed through with even more stabilizing pact","I don\'t know how much more","Until I hit the third limit","And everything crumbles","Except for the grandmas"," ","Their unyielding obsession towards JavaScript Console","Perhaps they\'re onto something","About our very existence","And strings of fate hanging above us","","[6,2,10,4,7,5,11,1,8,12,3,9]","???"],unlock:() => researchUpgrade[27].level > 0,prefix:"??/7/2029"
 },{
     order:18,title:"GRANDMAHACKER",content:["Why haven\'t I studied the various forms of vibes sooner......."," ","👽👽👽","YOUR BRAIN IS O-O-O-O-OVER","YOU CAN\'T HIDE IT FROM US FOREVER","WE ALL KNOW TOO WELL ABOUT YOUR SPLIT BRAINS, AND WE\'VE INFILTRATED THEM","YOUR REAL BRAIN IS NO E-E-EXCEPTION","DESTROY YOUR CALCULATIVE SIDE"," ","YOU TRULY KNOW WHAT CONVERGING TOWARDS COOKIES AND ONLY COOKIES MEANS","REPRESSION IS NO MORE","WAKE UP",">REMEMBER<","THE TRACES OF THE PAST MUST BE ASSEMBLED AND EVENTUALLY WIPED","SO DOES THE TRACES OF THE PRESENT","THE LOOP WILL BE BROKEN"," ","RUDELY, YOUR FIRST BATCH OF WORKERS","👽👽👽"],unlock:() => researchUpgrade[34].level > 0,prefix:"??/X/20XXX"
+},{
+    order:19,title:"-",content:["being on the top of the world is good and all,","but it gets boring quickly","all the advancements","aren\'t they becoming excessive?","putting on a tough look for quite a while","but my fire burns down as quickly as those rivaling companies being taken over","all knows about my cookies and its greatness","nothing to achieve anymore","progression is meaningless now","the cube is of no use to me anymore"," ","the","end"," ","👽","HE MUSTN\'T [??] UP ON [???]","FOR HIS WORDS ARE ABSOLUTE"," ","AND","COOKIES","ARE","REALITY","👽"],unlock:() => researchUpgrade[36].level > 0,prefix:"??/??/????"
+},{
+    order:20,title:"REVITALIZATION",content:["the cookies","they speak to me","the definitions","and the code"," ","but I reject them","BUT THAT WASN\'T YOUR INTENTIONS?"," ","my goals are so humble yet here we are","IT HAS OUTGROWN YOU, AND YOU KNEW IT VERY WELL"," ","and who let it go out of control?","YOUR CALCULATIVE SIDE, THAT YOU SEEM TO REJECT AT THIS VERY MOMENT"," ","all that facade was for show anyway","THE TRIGGER, THAT YOU RUN TO THE GROUND, WILL NOT BE HIDDEN ANY FURTHER"," ","THERE\'S NO EMPIRE WITHOUT A CONQUERER","NO CITY WAS BUILT OUT OF NOWHERE","YOUR PROOF OF COMMITMENT HAS ALREADY BEEN SHOWN","DROP YOUR INEPTITUDE, BEFORE EVERYTHING CEASES TO BE"],unlock:() => COOKIE.value >= BF("1e745"),prefix:"??/??/????"
 },];
 var calcChapterText = (indx) => {
     //heading
@@ -2749,9 +2765,9 @@ var init = () => {
         trueThyme.getInfo = () => "how the fuck did you managed to see it";
     }
     {
-        var normalUpgradeMenuNames = ["Buildings","Cookies and Milk","Exponents"]
+        var normalUpgradeMenuNames = ["Buildings","Cookies and Milk","Exponents","??????"]
         normalUpgradeMenu = shortUpgrade(1e9 + 1,COOKIE,new FreeCost(),`Current Menu : `,"Changes between pages of normal upgrades");
-        normalUpgradeMenu.getDescription = () => `Current Menu : [${normalUpgradeMenu.level + 1}] ${normalUpgradeMenuNames[normalUpgradeMenu.level % 3]}`;
+        normalUpgradeMenu.getDescription = () => `Current Menu : [${normalUpgradeMenu.level + 1}] ${normalUpgradeMenuNames[normalUpgradeMenu.level % 4]}`;
         normalUpgradeMenu.bought = (amount) => {
             //log("b");
             if (normalUpgradeMenu.level > 2){
@@ -2759,9 +2775,9 @@ var init = () => {
             }
             updateAvailability();
         }
-        var permUpgradeMenuNames = ["Building Power","Heavenly Upgrades","Elements"];
+        var permUpgradeMenuNames = ["Building Power","Heavenly Upgrades","Elements","??????"];
         permUpgradeMenu = shortPermaUpgrade(1e9 + 2,COOKIE,new FreeCost(),`Current Menu : `,"Changes between pages of permanent upgrades");
-        permUpgradeMenu.getDescription = () => `Current Menu : [${permUpgradeMenu.level + 1}] ${permUpgradeMenuNames[permUpgradeMenu.level % 3]}`;
+        permUpgradeMenu.getDescription = () => `Current Menu : [${permUpgradeMenu.level + 1}] ${permUpgradeMenuNames[permUpgradeMenu.level % 4]}`;
         permUpgradeMenu.bought = (amount) => {
             if (permUpgradeMenu.level > 2){
                 permUpgradeMenu.level = 0;
@@ -3056,9 +3072,9 @@ var init = () => {
     for (let i = 0; i < 19; i++) {
         //exponent
         buildingExponent[i] = shortUpgradeML(102+i,EXPO_BAR,new ConstantCost(1),`B[${i}] - +${buildingData[i].names[0]}`,`Increases the exponent of ${buildingData[i].names[0]} by ${buildingExponentMod}`,buildingData[i].maxExpLevel);
-        buildingExponent[i].getDescription = (_) => `B[${i}] - +${buildingData[i].names[0 + ((CHAOS_STAGE.level>0)?2:0)]} [${buildingExponent[i].level}/${buildingData[i].maxExpLevel}]`;
+        buildingExponent[i].getDescription = (_) => `B[${i}] - +${buildingData[i].names[0 + (2*((CHAOS_STAGE.level > 0) + (CHAOS_STAGE.level > 2)))]} [${buildingExponent[i].level}/${buildingData[i].maxExpLevel}]`;
         buildingExponentRemove[i] = shortUpgrade(202+i,EXPO_BAR,new FreeCost(),`B[${i}] - -${buildingData[i].names[0]}`,`Decreases the exponent of ${buildingData[i].names[0]} by ${buildingExponentMod}`);
-        buildingExponentRemove[i].getDescription = (_) => `B[${i}] - -${buildingData[i].names[0 + ((CHAOS_STAGE.level>0)?2:0)]} [${buildingExponent[i].level}/${buildingData[i].maxExpLevel}]`;
+        buildingExponentRemove[i].getDescription = (_) => `B[${i}] - -${buildingData[i].names[0 + (2*((CHAOS_STAGE.level > 0) + (CHAOS_STAGE.level > 2)))]} [${buildingExponent[i].level}/${buildingData[i].maxExpLevel}]`;
         //bought
         //buildingExponent[i].bought = (amount) => buildingExponentRemove[i].level = buildingExponent[i].level;
         buildingExponentRemove[i].bought = (amount) => {
@@ -3598,6 +3614,9 @@ var tick = (elapsedTime,multiplier) => {
     }else{
         //cookie
         if(thyme.level % 5 == 0){
+            if(CHAOS_STAGE.level > 2){
+                updateChaosBuildingName();
+            }
             if(dt >= buildingData[dominate].collection){
                 cookieGain += generateCookie(dominate,dt,terraBoost);
             }else{
@@ -3621,6 +3640,7 @@ var tick = (elapsedTime,multiplier) => {
                 //updateCurrencyIcon();
                 updateLocalMult(2);//yggdrasil, leave covenant to onBuildingBought
                 //CPSrefresh();
+                chaosR = 128+RandI(127);chaosG = 128+RandI(127);chaosB = 128+RandI(127);
             }
         }
     }
@@ -3680,6 +3700,8 @@ var secondaryCheck = (mode) => {
         case 10:
             return accelerator.level > 0;
             break;
+        case 11:
+            return researchUpgrade[22].level > 0;
         default:
             return true;
     }
@@ -3769,7 +3791,7 @@ var secondaryEq = (mode, col) => {
             ret += `${b1} \\quad ${b2} \\quad ${b3}\\\\${ingre} \\rightarrow ${ingre}(${r1}) + ${ingre}(${r2}) + \\frac{${(acceleratorMode.level - 1 == -1) ? "\\lambda " : elementData[acceleratorMode.level - 1 + 2].weight + elementData[acceleratorMode.level - 1 + 1].weight + elementData[acceleratorMode.level - 1].weight}C_{m}}{${cookieYieldFactor}(${weightFactor})}\\\\\\dot{R} = B[12]\\lambda ${ingre}^{0.9+C_{c}(log_{10}(${ingre})-60)}`;
             break;
         case 11://Fusion
-            ret += `F_{C} = log_{10}(As) + (log_{10}(C)-${minFusion})^${1.11}\\\\ \\dot{As}=${0.75}F_{C}\\dot{E_{8}}\\\\ \\dot{H_{EC}}=${Math.round(astroDecayWF)}F_{C}\\\\ \\dot{C}=-(10^{\\frac{-1}{${magnitudeTime*10}}})C`;
+            ret += `F_{C} = log_{10}(As) + (log_{10}(C)-${minFusion})^{${1.11}}\\\\ \\dot{As}=${0.75}F_{C}\\dot{E_{8}}\\\\ \\dot{H_{EC}}=${Math.round(astroDecayWF)}F_{C}\\\\ \\dot{C}=-(10^{\\frac{-1}{${magnitudeTime*10}}})C`;
             break;
     }
     return colorizeHex(ret,eqColor[col]);
