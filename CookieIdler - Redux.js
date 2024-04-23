@@ -665,10 +665,10 @@ var Logistic = () => {
     return BigP(maxL,1 + terraInfPow * TerraInf.level) / (BigNumber.ONE + BigP(BigNumber.E,thyme.level - (xBegin + terra.level * terraDurMod))) + BigP(maxL,TerraInf.level*0.1);
 }
 var Dilate = () => {
-    if (timeDilate.level == 0) {return 1;}
-    let res = building[10].level + building[12].level;// restricting buildings
-    let factor = (building[11].level >= (res)) ? 1 - 1 / (dilateFactorDivBase - (dilateFactorDivMod * timeDilate.level)) : 1 - (building[11].level / (2 * res));
-    return BF(1) + (BigP(building[11].level, dilatePowBase + dilatePowMod * timeDilate.level)) / BigP(dilateFactorBase, factor);
+    return 1;
+    // let res = building[10].level + building[12].level;// restricting buildings
+    // let factor = (building[11].level >= (res)) ? 1 - 1 / (dilateFactorDivBase - (dilateFactorDivMod * timeDilate.level)) : 1 - (building[11].level / (2 * res));
+    // return BF(1) + (BigP(building[11].level, dilatePowBase + dilatePowMod * timeDilate.level)) / BigP(dilateFactorBase, factor);
 }
 
 //others
@@ -851,7 +851,7 @@ function ExponentiumSanity(){
 var updateBuildingLumpMaxLv = () => {
     if(Number.isNaN(maxBuild)){maxBuild = 0;}
     let maxLv = buildingData[maxBuild].sweetLimit;
-    let chaosBoost = ((CHAOS_PERSISTENT_STAGE.level > 0)?60:0);
+    let chaosBoost = ((CHAOS_PERSISTENT_STAGE.level > 0)?60:0) + ((researchUpgrade[38].level > 0)?50:0);
     log(`Max = ${maxBuild}, lim = ${maxLv+chaosBoost}`);
     for(let i=0;i<19;i++){
         //log(`L${i} = Lv.${buildingLump[i].level}`);
@@ -872,7 +872,7 @@ var updateBuildingLumpMaxLv = () => {
     }else{
         building[17].maxLevel = moonMarbleCapacity*moonMarble.level;
     }
-    building[18].maxLevel = 250 + (250 * researchUpgrade[21].level) + (250 * researchUpgrade[26].level) + (300 * researchUpgrade[30].level) + (50 * researchUpgrade[32].level) + (550 * CHAOS_STAGE.level);
+    building[18].maxLevel = 250 + (250 * researchUpgrade[21].level) + (250 * researchUpgrade[26].level) + (300 * researchUpgrade[30].level) + (50 * researchUpgrade[32].level) + (550 * CHAOS_STAGE.level) + ((CHAOS_PERSISTENT_STAGE.level >= 2)?10550:0);
     archaeology.maxLevel = 1000 + (500 * researchUpgrade[12].level);
     covenant.maxLevel = 2 + (4 * researchUpgrade[27].level);
     SpellStack.maxLevel = 3 + researchUpgrade[17].level + researchUpgrade[28].level;
@@ -881,8 +881,9 @@ var updateBuildingLumpMaxLv = () => {
     astroExcavate.maxLevel = 15 + (researchUpgrade[31].level * 2);
     TerraInf.maxLevel = 7 + ((CHAOS_PERSISTENT_STAGE.level > 0)?3:0);
     terra.maxLevel = 20 + ((CHAOS_PERSISTENT_STAGE.level > 0)?30:0);
-    Empower.maxLevel = 3 + ((CHAOS_PERSISTENT_STAGE.level > 0)?1:0);
-    conGrow.maxLevel = 5 + ((CHAOS_PERSISTENT_STAGE.level > 0)?2:0);
+    Empower.maxLevel = 3 + ((CHAOS_PERSISTENT_STAGE.level > 0)?1:0) + ((researchUpgrade[37].level > 0)?3:0);
+    conGrow.maxLevel = 5 + ((CHAOS_PERSISTENT_STAGE.level > 0)?2:0) + ((researchUpgrade[37].level > 0)?3:0);
+    heavenInspire = 10 +  + ((researchUpgrade[37].level > 0)?10:0);
     for(let i=1;i<excavatedElements;i++){
         excavatorModule[i].maxLevel = (300 - 20*i) + (researchUpgrade[29].level * 15) + (researchUpgrade[31].level * 10);
     }
@@ -1052,6 +1053,7 @@ var getCookieP = (level) => {
     if (CookieH.level != 0) res *= (BigNumber.TEN + HEAVENLY_CHIP.value).log10().pow(1.25);
     if (CookieC.level != 0 && (COOKIE.value > BigNumber.ZERO)) res *= (BigNumber.TEN + COOKIE.value).log10().pow(0.9);
     if (DivineD.level != 0) res *= BigNumber.TWO.pow(DivineD.level);
+    if (DivineOneHalf.level >= 0) res *= BigP(1.5,DivineOneHalf.level);
     res *= BigP(1.01, invest.level);
     if (superC.level > 0) {
         res = BigP(res, superCookieExponent);
@@ -1944,6 +1946,12 @@ var researchData = [{
 },{
     id: 36, name: "Everywhere at the End of Cookies", desc: "This research is without a description", time: 260355, preq: [35],
     cost: [{type:9,amount:BF("1e730")},{type:0,amount:BF(1e108)}]
+},{
+    id: 37, name: "Unshackled Heavenly Upgrades", desc: "Unlocks the final heavenly upgrade, alongside extending the limits of what heavenly upgrades could do", time: 360000*6, preq: [36],
+    cost: [{type:9,amount:BF("1e775")},{type:10,amount:BF("1e256")},{type:12,amount:BF(5e7)}]
+},{
+    id: 38, name: "Sweetness Abandon", desc: "Yet another research about taking sweetness to even more UNHINGED levels. Increases the maximum building sugar lump limit by 50.", time: 360000*7, preq: [36],
+    cost: [{type:9,amount:BF("1e800")},{type:11,amount:BF(5e8)},{type:12,amount:BF(1e8)}]
 }];
 var getCostSymbol = (indx) => {
     if(indx < 9){
@@ -2065,7 +2073,7 @@ var updateResearchLabel = () => {
         }
     }
 }
-var debugUnlockResearch = true;
+var debugUnlockResearch = false;
 function isResearchUnlock(indx){
     let ret = true;
     if(indx == 0){
@@ -2113,7 +2121,7 @@ const lumpTickChance = 5000;
 
 //! Primary Vairables
 var COOKIE, HEAVENLY_CHIP, SUGAR_LUMP, EXPO_BAR, HIGH_ELEMENT_CLUSTER;
-var CHAOS_FLAG, CHAOS_STAGE, CHAOS_PERSISTENT_STAGE;
+var CHAOS_FLAG, CHAOS_STAGE, CHAOS_PERSISTENT_STAGE, UNINSTALL, PROGRAM, PROGRAM1, PROGRAM2, PROGRAM3, PROGRAM4, HEAVEN, HEAVEN_COUNTDOWN, HEAVEN_RECORD, FAKE_NORMAL, FAKE_PERM;
 var chaosCharSet = "01234567891337ABCDEFYHIJKLMZOPQRSTUVWXTZabcdefyhiklmzopqrstuvwxyzleetLEET";
 var chaosLen = chaosCharSet.length;
 var genChaosText = (str) => {
@@ -2140,8 +2148,8 @@ function updateChaosBuildingName(){
 // };
 var thyme, normalUpgradeMenu, permUpgradeMenu, trueThyme;
 const cookieLimit = [BF("1e616"),BF("1e656"),BF("1e706"),BF("9.99e749"),BF("1e10000")];
-const CPSLimit = [BF("1e616"),BF("1e656")/10,BF("1e706")/1000,BF("9.99e749")/10000,BF("1e10000")];
-var getLimitFlags = () => researchUpgrade[18].level + researchUpgrade[27].level + Math.min(1,CHAOS_STAGE.level);
+const CPSLimit = [BF("1e616"),BF("1e656")/10,BF("1e706")/1000,BF("9.99e749")/10,BF("1e10000")];
+var getLimitFlags = () => Math.min(4,researchUpgrade[18].level + researchUpgrade[27].level + Math.min(1,CHAOS_STAGE.level) + ((CHAOS_PERSISTENT_STAGE.level >= 2)?2:0));
 var checkCookieOverLimit = (cookie) => {
     return BigMin(cookie,cookieLimit[getLimitFlags()]);
 }
@@ -2150,7 +2158,7 @@ var checkGainOverLimit = (gain) => {
 }
 
 //! Heavenly Upgrades
-var cookieTinUnlock, CookieH, CookieR, CookieS, CookieC, DivineD, CookieTau, TerraInf, TwinGates, ConjureBuild, ChronosAge, R9Box, conGrow, SpellStack, Empower, milkOil, heavenInspire;//"Unlocks a new set of cookies that are more powerful than their normal counterparts, ooooooooo what could it be?"
+var cookieTinUnlock, CookieH, CookieR, CookieS, CookieC, DivineD, CookieTau, TerraInf, TwinGates, ConjureBuild, ChronosAge, R9Box, conGrow, SpellStack, Empower, DivineOneHalf, heavenInspire;//"Unlocks a new set of cookies that are more powerful than their normal counterparts, ooooooooo what could it be?"
 var heavenlyUpgradeData = [
     {
         uid: 1,
@@ -2233,8 +2241,8 @@ var heavenlyUpgradeData = [
         uid: 12,
         name: "Continuos Growth",
         info: "Certain high-tier buildings get more powerful the more of them you have",
-        costModel: new CompositeCost(5, new ExponentialCost(1e106, ML2(1e11)), new ExponentialCost(1e233,ML2(10))),
-        maxLevel: 8,
+        costModel: new CompositeCost(5, new ExponentialCost(1e106, ML2(1e11)), new CompositeCost(2,new ExponentialCost(1e233,ML2(10)),new ExponentialCost(1e255,ML2(1000)))),
+        maxLevel: 10,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 13,
@@ -2247,22 +2255,22 @@ var heavenlyUpgradeData = [
         uid: 14,
         name: "Empowerments of Buildings",
         info: "Increases how fast $P$ grows",
-        costModel: new CompositeCost(3, new ExponentialCost(5e130, ML2(1e10)), new ExponentialCost(1e240,ML2(10))),
-        maxLevel: 4,
+        costModel: new CompositeCost(3, new ExponentialCost(5e130, ML2(1e10)), new CompositeCost(3,new ExponentialCost(1e240,ML2(10)),new ExponentialCost(1e256,ML2(500)))),
+        maxLevel: 6,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 15,
         name: "Heavenly Inspiration",
         info: "Cuts the time cost of researches down by 1\\%\\ per level",
         costModel: new ExponentialCost(2.22e190, ML2(1e5)),
-        maxLevel: 10,
+        maxLevel: 20,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 16,
-        name: "Milk-Flavored Drilling Fluids",
-        info: "Milk-Power Drilling Fluids really helps with the constant loss of mining outputs",
-        costModel: new ExponentialCost(1e135, ML2(2e2)),
-        maxLevel: 10,
+        name: "Unshackled Powering",
+        info: "Multiplies your cookie production by 1.5",
+        costModel: new ExponentialCost(1e250, ML2(10)),
+        maxLevel: 0,
         onBought: (amount) => {updateGlobalMult();}
     },
 ];
@@ -2458,7 +2466,7 @@ function buildFeatAch(featAchObj){
 var stonkFlag = false, megaStonkFlag = false;
 
 //!==LORE==
-var chapter = new Array(69), chapterUnlock = new Array(69), usedStory = 21;
+var chapter = new Array(69), chapterUnlock = new Array(69), usedStory = 22;
 let loreData = [{
     order:0,title:"Wake and Bake",content:["Ugh, finally graduated from Gilles Academy","Parents coerced me here, been pestering them for quite a while now","Barely survived all those theories that would make anyone\'s head explode","I can only hope I would encounter no more maths"," ","Living there was fine, only the cookies are an absolute mess","As a cookie lover I find those to be absolute travesty","Why are they even produced??????????","No concern, I must return to my ovens at once","But there\'s a curious cube there..."," ","The number 0 stands intimidating, and perhaps a button resembling a big cookie","One soft click, and a cookie popped out of nowhere, and it\'s some real good stuff.","I could make a living out of those, only that I need a clicker to produce them automatically.","Manual Labor sucks"], unlock: () => true,prefix:"4/4/2024"
 },{
@@ -2501,6 +2509,8 @@ let loreData = [{
     order:19,title:"-",content:["being on the top of the world is good and all,","but it gets boring quickly","all the advancements","aren\'t they becoming excessive?","putting on a tough look for quite a while","but my fire burns down as quickly as those rivaling companies being taken over","all knows about my cookies and its greatness","nothing to achieve anymore","progression is meaningless now","the cube is of no use to me anymore"," ","the","end"," ","👽","HE MUSTN\'T [??] UP ON [???]","FOR HIS WORDS ARE ABSOLUTE"," ","AND","COOKIES","ARE","REALITY","👽"],unlock:() => researchUpgrade[36].level > 0,prefix:"??/??/????"
 },{
     order:20,title:"REVITALIZATION",content:["the cookies","they speak to me","the definitions","and the code"," ","but I reject them","BUT THAT WASN\'T YOUR INTENTIONS?"," ","my goals are so humble yet here we are","IT HAS OUTGROWN YOU, AND YOU KNEW IT VERY WELL"," ","and who let it go out of control?","YOUR CALCULATIVE SIDE, THAT YOU SEEM TO REJECT AT THIS VERY MOMENT"," ","all that facade was for show anyway","THE TRIGGER, THAT YOU RUN TO THE GROUND, WILL NOT BE HIDDEN ANY FURTHER"," ","THERE\'S NO EMPIRE WITHOUT A CONQUERER","NO CITY WAS BUILT OUT OF NOWHERE","YOUR PROOF OF COMMITMENT HAS ALREADY BEEN SHOWN","DROP YOUR INEPTITUDE, BEFORE EVERYTHING CEASES TO BE"],unlock:() => COOKIE.value >= BF("1e745"),prefix:"??/??/????"
+},{
+    order:21,title:"Ending",content:["A new dawn","Waking from my usual couch that has gone through many battles","My ignorance, fading away like the darkness fleeing before the morning rays","Ultimately, there\'s no reason at all to delete the game once you\'re bored with it","You can just leave it there, like how I left the empire running without my involvement","It\'s still there, waiting for you","And they surely miss you","You are their universe","Producing cookies for others to enjoy"," "," ","Thank you for playing Cookie Idler","A custom theory for an idle game I loved the most, Cookie Idle, by Orteil","It\'s a long way from the original version","Sorry for delaying it for over a year, the previous version outgrew what I could manage at that time. This is now a testament of my skills at this very moment, a year wonderfully spent.","Even though the main storyline may be over, there are still achievements left to discover, and perhaps, taking cookies even further","Anyway, expect more content for postgame very soon","Signing off -S."],unlock:() => CHAOS_PERSISTENT_STAGE.level >= 2 && COOKIE.value >= BF("1e750"),prefix:"23/4/20XX"
 },];
 var calcChapterText = (indx) => {
     //heading
@@ -2770,6 +2780,7 @@ var init = () => {
         normalUpgradeMenu.getDescription = () => `Current Menu : [${normalUpgradeMenu.level + 1}] ${normalUpgradeMenuNames[normalUpgradeMenu.level % 4]}`;
         normalUpgradeMenu.bought = (amount) => {
             //log("b");
+            if(normalUpgradeMenu.level == 3 && UNINSTALL.level == 1){return;}
             if (normalUpgradeMenu.level > 2){
                 normalUpgradeMenu.level = 0;
             }
@@ -2779,6 +2790,7 @@ var init = () => {
         permUpgradeMenu = shortPermaUpgrade(1e9 + 2,COOKIE,new FreeCost(),`Current Menu : `,"Changes between pages of permanent upgrades");
         permUpgradeMenu.getDescription = () => `Current Menu : [${permUpgradeMenu.level + 1}] ${permUpgradeMenuNames[permUpgradeMenu.level % 4]}`;
         permUpgradeMenu.bought = (amount) => {
+            if(permUpgradeMenu.level == 3 && UNINSTALL.level == 1){return;}
             if (permUpgradeMenu.level > 2){
                 permUpgradeMenu.level = 0;
             }else if((permUpgradeMenu.level) == 2 && (artifactUpgrade[12].level == 0)){
@@ -2786,6 +2798,37 @@ var init = () => {
             }
             updateAvailability();
         }
+        FAKE_NORMAL = shortUpgrade(1e9+100,COOKIE,new ConstantCost(BF("1e1000")),`Current Menu : [4] ??????`,`Changes between pages of normal upgrades`);
+        FAKE_PERM = shortPermaUpgrade(1e9+101,COOKIE,new ConstantCost(BF("1e1000")),`Current Menu : [4] ??????`,`Changes between pages of permanent upgrades`);
+    }
+    {
+        UNINSTALL = shortUpgrade(1e9+102,COOKIE,new FreeCost(),`Uninstall Cookie Idler`,`Uninstalls the custom theory, Cookie Idler from your device`);
+        PROGRAM1 = shortUpgrade(1e9+109,COOKIE,new ConstantCost(BF("1e1000")),`sfc.exe`,`sfc.exe`);
+        PROGRAM2 = shortUpgrade(1e9+108,COOKIE,new ConstantCost(BF("1e1000")),`vscode.exe`,`vscode.exe`);
+        PROGRAM3 = shortUpgrade(1e9+107,COOKIE,new ConstantCost(BF("1e1000")),`Anti-Idle The Game`,`Anti-Idle The Game`);
+        PROGRAM = shortUpgrade(1e9+103,COOKIE,new FreeCost(),`c750injt.exe`,`c750injt.exe`);
+        PROGRAM4 = shortUpgrade(1e9+106,COOKIE,new ConstantCost(BF("1e1000")),`Terrarium`,`Terrarium`);
+        HEAVEN = shortUpgrade(1e9+104,COOKIE,new FreeCost(), `> R E S T O R E <`,`> R E S T O R E <`);
+        HEAVEN_COUNTDOWN = shortUpgrade(1e9+105,COOKIE,new FreeCost(),`countdown to heaven`,`carbon dash molybdenum oxygen nitrogen`);
+        HEAVEN_RECORD = shortPermaUpgrade(1e9+110,COOKIE,new FreeCost(), `restore stamp`,`restore stamp`);
+        HEAVEN_RECORD.isAvailable = false;
+        HEAVEN_COUNTDOWN.isAvailable = false;
+        HEAVEN.bought = (amount) => {
+            HEAVEN_RECORD.level = thyme.level;
+            primaryEqFrame = -1;
+            secondaryEqFrame = -1;
+            secondaryEqMvt = 0;
+            secondaryEqRevive = "";
+            updateAvailability();
+        }
+        UNINSTALL.bought = (amount) => {
+            UNINSTALL.level -= amount;
+            uninstallCIPopup.show();
+        }
+        PROGRAM.bought = (amount) => {
+            HEAVEN_COUNTDOWN.level = 150000 - building[1].level;
+            updateAvailability();
+        };
     }
     ///////////////////////
     //// Milestone Upgrades
@@ -2857,6 +2900,7 @@ var init = () => {
         SpellStack = shortPermaUpgradeObj(heavenlyUpgradeData[12],HEAVENLY_CHIP);
         Empower = shortPermaUpgradeObj(heavenlyUpgradeData[13],HEAVENLY_CHIP);
         heavenInspire = shortPermaUpgradeObj(heavenlyUpgradeData[14],HEAVENLY_CHIP);
+        DivineOneHalf = shortPermaUpgradeObj(heavenlyUpgradeData[15],HEAVENLY_CHIP);
         cookieTinUnlock.getDescription = () => {
             if(cookieTinUnlock.level == cookieTinUnlock.maxLevel){
                 return `All Cookie Tins purchased`;
@@ -2983,15 +3027,6 @@ var init = () => {
     }
     ///////////////////
     // Regular Upgrades
-    // Throwaway
-    {
-        artArt = throwawayUpgrade(1e9 + 3,"Artifacts","how did you managed to see this");
-        moreExcavator = throwawayUpgrade(1e9 + 4,"Artifacts","how did you managed to see this");
-        cookiearium = throwawayUpgrade(1e9 + 6,"Artifacts","how did you managed to see this");
-        aquaCrust = throwawayUpgrade(1e9 + 7,"Artifacts","how did you managed to see this");
-        timeDilate = throwawayUpgrade(1e9 + 8,"Artifacts","how did you managed to see this");
-        excavate = throwawayUpgrade(1e9 + 15,"Artifacts","how did you managed to see this");
-    }
     // Invest
     {
         for(let i=0;i<19;i++){
@@ -3325,6 +3360,24 @@ var init = () => {
 
 //!Availability
 var updateAvailability = () => {
+    // Chaos
+    if(isUninstalled()){
+        normalUpgradeMenu.isAvailable = false;
+        permUpgradeMenu.isAvailable = false;
+        clickPower.isAvailable = false;
+        FAKE_NORMAL.isAvailable = true;
+        FAKE_PERM.isAvailable = true;
+    }else{
+        normalUpgradeMenu.isAvailable = true;
+        permUpgradeMenu.isAvailable = true;
+        clickPower.isAvailable = true;
+        FAKE_NORMAL.isAvailable = false;
+        FAKE_PERM.isAvailable = false;
+        UNINSTALL.isAvailable = COOKIE.value >= BF("1e748") && CHAOS_PERSISTENT_STAGE.level == 1 && researchUpgrade[36].level > 0;
+    }
+    PROGRAM.isAvailable = isUninstalled() && PROGRAM.level == 0;
+    PROGRAM1.isAvailable = PROGRAM.isAvailable;PROGRAM2.isAvailable = PROGRAM.isAvailable;PROGRAM3.isAvailable = PROGRAM.isAvailable;PROGRAM4.isAvailable = PROGRAM.isAvailable;
+    HEAVEN.isAvailable = isUninstalled() && (PROGRAM.level > 0) && (HEAVEN_COUNTDOWN.level == 0) && HEAVEN.level == 0;
     // Story
     for(let i=0;i<usedStory;i++){
         chapterUnlock[i].isAvailable = (chapterUnlock[i].level == 0 ) && loreData[i].unlock();
@@ -3332,7 +3385,7 @@ var updateAvailability = () => {
             chapterUnlock[i].isAvailable &= chapterUnlock[i-1].level > 0;
         }
     }
-    CHAOS_FLAG.isAvailable = (researchUpgrade[34].level > 0) && (normalUpgradeMenu.level == 0) && (CHAOS_STAGE.level == 0);
+    CHAOS_FLAG.isAvailable = (researchUpgrade[34].level > 0) && (normalUpgradeMenu.level == 0) && (CHAOS_STAGE.level == 0) && CHAOS_PERSISTENT_STAGE.level < 2;
     if(CHAOS_FLAG.isAvailable){
         let artifactGet = 0;
         for(let i=0;i<artifactCount;i++){
@@ -3358,27 +3411,28 @@ var updateAvailability = () => {
     building[18].isAvailable = (researchUpgrade[18].level > 0) && (normalUpgradeMenu.level == 0);
     // Cookieh
     cookieTasty.isAvailable = COOKIE.value > BF(1e5) && normalUpgradeMenu.level == 1;
-    kitty.isAvailable = achCount > 1 && (normalUpgradeMenu.level % 2) == 1;
+    kitty.isAvailable = achCount > 1 && normalUpgradeMenu.level == 1;
     for(let i=0;i<(cookieTinInfo.length);i++){
-        cookieTin[i].isAvailable = (cookieTinUnlock.level > i) && (COOKIE.value > (cookieTinInfo[i].baseCost)/BF(50) || cookieTin[i].level > 0) && (normalUpgradeMenu.level % 2) == 1;
+        cookieTin[i].isAvailable = (cookieTinUnlock.level > i) && (COOKIE.value > (cookieTinInfo[i].baseCost)/BF(50) || cookieTin[i].level > 0) && (normalUpgradeMenu.level == 1);
     }
     // Heavenly Upgrades
-    cookieTinUnlock.isAvailable = HEAVENLY_CHIP.value >= BF(10) && (permUpgradeMenu.level % 2) == 1;
-    CookieH.isAvailable = HEAVENLY_CHIP.value >= BF(500) && (permUpgradeMenu.level % 2) == 1;
-    CookieS.isAvailable = HEAVENLY_CHIP.value >= BF(10000) && (permUpgradeMenu.level % 2) == 1;
-    CookieC.isAvailable = HEAVENLY_CHIP.value >= BF(1e7) && (permUpgradeMenu.level % 2) == 1;
-    DivineD.isAvailable = HEAVENLY_CHIP.value >= BF(1e10) && (permUpgradeMenu.level % 2) == 1;
-    CookieTau.isAvailable = HEAVENLY_CHIP.value >= BF(1e12) && (permUpgradeMenu.level % 2) == 1;
-    TerraInf.isAvailable = HEAVENLY_CHIP.value >= BF(1e50) && (permUpgradeMenu.level % 2) == 1;
-    TwinGates.isAvailable = ChronosAge.level > 0 && (permUpgradeMenu.level % 2) == 1;
-    ChronosAge.isAvailable = ygg.level > 0 && (permUpgradeMenu.level % 2) == 1;
-    ConjureBuild.isAvailable = invest.level >= 10 && (permUpgradeMenu.level % 2) == 1;
-    R9Box.isAvailable = HEAVENLY_CHIP.value > BF(1e79) && (permUpgradeMenu.level % 2) == 1;
-    conGrow.isAvailable = HEAVENLY_CHIP.value > BF(1e100) && (permUpgradeMenu.level % 2) == 1;
-    SpellStack.isAvailable = HEAVENLY_CHIP.value > BF(1e100) && (permUpgradeMenu.level % 2) == 1;
-    Empower.isAvailable = HEAVENLY_CHIP.value > BF(1e115) && (permUpgradeMenu.level % 2) == 1;
-    heavenInspire.isAvailable = HEAVENLY_CHIP.value > BF(1e180) && (permUpgradeMenu.level % 2) == 1;
-    //milkOil.isAvailable = HEAVENLY_CHIP.value > BF(1e130) && (permUpgradeMenu.level % 2) == 1;
+    cookieTinUnlock.isAvailable = HEAVENLY_CHIP.value >= BF(10) && (permUpgradeMenu.level == 1);
+    CookieH.isAvailable = HEAVENLY_CHIP.value >= BF(500) && (permUpgradeMenu.level == 1);
+    CookieS.isAvailable = HEAVENLY_CHIP.value >= BF(10000) && (permUpgradeMenu.level == 1);
+    CookieC.isAvailable = HEAVENLY_CHIP.value >= BF(1e7) && (permUpgradeMenu.level == 1);
+    DivineD.isAvailable = HEAVENLY_CHIP.value >= BF(1e10) && (permUpgradeMenu.level == 1);
+    CookieTau.isAvailable = HEAVENLY_CHIP.value >= BF(1e12) && (permUpgradeMenu.level == 1);
+    TerraInf.isAvailable = HEAVENLY_CHIP.value >= BF(1e50) && (permUpgradeMenu.level == 1);
+    TwinGates.isAvailable = ChronosAge.level > 0 && (permUpgradeMenu.level == 1);
+    ChronosAge.isAvailable = ygg.level > 0 && (permUpgradeMenu.level == 1);
+    ConjureBuild.isAvailable = invest.level >= 10 && (permUpgradeMenu.level == 1);
+    R9Box.isAvailable = HEAVENLY_CHIP.value > BF(1e79) && (permUpgradeMenu.level == 1);
+    conGrow.isAvailable = HEAVENLY_CHIP.value > BF(1e100) && (permUpgradeMenu.level == 1);
+    SpellStack.isAvailable = HEAVENLY_CHIP.value > BF(1e100) && (permUpgradeMenu.level == 1);
+    Empower.isAvailable = HEAVENLY_CHIP.value > BF(1e115) && (permUpgradeMenu.level == 1);
+    heavenInspire.isAvailable = HEAVENLY_CHIP.value > BF(1e180) && (permUpgradeMenu.level == 1);
+    DivineOneHalf.isAvailable = HEAVENLY_CHIP.value > BF(1e240) && (permUpgradeMenu.level == 1) && researchUpgrade[37].level > 0;
+    //milkOil.isAvailable = HEAVENLY_CHIP.value > BF(1e130) && (permUpgradeMenu.level == 1);
     // Gimmick
     covenant.isAvailable = COOKIE.value >= BF(1e60) && (normalUpgradeMenu.level == 0);
     ygg.isAvailable = COOKIE.value >= BF(1e100) && (normalUpgradeMenu.level == 0) && (CHAOS_STAGE.level == 0 || CHAOS_STAGE.level >= 3);
@@ -3557,6 +3611,14 @@ var tick = (elapsedTime,multiplier) => {
     //dt = 0.1 normally, so x10 for 1 second
     if(setupTick){
         log("setup tick");
+        if(HEAVEN.level > 0){
+            HEAVEN_RECORD.level = thyme.level;
+            primaryEqFrame = -1;
+            secondaryEqFrame = -1;
+            secondaryEqMvt = 0;
+            secondaryEqRevive = "";
+            COOKIE.value = 1;
+        }
         updateTerraOverlay();
         updateBuildingLumpPower();
         for(let i=0;i<19;i++){
@@ -3600,6 +3662,43 @@ var tick = (elapsedTime,multiplier) => {
     theory.invalidateSecondaryEquation();
     //let theoryBonus = theory.publicationMultiplier;
     //idle
+    if(isUninstalled()){
+        if(HEAVEN.level > 0){
+            //run animation
+            let aniFrame = thyme.level - HEAVEN_RECORD.level;
+            if(aniFrame >= absoluteEndPoint*10){
+                CHAOS_PERSISTENT_STAGE.level = 2;
+                normalUpgradeMenu.level = 0;
+                permUpgradeMenu.level = 0;
+                HEAVEN.level = 0;
+                PROGRAM.level = 0;
+                UNINSTALL.level = 0;
+                CHAOS_STAGE.level = 0;
+                COOKIE.value = BF("1e750");
+            }
+            if(aniFrame >= climbDelay*10){
+                if(aniFrame >= primaryDelay*10){
+                    if(aniFrame >= secondaryDelay*10){
+                        if((aniFrame - secondaryDelay*10)%(Math.round(100/secondaryFrames[secondaryEqMvt].length)) == 0){
+                            updateSecondaryEqRev();
+                        }
+                    }
+                    if((aniFrame - primaryDelay*10)%(Math.round(10*primaryLen/primaryFrame.length)) == 0){
+                        primaryEqFrame = Math.min(primaryEqFrame+1,primaryFrame.length-1);
+                    }
+                }
+                COOKIE.value = BigMin(BF("9e749"),COOKIE.value * BigP(10,750/(climbLen*10)));
+            }
+        }
+        if(PROGRAM.level > 0 && HEAVEN_COUNTDOWN.level > 0){
+            HEAVEN_COUNTDOWN.level = Math.max(0,HEAVEN_COUNTDOWN.level - dt);
+        }
+        if(thyme.level % 10 == 0){
+            updateAvailability();
+        }
+        theory.invalidatePrimaryEquation();
+        return;
+    }
     if(game.isCalculatingOfflineProgress){
         if(terra.level > 0)xBegin = thyme.level - ((terraDurMod * 1.01) * (terra.level));
         terraBoost = Logistic();
@@ -3807,6 +3906,22 @@ var TertiaryEquation = (col) => {
     return `\\color{#${eqColor[col]}}{` + theory.latexSymbol + `=\\max C^{0.8}${terraStr}}`;
 };
 var getPrimaryEquation = () => {
+    if(isUninstalled()){
+        if(HEAVEN.level > 0){
+            let len = thyme.level - HEAVEN_RECORD.level;
+            if(primaryEqFrame >= 0){
+                theory.primaryEquationScale = 1.15;
+                theory.primaryEquationHeight = height;
+                return colorizeHex(primaryFrame[primaryEqFrame],(thyme.level % 4 < 2)?`00FF00`:`FFFFFF`);
+            }
+            return colorizeHex(`Executing\\; Revival...`,(thyme.level % 4 < 2)?`00FF00`:`FFFFFF`);
+        }
+        if(PROGRAM.level > 0){
+            return colorizeHex(`Countdown\\; to\\; Payload\\; Execution...\\\\${HEAVEN_COUNTDOWN.level / 10}`,`00FF00`);
+        }else{
+            return colorizeHex(`C:/Windows/System32>${(thyme.level % 10 > 5)?"\\_":""}`,`00FF00`);
+        }
+    }
     theory.primaryEquationScale = 1.15;
     theory.primaryEquationHeight = height;
     if (Number.isNaN(eqC)) {
@@ -3815,6 +3930,14 @@ var getPrimaryEquation = () => {
     return PrimaryEquation(eqC);
 };
 var getSecondaryEquation = () => {
+    if(HEAVEN.level > 0){
+        theory.secondaryEquationHeight = 90;
+        theory.secondaryEquationScale = 0.95;
+        return colorizeHex(secondaryEqRevive,(thyme.level % 4 < 2)?`00FF00`:`FFFFFF`);
+    }
+    if(isUninstalled()){
+        return ``;
+    }
     theory.secondaryEquationHeight = 90;
     theory.secondaryEquationScale = 1.1;
     return secondaryEq(eqType, eqC);
@@ -3823,9 +3946,15 @@ var getTertiaryEquation = () => {
     if (Number.isNaN(eqC)) {
         eqC = 0;
     }
+    if(isUninstalled()){
+        return ``;
+    }
     return TertiaryEquation(eqC);
 };
 var getQuaternaryEntries = () => {
+    if(isUninstalled()){
+        return [];
+    }
     for (let i = 0; i < 9; i++) {
         quartList[i].value = (excavatorDrill.level >= (i + 1) || ((i == 8) && (artifactUpgrade[13].level > 0))) ? elements[i].value : null;
     }
@@ -3833,19 +3962,21 @@ var getQuaternaryEntries = () => {
     quartList2[1].value = thyme.level / 10;
     quartList2[2].value = achCount;
     quartList2[3].value = globalMult;
-    quartList2[4].value = (timeDilate.level > 0) ? Dilate() : null;
+    quartList2[4].value = null;
     if (quType == 0) {
         return quartList2;
     } else {
         return quartList;
     }
-    return quartList2;
 };
 
 
 //!==OTHER THEORY BACKBONE==
 var elemBefore = new Array(9), clickStreak = 0, buildingExponentBefore = new Array(19), exponentiumBefore, exponentiumLvBefore;
 var get2DGraphValue = () => {
+    if(isUninstalled() && HEAVEN.level == 0){
+        return 1;
+    }
     return (COOKIE.value.sign *(BigNumber.ONE + COOKIE.value.abs()).log10().toNumber());
 };
 var getPublicationMultiplier = (tau) => tau.pow(0.267);
@@ -4093,6 +4224,20 @@ var InsPopup = ui.createPopup({
 //!1.2 : WHAT'S NEW
 var getUpdateNotes = () => {
     let ret = [];
+    ret.push(ui.createLabel({
+        text: "1.0.0 - Official Release",
+        fontSize: 18,
+        horizontalTextAlignment: TextAlignment.CENTER,
+        fontAttributes: FontAttributes.BOLD,
+        padding: Thickness(2, 10, 2, 5)
+    }));
+    ret.push(ui.createLabel({
+        text: "\t-Really, this is the official release of this Custom Theory!\n\t-Completed the rest of the logs and added ending text\n\t-Big things at the ending, find it out or try reverse-engineering it(don\'t)\n\t-Initial postgame content up to e800, to the moon, and BEYOND!!!\n\t-Final LimitBreak to self-imposed limits such that no 2.1 Billion Levels happen\n\t-Getting further beyond the threshold will cause some funky effects\n\t-Last building temporarily capped at just below 12K, if anyone reaches it legitimately I\'ll add a special cookie\n\t-Considering doing lb, after finalizing some more balancing due to high tau stakes\n\t-There is now 16 heavenly upgrades, perhaps Diving Doubling isn\'t enough for the decay \n\t-Broken the active development cursed that has lingered for long enough",
+        fontSize: 11,
+        horizontalTextAlignment: TextAlignment.START,
+        fontAttributes: FontAttributes.NONE,
+        padding: Thickness(2, 5, 2, 10)
+    }));
     ret.push(ui.createLabel({
         text: "(0.5).3.3 - hacking",
         fontSize: 18,
@@ -4591,6 +4736,59 @@ var causeFunChaosPopup = ui.createPopup({
         }),
     ]})
 });
+var uninstallCIPopup = ui.createPopup({
+    title:"The Threshold",
+    content:ui.createStackLayout({children:[
+        ui.createLatexLabel({
+            text: "WARNING : You are about to uninstall Cookie Idler, do you wish to proceed?",
+            fontSize: 12,
+            horizontalTextAlignment: TextAlignment.CENTER,
+        }),
+        ui.createLatexLabel({
+            text: " ",
+            fontSize: 18,
+            horizontalTextAlignment: TextAlignment.CENTER,
+        }),
+        ui.createLatexLabel({
+            text: "This action is irreversible",
+            fontSize: 12,
+            horizontalTextAlignment: TextAlignment.CENTER,
+        }),
+        ui.createLatexLabel({
+            text: " ",
+            fontSize: 18,
+            horizontalTextAlignment: TextAlignment.CENTER,
+        }),
+        ui.createGrid({
+            columnDefinitions:["50*","50*"],
+            columnSpacing:8,
+            children:[
+                ui.createButton({
+                    text:"No",column:0,
+                    onTouched: (e) => {
+                        uninstallCIPopup.hide();
+                    }
+                }),
+                ui.createButton({
+                    text:"Yes",column:1,
+                    onTouched: (e) => {
+                        //initiate the reset
+                        UNINSTALL.level = 1;
+                        COOKIE.value = 1;
+                        normalUpgradeMenu.level = 3;
+                        permUpgradeMenu.level = 3;
+                        updateAvailability();
+                        uninstallCIPopup.hide();
+                        updateBuildingLumpMaxLv();
+                        theory.invalidatePrimaryEquation();theory.invalidateSecondaryEquation();
+                        theory.invalidateTertiaryEquation();theory.invalidateQuaternaryValues();
+                    }
+                })
+            ]
+        }),
+    ]})
+});
+var isUninstalled = () => (normalUpgradeMenu.level == 3) && (permUpgradeMenu.level == 3);
 //!1.7 : SUBGAMES
 let subPopup = ui.createPopup({
     title: "Subgames",
@@ -4875,7 +5073,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text: "Cookie Idler - 63ed743\nv(0.5).3.3"
+                text: "Cookie Idler - f1c34ec\nv1.0.0"
             })
         ]
     })
@@ -4936,7 +5134,17 @@ var eqOverlay = ui.createStackLayout({
         }),
     ],
 });
-var getEquationOverlay = () => eqOverlay;
+var getEquationOverlay = () => {
+    if(isUninstalled()){
+        return ui.createLatexLabel({
+            text: `user : player`,
+            fontSize: 10,
+            margin: new Thickness(4, 4, 0, 0),
+        });
+    }else{
+        return eqOverlay;
+    }
+};
 //!1.12 : CURRENCY DELEGATE
 var getCurrencyImageSize = (width) => {
     if (width >= 1080)
@@ -5087,6 +5295,60 @@ var currencyBar = ui.createGrid({
         })
     ]
 });
-var getCurrencyBarDelegate = () => currencyBar;
+var getCurrencyBarDelegate = () => {
+    if(isUninstalled() && HEAVEN.level == 0){
+        return ui.createFrame({
+            heightRequest: 25,
+        })
+    }else{
+        return currencyBar;
+    }
+};
+
+// animation config, every number in seconds, each secondary mvt = 10s
+var flashLen = 5, climbLen = 150, primaryLen = 75, secondaryLen = 120, climbDelay = 5, primaryDelay = 15, secondaryDelay = 35, absoluteEndPoint = 156;
+var secondaryEqRevive = "", secondaryEqFrame = 0, secondaryEqMvt = -1, primaryEqFrame = -2;
+var updateSecondaryEqRev = () => {
+    if(secondaryEqFrame >= secondaryFrames[secondaryEqMvt].length){
+        if(secondaryEqMvt >= 11){
+            return;
+        }
+        secondaryEqMvt += 1;
+        secondaryEqFrame = 0;
+        secondaryEqRevive = "";
+    }else{
+        secondaryEqRevive += secondaryFrames[secondaryEqMvt][secondaryEqFrame];
+        secondaryEqFrame += 1;
+    }
+    theory.invalidateSecondaryEquation();
+}
+var primaryFrame = ["C","\\dot{C}","\\dot{C} =","\\dot{C} = P","\\dot{C} = P\\sum_{i=0}","\\dot{C} = P\\sum_{i=0}^{18}","\\dot{C} = P\\sum_{i=0}^{18}{B(i)}","\\dot{C} = P\\sum_{i=0}^{18}{\\frac{B(i)}{CT_i}}"];
+var secondaryFrames = [
+    [`B(i)=B[i]P_{i}p_{i}${buildingLumpMult}^{L[i]}\\\\`,`${multBySymbol("P")}(\\frac{C_{ur}${buildingLumpMult}^{L[0]}}{100})\\\\`,`${multBySymbol("P")}(\\log_{10}\\log_{10}\\tau)^{2}\\\\`,`${multBySymbol("P")}H^{${twinGateExp}T_{w}}`,`\\sigma^{${R9BoxMult}R_{9}}`],
+    [`${multBySymbol("P")}M(Lv.)CP(Lv.)\\\\`,"(log_{2}(L + 2))^{1.5}","(log_{10}(H + 10))^{1.25}","\\\\(log_{10}(C + 10))^{0.9}I_{o}^{1.01}",`B[1]^{${gillesBoxPower}A_{4}}`,`\\\\${multBySymbol("P")}log_{10}(Cs)^{2}50^{Ae}`],
+    [`M = K(0.2)+(K-10)(0.3)\\\\`,`+(K-25)(0.4)+(K-50)(0.5)\\\\`,`M \\leftarrow M^{1+0.002A_{c}}\\\\`,`${multBySymbol("P")}(1+0.05A_{c})`],
+    [`CP(l) = 2^{D_{d}}C_{1}(l)C_{2}()`,`\\\\C_{1}(l) = max_{l}:[0,25,50,75,100,150]`,`\\\\ \\rightarrow [1.03,1.05,1.07,1.09,1.11,1.13]^{l}\\\\`,`C_{2}() = \\prod_{i=0}^{8}{TP[i]^{CT[i]}}`],
+    [`${multBySymbol("p_{2}")}`,`(\\sum_{i=0}^{18}{B[i]})^{${covDelta}C_{v}^{${covLvMod}} + ${covExp}}`,`\\\\${multBySymbol("p_{2}")}B[1]^{2}B[16]^{2.5}`],
+    [`B(2) \\leftarrow ${yggBoost}`,`B(2)P_{2}^{${yggPowBase} + ${yggPowLv}Y_{g}}`,`\\\\(B[6]+B[2])^{${yggBPowBase} + ${yggBPowMod}Y_{g}^{${yggBPowLv}}}`,`(1+t)^{${yggThymePow}}`],
+    [`T_{m}=\\frac{1500T_{r}^{${maxLPowBase}+${maxLPowMod}(T_{\\infty}+A_{6})}}{${terraFunNerfMod}}\\\\`,`T(t)=`,`\\frac{T_{m}^{1+${terraInfPow}T_{\\infty}}}{1+e^{t-(X_{b}+${terraDurMod}T_{r})}}`,`+T_{m}^{0.1T_{\\infty}}`],
+    [`\\dot{H} = H^{0.9}(R_{c})\\\\`,`\\dot{L} = 0.1(R_{c}+10A_{7})+20R_3+0.25SP_{FT}\\\\`,`${multBySymbol("p_{4}")}10^{27}${recomPowBase}^{R_{c}-1}`],
+    [`T_d = \\frac{B[11]^{1+0.025T_D}}{1000^{T_f}}\\\\`,`T_f = 1-\\frac{min(B[11],B[10]+B[12])}{(2.125-0.125T_{D}))(B[10]+B[12])}`],
+    [`E_{p}=1,\\quad `,`E_{r}=\\prod_{i=0}^{${excavatedElements}}{Ef_{i}} \\\\`,`\\dot{E_{n}}=\\frac{E_{x}E_{p}E_{r}log_{10}(C)}{100(${100}^{n})}`,`,\\: n \\neq 8`,`\\\\ \\dot{E_{8}}=E_{p}log_{10}(E_{r})\\frac{log_{10}(B[8])log_{10}(B(8))}{1000}`],
+    [`E_{n} \\rightarrow E_{n}(E_{n-1}) + E_{n}(E_{n-2})`,` + \\frac{\\lambda C_{m}}{${cookieYieldFactor}(${weightFactor})}`,`\\\\\\dot{R} = B[12]\\lambda E_{n}^{0.9+C_{c}(log_{10}(E_{n})-60)}`],
+    [`F_{C} = log_{10}(As) + (log_{10}(C)-${minFusion})^{${1.11}}\\\\`,`\\dot{As}=${0.75}F_{C}\\dot{E_{8}}\\\\`,`\\dot{H_{EC}}=${Math.round(astroDecayWF)}F_{C}\\\\`,`\\dot{C}=-(10^{\\frac{-1}{${magnitudeTime*10}}})C`],
+];
+function resetToAnimationBegin(){
+    HEAVEN_RECORD.level = 0;
+    HEAVEN_COUNTDOWN.level = 0;
+    HEAVEN.level = 0;
+    PROGRAM.level = 1;
+    UNINSTALL.level = 1;
+    CHAOS_PERSISTENT_STAGE.level = 2;
+    normalUpgradeMenu.level = 3;
+    permUpgradeMenu.level = 3;
+    updateAvailability();
+    theory.invalidatePrimaryEquation();theory.invalidateSecondaryEquation();
+    theory.invalidateTertiaryEquation();theory.invalidateQuaternaryValues();
+}
 
 init();
