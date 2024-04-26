@@ -1983,6 +1983,9 @@ var getTimeString = (ticks) => {
 }
 var isValidCostObj = (cost) => Object.hasOwn(cost,'type') && Object.hasOwn(cost,'amount');
 var researchBegin = (indx) => {
+    if(indx < 0 || indx >= researchData.length){
+        return;
+    }
     if(researchUpgrade[indx].level > 0){
         log("completed");
         return;
@@ -3394,14 +3397,15 @@ var updateAvailability = () => {
         CHAOS_FLAG.isAvailable &= artifactGet >= 15;
     }
     // Buildings
+    if(Number.isNaN(maxBuild)){maxBuild = 0;}
     for (let i = 0; i < 19; i++) {
         if (i >= 3) {building[i].isAvailable = (COOKIE.value >= buildingData[i - 1].baseCost) || (building[i].level > 0);}
         else {building[i].isAvailable = true;}
         building[i].isAvailable &= (normalUpgradeMenu.level == 0);
         buildingPower[i].isAvailable = building[i].level > 0 && permUpgradeMenu.level == 0;
         buildingLump[i].isAvailable = building[i].level > 10 && permUpgradeMenu.level == 0;
-        buildingExponent[i].isAvailable = (building[i].level > 0) && (normalUpgradeMenu.level == 2) && (modeExponentium.level == 0);
-        buildingExponentRemove[i].isAvailable = (building[i].level > 0) && (normalUpgradeMenu.level == 2) && (modeExponentium.level == 1);
+        buildingExponent[i].isAvailable = ((building[i].level > 0) || i <= maxBuild) && (normalUpgradeMenu.level == 2) && (modeExponentium.level == 0);
+        buildingExponentRemove[i].isAvailable = ((building[i].level > 0) || i <= maxBuild) && (normalUpgradeMenu.level == 2) && (modeExponentium.level == 1);
     }
     exponentium.isAvailable = (normalUpgradeMenu.level == 2);
     modeExponentium.isAvailable = (normalUpgradeMenu.level == 2);
@@ -5018,6 +5022,7 @@ let researchMenu = ui.createPopup({
     })
 });
 //!1.10 : MAIN MENU
+var versionStr = "1.0.0.1", parentCommit="3bb64d4";
 let popup = ui.createPopup({
     title: "Main Menu",
     isPeekable: true,
@@ -5073,7 +5078,7 @@ let popup = ui.createPopup({
                 horizontalTextAlignment: TextAlignment.CENTER,
                 fontSize: 15,
                 padding: new Thickness(10, 10, 0, 0),
-                text: "Cookie Idler - f1c34ec\nv1.0.0"
+                text: `Cookie Idler - ${parentCommit}\nv${versionStr}`
             })
         ]
     })
