@@ -883,7 +883,7 @@ var updateBuildingLumpMaxLv = () => {
     terra.maxLevel = 20 + ((CHAOS_PERSISTENT_STAGE.level > 0)?30:0);
     Empower.maxLevel = 3 + ((CHAOS_PERSISTENT_STAGE.level > 0)?1:0) + ((researchUpgrade[37].level > 0)?3:0);
     conGrow.maxLevel = 5 + ((CHAOS_PERSISTENT_STAGE.level > 0)?2:0) + ((researchUpgrade[37].level > 0)?3:0);
-    heavenInspire = 10 +  + ((researchUpgrade[37].level > 0)?10:0);
+    heavenInspire.maxLevel = 10 + ((researchUpgrade[37].level > 0)?10:0);
     for(let i=1;i<excavatedElements;i++){
         excavatorModule[i].maxLevel = (300 - 20*i) + (researchUpgrade[29].level * 15) + (researchUpgrade[31].level * 10);
     }
@@ -1234,7 +1234,7 @@ var artifactData = [{
     cost: BF("1e330"),unlockCondition: () => {return (building[7].level >= (parseInt([+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[]]) ^ parseInt([+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[] + !+[]] + [+!+[] + !+[] + !+[] + !+[] + !+[] + !+[]])) + 100) && (Math.random() < 0.01);}, desc: "Finally, you get the wizard to cast actual spells instead of conjuring cookies. Despite the thickness, there\'s somehow only 8 spells"
 },{
     order: 11,name: "Antediluvian Engine",clue: "Long-Lived 6048000",
-    cost: BF("1e510"),unlockCondition: () => {return (thyme.level >= 6048000) && (Math.random() < (0.001 * (thyme.level/6048000)));}, desc: "A peculiar machine somehow capable of locally accelerating spacetime using something about time crystals. Engravings of menacing nature can be found tucked away at the bottom, though we don\'t know why. It also comes with a guidebook on parallel computing, not that anything in there makes no sense, right?"
+    cost: BF("1e490"),unlockCondition: () => {return (thyme.level >= 6048000) && (Math.random() < (0.001 * (thyme.level/6048000)));}, desc: "A peculiar machine somehow capable of locally accelerating spacetime using something about time crystals. Engravings of menacing nature can be found tucked away at the bottom, though we don\'t know why. It also comes with a guidebook on parallel computing, not that anything in there makes no sense, right?"
 },{
     order: 12,name: "Elementium Infused Chocolate Chunk",clue: "Cavitilicious",
     cost: BF("1e365"),unlockCondition: () => {return (SUGAR_LUMP.value >= 0b10011100010000000000) && (Math.random() < 0.005);}, desc: "Despite its \"normal\" appearance, that chunk is full of.... uh.... elements? What is that word anyway?"
@@ -2266,7 +2266,7 @@ var heavenlyUpgradeData = [
         name: "Heavenly Inspiration",
         info: "Cuts the time cost of researches down by 1\\%\\ per level",
         costModel: new ExponentialCost(2.22e190, ML2(1e5)),
-        maxLevel: 20,
+        maxLevel: 30,
         onBought: (amount) => {updateGlobalMult();}
     },{
         uid: 16,
@@ -5022,7 +5022,7 @@ let researchMenu = ui.createPopup({
     })
 });
 //!1.10 : MAIN MENU
-var versionStr = "1.0.0.1", parentCommit="3bb64d4";
+var versionStr = "1.0.0.2", parentCommit="c997cf7";
 let popup = ui.createPopup({
     title: "Main Menu",
     isPeekable: true,
