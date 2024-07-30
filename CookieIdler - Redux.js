@@ -1245,8 +1245,8 @@ var artifactData = [{
     order: 14,name: "Cherrysilverium Meld",clue: "Melting Cs",
     cost: BF("1e610"),unlockCondition: () => {return (Math.random() < 0.05) && (acceleratorMode.level == 4) && (acceleratorButton.level == 1);}, desc: "A curious blob of metal, one of the inscriptions inside the temple\'s numerous halls details a picture of it literally melding stuffs together, with humans and cookies"
 },{
-    order: 15,name: "Tokakyote Type-C",clue: "And then, everything was decayed, but what was left, was greater than what were there",
-    cost: BF("1e651"),unlockCondition: () => {return (Math.random() < 0.005) && (HIGH_ELEMENT_CLUSTER.value >= BF(100000));}, desc: "A helical structure that people claim is able to perform nuclear fusion. Why does such a thing exist inside a temple anyway?"
+    order: 15,name: "Tokakyote Type-C",clue: "When you decay a lot at once, there\'s always a chance for something extra to emerge",
+    cost: BF("1e651"),unlockCondition: () => {return (Math.random() < 0.005) && (HIGH_ELEMENT_CLUSTER.value >= BF(80000));}, desc: "A helical structure that people claim is able to perform nuclear fusion. Why does such a thing exist inside a temple anyway?"
 }];
 //loot
 const maxRoll = 10000;
@@ -1896,13 +1896,13 @@ var researchData = [{
     id: 19, name: "Higher Elements Cluster", desc: "Lately there has been an anomaly in reading from particle accelerators. Your scientists has determined those to be atoms of elements heavier than what we\'ve seen before. Maybe harnessing them would yield even more techs that only a baker could dream of.", time: 720000, preq: [18,16],
     cost: [{type:8,amount:BF(1.5e12)},{type:5,amount:BF(7.8e60)},{type:6,amount:BF(7.5e59)},{type:7,amount:BF(3.1e57)},{type:28,amount:BF(4200)},{type:26,amount:BF(6250)},{type:25,amount:BF(7500)}]
 },{
-    id: 20, name: "Multiverse Eschatology", desc: "The inevitable destruction of the universe. That\'s something we couldn\'t avoid (yet), so coming up with proper plans to deal with dying universes is critical towards sustaining its rate of production. The theory produced would be most useful when used in conjunction with cortex bakers. Makes Idleverses\'s CPS approach Cortex Baker, anyhow...", time: 1080000, preq: [18,16,20],
+    id: 20, name: "Multiverse Eschatology", desc: "The inevitable destruction of the universe. That\'s something we couldn\'t avoid (yet), so coming up with proper plans to deal with dying universes is critical towards sustaining its rate of production. The theory produced would be most useful when used in conjunction with cortex bakers. Makes Idleverses\'s CPS approach Cortex Baker, anyhow...", time: 108000, preq: [18,16],
     cost: [{type:9,amount:BF("1e620")},{type:30,amount:BF(2024)},{type:31,amount:BF(50)},{type:24,amount:BF(7725)},{type:7,amount:BF(3e60)},{type:8,amount:BF(1.5e13)}]
 },{
     id: 21, name: "Electric Sheep", desc: "A revolutionary way of dreaming where instead of dreaming various mundane scenarios that may or may not hinder the brain\'s function. The dream is replaced with mathematical wonder of complex, fractalline patterns full of complex(perhaps complete) jargon and even more incomprehensible equations, all perfect fit for a resting cortex brain. Plus you get to see some cool stuffs to. Increases the maximum amount of Cortex Baker by 250 and multiplies its CPS by 10.", time: 864000, preq: [18],
     cost: [{type:9,amount:BF("1e625")},{type:31,amount:BF(250)},{type:11,amount:BF(1e7)},{type:4,amount:BF(5.25e65)},{type:5,amount:BF(1.1e65)},{type:7,amount:BF(1.5e60)},{type:8,amount:BF(7.5e12)}]
 },{
-    id: 22, name: "Fusion Reactor", desc: "In order to REALLY get those HECs pumping out. We have discovered that somehow fusing COOKIES together would do it, especially since all of the other elements are being stretched to the limits(thanks to our research efforts). Unlocks Fusion Reactors, and perhaps a way to FUSE elements soon?", time: 1440000, preq: [11,19,20],
+    id: 22, name: "Fusion Reactor", desc: "In order to REALLY get those HECs pumping out. We have discovered that somehow fusing COOKIES together would do it, especially since all of the other elements are being stretched to the limits(thanks to our research efforts). Unlocks Fusion Reactors, and perhaps a way to FUSE elements soon?", time: 144000, preq: [11,19,20],
     cost: [{type:9,amount:BF("1e650")},{type:10,amount:BF("5e213")},{type:25,amount:BF(7650)},{type:0,amount:BF("5e80")},{type:4,amount:BF("2.6e75")},{type:7,amount:BF("2.1e65")},{type:8,amount:BF("1.1e13")},{type:12,amount:BF(250000)},]
 },{
     id: 23, name: "Molecular Mining", desc: "The peak of mining. Separating everything from the ground into its molecules and separate them into various elements(mostly useless normal ones omg why), it\'s a surefire way of guaranteeing no loss from the refinement process that seems to dispose of a tiny bit of the real thing(but they add up though).", time: 1260000, preq: [19],
@@ -2150,8 +2150,8 @@ function updateChaosBuildingName(){
 //     }
 // };
 var thyme, normalUpgradeMenu, permUpgradeMenu, trueThyme;
-const cookieLimit = [BF("1e616"),BF("1e656"),BF("1e706"),BF("9.99e749"),BF("1e10000")];
-const CPSLimit = [BF("1e616"),BF("1e656")/10,BF("1e706")/1000,BF("9.99e749")/10,BF("1e10000")];
+const cookieLimit = [BF("1e617"),BF("1e658"),BF("1e707"),BF("9.99e749"),BF("1e10000")];
+const CPSLimit = [BF("1e617"),BF("1e658")/10,BF("1e707")/1000,BF("9.99e749")/10,BF("1e10000")];
 var getLimitFlags = () => Math.min(4,researchUpgrade[18].level + researchUpgrade[27].level + Math.min(1,CHAOS_STAGE.level) + ((CHAOS_PERSISTENT_STAGE.level >= 2)?2:0));
 var checkCookieOverLimit = (cookie) => {
     return BigMin(cookie,cookieLimit[getLimitFlags()]);
