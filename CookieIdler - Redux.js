@@ -885,7 +885,7 @@ var updateBuildingLumpMaxLv = () => {
     conGrow.maxLevel = 5 + ((CHAOS_PERSISTENT_STAGE.level > 0)?2:0) + ((researchUpgrade[37].level > 0)?3:0);
     heavenInspire.maxLevel = 10 + ((researchUpgrade[37].level > 0)?10:0);
     for(let i=1;i<excavatedElements;i++){
-        excavatorModule[i].maxLevel = (300 - 20*i) + (researchUpgrade[29].level * 15) + (researchUpgrade[31].level * 10);
+        excavatorModule[i].maxLevel = (305 - 20*i) + (researchUpgrade[29].level * 15) + (researchUpgrade[31].level * 10);
     }
 }
 var updateBuildingLumpPower = () => {
@@ -1699,7 +1699,7 @@ var acceleratorStatus = (level, mode) => {
 function decayElement(indx, dt){
     if(indx >= 2 && (elements[indx].value >= elementData[indx].minDecayAmt)){
         let calcCriticalConst = criticalConst - (0.00027777 * researchUpgrade[33].level);
-        let rate = building[12].level * lambda * BigP(elements[indx].value,maxDecayPow + (elements[indx].value > BF(1e60)?((calcCriticalConst) * (BigL10(elements[indx].value)-60)):0));
+        let rate = building[12].level * lambda * BigP(elements[indx].value,maxDecayPow + (elements[indx].value > BF(1e63)?((calcCriticalConst) * (BigL10(elements[indx].value)-63)):0));
         let isCritical = dt * rate > elements[indx].value
         if(isCritical){//critical point, happens at roughly e90
             rate = elements[indx].value * 0.99;
@@ -1759,7 +1759,7 @@ function decayElementTest(indx, dt){
 }
 //fusion
 var fusionReactor, astroDecayWF = (elementData[8].weight+elementData[7].weight+elementData[6].weight) / weightFactor;
-const magnitudeTime = 20, minFusion = 650, astroYieldConst = 0.75;//time to go down 10x, 10^n C required to begin fusion, base astrofudge/s yield
+const magnitudeTime = 20, minFusion = 645, astroYieldConst = 0.75;//time to go down 10x, 10^n C required to begin fusion, base astrofudge/s yield
 const cookieLoss = Math.pow(10,(1/(magnitudeTime*10)) * -1);
 var fusionStatus = (level) => {
     //0 = OFF, 1 = ON
@@ -1912,31 +1912,31 @@ var researchData = [{
     cost: [{type:9,amount:BF("1.23e645")},{type:11,amount:BF(2.5e7)},{type:2,amount:BF("7.777e83")},{type:3,amount:BF("5.555e81")},{type:12,amount:BF(1000000)},{type:14,amount:BF(10000)},]
 },{
     id: 25, name: "E >> 0", desc: "The ultimate solution to \"Why does everything fade into nothing at the end\". It truly doesn\'t make any sense to a layman, but to those scaredy-cats universe doomers it sure invalidates them.", time: 805422, preq: [20],
-    cost: [{type:9,amount:BF("2.22e652")},{type:7,amount:BF("2.22e78")},{type:6,amount:BF(2.22e80)},{type:5,amount:BF("2.22e82")},{type:12,amount:BF(444444)},{type:25,amount:BF(2500)},{type:27,amount:BF(2500)},{type:30,amount:BF(2500)}]
+    cost: [{type:9,amount:BF("2.22e652")},{type:7,amount:BF("1.11e78")},{type:6,amount:BF(2.22e80)},{type:5,amount:BF("2.22e82")},{type:12,amount:BF(444444)},{type:25,amount:BF(2500)},{type:27,amount:BF(2500)},{type:30,amount:BF(2500)}]
 },{
     id: 26, name: "W.O.K.E.", desc: "One of the main inhibitors of the CT(Cookie Thinking) functions is the neverending torrent of intrusive thoughts that would rudely barge in without consent. The most common of such thoughts is about political nonsense that only serves to distract people from real action(in the real world). Staying W.O.K.E.(full name redacted) would serve as a way to transcend those though a common realization(which is also redacted). Increases the maximum amount of Cortex Baker by 300 and multiplies its CPS by 10.", time: 1208133, preq: [21],
-    cost: [{type:9,amount:BF("3.33e653")},{type:4,amount:BF(3.33e83)},{type:7,amount:BF("3.33e79")},{type:18,amount:BF(10400)},{type:29,amount:BF(3725)},{type:12,amount:BF(555555)},{type:31,amount:BF(500)},]
+    cost: [{type:9,amount:BF("3.33e653")},{type:4,amount:BF(3.33e83)},{type:7,amount:BF("1.333e79")},{type:18,amount:BF(10400)},{type:29,amount:BF(3725)},{type:12,amount:BF(555555)},{type:31,amount:BF(500)},]
 },{
     id: 27, name: "Communal Brainsweep", desc: "WARN1NG : PR0CEED1NG ANY FURTHER IN SC1ENT1F1C RES3ARCH MAY HAVE UN3XP3CTED RE5ULTS. Y0U HAVE BEEN WARNED.\nRemoves another layer of limit of the Cookie Empire, at a cost of even more unstable environment. Buffs grandmas by who knows what.", time: 1666666, preq: [26,18],
-    cost: [{type:9,amount:BF("1e656")},{type:11,amount:BF(6.6e7)},{type:4,amount:BF("6.66e90")},{type:6,amount:BF(6.66e83)},{type:7,amount:BF(6.66e81)},{type:8,amount:BF(6.66e17)},{type:12,amount:BF(666666)},{type:14,amount:BF(10759)}]
+    cost: [{type:9,amount:BF("1e656")},{type:11,amount:BF(6.6e7)},{type:4,amount:BF("6.66e90")},{type:6,amount:BF(6.66e83)},{type:7,amount:BF(6.66e79)},{type:8,amount:BF(6.66e17)},{type:12,amount:BF(666666)},{type:14,amount:BF(10759)}]
 },{
     id: 28, name: "Mana Conviencetrons", desc: "By nature, mana usually all float away into thin air, making spells needlessly tedious to cast, and its effects severely hindered. Through the application of Mana Leaching and some recent innovations, we can now capture those runaway mana and put them into where it should be! Boosts Spell Power by 15.", time: 900000, preq: [17],
     cost: [{type:20,amount:BF(10000)},{type:11,amount:BF(1e8)},{type:2,amount:BF(5e91)},{type:3,amount:BF(5e91)},{type:4,amount:BF(5e91)},{type:8,amount:BF(5e17)},{type:12,amount:BF(2222222)}]
 },{
     id: 29, name: "Mechanized Fabrications", desc: "A marvel of machine construction whose uses seem infinite. Proven to be exceptionally useful for Spaced-based usage and improving throughput of power surging across all buildings. Also makes whoever carefully reading all of this have a cookieful day.", time: 1750000, preq: [27],
-    cost: [{type:9,amount:BF("1e675")},{type:17,amount:BF(10900)},{type:28,amount:BF(5300)},{type:0,amount:BF(4.5e94)},{type:4,amount:BF(1e91)},{type:5,amount:BF(2.5e90)},{type:7,amount:BF(2.75e83)},{type:12,amount:BF(1e7)}]
+    cost: [{type:9,amount:BF("1e675")},{type:17,amount:BF(10900)},{type:28,amount:BF(5300)},{type:0,amount:BF(4.5e94)},{type:4,amount:BF(1e91)},{type:5,amount:BF(2.5e90)},{type:7,amount:BF(2.75e82)},{type:12,amount:BF(1e7)}]
 },{
-    id: 30, name: "The Montessori Method", desc: "Nurturing new Cortex Bakers is proven to be way more efficient than fixing all the existing ones. With the Montessori Method of Education implemented, it can boost the overall efficiency of brains through through and concise development throughout all mental aspects. Also makes it less likely to antagonize each other. Increases the maximum amount of Cortex Baker by 250 and multiplies its CPS by 10.", time: 1500000, preq: [27,26],
+    id: 30, name: "The Montessori Method", desc: "Nurturing new Cortex Bakers is proven to be way more efficient than fixing all the existing ones. With the Montessori Method of Education implemented, it can boost the overall efficiency of brains through thorough and concise development throughout all mental aspects. Also makes it less likely to antagonize each other. Increases the maximum amount of Cortex Baker by 250 and multiplies its CPS by 10.", time: 1500000, preq: [27,26],
     cost: [{type:9,amount:BF("1e673")},{type:10,amount:BF("1e221")},{type:31,amount:BF(750)},{type:2,amount:BF(1e91)},{type:3,amount:BF(5e89)},{type:12,amount:BF(2.5e6)}]
 },{
     id: 31, name: "Spacellic Materializers", desc: "From E>>0 research, it has been discovered that the method of creating something from nothing is really possible in our universe. A truly new method of getting even more elements from the same earth. Adds additional levels to Extraterrestrial Excavators, Excavator, and Mining Modules. Also allows the power of Terraform Buff to affect excavations.", time: 2000000, preq: [23,29],
-    cost: [{type:9,amount:BF("1e680")},{type:3,amount:BF(5e92)},{type:4,amount:BF(1e93)},{type:5,amount:BF(5e92)},{type:6,amount:BF(1e88)},{type:7,amount:BF(5e85)},{type:8,amount:BF(5e22)},{type:12,amount:BF(3.5e7)}]
+    cost: [{type:9,amount:BF("1e680")},{type:3,amount:BF(5e92)},{type:4,amount:BF(1e93)},{type:5,amount:BF(5e92)},{type:6,amount:BF(1e88)},{type:7,amount:BF(1.66e85)},{type:8,amount:BF(5e22)},{type:12,amount:BF(3.5e7)}]
 },{
     id: 32, name: "Anti-Conspiratorial-Grandmatriachs Program", desc: "A personal project about pushing grandmas away from your array of cortex brains. Even though the gains may be questionable from the outside, but every bit helps! Increases the maximum amount of Cortex Baker by 50.\nNOTE : CANNOT BE INITIATED IN PRESENCE OF ANY ELDERLY INDIVIDUAL AND THEIR INFLUENCE", time: 2222222, preq: [27],
     cost: [{type:9,amount:BF("1e690")},{type:31,amount:BF(1050)},{type:30,amount:BF(3125)},{type:29,amount:BF(4340)},{type:28,amount:BF(5570)},{type:4,amount:BF(7.77e92)},{type:12,amount:BF(17777777)}]
 },{
     id: 33, name: "Aberrant Decay", desc: "Tweaking the laws of physics JUSSSSSSSSSSSSSSSSST a bit might be the key to our perplexing properties of elements suddenly disappearing into nothingness past a certain point(well, more like an ever-increasing diminishing returns). Reduces the critical penalty constant slightly.", time: 2121212, preq: [22,29],
-    cost: [{type:27,amount:BF(3600)},{type:0,amount:BF(2e97)},{type:1,amount:BF(5e95)},{type:2,amount:BF(1.25e94)},{type:7,amount:BF(1.25e86)},{type:8,amount:BF(5e22)},{type:12,amount:BF(12345678)}]
+    cost: [{type:27,amount:BF(3600)},{type:0,amount:BF(2e97)},{type:1,amount:BF(5e95)},{type:2,amount:BF(1.25e94)},{type:7,amount:BF(6.25e85)},{type:8,amount:BF(5e22)},{type:12,amount:BF(12345678)}]
 },{
     id: 34, name: "Elder Shades", desc: "WARNING : TO CREATE THIS ITEM WOULD BE TO HANG THE FATES OF THIS UNIVERSE AND 5XXXXX OTHER MULTIVERSES IN BALANCE UNTIL THE UNDERLYING CAUSE HAS BEEN RESOLVED\nENTANGLEMENT CODE : ORT - EXISTENTIAL\nLOCUS CODE : 1, 16\nJust a cool sunglasses, what more could it possibly be?", time: 1725634, preq: [27],
     cost: [{type:9,amount:BF("7e700")},{type:11,amount:BF(66666666)},{type:8,amount:BF(5e27)},{type:12,amount:BF(44444444)}]
