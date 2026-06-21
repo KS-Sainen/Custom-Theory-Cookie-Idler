@@ -1263,7 +1263,7 @@ let pubH = (i) => {
     HEAVENLY_CHIP.value += BF(i) * hfc(COOKIE.value);
 };
 var rollLoot = () => {
-    let r = RandI(maxRoll); + ((isSpellActive(3))?templeLuck:0) + (butterBar.level * 25);
+    let r = RandI(maxRoll) + ((isSpellActive(3))?templeLuck:0) + (butterBar.level * 25);
     let prize = bsearch(lootWeight, r);
     switch (prize) {
         case 0:
